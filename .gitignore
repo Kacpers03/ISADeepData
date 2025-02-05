@@ -1,0 +1,18 @@
+# Ignorer .NET build-filer
+bin/
+obj/
+*.pdb
+*.exe
+*.dll
+*.log
+*.vs/
+
+# Ignorer Next.js build-filer
+.next/
+out/
+node_modules/
+*.log
+.env.local
+.env.development.local
+.env.production.local
+*.cache
