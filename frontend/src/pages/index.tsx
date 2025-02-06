@@ -1,6 +1,7 @@
 import Layout from "../shared/layout";
 
 export default function Home() {
+
   return (
     <Layout>
       <h2>Welcome to ISA DeepData</h2>
@@ -8,3 +9,4 @@ export default function Home() {
     </Layout>
   );
 }
+
