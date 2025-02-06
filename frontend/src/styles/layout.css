@@ -1,0 +1,81 @@
+/* HEADER */
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: white;
+    padding: 10px 20px;
+    border-bottom: 1px solid #ddd;
+  }
+  
+  .logo {
+    display: flex;
+    align-items: center;
+  }
+  
+  .logo-img {
+    height: 50px;
+    margin-right: 10px;
+  }
+  
+  .logo-text h1 {
+    font-size: 18px;
+    margin: 0;
+  }
+  
+  .logo-text p {
+    font-size: 12px;
+    color: blue;
+    margin: 0;
+  }
+  
+  /* NAVBAR */
+  .navbar {
+    display: flex;
+  }
+  
+  .nav-links {
+    list-style: none;
+    display: flex;
+    gap: 20px;
+  }
+  
+  .nav-item a {
+    text-decoration: none;
+    color: black;
+  }
+  
+  .nav-dropdown {
+    position: relative;
+  }
+  
+  .dropdown-menu {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background: white;
+    list-style: none;
+    padding: 10px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    display: none;
+  }
+  
+  .nav-dropdown:hover .dropdown-menu {
+    display: block;
+  }
+  
+  /* HOVEDINNHOLD */
+  .content {
+    background-color: #5A79A5; /* Samme blåfarge som på bildet */
+    min-height: 500px;
+    padding: 20px;
+  }
+  
+  /* FOOTER */
+  .footer {
+    text-align: center;
+    padding: 10px;
+    background: #222;
+    color: white;
+  }
+  
