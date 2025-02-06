@@ -1,7 +1,7 @@
 import type { NextConfig } from "next";
 
-const nextConfig: NextConfig = {
-  /* config options here */
+const nextConfig = {
+  srcDir: "src", // Forteller Next.js at src/ er root
 };
 
 export default nextConfig;
