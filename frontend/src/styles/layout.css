@@ -1,14 +1,14 @@
-/* 🌍 Sørger for at hele siden dekker skjermen */
+/* 🌍 Fjern margin og padding for fullskjerm */
 html, body {
     margin: 0;
     padding: 0;
     height: 100%;
     width: 100%;
     font-family: Arial, sans-serif;
-    overflow-x: hidden; /* Fjerner horisontal scroll */
+    overflow-x: hidden; /* Unngå horisontal scrolling */
 }
 
-/* 🏗️ Gjør layouten full høyde og bredde */
+/* 🏗️ Gjør layouten full høyde */
 .layout {
     display: flex;
     flex-direction: column;
@@ -16,42 +16,31 @@ html, body {
     width: 100%;
 }
 
-/* 🚀 Hovedinnhold tar opp all plass mellom header og footer */
-.content {
-    flex: 1; /* Fyller all tilgjengelig plass */
-    background-color: #5A79A5; /* Blåfarge */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 20px;
-    width: 100%;
-}
-
 /* 📌 HEADER */
 .header {
     display: flex;
-    justify-content: space-between;
+    flex-direction: column;
     align-items: center;
     background: white;
-    padding: 10px 20px;
+    padding: 20px 0;
     border-bottom: 1px solid #ddd;
     width: 100%;
-    height: 80px; /* Juster høyde for å matche designet */
 }
 
 /* LOGO */
-.logo {
+.logo-container {
     display: flex;
     align-items: center;
+    gap: 10px;
 }
 
 .logo-img {
-    height: 40px;
-    margin-right: 10px;
+    height: 60px; /* Gjør logoen mindre */
+    width: auto;
 }
 
 .logo-text h1 {
-    font-size: 16px;
+    font-size: 18px;
     margin: 0;
 }
 
@@ -61,46 +50,37 @@ html, body {
     margin: 0;
 }
 
-/* 📌 NAVBAR */
+/* 📌 NAVBAR - Plasseres under logoen */
+.navbar-container {
+    width: 100%;
+    margin-top: 10px; /* Liten avstand mellom logo og navbar */
+}
+
 .navbar {
     display: flex;
-    align-items: center;
+    justify-content: center;
 }
 
 .nav-links {
     list-style: none;
     display: flex;
-    gap: 25px;
+    gap: 20px;
     padding: 0;
     margin: 0;
 }
 
-.nav-item a {
-    text-decoration: none;
-    color: black;
+/* 📌 CONTENT */
+.content {
+    flex: 1;
+    background-color: #5A79A5; /* Blåfarge */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    width: 100%;
 }
 
-/* DROPDOWN */
-.nav-dropdown {
-    position: relative;
-}
-
-.dropdown-menu {
-    position: absolute;
-    top: 100%;
-    left: 0;
-    background: white;
-    list-style: none;
-    padding: 10px;
-    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-    display: none;
-}
-
-.nav-dropdown:hover .dropdown-menu {
-    display: block;
-}
-
-/* 📌 FOOTER - Fester seg alltid i bunnen */
+/* 📌 FOOTER */
 .footer {
     text-align: center;
     padding: 10px;
