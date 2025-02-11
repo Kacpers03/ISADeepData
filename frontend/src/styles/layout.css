@@ -3,7 +3,7 @@
     display: flex;
     flex-direction: column;
     min-height: 100vh;
-    background-color: #4F6D92; /* Setter bakgrunnsfargen til ønsket */
+    background-color: #4F6D92; /* Ønsket bakgrunnsfarge */
 }
 
 /* Sørger for at innholdet tar opp all tilgjengelig plass */
@@ -11,21 +11,34 @@
     flex: 1;
 }
 
-/* Justerer headeren – fjerner overflødig padding for å redusere gapet */
-header {
-    position: relative; 
+/* Sticky header: holder headeren fast øverst med høy z-index */
+.sticky-header {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
     background-color: white;
-    padding-bottom: 0;
+    transition: transform 0.3s ease-in-out;
 }
 
-/* Holder navbaren uendret */
+/* Dynamiske header-klasser for å vise/skjule headeren (inkludert navbar) */
+/* Ved visning: ingen transformasjon */
+.header-visible {
+    transform: translateY(0);
+}
+
+/* Ved skjuling: flytt headeren helt opp (bruker -100% for å sikre at hele elementet forsvinner) */
+.header-hidden {
+    transform: translateY(-100%);
+}
+
+/* Navbar styling */
 .navbar {
     background: none !important;
     box-shadow: none;
     padding-top: 10px;
 }
 
-/* Burgerknapp – fjernet absolutt posisjonering slik at den plasseres i flex-beholderen */
+/* Burgerknapp – posisjoneringen er fjernet for å plassere den naturlig i flex-beholderen */
 .custom-toggler {
     background-color: #0056b3 !important; /* Blå farge */
     border-radius: 50%;
@@ -61,11 +74,9 @@ header {
         align-items: flex-start !important;
         padding-left: 10px;
     }
-
     .navbar-nav {
         width: 100%;
     }
-
     .navbar-nav .nav-item {
         margin-bottom: 10px;
     }
@@ -82,3 +93,10 @@ header {
 }
 
 /* Footer styling */
+footer {
+    background-color: #4F6D92; /* Samme farge som layoutens bakgrunn */
+    color: #ffffff;            /* Hvit tekst for god kontrast */
+    padding: 20px;
+    text-align: center;
+    margin-top: auto;          /* Plasserer footeren nederst i flex containeren */
+}

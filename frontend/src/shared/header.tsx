@@ -1,9 +1,29 @@
+import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import Navigation from "../components/navigation/navigation";
 
 export default function Header() {
+  const [showHeader, setShowHeader] = useState(true);
+  const lastScrollY = useRef(0);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > lastScrollY.current && window.scrollY > 100) {
+        // Ved scroll ned: skjul headeren (og dermed navbaren)
+        setShowHeader(false);
+      } else {
+        // Ved scroll opp: vis header og navbar
+        setShowHeader(true);
+      }
+      lastScrollY.current = window.scrollY;
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
   return (
-    <header className="bg-white shadow-sm">
+    <header className={`sticky-header ${showHeader ? "header-visible" : "header-hidden"}`}>
       <div className="container">
         {/* Øverste rad med logo og burger-knapp */}
         <div className="d-flex align-items-center justify-content-between py-3">
@@ -27,7 +47,7 @@ export default function Header() {
             <span className="navbar-toggler-icon"></span>
           </button>
         </div>
-        {/* Navigasjonsbar – beholdt under logoen */}
+        {/* Navigasjonsmenyen */}
         <Navigation />
       </div>
     </header>
