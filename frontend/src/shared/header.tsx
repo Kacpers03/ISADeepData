@@ -4,15 +4,20 @@ import Navigation from "../components/navigation/navigation";
 
 export default function Header() {
   const [showHeader, setShowHeader] = useState(true);
+  const [isNavOpen, setIsNavOpen] = useState(false);
   const lastScrollY = useRef(0);
 
   useEffect(() => {
     const handleScroll = () => {
+      // Hvis navigasjonsmenyen er åpen, la headeren stå synlig
+      if (isNavOpen) {
+        setShowHeader(true);
+        lastScrollY.current = window.scrollY;
+        return;
+      }
       if (window.scrollY > lastScrollY.current && window.scrollY > 100) {
-        // Ved scroll ned: skjul headeren (og dermed navbaren)
         setShowHeader(false);
       } else {
-        // Ved scroll opp: vis header og navbar
         setShowHeader(true);
       }
       lastScrollY.current = window.scrollY;
@@ -20,7 +25,14 @@ export default function Header() {
 
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  }, [isNavOpen]);
+
+  // Håndter toggling av burger-menyen
+  const handleNavToggle = () => {
+    setIsNavOpen((prev) => !prev);
+    // Når menyen åpnes, tving headeren til å være synlig
+    setShowHeader(true);
+  };
 
   return (
     <header className={`sticky-header ${showHeader ? "header-visible" : "header-hidden"}`}>
@@ -34,15 +46,16 @@ export default function Header() {
               <p className="text-primary">International Seabed Authority</p>
             </div>
           </div>
-          {/* Burgerknapp – vises kun på mobil */}
+          {/* Burger-knapp – vises kun på mobil */}
           <button
             className="navbar-toggler custom-toggler d-lg-none"
             type="button"
             data-bs-toggle="collapse"
             data-bs-target="#navbarNav"
             aria-controls="navbarNav"
-            aria-expanded="false"
+            aria-expanded={isNavOpen}
             aria-label="Toggle navigation"
+            onClick={handleNavToggle}
           >
             <span className="navbar-toggler-icon"></span>
           </button>
