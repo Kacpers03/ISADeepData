@@ -1,0 +1,119 @@
+body {
+    background-color:#62ab71;
+}
+
+.tableContainer {
+    width: 85%;
+    max-width: 1000px;
+    background: rgba(255, 255, 255, 0.1); /* Glass effect */
+    backdrop-filter: blur(10px);
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    overflow: hidden;
+    padding: 20px; /* Add spacing */
+    margin: auto; /* Center it */
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse; /* Fix spacing issues */
+}
+
+.tableHead th {
+    background: #374151;
+    color: white;
+    text-align: left;
+    padding: 12px 15px;
+    border-bottom: 2px solid #4b5563;
+}
+
+.tableRow td {
+    padding: 12px 15px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.tableRow:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+/* Align Checkboxes Properly */
+.checkboxWrapper {
+    display: flex;
+    align-items: center;
+}
+
+/* Fix File Link Visibility */
+.fileLink {
+    font-weight: bold;
+    color: #ffffff; /* Bright Yellow */
+    text-decoration: none;
+    transition: color 0.2s ease-in-out;
+}
+
+.fileLink:hover {
+    color: #000000;
+}
+
+/* Improve Disabled Button */
+.downloadButton {
+    margin-top: 20px;
+    padding: 12px 24px;
+    background: #2563eb;
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+}
+
+.downloadButton:hover {
+    background: #3b82f6;
+}
+
+.downloadButton:disabled {
+    background: rgba(255, 255, 255, 0.2); /* Lighter to match the design */
+    color: rgba(255, 255, 255, 0.6);
+    cursor: not-allowed;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.infoIcon {
+    position: relative;
+    display: inline-block;
+    cursor: pointer;
+    font-size: 18px;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    text-align: center;
+    line-height: 20px;
+    background-color: #007bff;
+    color: white;
+    font-weight: bold;
+  }
+  
+  .tooltip {
+    visibility: hidden;
+    width: 300px; /* Make it a larger square */
+    background-color: rgba(0, 0, 0, 0.85);
+    color: #fff;
+    text-align: left;
+    padding: 15px;
+    border-radius: 8px;
+    position: fixed; /* This allows it to float outside the table */
+    z-index: 1000; /* Ensures it's above everything */
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out;
+    pointer-events: none; /* Prevents interfering with other elements */
+  }
+  
+  .infoIcon:hover .tooltip {
+    visibility: visible;
+    opacity: 1;
+    top: 50px; /* Adjusts position relative to viewport */
+    left: 50%; /* Centers it horizontally */
+    transform: translateX(-50%);
+  }
+  
