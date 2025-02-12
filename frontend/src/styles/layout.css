@@ -1,15 +1,26 @@
 /* Gjør layouten fleksibel for å sikre at footeren holder seg nederst */
+/* Global layout */
 .layout {
     display: flex;
     flex-direction: column;
     min-height: 100vh;
-    background-color: #4F6D92; /* Ønsket bakgrunnsfarge */
-}
-
-/* Sørger for at innholdet tar opp all tilgjengelig plass */
-.container {
+  }
+  
+  /* Standard container (brukes for øvrige sider) */
+  .container {
     flex: 1;
-}
+  }
+  
+  /* Spesiell fullbredde wrapper for hjemsiden – denne brukes for <main> på "/" */
+  .homeMain {
+    width: 100%;
+    /* Beregnet høyde: 100vh minus header og footer. Her antas 60px for hver – juster etter behov. */
+    height: calc(100vh - 120px);
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    position: relative;
+  }
 
 /* Sticky header: holder headeren fast øverst med høy z-index */
 .sticky-header {
