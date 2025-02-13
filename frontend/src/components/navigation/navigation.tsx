@@ -10,9 +10,9 @@ export default function Navigation() {
             <NavDropdown
               title="About ISA"
               items={[
-                { text: "Mission", link: "/mission" },
-                { text: "History", link: "/history" },
-                { text: "Team", link: "/team" },
+                { text: "About", link: "/about/about" },
+                { text: "Purpose", link: "/purpose" },
+                { text: "Regulations", link: "/regulations" },
               ]}
             />
             <NavItem text="Map" link="/map" />
