@@ -1,5 +1,5 @@
 /* Main container styling */
-.filter-container {
+.filterContainer {
     background-color: #f3f4f6;
     padding: 16px;
     border-radius: 8px;
@@ -9,7 +9,7 @@
 }
 
 /* Title Styling */
-.filter-title {
+.filterTitle {
     font-size: 1.25rem;
     font-weight: 600;
     color: #1f2937;
@@ -17,30 +17,44 @@
 }
 
 /* Horizontal line */
-.filter-divider {
+.filterDivider {
     border-bottom: 2px solid #e5e7eb;
     margin-bottom: 12px;
 }
 
-/* Dropdown button */
-.dropdown-button {
-    width: 100%;
-    padding: 10px;
-    font-size: 1rem;
-    font-weight: 500;
-    background-color: #374151;
-    color: white;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 8px;
+/* CSS */
+.dropdownButton {
+  background-color: #FFFFFF;
+  border: 0;
+  border-radius: .5rem;
+  box-sizing: border-box;
+  color: #111827;
+  font-family: "Inter var",ui-sans-serif,system-ui,-apple-system,system-ui,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji";
+  font-size: .875rem;
+  font-weight: 600;
+  line-height: 1.25rem;
+  padding: .75rem 1rem;
+  text-align: center;
+  text-decoration: none #D1D5DB solid;
+  text-decoration-thickness: auto;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
 }
 
-.dropdown-button:hover {
-    background-color: #4b5563;
+.dropdownButton:hover {
+  background-color: rgb(249,250,251);
+}
+
+.dropdownButton:focus {
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+}
+
+.dropdownButton:focus-visible {
+  box-shadow: none;
 }
 
 /* Dropdown arrow */
@@ -53,7 +67,7 @@
 }
 
 /* Dropdown content */
-.dropdown-content {
+.dropdownContent {
     background-color: white;
     border: 1px solid #ddd;
     border-radius: 6px;
@@ -70,7 +84,7 @@
 }
 
 /* Checkbox Styling */
-.filter-checkbox {
+.filterCheckbox {
     display: flex;
     align-items: center;
     gap: 8px;
@@ -80,7 +94,7 @@
 }
 
 /* Input Checkbox */
-.filter-checkbox input {
+.filterCheckbox input {
     width: 16px;
     height: 16px;
     accent-color: #2563eb;
@@ -88,7 +102,7 @@
 }
 
 /* Button Styling */
-.clear-filter-button {
+.clearFilterButton {
     width: 100%;
     background-color: #6b7280;
     color: white;
@@ -101,6 +115,6 @@
     margin-top: 10px;
 }
 
-.clear-filter-button:hover {
+.clearFilterButton:hover {
     background-color: #4b5563;
 }

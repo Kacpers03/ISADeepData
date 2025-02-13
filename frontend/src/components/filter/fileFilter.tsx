@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import "../../styles/filefilter.module.css"; // Import CSS file
+import styles from "../../styles/filefilter.module.css"; // Import CSS file
 
 const FilterSearch = ({ filters, setFilters }) => {
   const filterOptions = {
@@ -65,23 +65,23 @@ const FilterSearch = ({ filters, setFilters }) => {
   };
 
   return (
-    <div className="filter-container">
-      <h2 className="filter-title">Search Filters</h2>
-      <hr className="filter-divider" />
+    <div className={styles.filterContainer}>
+      <h2 className={styles.filterTitle}>Search Filters</h2>
+      <hr className={styles.filterDivider} />
 
       {Object.entries(filterOptions).map(([category, options]) => (
-        <div key={category} className="filter-group" ref={(el) => (dropdownRefs.current[category] = el)}>
+        <div key={category} className={styles.filterGroup} ref={(el) => (dropdownRefs.current[category] = el)}>
           <button
-            className="dropdown-button"
+            className={styles.dropdownButton}
             onClick={() => toggleDropdown(category)}
           >
             {category.charAt(0).toUpperCase() + category.slice(1)}
-            <span className={`arrow ${dropdownOpen[category] ? "up" : "down"}`}>▼</span>
+            <span className={dropdownOpen[category] ? styles.arrowUp : styles.arrowDown}>▼</span>
           </button>
 
           {dropdownOpen[category] && (
-            <div className="dropdown-content" ref={(el) => (menuRefs.current[category] = el)}>
-              <label className="filter-checkbox">
+            <div className={styles.dropdownContent} ref={(el) => (menuRefs.current[category] = el)}>
+              <label className={styles.filterCheckbox}>
                 <input
                   type="checkbox"
                   checked={filters[category] === "All"}
@@ -91,7 +91,7 @@ const FilterSearch = ({ filters, setFilters }) => {
               </label>
 
               {options.map((option) => (
-                <label key={option} className="filter-checkbox">
+                <label key={option} className={styles.filterCheckbox}>
                   <input
                     type="checkbox"
                     checked={
@@ -112,7 +112,7 @@ const FilterSearch = ({ filters, setFilters }) => {
         onClick={() =>
           setFilters({ country: "All", contractor: "All", year: "All", category: "All" })
         }
-        className="clear-filter-button"
+        className={styles.clearFilterButton}
       >
         Clear Filters
       </button>
