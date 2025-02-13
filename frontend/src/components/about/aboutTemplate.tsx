@@ -9,67 +9,103 @@ export default function AboutTemplate() {
                 className="img-fluid rounded"
                 loading="lazy"
                 src="/image/cargoship.jpg"
-                alt="About 1"
+                alt="ISA DeepData Overview"
               />
             </div>
             <div className="col-12 col-lg-6 col-xl-7">
               <div className="row justify-content-xl-center">
                 <div className="col-12 col-xl-11">
-                  <h2 className="mb-3">Who Are We?</h2>
+                  <h2 className="mb-3">About ISA DeepData</h2>
                   <p className="lead fs-4 text-secondary mb-3">
-                    We help people to build incredible brands and superior products. Our perspective is
-                    to furnish outstanding captivating services.
+                    ISA DeepData provides innovative solutions for deep-sea data analysis.
                   </p>
                   <p className="mb-5">
-                    We are a fast-growing company, but we have never lost sight of our core values. We
-                    believe in collaboration, innovation, and customer satisfaction. We are always
-                    looking for new ways to improve our products and services.
+                    Our platform harnesses cutting-edge technology to transform raw marine data into actionable insights,
+                    empowering stakeholders to make informed decisions about sustainable marine resource management.
                   </p>
                   <div className="row gy-4 gy-md-0 gx-xxl-5">
-                    <div className="col-12 col-md-6">
+                    <div className="col-12 col-md-4">
                       <div className="d-flex">
-                        <div className="me-4 text-primary">
+                        <div className="me-3 text-primary">
+                          {/* Innovative Analytics Icon */}
                           <svg
                             xmlns="http://www.w3.org/2000/svg"
                             width="32"
                             height="32"
                             fill="currentColor"
-                            className="bi bi-gear-fill"
+                            className="bi bi-bar-chart-line"
                             viewBox="0 0 16 16"
                           >
-                            <path d="M9.405 1.05c-.413-1.4-2.397-1.4-2.81 0l-.1.34a1.464 1.464 0 0 1-2.105.872l-.31-.17c-1.283-.698-2.686.705-1.987 1.987l.169.311c.446.82.023 1.841-.872 2.105l-.34.1c-1.4.413-1.4 2.397 0 2.81l.34.1a1.464 1.464 0 0 1 .872 2.105l-.17.31c-.698 1.283.705 2.686 1.987 1.987l.311-.169a1.464 1.464 0 0 1 2.105.872l.1.34c.413 1.4 2.397 1.4 2.81 0l.1-.34a1.464 1.464 0 0 1 2.105-.872l.31.17c1.283.698 2.686-.705 1.987-1.987l-.169-.311a1.464 1.464 0 0 1 .872-2.105l.34-.1c1.4-.413 1.4-2.397 0-2.81l-.34-.1a1.464 1.464 0 0 1-.872-2.105l.17-.31c.698-1.283-.705-2.686-1.987-1.987l-.311.169a1.464 1.464 0 0 1-2.105-.872l-.1-.34zM8 10.93a2.929 2.929 0 1 1 0-5.86 2.929 2.929 0 0 1 0 5.858z" />
+                            <path d="M11 1a1 1 0 0 1 1 1v12a1 1 0 0 1-2 0V2a1 1 0 0 1 1-1z" />
+                            <path d="M6 5a1 1 0 0 1 1 1v7a1 1 0 0 1-2 0V6a1 1 0 0 1 1-1z" />
+                            <path d="M1 8a1 1 0 0 1 1 1v4a1 1 0 0 1-2 0v-4a1 1 0 0 1 1-1z" />
                           </svg>
                         </div>
                         <div>
-                          <h2 className="h4 mb-3">Versatile Brand</h2>
+                          <h2 className="h5 mb-2">Innovative Analytics</h2>
                           <p className="text-secondary mb-0">
-                            We are crafting a digital method that subsists life across all mediums.
+                            Transform raw marine data into clear, actionable insights.
                           </p>
                         </div>
                       </div>
                     </div>
-                    <div className="col-12 col-md-6">
+                    <div className="col-12 col-md-4">
                       <div className="d-flex">
-                        <div className="me-4 text-primary">
+                        <div className="me-3 text-primary">
+                          {/* Marine Insights Icon */}
                           <svg
                             xmlns="http://www.w3.org/2000/svg"
                             width="32"
                             height="32"
                             fill="currentColor"
-                            className="bi bi-fire"
+                            className="bi bi-water"
                             viewBox="0 0 16 16"
                           >
-                            <path d="M8 16c3.314 0 6-2 6-5.5 0-1.5-.5-4-2.5-6 .25 1.5-1.25 2-1.25 2C11 4 9 .5 6 0c.357 2 .5 4-2 6-1.25 1-2 2.729-2 4.5C2 14 4.686 16 8 16Zm0-1c-1.657 0-3-1-3-2.75 0-.75.25-2 1.25-3C6.125 10 7 10.5 7 10.5c-.375-1.25.5-3.25 2-3.5-.179 1-.25 2 1 3 .625.5 1 1.364 1 2.25C11 14 9.657 15 8 15Z" />
+                            <path d="M8 0a8 8 0 0 0-8 8c0 3.86 3.14 7 7 7s7-3.14 7-7a8 8 0 0 0-7-7zm3.5 8a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0z" />
                           </svg>
                         </div>
                         <div>
-                          <h2 className="h4 mb-3">Digital Agency</h2>
+                          <h2 className="h5 mb-2">Marine Insights</h2>
                           <p className="text-secondary mb-0">
-                            We believe in innovation by merging primary with elaborate ideas.
+                            Leverage expert analysis for sustainable marine management.
                           </p>
                         </div>
                       </div>
                     </div>
+                    <div className="col-12 col-md-4">
+                      <div className="d-flex">
+                        <div className="me-3 text-primary">
+                          {/* Collaborative Expertise Icon */}
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="32"
+                            height="32"
+                            fill="currentColor"
+                            className="bi bi-handshake"
+                            viewBox="0 0 16 16"
+                          >
+                            <path d="M6.146 11.354a.5.5 0 0 1 .708 0L8 12.5l1.146-1.146a.5.5 0 0 1 .708.708L8.707 13.5l1.147 1.146a.5.5 0 0 1-.708.708L8 14.207l-1.146 1.147a.5.5 0 0 1-.708-.708L7.293 13.5 6.146 12.354a.5.5 0 0 1 0-.708z" />
+                            <path d="M2.5 8.5a.5.5 0 0 1 .5-.5H4v1H3a.5.5 0 0 1-.5-.5zM12 8h1.5a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5H12v-2z" />
+                            <path d="M2.939 4.86a.5.5 0 0 1 .707-.04l1.098.998a.5.5 0 0 1-.642.766l-1.098-.998a.5.5 0 0 1-.065-.728zM12.657 4.795a.5.5 0 0 1 .066.728l-1.098.998a.5.5 0 1 1-.642-.766l1.098-.998a.5.5 0 0 1 .578-.04z" />
+                            <path d="M7.646 1.646a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 2.707V6.5a.5.5 0 0 1-1 0V2.707L4.354 5.354a.5.5 0 1 1-.708-.708l3-3z" />
+                          </svg>
+                        </div>
+                        <div>
+                          <h2 className="h5 mb-2">Collaborative Expertise</h2>
+                          <p className="text-secondary mb-0">
+                            Partner with industry leaders to drive innovation and excellence.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  {/* Ekstra innhold – f.eks. en call-to-action */}
+                  <div className="mt-5">
+                    <h3 className="mb-3">Join Our Deep Data Revolution</h3>
+                    <p className="text-secondary">
+                      Discover how ISA DeepData is transforming the marine industry. Explore our interactive tools, 
+                      comprehensive reports, and cutting-edge research to stay ahead in the world of deep-sea data.
+                    </p>
                   </div>
                 </div>
               </div>
