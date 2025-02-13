@@ -1,10 +1,13 @@
+import Link from 'next/link';
+import React from 'react';
+
 export default function Footer() {
   return (
-    <footer className="text-white" style={{ backgroundColor: "#45526e", marginTop: 0 }}>
-      {/* Øvre seksjon med kontaktinfo */}
+    <footer className="text-white" style={{ backgroundColor: '#45526e', marginTop: 0 }}>
+      {/* Upper section with contact info */}
       <div className="container p-4">
         <div className="row">
-          {/* Kontakt-delen plassert på venstre side */}
+          {/* Left side: Contact info */}
           <div className="col-md-6 text-start mt-3">
             <h6 className="text-uppercase mb-4 font-weight-bold">Contact</h6>
             <p>
@@ -17,20 +20,29 @@ export default function Footer() {
               <i className="fas fa-phone mr-3"></i> +1 (876) 922-9105
             </p>
           </div>
+
+          {/* Right side: Information + Terms link */}
+          <div className="col-md-6 text-end mt-3">
+            <h6 className="text-uppercase mb-4 font-weight-bold">Information</h6>
+            <p>
+              {/* Link to /terms page */}
+              <Link href="/information/temps" className="text-white">
+                Terms of Use
+              </Link>
+            </p>
+          </div>
         </div>
       </div>
 
-      {/* Fjern <hr> dersom det lager en uønsket hvit linje */}
-      {/* <hr className="my-3" /> */}
-
-      {/* Nedre seksjon med copyright og sosiale medier */}
+      {/* Lower section with copyright and social media */}
       <div className="container">
         <div className="row d-flex align-items-center">
-          {/* Venstre side */}
+          {/* Left side */}
           <div className="col-md-7 col-lg-8 text-center text-md-start">
             <div className="p-3">© 2025 All rights reserved.</div>
           </div>
-          {/* Høyre side: Sosiale medie-ikoner */}
+
+          {/* Right side: Social media icons */}
           <div className="col-md-5 col-lg-4 ml-lg-0 text-center text-md-end">
             <a
               href="https://www.facebook.com/ISBAHeadquarters"

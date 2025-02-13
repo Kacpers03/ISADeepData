@@ -1,0 +1,87 @@
+/* Hero Section */
+.hero {
+    padding: 4rem 0;
+    background: linear-gradient(
+        rgba(0, 0, 0, 0.4),
+        rgba(0, 0, 0, 0.4)
+      ),
+      url('/path/to/ocean-bg.jpg') center/cover no-repeat;
+    background-attachment: fixed;
+  }
+  
+  .heroContainer {
+    text-align: center;
+    color: #fff;
+  }
+  
+  .heroTitle {
+    font-size: 2.5rem;
+    font-weight: bold;
+    margin-bottom: 1rem;
+  }
+  
+  .heroSubtitle {
+    font-size: 1.25rem;
+    margin-bottom: 0;
+  }
+  
+  /* Table of Contents */
+  .toc {
+    margin: 2rem 0;
+    text-align: center;
+  }
+  
+  .tocList {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: inline-flex;
+    gap: 1rem;
+  }
+  
+  .tocLink {
+    color: #343a40;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.3s;
+  }
+  
+  .tocLink:hover {
+    text-decoration: underline;
+    color: #007bff; /* Change this color if desired */
+  }
+  
+  /* Overview Section */
+  .overview {
+    padding: 2rem 0;
+  }
+  
+  .overviewContent {
+    background-color: #f8f9fa;
+    padding: 2rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+  }
+  
+  .sectionTitle {
+    font-size: 1.75rem;
+    margin-bottom: 1rem;
+    font-weight: bold;
+  }
+  
+  .sectionText {
+    margin-bottom: 1rem;
+    line-height: 1.6;
+    color: #495057;
+  }
+  
+  /* Accordion Section */
+  .accordionSection {
+    padding: 2rem 0;
+  }
+  
+  .accordionIcon {
+    margin-right: 0.5rem;
+    font-size: 1.25rem;
+  }
+  
