@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useState, useEffect, useRef } from "react";
+import "../../styles/filefilter.module.css"; // Import CSS file
 
 const FilterSearch = ({ filters, setFilters }) => {
   const filterOptions = {
@@ -8,21 +9,52 @@ const FilterSearch = ({ filters, setFilters }) => {
     category: ["Reports", "Contracts", "Environmental Data"],
   };
 
+  const [dropdownOpen, setDropdownOpen] = useState({
+    country: false,
+    contractor: false,
+    year: false,
+    category: false,
+  });
+
+  const dropdownRefs = useRef({});
+  const menuRefs = useRef({});
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      Object.keys(dropdownRefs.current).forEach((category) => {
+        if (
+          dropdownRefs.current[category] &&
+          !dropdownRefs.current[category].contains(event.target) &&
+          menuRefs.current[category] &&
+          !menuRefs.current[category].contains(event.target)
+        ) {
+          setDropdownOpen((prev) => ({ ...prev, [category]: false }));
+        }
+      });
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const toggleDropdown = (category) => {
+    setDropdownOpen((prev) => ({ ...prev, [category]: !prev[category] }));
+  };
+
   const handleCheckboxChange = (category, value) => {
     setFilters((prevFilters) => {
       const updatedFilters = { ...prevFilters };
 
       if (value === "All") {
-        updatedFilters[category] = "All"; // Reset to All
+        updatedFilters[category] = "All";
       } else {
         if (updatedFilters[category] === "All") {
-          updatedFilters[category] = [value]; // Change from "All" to specific selection
+          updatedFilters[category] = [value];
         } else {
           updatedFilters[category] = updatedFilters[category].includes(value)
-            ? updatedFilters[category].filter((item) => item !== value) // Remove if exists
-            : [...updatedFilters[category], value]; // Add if not exists
+            ? updatedFilters[category].filter((item) => item !== value)
+            : [...updatedFilters[category], value];
 
-          // If no items are selected, revert to "All"
           if (updatedFilters[category].length === 0) {
             updatedFilters[category] = "All";
           }
@@ -33,37 +65,46 @@ const FilterSearch = ({ filters, setFilters }) => {
   };
 
   return (
-    <div className="bg-gray-100 p-4 rounded-lg w-64">
-      <h2 className="text-lg font-semibold">Search Filters</h2>
-      <hr className="my-2" />
+    <div className="filter-container">
+      <h2 className="filter-title">Search Filters</h2>
+      <hr className="filter-divider" />
 
       {Object.entries(filterOptions).map(([category, options]) => (
-        <div key={category} className="mb-4">
-          <h3 className="font-medium capitalize">{category}</h3>
-          <div className="space-y-2">
-            <label className="flex items-center gap-2">
-              <input
-                type="checkbox"
-                checked={filters[category] === "All"}
-                onChange={() => handleCheckboxChange(category, "All")}
-              />
-              All
-            </label>
+        <div key={category} className="filter-group" ref={(el) => (dropdownRefs.current[category] = el)}>
+          <button
+            className="dropdown-button"
+            onClick={() => toggleDropdown(category)}
+          >
+            {category.charAt(0).toUpperCase() + category.slice(1)}
+            <span className={`arrow ${dropdownOpen[category] ? "up" : "down"}`}>▼</span>
+          </button>
 
-            {options.map((option) => (
-              <label key={option} className="flex items-center gap-2">
+          {dropdownOpen[category] && (
+            <div className="dropdown-content" ref={(el) => (menuRefs.current[category] = el)}>
+              <label className="filter-checkbox">
                 <input
                   type="checkbox"
-                  checked={
-                    filters[category] !== "All" &&
-                    filters[category]?.includes(option)
-                  }
-                  onChange={() => handleCheckboxChange(category, option)}
+                  checked={filters[category] === "All"}
+                  onChange={() => handleCheckboxChange(category, "All")}
                 />
-                {option}
+                All
               </label>
-            ))}
-          </div>
+
+              {options.map((option) => (
+                <label key={option} className="filter-checkbox">
+                  <input
+                    type="checkbox"
+                    checked={
+                      filters[category] !== "All" &&
+                      filters[category]?.includes(option)
+                    }
+                    onChange={() => handleCheckboxChange(category, option)}
+                  />
+                  {option}
+                </label>
+              ))}
+            </div>
+          )}
         </div>
       ))}
 
@@ -71,7 +112,7 @@ const FilterSearch = ({ filters, setFilters }) => {
         onClick={() =>
           setFilters({ country: "All", contractor: "All", year: "All", category: "All" })
         }
-        className="w-full bg-gray-500 text-white py-2 rounded mt-2"
+        className="clear-filter-button"
       >
         Clear Filters
       </button>

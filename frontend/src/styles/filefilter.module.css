@@ -1,0 +1,106 @@
+/* Main container styling */
+.filter-container {
+    background-color: #f3f4f6;
+    padding: 16px;
+    border-radius: 8px;
+    width: 250px;
+    min-width: 250px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Title Styling */
+.filter-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #1f2937;
+    margin-bottom: 10px;
+}
+
+/* Horizontal line */
+.filter-divider {
+    border-bottom: 2px solid #e5e7eb;
+    margin-bottom: 12px;
+}
+
+/* Dropdown button */
+.dropdown-button {
+    width: 100%;
+    padding: 10px;
+    font-size: 1rem;
+    font-weight: 500;
+    background-color: #374151;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.dropdown-button:hover {
+    background-color: #4b5563;
+}
+
+/* Dropdown arrow */
+.arrow {
+    transition: transform 0.3s ease;
+}
+
+.arrow.up {
+    transform: rotate(180deg);
+}
+
+/* Dropdown content */
+.dropdown-content {
+    background-color: white;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    max-height: 150px;
+    overflow-y: auto;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    position: absolute;
+    width: 100%;
+    z-index: 10;
+}
+
+/* Checkbox Styling */
+.filter-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    font-size: 0.95rem;
+    color: #4b5563;
+}
+
+/* Input Checkbox */
+.filter-checkbox input {
+    width: 16px;
+    height: 16px;
+    accent-color: #2563eb;
+    cursor: pointer;
+}
+
+/* Button Styling */
+.clear-filter-button {
+    width: 100%;
+    background-color: #6b7280;
+    color: white;
+    font-size: 1rem;
+    padding: 10px;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    transition: background 0.3s ease-in-out;
+    margin-top: 10px;
+}
+
+.clear-filter-button:hover {
+    background-color: #4b5563;
+}
