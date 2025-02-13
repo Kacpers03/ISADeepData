@@ -1,15 +1,26 @@
 import { useState, useEffect, useRef } from "react";
+import { useRouter } from "next/router";
 import Image from "next/image";
 import Navigation from "../components/navigation/navigation";
 
 export default function Header() {
+  const router = useRouter();
   const [showHeader, setShowHeader] = useState(true);
   const [isNavOpen, setIsNavOpen] = useState(false);
   const lastScrollY = useRef(0);
 
+  // Denne useEffect trigges hver gang URL-en (router.asPath) endres
+  useEffect(() => {
+    console.log("Rute endret til: ", router.asPath);
+    // Nullstill headeren: vis headeren, nullstill scroll-posisjon og scroll til toppen
+    setShowHeader(true);
+    lastScrollY.current = 0;
+    window.scrollTo(0, 0);
+  }, [router.asPath]);
+
+  // Håndter scroll-logikken
   useEffect(() => {
     const handleScroll = () => {
-      // Hvis navigasjonsmenyen er åpen, la headeren stå synlig
       if (isNavOpen) {
         setShowHeader(true);
         lastScrollY.current = window.scrollY;
@@ -27,10 +38,9 @@ export default function Header() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, [isNavOpen]);
 
-  // Håndter toggling av burger-menyen
   const handleNavToggle = () => {
     setIsNavOpen((prev) => !prev);
-    // Når menyen åpnes, tving headeren til å være synlig
+    // Når burger-menyen toggles, vis headeren
     setShowHeader(true);
   };
 
