@@ -11,7 +11,7 @@ export default function Footer() {
               <i className="fas fa-home mr-3"></i> 14 - 20 Port Royal Street, Kingston, Jamaica
             </p>
             <p>
-              <i className="fas fa-envelope mr-3"></i> info@gmail.com
+              <i className="fas fa-envelope mr-3"></i> news@isa.org.jm
             </p>
             <p>
               <i className="fas fa-phone mr-3"></i> +1 (876) 922-9105

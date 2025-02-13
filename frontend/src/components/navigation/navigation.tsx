@@ -12,7 +12,7 @@ export default function Navigation() {
               items={[
                 { text: "About", link: "/about/about" },
                 { text: "Purpose", link: "/purpose" },
-                { text: "Regulations", link: "/regulations" },
+                { text: "Missions", link: "/about/mission" },
               ]}
             />
             <NavItem text="Map" link="/map" />
