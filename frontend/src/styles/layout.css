@@ -1,158 +1,161 @@
 /* Global layout */
 .layout {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* Standard container (brukes for øvrige sider) */
+.container {
+  flex: 1;
+  padding: 0 20px; /* evt. litt padding */
+}
+
+/* Fullbredde wrapper for hjemmesiden – nå med eksplisitt høyde for å sikre riktig beregning av 100% i .homeContainer */
+.homeMain {
+  width: 100%;
+  height: calc(100vh - 120px); /* Endret fra min-height til height */
+  margin: 0;
+  padding: 0;
+  position: relative;
+}
+
+/* Sticky header: holder headeren fast øverst med høy z-index */
+.sticky-header {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  background-color: white;
+  transition: transform 0.3s ease-in-out;
+}
+
+/* Dynamiske header-klasser for å vise/skjule headeren */
+.header-visible {
+  transform: translateY(0);
+}
+
+.header-hidden {
+  transform: translateY(-100%);
+}
+
+.home-link {
+  color: black !important; /* Hindrer at lenken blir blå */
+}
+
+/* Navbar styling */
+.navbar {
+  background: none !important;
+  box-shadow: none;
+  padding-top: 10px;
+}
+
+/* Burgerknapp – posisjoneringen er fjernet for å plassere den naturlig i flex-beholderen */
+.custom-toggler {
+  background-color: #0056b3 !important;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s ease-in-out;
+}
+
+.custom-toggler:hover {
+  background-color: #003d82 !important;
+}
+
+.custom-toggler .navbar-toggler-icon {
+  filter: invert(1);
+}
+
+/* Navigasjonsmeny styling */
+.navbar-nav {
+  margin-left: 0;
+  align-items: flex-start;
+}
+
+/* Mobilvisning for navigasjon */
+@media (max-width: 991px) {
+  .navbar-collapse {
     display: flex;
     flex-direction: column;
-    min-height: 100vh;
+    align-items: flex-start !important;
+    padding-left: 10px;
   }
-  
-  /* Standard container (brukes for øvrige sider) */
-  .container {
-    flex: 1;
-    padding: 0 20px; /* evt. litt padding */
-  }
-  
-  /* Fullbredde wrapper for hjemmesiden – nå med eksplisitt høyde for å sikre riktig beregning av 100% i .homeContainer */
-  .homeMain {
-    width: 100%;
-    height: calc(100vh - 120px); /* Endret fra min-height til height */
-    margin: 0;
-    padding: 0;
-    position: relative;
-  }
-  
-  /* Sticky header: holder headeren fast øverst med høy z-index */
-  .sticky-header {
-    position: sticky;
-    top: 0;
-    z-index: 1000;
-    background-color: white;
-    transition: transform 0.3s ease-in-out;
-  }
-  
-  /* Dynamiske header-klasser for å vise/skjule headeren */
-  .header-visible {
-    transform: translateY(0);
-  }
-  
-  .header-hidden {
-    transform: translateY(-100%);
-  }
-  
-  /* Navbar styling */
-  .navbar {
-    background: none !important;
-    box-shadow: none;
-    padding-top: 10px;
-  }
-  
-  /* Burgerknapp – posisjoneringen er fjernet for å plassere den naturlig i flex-beholderen */
-  .custom-toggler {
-    background-color: #0056b3 !important;
-    border-radius: 50%;
-    width: 50px;
-    height: 50px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border: none;
-    cursor: pointer;
-    transition: background-color 0.3s ease-in-out;
-  }
-  
-  .custom-toggler:hover {
-    background-color: #003d82 !important;
-  }
-  
-  .custom-toggler .navbar-toggler-icon {
-    filter: invert(1);
-  }
-  
-  /* Navigasjonsmeny styling */
   .navbar-nav {
-    margin-left: 0;
-    align-items: flex-start;
-  }
-  
-  /* Mobilvisning for navigasjon */
-  @media (max-width: 991px) {
-    .navbar-collapse {
-      display: flex;
-      flex-direction: column;
-      align-items: flex-start !important;
-      padding-left: 10px;
-    }
-    .navbar-nav {
-      width: 100%;
-    }
-    .navbar-nav .nav-item {
-      margin-bottom: 10px;
-    }
-  }
-  
-  /* Hover-effekt for navigasjonslenker */
-  .navbar-nav .nav-link:hover {
-    color: #d4d4d4 !important;
-  }
-  
-  /* Dropdown-menyen */
-  .dropdown-menu {
-    background-color: white !important;
-  }
-  
-  /* Footer styling */
-  footer {
-    background-color: #4F6D92;
-    color: #ffffff;
-    padding: 20px;
-    text-align: center;
-    margin-top: auto;
-  }
-  
-  /* HOME PAGE STYLES (i home.module.css) */
-  
-  /* Denne containeren fyller hele den tilgjengelige høyden for midtdelen */
-  .homeContainer {
-    position: relative;
     width: 100%;
-    height: 100%; /* Arver nå riktig høyde fra .homeMain */
-    overflow: hidden;
-    text-align: center;
-    margin: 0;
-    padding: 0;
   }
-  
-  /* Videoen fyller hele homeContainer */
-  .heroVideo {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
+  .navbar-nav .nav-item {
+    margin-bottom: 10px;
   }
-  
-  /* Overlay-teksten plasseres midt i containeren */
-  .overlay {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    z-index: 2;
-    text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.7);
-    color: #fff;
-    text-align: center;
-    padding: 0 2rem;
-  }
-  
-  .overlay h2 {
-    font-family: 'Roboto', sans-serif;
-    font-size: 2.5rem;
-    margin-bottom: 1rem;
-  }
-  
-  .overlay p {
-    font-family: 'Open Sans', sans-serif;
-    font-size: 1.25rem;
-    margin-bottom: 2rem;
-  }
-  
+}
+
+/* Hover-effekt for navigasjonslenker */
+.navbar-nav .nav-link:hover {
+  color: #d4d4d4 !important;
+}
+
+/* Dropdown-menyen */
+.dropdown-menu {
+  background-color: white !important;
+}
+
+/* Footer styling */
+footer {
+  background-color: #4f6d92;
+  color: #ffffff;
+  padding: 20px;
+  text-align: center;
+  margin-top: auto;
+}
+
+/* HOME PAGE STYLES (i home.module.css) */
+
+/* Denne containeren fyller hele den tilgjengelige høyden for midtdelen */
+.homeContainer {
+  position: relative;
+  width: 100%;
+  height: 100%; /* Arver nå riktig høyde fra .homeMain */
+  overflow: hidden;
+  text-align: center;
+  margin: 0;
+  padding: 0;
+}
+
+/* Videoen fyller hele homeContainer */
+.heroVideo {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Overlay-teksten plasseres midt i containeren */
+.overlay {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 2;
+  text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.7);
+  color: #fff;
+  text-align: center;
+  padding: 0 2rem;
+}
+
+.overlay h2 {
+  font-family: "Roboto", sans-serif;
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+}
+
+.overlay p {
+  font-family: "Open Sans", sans-serif;
+  font-size: 1.25rem;
+  margin-bottom: 2rem;
+}

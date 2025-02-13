@@ -13,7 +13,6 @@ export default function Header() {
   // Denne useEffect trigges hver gang URL-en (router.asPath) endres
   useEffect(() => {
     console.log("Rute endret til: ", router.asPath);
-    // Nullstill headeren: vis headeren, nullstill scroll-posisjon og scroll til toppen
     setShowHeader(true);
     lastScrollY.current = 0;
     window.scrollTo(0, 0);
@@ -41,7 +40,6 @@ export default function Header() {
 
   const handleNavToggle = () => {
     setIsNavOpen((prev) => !prev);
-    // Når burger-menyen toggles, vis headeren
     setShowHeader(true);
   };
 
@@ -55,10 +53,7 @@ export default function Header() {
         {/* Øverste rad med logo og burger-knapp */}
         <div className="d-flex align-items-center justify-content-between py-3">
           <Link href="/" passHref legacyBehavior>
-            <a
-              className="d-flex align-items-center text-decoration-none"
-              style={{ cursor: "pointer" }}
-            >
+            <a className="home-link d-flex align-items-center text-decoration-none">
               <Image src="/image/image.png" alt="Logo" width={80} height={80} />
               <div className="ms-3">
                 <h1 className="h4 mb-0">ISA DeepData</h1>
