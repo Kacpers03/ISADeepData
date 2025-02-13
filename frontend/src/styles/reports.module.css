@@ -1,17 +1,17 @@
 body {
-    background-color:#62ab71;
+    background-color:#ffffff;
 }
 
 .tableContainer {
-    width: 85%;
-    max-width: 1000px;
+    width: 100%; /* Use full width within parent */
+    max-width: none; /* Remove max width restriction */
     background: rgba(255, 255, 255, 0.1); /* Glass effect */
     backdrop-filter: blur(10px);
     border-radius: 12px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
     overflow: hidden;
-    padding: 20px; /* Add spacing */
-    margin: auto; /* Center it */
+    padding: 20px;
+    margin: 0; /* REMOVE auto-centering */
 }
 
 .table {
@@ -45,13 +45,13 @@ body {
 /* Fix File Link Visibility */
 .fileLink {
     font-weight: bold;
-    color: #ffffff; /* Bright Yellow */
+    color: #000000; 
     text-decoration: none;
     transition: color 0.2s ease-in-out;
 }
 
 .fileLink:hover {
-    color: #000000;
+    color: #2e4ac7;
 }
 
 /* Improve Disabled Button */
