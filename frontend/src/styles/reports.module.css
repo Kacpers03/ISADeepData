@@ -4,7 +4,7 @@ body {
 
 .tableContainer {
     width: 100%; /* Use full width within parent */
-    max-width: none; /* Remove max width restriction */
+    flex-grow: 1;
     background: rgba(255, 255, 255, 0.1); /* Glass effect */
     backdrop-filter: blur(10px);
     border-radius: 12px;
@@ -12,6 +12,7 @@ body {
     overflow: hidden;
     padding: 20px;
     margin: 0; /* REMOVE auto-centering */
+    margin-bottom: 50px;
 }
 
 .table {
@@ -116,4 +117,20 @@ body {
     left: 50%; /* Centers it horizontally */
     transform: translateX(-50%);
   }
+
+  .AllComponents {
+    display: flex !important;
+    gap: 16px !important;
+    align-items: flex-start !important;
+}
+
+.table tr:nth-child(even) {
+    background-color: #f3f4f6; /* Light gray */
+}
+
+.table tr:nth-child(odd) {
+    background-color: #ffffff; /* White */
+}
+
+   
   
