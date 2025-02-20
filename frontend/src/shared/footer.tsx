@@ -7,10 +7,10 @@ export default function Footer() {
       className="text-white"
       style={{ backgroundColor: "#45526e", marginTop: 0 }}
     >
-      {/* Upper section with contact info + topics + information */}
+      {/* Øvre seksjon: Contact, Topics og Information */}
       <div className="container p-4">
         <div className="row">
-          {/* Left side: Contact info */}
+          {/* Contact Section */}
           <div className="col-md-4 text-start mt-3">
             <h6
               className="text-uppercase mb-4 font-weight-bold"
@@ -34,7 +34,7 @@ export default function Footer() {
             </p>
           </div>
 
-          {/* Middle: Topics */}
+          {/* Topics Section */}
           <div className="col-md-4 text-start mt-3">
             <h6
               className="text-uppercase mb-4 font-weight-bold"
@@ -47,38 +47,56 @@ export default function Footer() {
               Topics
             </h6>
             <p className="mt-3">
-              <Link href="/topics/strategic-plan" className="text-white">
+              <Link
+                href="/topics/strategic-plan"
+                className="text-white text-decoration-none"
+              >
                 Strategic Plan
               </Link>
             </p>
             <p>
-              <Link href="/topics/mining-code" className="text-white">
+              <Link
+                href="/topics/mining-code"
+                className="text-white text-decoration-none"
+              >
                 Mining Code
               </Link>
             </p>
             <p>
-              <Link href="/topics/marine-protection" className="text-white">
+              <Link
+                href="/topics/marine-protection"
+                className="text-white text-decoration-none"
+              >
                 Protection of the Marine Environment
               </Link>
             </p>
             <p>
-              <Link href="/topics/exploration-contracts" className="text-white">
+              <Link
+                href="/topics/exploration-contracts"
+                className="text-white text-decoration-none"
+              >
                 Exploration Contracts
               </Link>
             </p>
             <p>
-              <Link href="/topics/voluntary-commitments" className="text-white">
+              <Link
+                href="/topics/voluntary-commitments"
+                className="text-white text-decoration-none"
+              >
                 Voluntary Commitments
               </Link>
             </p>
             <p>
-              <Link href="/topics/workshops" className="text-white">
+              <Link
+                href="/topics/workshops"
+                className="text-white text-decoration-none"
+              >
                 Workshops
               </Link>
             </p>
           </div>
 
-          {/* Right side: Information + Terms link */}
+          {/* Information Section */}
           <div className="col-md-4 text-start mt-3">
             <h6
               className="text-uppercase mb-4 font-weight-bold"
@@ -91,8 +109,10 @@ export default function Footer() {
               Information
             </h6>
             <p className="mt-3">
-              {/* Link to /information/temps page (unchanged) */}
-              <Link href="/information/temps" className="text-white">
+              <Link
+                href="/information/terms"
+                className="text-white text-decoration-none"
+              >
                 Terms of Use
               </Link>
             </p>
@@ -100,15 +120,44 @@ export default function Footer() {
         </div>
       </div>
 
-      {/* Lower section: copyright + social media */}
+      {/* Kreativ divider uten mellomrom */}
+      <div className="container">
+        <div className="row">
+          <div className="col-12">
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                margin: "30px 0",
+              }}
+            >
+              <div
+                style={{
+                  flex: 1,
+                  height: "1px",
+                  background: "linear-gradient(to right, transparent, white)",
+                }}
+              />
+              <div
+                style={{
+                  flex: 1,
+                  height: "1px",
+                  background: "linear-gradient(to left, transparent, white)",
+                }}
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Nedre seksjon: Copyright og sosiale lenker */}
       <div className="container">
         <div className="row d-flex align-items-center">
-          {/* Left side */}
+          {/* Venstre side */}
           <div className="col-md-7 col-lg-8 text-center text-md-start">
             <div className="p-3">© 2025 All rights reserved.</div>
           </div>
-
-          {/* Right side: Social media icons */}
+          {/* Høyre side: Sosiale ikoner */}
           <div className="col-md-5 col-lg-4 ml-lg-0 text-center text-md-end">
             <a
               href="https://www.facebook.com/ISBAHeadquarters"
