@@ -1,17 +1,30 @@
-import Link from 'next/link';
-import React from 'react';
+import Link from "next/link";
+import React from "react";
 
 export default function Footer() {
   return (
-    <footer className="text-white" style={{ backgroundColor: '#45526e', marginTop: 0 }}>
-      {/* Upper section with contact info */}
+    <footer
+      className="text-white"
+      style={{ backgroundColor: "#45526e", marginTop: 0 }}
+    >
+      {/* Upper section with contact info + topics + information */}
       <div className="container p-4">
         <div className="row">
           {/* Left side: Contact info */}
-          <div className="col-md-6 text-start mt-3">
-            <h6 className="text-uppercase mb-4 font-weight-bold">Contact</h6>
-            <p>
-              <i className="fas fa-home mr-3"></i> 14 - 20 Port Royal Street, Kingston, Jamaica
+          <div className="col-md-4 text-start mt-3">
+            <h6
+              className="text-uppercase mb-4 font-weight-bold"
+              style={{
+                borderBottom: "2px solid white",
+                display: "inline-block",
+                paddingBottom: "5px",
+              }}
+            >
+              Contact
+            </h6>
+            <p className="mt-3">
+              <i className="fas fa-home mr-3"></i> 14 - 20 Port Royal Street,
+              Kingston, Jamaica
             </p>
             <p>
               <i className="fas fa-envelope mr-3"></i> news@isa.org.jm
@@ -21,11 +34,64 @@ export default function Footer() {
             </p>
           </div>
 
-          {/* Right side: Information + Terms link */}
-          <div className="col-md-6 text-end mt-3">
-            <h6 className="text-uppercase mb-4 font-weight-bold">Information</h6>
+          {/* Middle: Topics */}
+          <div className="col-md-4 text-start mt-3">
+            <h6
+              className="text-uppercase mb-4 font-weight-bold"
+              style={{
+                borderBottom: "2px solid white",
+                display: "inline-block",
+                paddingBottom: "5px",
+              }}
+            >
+              Topics
+            </h6>
+            <p className="mt-3">
+              <Link href="/topics/strategic-plan" className="text-white">
+                Strategic Plan
+              </Link>
+            </p>
             <p>
-              {/* Link to /terms page */}
+              <Link href="/topics/mining-code" className="text-white">
+                Mining Code
+              </Link>
+            </p>
+            <p>
+              <Link href="/topics/marine-protection" className="text-white">
+                Protection of the Marine Environment
+              </Link>
+            </p>
+            <p>
+              <Link href="/topics/exploration-contracts" className="text-white">
+                Exploration Contracts
+              </Link>
+            </p>
+            <p>
+              <Link href="/topics/voluntary-commitments" className="text-white">
+                Voluntary Commitments
+              </Link>
+            </p>
+            <p>
+              <Link href="/topics/workshops" className="text-white">
+                Workshops
+              </Link>
+            </p>
+          </div>
+
+          {/* Right side: Information + Terms link */}
+          <div className="col-md-4 text-start mt-3">
+            <h6
+              className="text-uppercase mb-4 font-weight-bold"
+              style={{
+                borderBottom: "2px solid white",
+                display: "inline-block",
+                paddingBottom: "5px",
+              }}
+            >
+              Information
+            </h6>
+            <p className="mt-3">
+              {/* Link to /information/temps page (unchanged) */}
               <Link href="/information/temps" className="text-white">
                 Terms of Use
               </Link>
@@ -34,7 +100,7 @@ export default function Footer() {
         </div>
       </div>
 
-      {/* Lower section with copyright and social media */}
+      {/* Lower section: copyright + social media */}
       <div className="container">
         <div className="row d-flex align-items-center">
           {/* Left side */}
