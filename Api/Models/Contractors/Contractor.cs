@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Models.Cruises;
+using  Models.Libarys;
 
 namespace Models.Contractors
 {
@@ -36,5 +38,8 @@ namespace Models.Contractors
 
         // Navigasjonsegenskaper til tilknyttede data
         public ICollection<ContractorArea> ContractorAreas { get; set; }
+        public ICollection<Cruise> Cruises { get; set; }
+        public ICollection<Library> Libraries { get; set; }
+
     }
 }

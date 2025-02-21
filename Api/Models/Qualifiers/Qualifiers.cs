@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Models.Contractor
+namespace Models.Qualifiers
 {
     public class Qualifier
     {

@@ -16,5 +16,6 @@ namespace Models.Contractors
 
         // Navigasjon: Alle contractors som tilhører denne typen
         public ICollection<Contractor> Contractors { get; set; }
+        
     }
 }
