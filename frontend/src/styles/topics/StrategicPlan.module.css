@@ -1,0 +1,75 @@
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  font-family: Arial, sans-serif;
+  color: #333;
+}
+
+.hero {
+  background: url("/images/strategic-hero.jpg") no-repeat center center/cover;
+  padding: 80px 20px;
+  color: white;
+  text-align: center;
+}
+
+.heroContent {
+  background-color: rgba(0, 0, 0, 0.5);
+  display: inline-block;
+  padding: 20px 40px;
+}
+
+.title {
+  font-size: 3rem;
+  margin: 0;
+}
+
+.subtitle {
+  font-size: 1.2rem;
+  margin-top: 10px;
+}
+
+.intro {
+  margin: 40px 0;
+  font-size: 1.1rem;
+  line-height: 1.6;
+}
+
+.sectionTitle {
+  font-size: 2rem;
+  margin-bottom: 20px;
+  border-bottom: 2px solid #45526e;
+  display: inline-block;
+  padding-bottom: 5px;
+}
+
+.objectivesList {
+  list-style: disc;
+  margin-left: 20px;
+  line-height: 1.8;
+}
+
+.content {
+  margin: 40px 0;
+  font-size: 1.1rem;
+  line-height: 1.8;
+}
+
+.cta {
+  text-align: center;
+  margin: 60px 0;
+}
+
+.ctaButton {
+  background-color: #45526e;
+  color: white;
+  padding: 10px 20px;
+  text-decoration: none;
+  border: 2px solid #45526e;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.ctaButton:hover {
+  background-color: white;
+  color: #45526e;
+}
