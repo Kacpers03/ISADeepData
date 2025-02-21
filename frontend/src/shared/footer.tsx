@@ -48,7 +48,7 @@ export default function Footer() {
             </h6>
             <p className="mt-3">
               <Link
-                href="/topics/strategic-plan"
+                href="/topics/StrategicPlan"
                 className="text-white text-decoration-none"
               >
                 Strategic Plan
@@ -56,7 +56,7 @@ export default function Footer() {
             </p>
             <p>
               <Link
-                href="/topics/mining-code"
+                href="/topics/MiningCode"
                 className="text-white text-decoration-none"
               >
                 Mining Code
@@ -64,7 +64,7 @@ export default function Footer() {
             </p>
             <p>
               <Link
-                href="/topics/marine-protection"
+                href="/topics/MarineProtection"
                 className="text-white text-decoration-none"
               >
                 Protection of the Marine Environment
@@ -72,23 +72,16 @@ export default function Footer() {
             </p>
             <p>
               <Link
-                href="/topics/exploration-contracts"
+                href="/topics/ExplorationContracts"
                 className="text-white text-decoration-none"
               >
                 Exploration Contracts
               </Link>
             </p>
+
             <p>
               <Link
-                href="/topics/voluntary-commitments"
-                className="text-white text-decoration-none"
-              >
-                Voluntary Commitments
-              </Link>
-            </p>
-            <p>
-              <Link
-                href="/topics/workshops"
+                href="/topics/Workshops"
                 className="text-white text-decoration-none"
               >
                 Workshops
