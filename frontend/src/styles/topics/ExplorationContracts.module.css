@@ -8,7 +8,7 @@
 
 /* HERO SECTION */
 .hero {
-  background: url("/images/hero-background.jpg") no-repeat center center/cover;
+  background: url("/images/exploration-hero.jpg") no-repeat center center/cover;
   text-align: center;
   color: white;
   padding: 80px 20px;
@@ -73,6 +73,21 @@
   height: auto;
   border: 2px solid #eaeaea;
   border-radius: 4px;
+}
+
+/* DETAILS SECTION */
+.details {
+  margin: 40px 0;
+  font-size: 1.1rem;
+  line-height: 1.8;
+}
+
+.sectionTitle {
+  font-size: 2rem;
+  margin-bottom: 20px;
+  border-bottom: 2px solid #45526e;
+  display: inline-block;
+  padding-bottom: 5px;
 }
 
 /* CTA SECTION */

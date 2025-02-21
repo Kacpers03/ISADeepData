@@ -1,74 +1,82 @@
 import React from "react";
-import styles from "../../styles/topics/StrategicPlan.module.css"; // Opprett en CSS-modul med din styling
+// Importer din egen modulære CSS-fil
+import styles from "../../styles/topics/StrategicPlan.module.css";
 
 const StrategicPlan: React.FC = () => {
   return (
     <div className={styles.container}>
-      {/* Hero / Header */}
-      <header className={styles.hero}>
+      {/* HERO SECTION */}
+      <section className={styles.hero}>
         <div className={styles.heroContent}>
-          <h1 className={styles.title}>Strategic Plan</h1>
-          <p className={styles.subtitle}>
-            Guiding the future of deep seabed mining through sustainable
-            practices and international cooperation.
+          <h1 className={styles.heroTitle}>ISA Strategic Plan</h1>
+          <p className={styles.heroSubtitle}>
+            Guiding the sustainable future of deep seabed mining.
           </p>
         </div>
-      </header>
-
-      {/* Ingress */}
-      <section className={styles.intro}>
-        <p>
-          The International Seabed Authority's Strategic Plan outlines our
-          vision for a balanced, sustainable, and scientifically informed
-          management of deep seabed resources. This plan sets the framework for
-          effective regulation, research, and capacity building, ensuring that
-          the exploration and exploitation of deep seabed minerals contribute to
-          the benefit of all mankind.
-        </p>
       </section>
 
-      {/* Key Objectives */}
-      <section className={styles.objectives}>
-        <h2 className={styles.sectionTitle}>Key Objectives</h2>
-        <ul className={styles.objectivesList}>
-          <li>
-            Ensure sustainable resource management and environmental protection.
-          </li>
-          <li>Promote international collaboration and capacity building.</li>
-          <li>Encourage innovation in deep-sea exploration and technology.</li>
-          <li>Strengthen legal and regulatory frameworks.</li>
-          <li>Foster transparency and accountability in decision-making.</li>
-        </ul>
+      {/* ABOUT SECTION */}
+      <section className={styles.about}>
+        <div className={styles.textBlock}>
+          <h2>About the Strategic Plan</h2>
+          <p>
+            The ISA Strategic Plan outlines our vision for a balanced,
+            sustainable, and scientifically informed approach to deep seabed
+            resource management. It provides a roadmap for effective regulation,
+            research, and capacity-building, ensuring that exploration and
+            exploitation benefit all of humanity.
+          </p>
+
+          <div className={styles.features}>
+            <div className={styles.feature}>
+              <img
+                src="/icons/regulation.svg"
+                alt="Regulation icon"
+                className={styles.icon}
+              />
+              <h3>Robust Regulation</h3>
+              <p>Establishing strong frameworks to govern seabed activities.</p>
+            </div>
+            <div className={styles.feature}>
+              <img
+                src="/icons/environment.svg"
+                alt="Environment icon"
+                className={styles.icon}
+              />
+              <h3>Environmental Protection</h3>
+              <p>Preserving marine ecosystems for future generations.</p>
+            </div>
+            <div className={styles.feature}>
+              <img
+                src="/icons/collab.svg"
+                alt="Collaboration icon"
+                className={styles.icon}
+              />
+              <h3>Global Collaboration</h3>
+              <p>Fostering partnerships with stakeholders worldwide.</p>
+            </div>
+          </div>
+        </div>
+
+        <div className={styles.imageBlock}>
+          <img
+            src="/images/strategic-directions.jpg"
+            alt="ISA Strategic Directions"
+            className={styles.image}
+          />
+        </div>
       </section>
 
-      {/* Main Content */}
-      <section className={styles.content}>
-        <h2 className={styles.sectionTitle}>Our Vision and Strategy</h2>
-        <p>
-          Our vision is to create a framework that not only supports the
-          sustainable development of deep seabed resources, but also protects
-          marine ecosystems for future generations. The strategy emphasizes
-          coordinated international efforts, robust scientific research, and the
-          integration of advanced technologies in monitoring and regulating
-          activities on the deep seabed.
-        </p>
-        <p>
-          Through targeted investments in research and development, enhanced
-          stakeholder engagement, and adaptive policy-making, we aim to balance
-          economic opportunities with environmental stewardship. This strategic
-          plan serves as a roadmap for the ISA and its partners as we navigate
-          the challenges and opportunities of deep seabed mining.
-        </p>
-      </section>
-
-      {/* Call to Action */}
+      {/* CTA SECTION */}
       <section className={styles.cta}>
+        <h2>Join Our Strategic Vision</h2>
         <p>
-          Learn more about our initiatives and how we work with international
-          partners to implement this strategic vision.
+          Learn more about how our Strategic Plan shapes the future of deep
+          seabed mining. Explore key initiatives, engage with our community, and
+          contribute to a sustainable ocean for all.
         </p>
         <a href="/contact" className={styles.ctaButton}>
-          Contact Us for More Information
+          Contact Us
         </a>
       </section>
     </div>

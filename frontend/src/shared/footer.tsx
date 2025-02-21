@@ -78,14 +78,7 @@ export default function Footer() {
                 Exploration Contracts
               </Link>
             </p>
-            <p>
-              <Link
-                href="/topics/VoluntaryCommitments"
-                className="text-white text-decoration-none"
-              >
-                Voluntary Commitments
-              </Link>
-            </p>
+
             <p>
               <Link
                 href="/topics/Workshops"
