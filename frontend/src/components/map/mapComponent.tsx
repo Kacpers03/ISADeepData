@@ -17,7 +17,7 @@ export default function MapComponent() {
         onMove={(evt) => setViewState(evt.viewState)}
         style={{ width: "100%", height: "100%" }}
         mapLib={maplibregl}
-        mapStyle="https://api.maptiler.com/maps/bright/style.json?key=DIN_NØKKEL"
+        mapStyle="https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json"
         attributionControl={false}
       >
         <NavigationControl position="top-right" showCompass={false} />
