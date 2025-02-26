@@ -1,21 +1,42 @@
 using Microsoft.EntityFrameworkCore;
-using Api.Data;  // Endre til riktig namespace for din DbContext
+using Api.Data;
+using Api.Repositories.Interfaces;
+using Api.Repositories.Implementations;
+using Api.Services.Interfaces;
+using Api.Services.Implementations;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Registrer DbContext med SQLite og hent tilkoblingsstrengen "DefaultConnection" fra appsettings.json
+// Register DbContext with SQLite and get connection string "DefaultConnection" from appsettings.json
 builder.Services.AddDbContext<MyDbContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection"))
 );
 
-// Legg til andre nødvendige tjenester
-builder.Services.AddControllersWithViews();
+// Register repositories
+builder.Services.AddScoped<IMapFilterRepository, MapFilterRepository>();
+
+// Register services
+builder.Services.AddScoped<IMapFilterService, MapFilterService>();
+
+// Add controllers and configure API
+builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+// Add CORS to allow frontend to access the API
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFrontend", policy =>
+    {
+        policy.WithOrigins("http://localhost:3000")  // Update with your frontend URL
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
+});
+
 var app = builder.Build();
 
-// Konfigurer middleware for utviklingsmiljø
+// Configure middleware for development environment
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -25,11 +46,13 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
+
+// Use CORS
+app.UseCors("AllowFrontend");
+
 app.UseAuthorization();
 
-// Standard rute for MVC
-app.MapControllerRoute(
-    name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+// Map controllers
+app.MapControllers();
 
 app.Run();
