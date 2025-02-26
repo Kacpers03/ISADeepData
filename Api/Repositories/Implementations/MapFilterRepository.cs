@@ -332,6 +332,47 @@ namespace Api.Repositories.Implementations
                             b.Status
                         })
                     })
+                }),
+                Cruises = cruises.Select(c => new
+                {
+                    c.CruiseId,
+                    c.CruiseName,
+                    c.ResearchVessel,
+                    c.StartDate,
+                    c.EndDate,
+                    Stations = c.Stations.Select(s => new
+                    {
+                        s.StationId,
+                        s.StationCode,
+                        s.StationType,
+                        s.Latitude,
+                        s.Longitude,
+                        Samples = samples
+                            .Where(sample => sample.StationId == s.StationId)
+                            .Select(sample => new
+                            {
+                                sample.SampleId,
+                                sample.SampleCode,
+                                sample.SampleType,
+                                sample.MatrixType,
+                                sample.HabitatType,
+                                sample.SamplingDevice,
+                                sample.DepthLower,
+                                sample.DepthUpper,
+                                sample.SampleDescription,
+                                Media = media
+                                    .Where(m => m.SampleId == sample.SampleId)
+                                    .Select(m => new
+                                    {
+                                        m.MediaId,
+                                        m.FileName,
+                                        m.MediaType,
+                                        m.CameraSpecs,
+                                        m.CaptureDate,
+                                        m.Remarks
+                                    })
+                            })
+                    })
                 })
             };
 
@@ -376,45 +417,5 @@ namespace Api.Repositories.Implementations
                 .OrderByDescending(y => y)
                 .ToListAsync();
         }
-    },
-                Cruises = cruises.Select(c => new
-                {
-                    c.CruiseId,
-                    c.CruiseName,
-                    c.ResearchVessel,
-                    c.StartDate,
-                    c.EndDate,
-                    Stations = c.Stations.Select(s => new
-                    {
-                        s.StationId,
-                        s.StationCode,
-                        s.StationType,
-                        s.Latitude,
-                        s.Longitude,
-                        Samples = samples
-                            .Where(sample => sample.StationId == s.StationId)
-                            .Select(sample => new
-                            {
-                                sample.SampleId,
-                                sample.SampleCode,
-                                sample.SampleType,
-                                sample.MatrixType,
-                                sample.HabitatType,
-                                sample.SamplingDevice,
-                                sample.DepthLower,
-                                sample.DepthUpper,
-                                sample.SampleDescription,
-                                Media = media
-                                    .Where(m => m.SampleId == sample.SampleId)
-                                    .Select(m => new
-                                    {
-                                        m.MediaId,
-                                        m.FileName,
-                                        m.MediaType,
-                                        m.CameraSpecs,
-                                        m.CaptureDate,
-                                        m.Remarks
-                                    })
-                            })
-                    })
-                })
+    }
+}

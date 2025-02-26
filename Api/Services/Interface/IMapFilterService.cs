@@ -1,3 +1,11 @@
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using DTOs.Contractors_Dto;
+using DTOs.Cruise_Dto;
+using DTOs.Station_Dto;
+using DTOs.Sample_Dto;
+using DTOs.PhotoVideo_Dto;
+
 namespace Api.Services.Interfaces
 {
     public interface IMapFilterService

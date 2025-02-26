@@ -1,3 +1,13 @@
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using Api.Repositories.Interfaces;
+using Api.Services.Interfaces;
+using DTOs.Contractors_Dto;
+using DTOs.Cruise_Dto;
+using DTOs.Station_Dto;
+using DTOs.Sample_Dto;
+using DTOs.PhotoVideo_Dto;
+
 namespace Api.Services.Implementations
 {
     public class MapFilterService : IMapFilterService
