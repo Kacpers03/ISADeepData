@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import FilterSearch from "../components/filter/fileFilter";
-import FileTable from "../components/table/fileTable";
+import FilterSearch from "../../components/filter/fileFilter";
+import FileTable from "../../components/table/fileTable";
 import stylestable from "../styles/reports.module.css"; // Import CSS Module
 import stylesfilter from "../styles/filefilter.module.css"; // Import CSS Module
 
