@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useRef } from "react";
-import Map, { NavigationControl, Marker, Popup, ViewStateChangeEvent } from "react-map-gl";
+import Map, { NavigationControl, Marker, Popup, Source, Layer, ViewStateChangeEvent } from "react-map-gl";
 import { useFilter } from "../../contexts/filterContext";
 import styles from "../../styles/map/map.module.css";
 import { DetailPanel } from "./detailPanel";
 import { FilterPanel } from "../filters/filterPanel";
-import { Station, Contractor, Cruise } from "../../types/filter-types";
+import { Station, Contractor, Cruise, GeoJsonFeature } from "../../types/filter-types";
 
 // You can keep your existing FILTER_OPTIONS or replace with API data
 
@@ -46,6 +46,56 @@ const EnhancedMapComponent: React.FC = () => {
   const [showFilters, setShowFilters] = useState(true);
   const mapRef = useRef(null);
   
+  // Tilstand for GeoJSON-lag
+  const [areaLayers, setAreaLayers] = useState<{ 
+    areaId: number;
+    areaName: string;
+    geoJson: GeoJsonFeature;
+    blocks: Array<{
+      blockId: number;
+      blockName: string;
+      geoJson: GeoJsonFeature;
+      status: string;
+    }>
+  }[]>([]);
+  
+  // Hent GeoJSON-data når en kontraktør velges
+  useEffect(() => {
+    if (selectedContractorId) {
+      const fetchGeoJson = async () => {
+        try {
+          const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5062/api';
+          const response = await fetch(`${API_BASE_URL}/MapFilter/contractor-areas-geojson/${selectedContractorId}`);
+          if (!response.ok) {
+            throw new Error('Failed to fetch area data');
+          }
+          
+          const areasData = await response.json();
+          
+          const formattedLayers = areasData.map((area: any) => ({
+            areaId: area.areaId,
+            areaName: area.areaName,
+            geoJson: JSON.parse(area.geoJson),
+            blocks: area.blocks.map((block: any) => ({
+              blockId: block.blockId,
+              blockName: block.blockName,
+              status: block.status,
+              geoJson: JSON.parse(block.geoJson)
+            }))
+          }));
+          
+          setAreaLayers(formattedLayers);
+        } catch (error) {
+          console.error('Error loading GeoJSON data:', error);
+        }
+      };
+      
+      fetchGeoJson();
+    } else {
+      setAreaLayers([]);
+    }
+  }, [selectedContractorId]);
+  
   // Extract stations from map data
   const stations: Station[] = mapData
     ? mapData.cruises.flatMap(cruise => cruise.stations || [])
@@ -58,9 +108,6 @@ const EnhancedMapComponent: React.FC = () => {
   // Handle map view state change
   const handleViewStateChange = (evt: ViewStateChangeEvent) => {
     setViewState(evt.viewState);
-    
-    // For performance reasons, don't update bounds on every tiny movement
-    // Instead, we could add a "Apply View Bounds" button if needed
   };
   
   // Calculate bounds from current view for filtering
@@ -162,6 +209,62 @@ const EnhancedMapComponent: React.FC = () => {
         mapboxAccessToken={process.env.NEXT_PUBLIC_MAPBOX_TOKEN}
       >
         <NavigationControl position="top-right" showCompass={true} />
+        
+        {/* Visualisering av områder og blokker */}
+        {areaLayers.map(area => (
+          <React.Fragment key={`area-${area.areaId}`}>
+            {/* Tegn området som polygon */}
+            <Source id={`area-source-${area.areaId}`} type="geojson" data={area.geoJson}>
+              <Layer
+                id={`area-fill-${area.areaId}`}
+                type="fill"
+                paint={{
+                  'fill-color': '#0277bd',
+                  'fill-opacity': 0.2,
+                }}
+              />
+              <Layer
+                id={`area-line-${area.areaId}`}
+                type="line"
+                paint={{
+                  'line-color': '#0277bd',
+                  'line-width': 2,
+                }}
+              />
+            </Source>
+            
+            {/* Tegn blokkene */}
+            {area.blocks.map(block => (
+              <Source 
+                key={`block-source-${block.blockId}`}
+                id={`block-source-${block.blockId}`}
+                type="geojson" 
+                data={block.geoJson}
+              >
+                <Layer
+                  id={`block-fill-${block.blockId}`}
+                  type="fill"
+                  paint={{
+                    'fill-color': block.status === 'Active' ? '#4CAF50' : 
+                                block.status === 'Pending' ? '#FFC107' : 
+                                block.status === 'Expired' ? '#9E9E9E' : '#F44336',
+                    'fill-opacity': 0.4,
+                  }}
+                />
+                <Layer
+                  id={`block-line-${block.blockId}`}
+                  type="line"
+                  paint={{
+                    'line-color': block.status === 'Active' ? '#4CAF50' : 
+                                block.status === 'Pending' ? '#FFC107' : 
+                                block.status === 'Expired' ? '#9E9E9E' : '#F44336',
+                    'line-width': 1,
+                  }}
+                />
+              </Source>
+            ))}
+          </React.Fragment>
+        ))}
         
         {/* Markers for each station */}
         {stations.map(station => (

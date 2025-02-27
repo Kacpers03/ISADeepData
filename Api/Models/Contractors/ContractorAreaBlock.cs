@@ -7,7 +7,7 @@ namespace Models.Contractors
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int BlockId { get; set; } // block_id
+        public int BlockId { get; set; }
 
         // Utenlandsk nøkkel: Hvilket område tilhører denne blokken
         public int AreaId { get; set; }
@@ -16,11 +16,17 @@ namespace Models.Contractors
 
         [Required]
         [StringLength(255)]
-        public string BlockName { get; set; } // block_name
+        public string BlockName { get; set; }
 
-        public string BlockDescription { get; set; } // block_description
+        public string BlockDescription { get; set; }
 
         [StringLength(100)]
-        public string Status { get; set; } // status
+        public string Status { get; set; }
+        
+        // Nye GeoJSON-relaterte felt
+        public string GeoJsonBoundary { get; set; }
+        public double CenterLatitude { get; set; }
+        public double CenterLongitude { get; set; }
+        public double AreaSizeKm2 { get; set; }
     }
 }

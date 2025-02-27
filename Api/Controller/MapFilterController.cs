@@ -458,5 +458,69 @@ namespace Api.Controllers
 
             return years;
         }
+
+
+        // I Api/Controller/MapFilterController.cs
+[HttpGet("area-geojson/{areaId}")]
+public async Task<ActionResult<object>> GetAreaGeoJson(int areaId)
+{
+    var area = await _context.ContractorAreas
+        .Include(a => a.ContractorAreaBlocks)
+        .FirstOrDefaultAsync(a => a.AreaId == areaId);
+        
+    if (area == null)
+        return NotFound();
+        
+    return new {
+        areaId = area.AreaId,
+        areaName = area.AreaName,
+        geoJson = area.GeoJsonBoundary,
+        blocks = area.ContractorAreaBlocks.Select(b => new {
+            blockId = b.BlockId,
+            blockName = b.BlockName,
+            status = b.Status,
+            geoJson = b.GeoJsonBoundary,
+            centerLat = b.CenterLatitude,
+            centerLon = b.CenterLongitude,
+            areaSizeKm2 = b.AreaSizeKm2
+        }).ToList()
+    };
+}
+
+[HttpGet("contractor-areas-geojson/{contractorId}")]
+public async Task<ActionResult<object>> GetContractorAreasGeoJson(int contractorId)
+{
+    var areas = await _context.ContractorAreas
+        .Include(a => a.ContractorAreaBlocks)
+        .Where(a => a.ContractorId == contractorId)
+        .ToListAsync();
+        
+    if (!areas.Any())
+        return NotFound();
+        
+    return areas.Select(area => new {
+        areaId = area.AreaId,
+        areaName = area.AreaName,
+        geoJson = area.GeoJsonBoundary,
+        centerLat = area.CenterLatitude,
+        centerLon = area.CenterLongitude,
+        totalAreaSizeKm2 = area.TotalAreaSizeKm2,
+        allocationDate = area.AllocationDate,
+        expiryDate = area.ExpiryDate,
+        blocks = area.ContractorAreaBlocks.Select(b => new {
+            blockId = b.BlockId,
+            blockName = b.BlockName,
+            status = b.Status,
+            geoJson = b.GeoJsonBoundary,
+            centerLat = b.CenterLatitude,
+            centerLon = b.CenterLongitude,
+            areaSizeKm2 = b.AreaSizeKm2
+        }).ToList()
+    }).ToList();
+}
+
+
+
+
     }
 }

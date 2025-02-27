@@ -11,6 +11,68 @@ export interface MapFilterParams {
     minLon?: number;
     maxLon?: number;
   }
+
+
+  // I frontend/src/types/filter-types.tsx
+
+// Legg til disse nye typene
+export interface GeoJsonFeature {
+  type: "Feature";
+  properties: Record<string, any>;
+  geometry: {
+    type: string;
+    coordinates: number[][][];
+  };
+}
+
+export interface ContractorAreaGeoData {
+  areaId: number;
+  areaName: string;
+  geoJson: string;
+  centerLat: number;
+  centerLon: number;
+  totalAreaSizeKm2: number;
+  allocationDate: string;
+  expiryDate: string;
+  blocks: ContractorBlockGeoData[];
+}
+
+export interface ContractorBlockGeoData {
+  blockId: number;
+  blockName: string;
+  status: string;
+  geoJson: string;
+  centerLat: number;
+  centerLon: number;
+  areaSizeKm2: number;
+}
+
+// Oppdater eksisterende typer
+export interface ContractorAreaBlock {
+  blockId: number;
+  areaId: number;
+  blockName: string;
+  blockDescription: string;
+  status: string;
+  geoJsonBoundary?: string;
+  centerLatitude?: number;
+  centerLongitude?: number;
+  areaSizeKm2?: number;
+}
+
+export interface ContractorArea {
+  areaId: number;
+  contractorId: number;
+  areaName: string;
+  areaDescription: string;
+  geoJsonBoundary?: string;
+  centerLatitude?: number;
+  centerLongitude?: number;
+  totalAreaSizeKm2?: number;
+  allocationDate?: string;
+  expiryDate?: string;
+  blocks?: ContractorAreaBlock[];
+}
   
   // Filter dropdown options
   export interface FilterOptions {
@@ -47,25 +109,34 @@ export interface MapFilterParams {
     areas?: ContractorArea[];
   }
   
-  // Contractor area data
-  export interface ContractorArea {
-    areaId: number;
-    contractorId: number;
-    areaName: string;
-    areaDescription: string;
-    blocks?: ContractorAreaBlock[];
-  }
-  
-  // Area block data
-  export interface ContractorAreaBlock {
+ // Oppdater eksisterende typer
+export interface ContractorAreaBlock {
     blockId: number;
     areaId: number;
     blockName: string;
     blockDescription: string;
     status: string;
-    // GeoJSON coordinates could be added here if available
+    geoJsonBoundary?: string;
+    centerLatitude?: number;
+    centerLongitude?: number;
+    areaSizeKm2?: number;
   }
   
+  export interface ContractorArea {
+    areaId: number;
+    contractorId: number;
+    areaName: string;
+    areaDescription: string;
+    geoJsonBoundary?: string;
+    centerLatitude?: number;
+    centerLongitude?: number;
+    totalAreaSizeKm2?: number;
+    allocationDate?: string;
+    expiryDate?: string;
+    blocks?: ContractorAreaBlock[];
+  }
+  
+ 
   // Cruise data
   export interface Cruise {
     cruiseId: number;
@@ -118,4 +189,37 @@ export interface MapFilterParams {
   export interface MapData {
     contractors: Contractor[];
     cruises: Cruise[];
+  }
+
+
+  // Legg til disse nye typene
+export interface GeoJsonFeature {
+    type: "Feature";
+    properties: Record<string, any>;
+    geometry: {
+      type: string;
+      coordinates: number[][][];
+    };
+  }
+  
+  export interface ContractorAreaGeoData {
+    areaId: number;
+    areaName: string;
+    geoJson: string;
+    centerLat: number;
+    centerLon: number;
+    totalAreaSizeKm2: number;
+    allocationDate: string;
+    expiryDate: string;
+    blocks: ContractorBlockGeoData[];
+  }
+  
+  export interface ContractorBlockGeoData {
+    blockId: number;
+    blockName: string;
+    status: string;
+    geoJson: string;
+    centerLat: number;
+    centerLon: number;
+    areaSizeKm2: number;
   }
