@@ -141,6 +141,9 @@ namespace Api.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
+                    b.Property<DateTime>("AllocationDate")
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("AreaDescription")
                         .IsRequired()
                         .HasColumnType("TEXT");
@@ -150,8 +153,24 @@ namespace Api.Migrations
                         .HasMaxLength(255)
                         .HasColumnType("TEXT");
 
+                    b.Property<double>("CenterLatitude")
+                        .HasColumnType("REAL");
+
+                    b.Property<double>("CenterLongitude")
+                        .HasColumnType("REAL");
+
                     b.Property<int>("ContractorId")
                         .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("ExpiryDate")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("GeoJsonBoundary")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<double>("TotalAreaSizeKm2")
+                        .HasColumnType("REAL");
 
                     b.HasKey("AreaId");
 
@@ -169,6 +188,9 @@ namespace Api.Migrations
                     b.Property<int>("AreaId")
                         .HasColumnType("INTEGER");
 
+                    b.Property<double>("AreaSizeKm2")
+                        .HasColumnType("REAL");
+
                     b.Property<string>("BlockDescription")
                         .IsRequired()
                         .HasColumnType("TEXT");
@@ -176,6 +198,16 @@ namespace Api.Migrations
                     b.Property<string>("BlockName")
                         .IsRequired()
                         .HasMaxLength(255)
+                        .HasColumnType("TEXT");
+
+                    b.Property<double>("CenterLatitude")
+                        .HasColumnType("REAL");
+
+                    b.Property<double>("CenterLongitude")
+                        .HasColumnType("REAL");
+
+                    b.Property<string>("GeoJsonBoundary")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Status")

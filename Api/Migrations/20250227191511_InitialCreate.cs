@@ -105,7 +105,13 @@ namespace Api.Migrations
                         .Annotation("Sqlite:Autoincrement", true),
                     ContractorId = table.Column<int>(type: "INTEGER", nullable: false),
                     AreaName = table.Column<string>(type: "TEXT", maxLength: 255, nullable: false),
-                    AreaDescription = table.Column<string>(type: "TEXT", nullable: false)
+                    AreaDescription = table.Column<string>(type: "TEXT", nullable: false),
+                    GeoJsonBoundary = table.Column<string>(type: "TEXT", nullable: false),
+                    CenterLatitude = table.Column<double>(type: "REAL", nullable: false),
+                    CenterLongitude = table.Column<double>(type: "REAL", nullable: false),
+                    TotalAreaSizeKm2 = table.Column<double>(type: "REAL", nullable: false),
+                    AllocationDate = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    ExpiryDate = table.Column<DateTime>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -175,7 +181,11 @@ namespace Api.Migrations
                     AreaId = table.Column<int>(type: "INTEGER", nullable: false),
                     BlockName = table.Column<string>(type: "TEXT", maxLength: 255, nullable: false),
                     BlockDescription = table.Column<string>(type: "TEXT", nullable: false),
-                    Status = table.Column<string>(type: "TEXT", maxLength: 100, nullable: false)
+                    Status = table.Column<string>(type: "TEXT", maxLength: 100, nullable: false),
+                    GeoJsonBoundary = table.Column<string>(type: "TEXT", nullable: false),
+                    CenterLatitude = table.Column<double>(type: "REAL", nullable: false),
+                    CenterLongitude = table.Column<double>(type: "REAL", nullable: false),
+                    AreaSizeKm2 = table.Column<double>(type: "REAL", nullable: false)
                 },
                 constraints: table =>
                 {
