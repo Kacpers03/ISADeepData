@@ -19,9 +19,9 @@ export default function Navigation() {
             <NavDropdown
               title="Library"
               items={[
-                { text: "Reports", link: "/reports" },
-                { text: "Publications", link: "/publications" },
-                { text: "Research", link: "/research" },
+                { text: "Reports", link: "/library/reports" },
+                { text: "Publications", link: "/library/publications" },
+                { text: "Research", link: "/library/research" },
               ]}
             />
             <NavItem text="Gallery" link="/gallery" />
