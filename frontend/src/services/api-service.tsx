@@ -5,7 +5,7 @@ export interface MapFilterParams {
   contractStatusId?: number;
   sponsoringState?: string | null;
   year?: number;
-  cruiseId?: number;
+  cruiseId?: number
 }
 
 // Types for filter options

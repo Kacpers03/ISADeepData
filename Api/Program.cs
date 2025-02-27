@@ -4,10 +4,11 @@ using Api.Repositories.Interfaces;
 using Api.Repositories.Implementations;
 using Api.Services.Interfaces;
 using Api.Services.Implementations;
+using Microsoft.Extensions.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Register DbContext with SQLite and get connection string "DefaultConnection" from appsettings.json
+// Register DbContext with SQLite using the connection string "DefaultConnection" from appsettings.json
 builder.Services.AddDbContext<MyDbContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection"))
 );
@@ -23,7 +24,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// Add CORS to allow frontend to access the API
+// Add CORS to allow frontend access
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend", policy =>
@@ -35,6 +36,21 @@ builder.Services.AddCors(options =>
 });
 
 var app = builder.Build();
+
+// Run seeding using the already built app
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    try
+    {
+        var context = services.GetRequiredService<MyDbContext>();
+        DbInitializer.Initialize(context);
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine("Feil under seeding: " + ex.Message);
+    }
+}
 
 // Configure middleware for development environment
 if (app.Environment.IsDevelopment())
