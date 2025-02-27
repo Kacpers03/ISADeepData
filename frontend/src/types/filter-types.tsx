@@ -39,7 +39,7 @@ export interface MapFilterParams {
     contractTypeId: number;
     contractStatusId: number;
     contractNumber: string;
-    sponsoringState: string;
+    sponsoringState: string ;
     contractualYear: number;
     remarks: string;
     contractType?: string; 

@@ -158,7 +158,7 @@ const EnhancedMapComponent: React.FC = () => {
         ref={mapRef}
         onMove={handleViewStateChange}
         style={{ width: "100%", height: "100%" }}
-        mapStyle="mapbox://styles/mapbox/light-v11"
+        mapStyle="https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json"
         mapboxAccessToken={process.env.NEXT_PUBLIC_MAPBOX_TOKEN}
       >
         <NavigationControl position="top-right" showCompass={true} />

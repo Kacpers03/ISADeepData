@@ -257,7 +257,7 @@ namespace Api.Controllers
             [FromQuery] int? contractorId,
             [FromQuery] int? contractTypeId, 
             [FromQuery] int? contractStatusId,
-            [FromQuery] string sponsoringState,
+            [FromQuery] string? sponsoringState,
             [FromQuery] int? year,
             [FromQuery] int? cruiseId)
         {
