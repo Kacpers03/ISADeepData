@@ -43,8 +43,8 @@ using (var scope = app.Services.CreateScope())
     var services = scope.ServiceProvider;
     try
     {
-        var context = services.GetRequiredService<MyDbContext>();
-        DbInitializer.Initialize(context);
+        //var context = services.GetRequiredService<MyDbContext>();
+       // DbInitializer.Initialize(context);
     }
     catch (Exception ex)
     {
