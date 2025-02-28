@@ -57,7 +57,7 @@ export const FilterPanel: React.FC = () => {
             onClick={resetFilters}
             disabled={loading}
           >
-            Reset Filters ({activeFilterCount})
+            Reset ({activeFilterCount})
           </button>
         )}
       </div>

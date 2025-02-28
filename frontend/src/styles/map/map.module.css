@@ -1,3 +1,5 @@
+/* Modified map.module.css - moving filter panel outside the map */
+
 /* Map Container */
 .mapContainer {
   position: relative;
@@ -9,21 +11,7 @@
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
 }
 
-/* FILTER PANEL STYLES */
-.filterPanel {
-  position: absolute;
-  top: 20px;
-  left: 20px;
-  width: 350px;
-  background-color: rgba(255, 255, 255, 0.95);
-  border-radius: 10px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-  z-index: 10;
-  transition: transform 0.3s ease, opacity 0.3s ease;
-  max-height: calc(100% - 40px);
-  overflow-y: auto;
-}
-
+/* FILTER PANEL STYLES - Removed position:absolute and related styles */
 .filterPanelInner {
   padding: 20px;
 }
@@ -560,40 +548,11 @@
   font-size: 1.2rem;
 }
 
-/* BUTTON STYLES */
-.toggleFilterButton {
-  position: absolute;
-  top: 20px;
-  left: 380px; /* Positioned to the right of the filter panel */
-  background-color: white;
-  border: none;
-  border-radius: 6px;
-  padding: 8px 12px;
-  font-size: 0.9rem;
-  font-weight: 500;
-  color: #455a64;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  cursor: pointer;
-  z-index: 5;
-  transition: all 0.2s ease;
-}
-
-.toggleFilterButton:hover {
-  background-color: #f5f5f5;
-}
-
-.filterIcon {
-  font-size: 1.1rem;
-  line-height: 1;
-}
-
+/* BUTTON STYLES - Repositioned and styled for the new layout */
 .viewportFilterButton {
   position: absolute;
-  top: 60px;
-  left: 380px;
+  top: 20px;
+  right: 20px;
   background-color: white;
   border: none;
   border-radius: 6px;
@@ -616,36 +575,12 @@
 
 /* RESPONSIVE ADJUSTMENTS */
 @media (max-width: 992px) {
-  .filterPanel {
-    width: 300px;
-  }
-  
-  .toggleFilterButton,
-  .viewportFilterButton {
-    left: 330px;
-  }
-  
   .detailPanel {
     width: 350px;
   }
 }
 
 @media (max-width: 768px) {
-  .filterPanel {
-    width: calc(100% - 40px);
-    max-height: 400px;
-  }
-  
-  .toggleFilterButton {
-    top: 420px;
-    left: 20px;
-  }
-  
-  .viewportFilterButton {
-    top: 420px;
-    left: 120px;
-  }
-  
   .detailPanel {
     top: auto;
     bottom: 20px;
@@ -657,7 +592,11 @@
   
   .mapLegend {
     bottom: auto;
-    top: 20px;
+    top: 70px;
     right: 20px;
+  }
+  
+  .viewportFilterButton {
+    top: 20px;
   }
 }

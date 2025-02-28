@@ -3,7 +3,6 @@ import Map, { NavigationControl, Marker, Popup, Source, Layer, ViewStateChangeEv
 import { useFilter } from "../../contexts/filterContext";
 import styles from "../../styles/map/map.module.css";
 import { DetailPanel } from "./detailPanel";
-import { FilterPanel } from "../filters/filterPanel";
 import { Station, Contractor, Cruise, GeoJsonFeature } from "../../types/filter-types";
 
 // You can keep your existing FILTER_OPTIONS or replace with API data
@@ -43,7 +42,6 @@ const EnhancedMapComponent: React.FC = () => {
     zoom: 1.5,
   });
 
-  const [showFilters, setShowFilters] = useState(true);
   const mapRef = useRef(null);
   
   // Tilstand for GeoJSON-lag
@@ -186,17 +184,6 @@ const EnhancedMapComponent: React.FC = () => {
           </div>
         </div>
         <p className={styles.legendNote}>Marker size indicates area size</p>
-      </div>
-      
-      {/* Filter panel with toggle functionality */}
-      <div 
-        className={styles.filterPanel} 
-        style={{ 
-          transform: showFilters ? 'translateX(0)' : 'translateX(-120%)',
-          opacity: showFilters ? 1 : 0
-        }}
-      >
-        <FilterPanel />
       </div>
       
       {/* Main Map */}
@@ -355,15 +342,7 @@ const EnhancedMapComponent: React.FC = () => {
         />
       )}
       
-      {/* Toggle Filter Panel Button */}
-      <button 
-        className={styles.toggleFilterButton} 
-        onClick={() => setShowFilters(!showFilters)}
-      >
-        <span className={styles.filterIcon}>≡</span> Filters
-      </button>
-      
-      {/* Viewport Filter Button - Optional */}
+      {/* Viewport Filter Button */}
       <button
         className={styles.viewportFilterButton}
         onClick={calculateBoundsFromView}

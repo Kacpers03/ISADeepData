@@ -1,3 +1,4 @@
+/* Updated map page layout CSS */
 .mapPageContainer {
   max-width: 1400px;
   margin: 0 auto;
@@ -24,8 +25,42 @@
   line-height: 1.6;
 }
 
-.mapSection {
+/* New layout with filter panel and map side by side */
+.mapLayout {
+  display: flex;
+  gap: 20px;
   margin-bottom: 50px;
+}
+
+/* Side filter panel */
+.sideFilterPanel {
+  width: 300px;
+  background-color: #fff;
+  border-radius: 12px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+  flex-shrink: 0;
+  align-self: flex-start;
+  position: sticky;
+  top: 20px;
+}
+
+/* Map section takes remaining space */
+.mapSection {
+  flex: 1;
+  min-width: 0; /* Ensures the flex item can shrink below its content size */
+}
+
+/* Responsive adjustments */
+@media (max-width: 992px) {
+  .mapLayout {
+    flex-direction: column;
+  }
+  
+  .sideFilterPanel {
+    width: 100%;
+    position: static;
+    margin-bottom: 20px;
+  }
 }
 
 .mapInfoSection {
@@ -66,19 +101,4 @@
   font-size: 1rem;
   line-height: 1.6;
   margin: 0;
-}
-
-/* Responsive adjustments */
-@media (max-width: 768px) {
-  .mapHeader h1 {
-    font-size: 2rem;
-  }
-  
-  .mapDescription {
-    font-size: 1rem;
-  }
-  
-  .mapInfoSection {
-    grid-template-columns: 1fr;
-  }
 }

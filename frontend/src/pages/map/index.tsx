@@ -3,6 +3,7 @@ import dynamic from "next/dynamic";
 import Head from "next/head";
 import { FilterProvider } from "../../contexts/filterContext";
 import styles from "../../styles/map/mapPage.module.css";
+import { FilterPanel } from "../../components/filters/filterPanel";
 
 // Dynamically import MapComponent without SSR
 const EnhancedMapComponent = dynamic(
@@ -28,8 +29,17 @@ export default function MapPage() {
           </p>
         </header>
         
-        <div className={styles.mapSection}>
-          <EnhancedMapComponent />
+        {/* New layout with side-by-side filter panel and map */}
+        <div className={styles.mapLayout}>
+          {/* Side filter panel */}
+          <div className={styles.sideFilterPanel}>
+            <FilterPanel />
+          </div>
+          
+          {/* Map container */}
+          <div className={styles.mapSection}>
+            <EnhancedMapComponent />
+          </div>
         </div>
         
         <div className={styles.mapInfoSection}>
