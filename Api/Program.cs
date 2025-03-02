@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 using Api.Data;
 using Api.Repositories.Interfaces;
 using Api.Repositories.Implementations;
@@ -13,16 +14,27 @@ builder.Services.AddDbContext<MyDbContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection"))
 );
 
+// Register Memory Cache
+builder.Services.AddMemoryCache();
+
 // Register repositories
 builder.Services.AddScoped<IMapFilterRepository, MapFilterRepository>();
 
 // Register services
 builder.Services.AddScoped<IMapFilterService, MapFilterService>();
+builder.Services.AddScoped<ISpatialService, SpatialService>();
 
 // Add controllers and configure API
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+// Add response caching middleware
+builder.Services.AddResponseCaching(options =>
+{
+    options.MaximumBodySize = 1024 * 1024; // 1MB
+    options.UseCaseSensitivePaths = false;
+});
 
 // Add CORS to allow frontend access
 builder.Services.AddCors(options =>
@@ -43,12 +55,17 @@ using (var scope = app.Services.CreateScope())
     var services = scope.ServiceProvider;
     try
     {
-        //var context = services.GetRequiredService<MyDbContext>();
-       // DbInitializer.Initialize(context);
+        var context = services.GetRequiredService<MyDbContext>();
+        DbInitializer.Initialize(context);
+        
+        // Lag kobling mellom stasjoner og blokker
+        var spatialService = services.GetRequiredService<ISpatialService>();
+        await spatialService.AssociateStationsWithBlocks();
     }
     catch (Exception ex)
     {
-        Console.WriteLine("Feil under seeding: " + ex.Message);
+        var logger = services.GetRequiredService<ILogger<Program>>();
+        logger.LogError(ex, "Feil under seeding: {Message}", ex.Message);
     }
 }
 
@@ -65,6 +82,25 @@ app.UseRouting();
 
 // Use CORS
 app.UseCors("AllowFrontend");
+
+// Use Response Caching
+app.UseResponseCaching();
+
+// Add cache headers middleware
+app.Use(async (context, next) =>
+{
+    // Add cache control headers for API responses
+    if (context.Request.Path.StartsWithSegments("/api"))
+    {
+        context.Response.GetTypedHeaders().CacheControl = new Microsoft.Net.Http.Headers.CacheControlHeaderValue
+        {
+            Public = true,
+            MaxAge = TimeSpan.FromMinutes(10)
+        };
+    }
+    
+    await next();
+});
 
 app.UseAuthorization();
 

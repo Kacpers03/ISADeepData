@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using Models.Cruises;
 using Models.Samples;
 using Models.CTD_Data;
+using Models.Contractors;
 
 namespace Models.Stations
 {
@@ -11,7 +12,7 @@ namespace Models.Stations
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int StationId { get; set; } // station_id
+        public int StationId { get; set; }
 
         // Utenlandsk nøkkel: Hvilket Cruise tilhører denne stasjonen?
         public int CruiseId { get; set; }
@@ -19,13 +20,18 @@ namespace Models.Stations
         public Cruise Cruise { get; set; }
 
         [StringLength(100)]
-        public string StationCode { get; set; } // station_code
+        public string StationCode { get; set; }
 
         [StringLength(100)]
-        public string StationType { get; set; } // station_type (f.eks. POINT, TRAWL)
+        public string StationType { get; set; }
 
-        public double Latitude { get; set; }  // latitude
-        public double Longitude { get; set; } // longitude
+        public double Latitude { get; set; }
+        public double Longitude { get; set; }
+
+        // Ny kobling til ContractorAreaBlock
+        public int? ContractorAreaBlockId { get; set; }
+        [ForeignKey("ContractorAreaBlockId")]
+        public ContractorAreaBlock ContractorAreaBlock { get; set; }
 
         // Navigasjon: Samples + CTD-data
         public ICollection<Sample> Samples { get; set; }

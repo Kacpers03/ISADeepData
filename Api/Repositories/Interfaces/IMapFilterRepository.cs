@@ -39,5 +39,8 @@ namespace Api.Repositories.Interfaces
         Task<IEnumerable<ContractStatusDto>> GetContractStatusesAsync();
         Task<IEnumerable<string>> GetSponsoringStatesAsync();
         Task<IEnumerable<int>> GetContractualYearsAsync();
+        
+        // Analytical methods
+        Task<object> GetBlockAnalysisAsync(int blockId);
     }
 }

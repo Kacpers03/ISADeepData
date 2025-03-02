@@ -23,10 +23,15 @@ namespace Models.Contractors
         [StringLength(100)]
         public string Status { get; set; }
         
-        // Nye GeoJSON-relaterte felt
+        // Eksisterende GeoJSON-relaterte felt
         public string GeoJsonBoundary { get; set; }
         public double CenterLatitude { get; set; }
         public double CenterLongitude { get; set; }
         public double AreaSizeKm2 { get; set; }
+        
+        // Nye analytiske felt
+        public string Category { get; set; }
+        public double ResourceDensity { get; set; }
+        public double EconomicValue { get; set; }
     }
 }
