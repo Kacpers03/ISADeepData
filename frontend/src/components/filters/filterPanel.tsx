@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useFilter } from '../../contexts/filterContext';
 import styles from '../../styles/map/map.module.css';
+import { CustomDropdown } from './CustomDropdown';
 
 export const FilterPanel: React.FC = () => {
   const { 
@@ -11,6 +12,20 @@ export const FilterPanel: React.FC = () => {
     loading,
     mapData
   } = useFilter();
+  
+  // State for contractor names
+  const [contractorNames, setContractorNames] = useState<Array<{id: number, name: string}>>([]);
+  
+  // Populate contractor names from mapData when it changes
+  useEffect(() => {
+    if (mapData?.contractors) {
+      const names = mapData.contractors.map(contractor => ({
+        id: contractor.contractorId,
+        name: contractor.contractorName
+      }));
+      setContractorNames(names);
+    }
+  }, [mapData]);
   
   // Count active filters
   const activeFilterCount = Object.keys(filters).length;
@@ -26,7 +41,7 @@ export const FilterPanel: React.FC = () => {
     const value = e.target.value;
     
     // For number values
-    if (['contractTypeId', 'contractStatusId', 'year', 'cruiseId', 'contractorId'].includes(key)) {
+    if (['mineralTypeId', 'contractStatusId', 'year', 'cruiseId', 'contractorId'].includes(key)) {
       if (value === 'all') {
         setFilter(key as any, undefined);
       } else {
@@ -47,6 +62,44 @@ export const FilterPanel: React.FC = () => {
     );
   }
   
+  // Format options for custom dropdowns
+  const contractorOptions = [
+    { value: 'all', label: 'All Contractors' },
+    ...contractorNames.map(c => ({ value: c.id.toString(), label: c.name }))
+  ];
+  
+  const mineralTypeOptions = [
+    { value: 'all', label: 'All Mineral Types' },
+    ...filterOptions.contractTypes.map(type => ({ 
+      value: type.contractTypeId.toString(), 
+      label: type.contractTypeName 
+    }))
+  ];
+  
+  const contractStatusOptions = [
+    { value: 'all', label: 'All Statuses' },
+    ...filterOptions.contractStatuses.map(status => ({ 
+      value: status.contractStatusId.toString(), 
+      label: status.contractStatusName 
+    }))
+  ];
+  
+  const sponsoringStateOptions = [
+    { value: 'all', label: 'All States' },
+    ...filterOptions.sponsoringStates.map(state => ({ 
+      value: state, 
+      label: state 
+    }))
+  ];
+  
+  const yearOptions = [
+    { value: 'all', label: 'All Years' },
+    ...filterOptions.contractualYears.map(year => ({ 
+      value: year.toString(), 
+      label: year.toString() 
+    }))
+  ];
+  
   return (
     <div className={styles.filterPanelInner}>
       <div className={styles.filterHeader}>
@@ -63,81 +116,60 @@ export const FilterPanel: React.FC = () => {
       </div>
       
       <div className={styles.filterGrid}>
-        {/* Contract Type Filter */}
-        <div className={styles.filterGroup}>
-          <label htmlFor="contractTypeId">Contract Type</label>
-          <select
-            id="contractTypeId"
-            value={filters.contractTypeId?.toString() || 'all'}
-            onChange={(e) => handleSelectChange(e, 'contractTypeId')}
-            className={filters.contractTypeId ? styles.activeFilter : ''}
-            disabled={loading}
-          >
-            <option value="all">All Contract Types</option>
-            {filterOptions.contractTypes.map(type => (
-              <option key={type.contractTypeId} value={type.contractTypeId.toString()}>
-                {type.contractTypeName}
-              </option>
-            ))}
-          </select>
-        </div>
+        {/* Contractor Name Filter - Custom Dropdown */}
+        <CustomDropdown
+          id="contractorId"
+          label="Contractor Name"
+          options={contractorOptions}
+          value={filters.contractorId?.toString() || 'all'}
+          onChange={(e: any) => handleSelectChange(e, 'contractorId')}
+          isActive={!!filters.contractorId}
+          disabled={loading}
+        />
         
-        {/* Contract Status Filter */}
-        <div className={styles.filterGroup}>
-          <label htmlFor="contractStatusId">Contract Status</label>
-          <select
-            id="contractStatusId"
-            value={filters.contractStatusId?.toString() || 'all'}
-            onChange={(e) => handleSelectChange(e, 'contractStatusId')}
-            className={filters.contractStatusId ? styles.activeFilter : ''}
-            disabled={loading}
-          >
-            <option value="all">All Statuses</option>
-            {filterOptions.contractStatuses.map(status => (
-              <option key={status.contractStatusId} value={status.contractStatusId.toString()}>
-                {status.contractStatusName}
-              </option>
-            ))}
-          </select>
-        </div>
+        {/* Mineral Type Filter - Custom Dropdown */}
+        <CustomDropdown
+          id="mineralTypeId"
+          label="Mineral Type"
+          options={mineralTypeOptions}
+          value={filters.mineralTypeId?.toString() || 'all'}
+          onChange={(e: any) => handleSelectChange(e, 'mineralTypeId')}
+          isActive={!!filters.mineralTypeId}
+          disabled={loading}
+        />
         
-        {/* Sponsoring State Filter */}
-        <div className={styles.filterGroup}>
-          <label htmlFor="sponsoringState">Sponsoring State</label>
-          <select
-            id="sponsoringState"
-            value={filters.sponsoringState || 'all'}
-            onChange={(e) => handleSelectChange(e, 'sponsoringState')}
-            className={filters.sponsoringState ? styles.activeFilter : ''}
-            disabled={loading}
-          >
-            <option value="all">All States</option>
-            {filterOptions.sponsoringStates.map(state => (
-              <option key={state} value={state}>
-                {state}
-              </option>
-            ))}
-          </select>
-        </div>
+        {/* Contract Status Filter - Custom Dropdown */}
+        <CustomDropdown
+          id="contractStatusId"
+          label="Contract Status"
+          options={contractStatusOptions}
+          value={filters.contractStatusId?.toString() || 'all'}
+          onChange={(e: any) => handleSelectChange(e, 'contractStatusId')}
+          isActive={!!filters.contractStatusId}
+          disabled={loading}
+        />
         
-        {/* Contractual Year Filter */}
-        <div className={styles.filterGroup}>
-          <label htmlFor="year">Contract Year</label>
-          <select
-            id="year"
-            value={filters.year?.toString() || 'all'}
-            onChange={(e) => handleSelectChange(e, 'year')}
-            className={filters.year ? styles.activeFilter : ''}
-            disabled={loading}
-          >
-            <option value="all">All Years</option>
-            {filterOptions.contractualYears.map(year => (
-              <option key={year} value={year.toString()}>
-                {year}
-              </option>
-            ))}
-          </select>
-        </div>
+        {/* Sponsoring State Filter - Custom Dropdown */}
+        <CustomDropdown
+          id="sponsoringState"
+          label="Sponsoring State"
+          options={sponsoringStateOptions}
+          value={filters.sponsoringState || 'all'}
+          onChange={(e: any) => handleSelectChange(e, 'sponsoringState')}
+          isActive={!!filters.sponsoringState}
+          disabled={loading}
+        />
+        
+        {/* Contractual Year Filter - Custom Dropdown */}
+        <CustomDropdown
+          id="year"
+          label="Contract Year"
+          options={yearOptions}
+          value={filters.year?.toString() || 'all'}
+          onChange={(e: any) => handleSelectChange(e, 'year')}
+          isActive={!!filters.year}
+          disabled={loading}
+        />
       </div>
       
       {/* Results Summary */}
@@ -149,16 +181,6 @@ export const FilterPanel: React.FC = () => {
             Showing {contractorCount} contractor{contractorCount !== 1 ? 's' : ''}, {cruiseCount} cruise{cruiseCount !== 1 ? 's' : ''}, and {stationCount} station{stationCount !== 1 ? 's' : ''}
           </span>
         )}
-      </div>
-      
-      {/* Additional filter tips */}
-      <div className={styles.filterTips}>
-        <h4>Filter Tips:</h4>
-        <ul>
-          <li>Click on any marker to see station details</li>
-          <li>Use the "Filter by View" button to filter by the current map area</li>
-          <li>Zoom in for more detail in densely populated areas</li>
-        </ul>
       </div>
     </div>
   );

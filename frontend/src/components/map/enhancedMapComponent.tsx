@@ -5,18 +5,6 @@ import styles from "../../styles/map/map.module.css";
 import { DetailPanel } from "./detailPanel";
 import { Station, Contractor, Cruise, GeoJsonFeature } from "../../types/filter-types";
 
-// You can keep your existing FILTER_OPTIONS or replace with API data
-
-const getMarkerColor = (status: string) => {
-  switch (status) {
-    case "Active": return "#4CAF50"; // Green
-    case "Pending": return "#FFC107"; // Yellow
-    case "Expired": return "#9E9E9E"; // Gray
-    case "Suspended": return "#F44336"; // Red
-    default: return "#2196F3"; // Blue
-  }
-};
-
 const EnhancedMapComponent: React.FC = () => {
   const {
     mapData,
@@ -34,6 +22,7 @@ const EnhancedMapComponent: React.FC = () => {
     setShowDetailPanel,
     detailPanelType,
     setDetailPanelType,
+    filters
   } = useFilter();
 
   const [viewState, setViewState] = useState({
@@ -44,7 +33,7 @@ const EnhancedMapComponent: React.FC = () => {
 
   const mapRef = useRef(null);
   
-  // Tilstand for GeoJSON-lag
+  // State for GeoJSON layers
   const [areaLayers, setAreaLayers] = useState<{ 
     areaId: number;
     areaName: string;
@@ -57,7 +46,14 @@ const EnhancedMapComponent: React.FC = () => {
     }>
   }[]>([]);
   
-  // Hent GeoJSON-data når en kontraktør velges
+  // State for showing contractor info label
+  const [selectedContractorInfo, setSelectedContractorInfo] = useState<{
+    name: string;
+    totalAreas: number;
+    totalBlocks: number;
+  } | null>(null);
+  
+  // Fetch GeoJSON data when a contractor is selected
   useEffect(() => {
     if (selectedContractorId) {
       const fetchGeoJson = async () => {
@@ -83,6 +79,48 @@ const EnhancedMapComponent: React.FC = () => {
           }));
           
           setAreaLayers(formattedLayers);
+          
+          // Set contractor info for the label
+          if (mapData?.contractors) {
+            const contractor = mapData.contractors.find(c => c.contractorId === selectedContractorId);
+            if (contractor) {
+              setSelectedContractorInfo({
+                name: contractor.contractorName,
+                totalAreas: formattedLayers.length,
+                totalBlocks: formattedLayers.reduce((total, area) => total + area.blocks.length, 0)
+              });
+            }
+          }
+          
+          // Auto-zoom to the contractor's areas if we have data
+          if (formattedLayers.length > 0 && mapRef.current) {
+            // Calculate bounds for all areas
+            let minLat = 90, maxLat = -90, minLon = 180, maxLon = -180;
+            
+            formattedLayers.forEach(area => {
+              if (area.geoJson.geometry && area.geoJson.geometry.coordinates) {
+                // For polygon geometries
+                const coordinates = area.geoJson.geometry.coordinates[0];
+                coordinates.forEach(coord => {
+                  const [lon, lat] = coord;
+                  minLon = Math.min(minLon, lon);
+                  maxLon = Math.max(maxLon, lon);
+                  minLat = Math.min(minLat, lat);
+                  maxLat = Math.max(maxLat, lat);
+                });
+              }
+            });
+            
+            // Add some padding
+            const pad = 1; // degrees
+            const map = mapRef.current;
+            
+            // Fit bounds with padding
+            map.fitBounds(
+              [[minLon - pad, minLat - pad], [maxLon + pad, maxLat + pad]],
+              { padding: 40, duration: 1000 }
+            );
+          }
         } catch (error) {
           console.error('Error loading GeoJSON data:', error);
         }
@@ -91,8 +129,18 @@ const EnhancedMapComponent: React.FC = () => {
       fetchGeoJson();
     } else {
       setAreaLayers([]);
+      setSelectedContractorInfo(null);
     }
-  }, [selectedContractorId]);
+  }, [selectedContractorId, mapData?.contractors]);
+  
+  // Monitor filter changes to update selectedContractorId
+  useEffect(() => {
+    if (filters.contractorId && filters.contractorId !== selectedContractorId) {
+      setSelectedContractorId(filters.contractorId);
+    } else if (!filters.contractorId && selectedContractorId) {
+      setSelectedContractorId(null);
+    }
+  }, [filters.contractorId, setSelectedContractorId, selectedContractorId]);
   
   // Extract stations from map data
   const stations: Station[] = mapData
@@ -162,29 +210,16 @@ const EnhancedMapComponent: React.FC = () => {
 
   return (
     <div className={styles.mapContainer}>
-      {/* Map Legend */}
-      <div className={styles.mapLegend}>
-        <h3>Contract Status</h3>
-        <div className={styles.legendItems}>
-          <div className={styles.legendItem}>
-            <span className={styles.legendMarker} style={{ backgroundColor: "#4CAF50" }}></span>
-            <span>Active</span>
-          </div>
-          <div className={styles.legendItem}>
-            <span className={styles.legendMarker} style={{ backgroundColor: "#FFC107" }}></span>
-            <span>Pending</span>
-          </div>
-          <div className={styles.legendItem}>
-            <span className={styles.legendMarker} style={{ backgroundColor: "#9E9E9E" }}></span>
-            <span>Expired</span>
-          </div>
-          <div className={styles.legendItem}>
-            <span className={styles.legendMarker} style={{ backgroundColor: "#F44336" }}></span>
-            <span>Suspended</span>
+      {/* Selected Contractor Info Box */}
+      {selectedContractorInfo && (
+        <div className={styles.contractorInfoBox}>
+          <h3>{selectedContractorInfo.name}</h3>
+          <div className={styles.contractorStats}>
+            <span>{selectedContractorInfo.totalAreas} exploration area{selectedContractorInfo.totalAreas !== 1 ? 's' : ''}</span>
+            <span>{selectedContractorInfo.totalBlocks} block{selectedContractorInfo.totalBlocks !== 1 ? 's' : ''}</span>
           </div>
         </div>
-        <p className={styles.legendNote}>Marker size indicates area size</p>
-      </div>
+      )}
       
       {/* Main Map */}
       <Map
@@ -197,10 +232,10 @@ const EnhancedMapComponent: React.FC = () => {
       >
         <NavigationControl position="top-right" showCompass={true} />
         
-        {/* Visualisering av områder og blokker */}
+        {/* Visualization of areas and blocks */}
         {areaLayers.map(area => (
           <React.Fragment key={`area-${area.areaId}`}>
-            {/* Tegn området som polygon */}
+            {/* Draw the area as polygon */}
             <Source id={`area-source-${area.areaId}`} type="geojson" data={area.geoJson}>
               <Layer
                 id={`area-fill-${area.areaId}`}
@@ -216,11 +251,29 @@ const EnhancedMapComponent: React.FC = () => {
                 paint={{
                   'line-color': '#0277bd',
                   'line-width': 2,
+                  'line-dasharray': [3, 2]
+                }}
+              />
+              {/* Add area label */}
+              <Layer
+                id={`area-label-${area.areaId}`}
+                type="symbol"
+                layout={{
+                  'text-field': area.areaName,
+                  'text-size': 12,
+                  'text-anchor': 'center',
+                  'text-offset': [0, 0],
+                  'text-allow-overlap': false
+                }}
+                paint={{
+                  'text-color': '#0277bd',
+                  'text-halo-color': 'rgba(255, 255, 255, 0.8)',
+                  'text-halo-width': 1.5
                 }}
               />
             </Source>
             
-            {/* Tegn blokkene */}
+            {/* Draw the blocks with status-dependent colors */}
             {area.blocks.map(block => (
               <Source 
                 key={`block-source-${block.blockId}`}
@@ -232,9 +285,7 @@ const EnhancedMapComponent: React.FC = () => {
                   id={`block-fill-${block.blockId}`}
                   type="fill"
                   paint={{
-                    'fill-color': block.status === 'Active' ? '#4CAF50' : 
-                                block.status === 'Pending' ? '#FFC107' : 
-                                block.status === 'Expired' ? '#9E9E9E' : '#F44336',
+                    'fill-color': '#4CAF50',
                     'fill-opacity': 0.4,
                   }}
                 />
@@ -242,10 +293,25 @@ const EnhancedMapComponent: React.FC = () => {
                   id={`block-line-${block.blockId}`}
                   type="line"
                   paint={{
-                    'line-color': block.status === 'Active' ? '#4CAF50' : 
-                                block.status === 'Pending' ? '#FFC107' : 
-                                block.status === 'Expired' ? '#9E9E9E' : '#F44336',
+                    'line-color': '#4CAF50',
                     'line-width': 1,
+                  }}
+                />
+                {/* Add block label */}
+                <Layer
+                  id={`block-label-${block.blockId}`}
+                  type="symbol"
+                  layout={{
+                    'text-field': block.blockName,
+                    'text-size': 10,
+                    'text-anchor': 'center',
+                    'text-offset': [0, 0],
+                    'text-allow-overlap': false
+                  }}
+                  paint={{
+                    'text-color': '#006400',
+                    'text-halo-color': 'rgba(255, 255, 255, 0.8)',
+                    'text-halo-width': 1.5
                   }}
                 />
               </Source>
@@ -267,21 +333,14 @@ const EnhancedMapComponent: React.FC = () => {
             <div 
               className={styles.mapMarker}
               style={{ 
-                backgroundColor: getMarkerColor(
-                  // Try to find status - you may need to adjust this based on your data structure
-                  station.stationType === "POINT" ? "Active" : 
-                  station.stationType === "TRAWL" ? "Pending" : "Active"
-                ),
+                backgroundColor: '#2196F3',
                 width: `30px`,
                 height: `30px`
               }}
             >
               <div className={styles.markerPulse} 
                 style={{ 
-                  borderColor: getMarkerColor(
-                    station.stationType === "POINT" ? "Active" : 
-                    station.stationType === "TRAWL" ? "Pending" : "Active"
-                  ) 
+                  borderColor: '#2196F3'
                 }}
               ></div>
             </div>
