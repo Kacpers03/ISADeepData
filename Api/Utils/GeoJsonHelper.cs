@@ -28,7 +28,7 @@ namespace Api.Helpers
             var geoJson = new
             {
                 type = "Feature",
-                properties = properties ?? new { },
+                properties = properties ?? new Dictionary<string, object>(),
                 geometry = new
                 {
                     type = "Polygon",
@@ -54,39 +54,39 @@ namespace Api.Helpers
             {
                 { "blockId", blockId },
                 { "name", blockName },
-               { "status", status }
-           };
-           
-           if (!string.IsNullOrEmpty(category))
-           {
-               properties.Add("category", category);
-           }
-           
-           if (resourceDensity.HasValue)
-           {
-               properties.Add("resourceDensity", resourceDensity.Value);
-           }
-           
-           return GenerateRectangleGeoJson(minLat, minLon, maxLat, maxLon, properties);
-       }
-       
-       public static string GeneratePointGeoJson(
-           double lat, 
-           double lon, 
-           Dictionary<string, object> properties = null)
-       {
-           var geoJson = new
-           {
-               type = "Feature",
-               properties = properties ?? new { },
-               geometry = new
-               {
-                   type = "Point",
-                   coordinates = new double[] { lon, lat }
-               }
-           };
+                { "status", status }
+            };
+            
+            if (!string.IsNullOrEmpty(category))
+            {
+                properties.Add("category", category);
+            }
+            
+            if (resourceDensity.HasValue)
+            {
+                properties.Add("resourceDensity", resourceDensity.Value);
+            }
+            
+            return GenerateRectangleGeoJson(minLat, minLon, maxLat, maxLon, properties);
+        }
+        
+        public static string GeneratePointGeoJson(
+            double lat, 
+            double lon, 
+            Dictionary<string, object> properties = null)
+        {
+            var geoJson = new
+            {
+                type = "Feature",
+                properties = properties ?? new Dictionary<string, object>(),
+                geometry = new
+                {
+                    type = "Point",
+                    coordinates = new double[] { lon, lat }
+                }
+            };
 
-           return JsonSerializer.Serialize(geoJson);
-       }
-   }
+            return JsonSerializer.Serialize(geoJson);
+        }
+    }
 }
