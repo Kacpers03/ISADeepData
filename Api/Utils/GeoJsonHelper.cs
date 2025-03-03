@@ -6,7 +6,12 @@ namespace Api.Helpers
 {
     public static class GeoJsonHelper
     {
-        public static string GenerateRectangleGeoJson(double minLat, double minLon, double maxLat, double maxLon)
+        public static string GenerateRectangleGeoJson(
+            double minLat, 
+            double minLon, 
+            double maxLat, 
+            double maxLon, 
+            Dictionary<string, object> properties = null)
         {
             var coordinates = new List<List<double[]>>
             {
@@ -23,7 +28,7 @@ namespace Api.Helpers
             var geoJson = new
             {
                 type = "Feature",
-                properties = new { },
+                properties = properties ?? new Dictionary<string, object>(),
                 geometry = new
                 {
                     type = "Polygon",
@@ -34,31 +39,50 @@ namespace Api.Helpers
             return JsonSerializer.Serialize(geoJson);
         }
         
-        public static string GeneratePolygonGeoJson(List<(double lat, double lon)> points)
+        public static string GenerateContractorBlockGeoJson(
+            double minLat, 
+            double minLon, 
+            double maxLat, 
+            double maxLon,
+            string blockName,
+            string status,
+            string category = null,
+            double? resourceDensity = null,
+            int blockId = 0)
         {
-            var coordinateList = new List<double[]>();
-            
-            foreach (var point in points)
+            var properties = new Dictionary<string, object>
             {
-                coordinateList.Add(new double[] { point.lon, point.lat });
+                { "blockId", blockId },
+                { "name", blockName },
+                { "status", status }
+            };
+            
+            if (!string.IsNullOrEmpty(category))
+            {
+                properties.Add("category", category);
             }
             
-            // Lukk polygonet ved å legge til første punkt på slutten
-            if (coordinateList.Count > 0)
+            if (resourceDensity.HasValue)
             {
-                coordinateList.Add(new double[] { points[0].lon, points[0].lat });
+                properties.Add("resourceDensity", resourceDensity.Value);
             }
             
-            var coordinates = new List<List<double[]>> { coordinateList };
-
+            return GenerateRectangleGeoJson(minLat, minLon, maxLat, maxLon, properties);
+        }
+        
+        public static string GeneratePointGeoJson(
+            double lat, 
+            double lon, 
+            Dictionary<string, object> properties = null)
+        {
             var geoJson = new
             {
                 type = "Feature",
-                properties = new { },
+                properties = properties ?? new Dictionary<string, object>(),
                 geometry = new
                 {
-                    type = "Polygon",
-                    coordinates
+                    type = "Point",
+                    coordinates = new double[] { lon, lat }
                 }
             };
 

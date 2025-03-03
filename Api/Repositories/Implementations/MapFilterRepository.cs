@@ -8,6 +8,8 @@ using Models.Cruises;
 using Models.Stations;
 using Models.Samples;
 using Models.Photo_Video;
+using Models.Env_Result;
+using Models.Geo_result;
 using DTOs.Contractors_Dto;
 using DTOs.Cruise_Dto;
 using DTOs.Station_Dto;
@@ -416,6 +418,127 @@ namespace Api.Repositories.Implementations
                 .Distinct()
                 .OrderByDescending(y => y)
                 .ToListAsync();
+        }
+        
+        public async Task<object> GetBlockAnalysisAsync(int blockId)
+        {
+            var block = await _context.ContractorAreaBlocks
+                .Include(b => b.ContractorArea)
+                .ThenInclude(a => a.Contractor)
+                .FirstOrDefaultAsync(b => b.BlockId == blockId);
+                
+            if (block == null)
+                return null;
+                
+            // Finn stasjoner innenfor blokken
+            var stations = await _context.Stations
+                .Where(s => s.ContractorAreaBlockId == blockId)
+                .ToListAsync();
+            
+            // Finn alle prøver tatt ved disse stasjonene
+            var stationIds = stations.Select(s => s.StationId).ToList();
+            var samples = await _context.Samples
+                .Include(s => s.Station)
+                .Where(s => stationIds.Contains(s.StationId))
+                .ToListAsync();
+                
+            // Samle analyse-resultater
+            var sampleIds = samples.Select(s => s.SampleId).ToList();
+            var envResults = await _context.EnvResults
+                .Where(e => sampleIds.Contains(e.SampleId))
+                .ToListAsync();
+                
+            var geoResults = await _context.GeoResults
+                .Where(g => sampleIds.Contains(g.SampleId))
+                .ToListAsync();
+                
+            // Beregn nøkkeltall
+            var environmentalParameters = envResults
+                .GroupBy(e => e.AnalysisCategory)
+                .Select(g => new {
+                    Category = g.Key,
+                    Parameters = g.GroupBy(e => e.AnalysisName)
+                        .Select(p => new {
+                            Name = p.Key,
+                            AverageValue = p.Average(r => r.AnalysisValue),
+                            MinValue = p.Min(r => r.AnalysisValue),
+                            MaxValue = p.Max(r => r.AnalysisValue),
+                            Unit = p.First().Units,
+                            Count = p.Count()
+                        })
+                        .ToList()
+                })
+                .ToList();
+                
+            var resourceMetrics = geoResults
+                .GroupBy(g => g.Category)
+                .Select(g => new {
+                    Category = g.Key,
+                    Analyses = g.GroupBy(a => a.Analysis)
+                        .Select(a => new {
+                            Analysis = a.Key,
+                            AverageValue = a.Average(r => r.Value),
+                            MinValue = a.Min(r => r.Value),
+                            MaxValue = a.Max(r => r.Value),
+                            Unit = a.First().Units,
+                            Count = a.Count()
+                        })
+                        .ToList()
+                })
+                .ToList();
+                
+            // Samle data om prøvetypene
+            var sampleTypes = samples
+                .GroupBy(s => s.SampleType)
+                .Select(g => new {
+                    SampleType = g.Key,
+                    Count = g.Count(),
+                    DepthRange = new {
+                        Min = g.Min(s => s.DepthLower),
+                        Max = g.Max(s => s.DepthUpper)
+                    }
+                })
+                .ToList();
+                
+            return new {
+                Block = new {
+                    block.BlockId,
+                    block.BlockName,
+                    block.Status,
+                    block.AreaSizeKm2,
+                    block.Category,
+                    block.ResourceDensity,
+                    block.EconomicValue,
+                    Area = new {
+                        block.ContractorArea.AreaId,
+                        block.ContractorArea.AreaName,
+                        Contractor = new {
+                            block.ContractorArea.Contractor.ContractorId,
+                            block.ContractorArea.Contractor.ContractorName
+                        }
+                    }
+                },
+                Counts = new {
+                    Stations = stations.Count,
+                    Samples = samples.Count,
+                    EnvironmentalResults = envResults.Count,
+                    GeologicalResults = geoResults.Count
+                },
+                EnvironmentalParameters = environmentalParameters,
+                ResourceMetrics = resourceMetrics,
+                SampleTypes = sampleTypes,
+                RecentStations = stations
+                    .OrderByDescending(s => s.StationId)
+                    .Take(5)
+                    .Select(s => new {
+                        s.StationId,
+                        s.StationCode,
+                        s.StationType,
+                        s.Latitude,
+                        s.Longitude
+                    })
+                    .ToList()
+            };
         }
     }
 }

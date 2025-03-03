@@ -25,5 +25,6 @@ namespace Api.Services.Interfaces
         Task<IEnumerable<ContractStatusDto>> GetContractStatusesAsync();
         Task<IEnumerable<string>> GetSponsoringStatesAsync();
         Task<IEnumerable<int>> GetContractualYearsAsync();
+        Task<object> GetBlockAnalysisAsync(int blockId);
     }
 }
