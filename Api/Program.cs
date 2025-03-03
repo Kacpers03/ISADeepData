@@ -57,15 +57,10 @@ using (var scope = app.Services.CreateScope())
     {
         var context = services.GetRequiredService<MyDbContext>();
         DbInitializer.Initialize(context);
-        
-        // Lag kobling mellom stasjoner og blokker
-        var spatialService = services.GetRequiredService<ISpatialService>();
-        await spatialService.AssociateStationsWithBlocks();
     }
     catch (Exception ex)
     {
-        var logger = services.GetRequiredService<ILogger<Program>>();
-        logger.LogError(ex, "Feil under seeding: {Message}", ex.Message);
+        Console.WriteLine("Feil under seeding: " + ex.Message);
     }
 }
 

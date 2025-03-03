@@ -223,3 +223,108 @@ export interface GeoJsonFeature {
     centerLon: number;
     areaSizeKm2: number;
   }
+
+  // Add these types to your filter-types.tsx file
+
+// Block analytics data
+export interface BlockAnalytics {
+    block: {
+      blockId: number;
+      blockName: string;
+      status: string;
+      areaSizeKm2: number;
+      area: {
+        areaId: number;
+        areaName: string;
+        contractor: {
+          contractorId: number;
+          contractorName: string;
+        }
+      }
+    };
+    counts: {
+      stations: number;
+      samples: number;
+      environmentalResults: number;
+      geologicalResults: number;
+    };
+    environmentalParameters: Array<{
+      category: string;
+      parameters: Array<{
+        name: string;
+        averageValue: number;
+        minValue: number;
+        maxValue: number;
+        unit: string;
+        count: number;
+      }>
+    }>;
+    resourceMetrics: Array<{
+      category: string;
+      analyses: Array<{
+        analysis: string;
+        averageValue: number;
+        minValue: number;
+        maxValue: number;
+        unit: string;
+        count: number;
+      }>
+    }>;
+    sampleTypes: Array<{
+      sampleType: string;
+      count: number;
+      depthRange: {
+        min: number;
+        max: number;
+      }
+    }>;
+    recentStations: Array<{
+      stationId: number;
+      stationCode: string;
+      stationType: string;
+      latitude: number;
+      longitude: number;
+    }>;
+  }
+  
+  // Contractor summary data
+  export interface ContractorSummary {
+    contractor: {
+      contractorId: number;
+      contractorName: string;
+      contractType: string;
+      status: string;
+      sponsoringState: string;
+      contractualYear: number;
+      contractDuration: number;
+    };
+    summary: {
+      totalAreas: number;
+      totalBlocks: number;
+      totalAreaKm2: number;
+      totalCruises: number;
+      totalStations: number;
+      totalSamples: number;
+      earliestCruise: string;
+      latestCruise: string;
+      expeditionDays: number;
+    };
+    areas: Array<{
+      areaId: number;
+      areaName: string;
+      totalAreaSizeKm2: number;
+      blockCount: number;
+    }>;
+  }
+  
+  // Update Station interface to include contractorAreaBlockId
+  export interface Station {
+    stationId: number;
+    cruiseId: number;
+    stationCode: string;
+    stationType: string;
+    latitude: number;
+    longitude: number;
+    contractorAreaBlockId?: number; // Add this field
+    samples?: Sample[];
+  }

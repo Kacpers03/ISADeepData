@@ -185,7 +185,10 @@ namespace Api.Migrations
                     GeoJsonBoundary = table.Column<string>(type: "TEXT", nullable: false),
                     CenterLatitude = table.Column<double>(type: "REAL", nullable: false),
                     CenterLongitude = table.Column<double>(type: "REAL", nullable: false),
-                    AreaSizeKm2 = table.Column<double>(type: "REAL", nullable: false)
+                    AreaSizeKm2 = table.Column<double>(type: "REAL", nullable: false),
+                    Category = table.Column<string>(type: "TEXT", nullable: true),
+                    ResourceDensity = table.Column<double>(type: "REAL", nullable: false),
+                    EconomicValue = table.Column<double>(type: "REAL", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -208,11 +211,17 @@ namespace Api.Migrations
                     StationCode = table.Column<string>(type: "TEXT", maxLength: 100, nullable: false),
                     StationType = table.Column<string>(type: "TEXT", maxLength: 100, nullable: false),
                     Latitude = table.Column<double>(type: "REAL", nullable: false),
-                    Longitude = table.Column<double>(type: "REAL", nullable: false)
+                    Longitude = table.Column<double>(type: "REAL", nullable: false),
+                    ContractorAreaBlockId = table.Column<int>(type: "INTEGER", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Stations", x => x.StationId);
+                    table.ForeignKey(
+                        name: "FK_Stations_ContractorAreaBlocks_ContractorAreaBlockId",
+                        column: x => x.ContractorAreaBlockId,
+                        principalTable: "ContractorAreaBlocks",
+                        principalColumn: "BlockId");
                     table.ForeignKey(
                         name: "FK_Stations_Cruises_CruiseId",
                         column: x => x.CruiseId,
@@ -407,6 +416,11 @@ namespace Api.Migrations
                 column: "StationId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Stations_ContractorAreaBlockId",
+                table: "Stations",
+                column: "ContractorAreaBlockId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Stations_CruiseId",
                 table: "Stations",
                 column: "CruiseId");
@@ -415,9 +429,6 @@ namespace Api.Migrations
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropTable(
-                name: "ContractorAreaBlocks");
-
             migrationBuilder.DropTable(
                 name: "CtdDataSet");
 
@@ -440,16 +451,19 @@ namespace Api.Migrations
                 name: "ValidValues");
 
             migrationBuilder.DropTable(
-                name: "ContractorAreas");
-
-            migrationBuilder.DropTable(
                 name: "Samples");
 
             migrationBuilder.DropTable(
                 name: "Stations");
 
             migrationBuilder.DropTable(
+                name: "ContractorAreaBlocks");
+
+            migrationBuilder.DropTable(
                 name: "Cruises");
+
+            migrationBuilder.DropTable(
+                name: "ContractorAreas");
 
             migrationBuilder.DropTable(
                 name: "Contractors");

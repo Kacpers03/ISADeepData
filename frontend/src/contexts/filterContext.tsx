@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { MapFilterParams, FilterOptions, MapData, Station } from '../types/filter-types';
+import { MapFilterParams, FilterOptions, MapData, Station, BlockAnalytics, ContractorSummary } from '../types/filter-types';
 import { apiService } from '../services/api-service';
 
 interface FilterContextValue {
@@ -33,8 +33,14 @@ interface FilterContextValue {
   // Detail panel state
   showDetailPanel: boolean;
   setShowDetailPanel: (show: boolean) => void;
-  detailPanelType: 'contractor' | 'cruise' | 'station' | null;
-  setDetailPanelType: (type: 'contractor' | 'cruise' | 'station' | null) => void;
+  detailPanelType: 'contractor' | 'cruise' | 'station' | 'blockAnalytics' | 'contractorSummary' | null;
+  setDetailPanelType: (type: 'contractor' | 'cruise' | 'station' | 'blockAnalytics' | 'contractorSummary' | null) => void;
+  
+  // Analytics data
+  contractorSummary: ContractorSummary | null;
+  setContractorSummary: (summary: ContractorSummary | null) => void;
+  blockAnalytics: BlockAnalytics | null;
+  setBlockAnalytics: (analytics: BlockAnalytics | null) => void;
   
   // Map actions
   refreshData: () => void;
@@ -66,7 +72,11 @@ export const FilterProvider: React.FC<{ children: ReactNode }> = ({ children }) 
   
   // Detail panel state
   const [showDetailPanel, setShowDetailPanel] = useState<boolean>(false);
-  const [detailPanelType, setDetailPanelType] = useState<'contractor' | 'cruise' | 'station' | null>(null);
+  const [detailPanelType, setDetailPanelType] = useState<'contractor' | 'cruise' | 'station' | 'blockAnalytics' | 'contractorSummary' | null>(null);
+  
+  // Analytics data
+  const [contractorSummary, setContractorSummary] = useState<ContractorSummary | null>(null);
+  const [blockAnalytics, setBlockAnalytics] = useState<BlockAnalytics | null>(null);
   
   // Load filter options on mount
   useEffect(() => {
@@ -108,6 +118,8 @@ export const FilterProvider: React.FC<{ children: ReactNode }> = ({ children }) 
     setSelectedStation(null);
     setShowDetailPanel(false);
     setDetailPanelType(null);
+    setContractorSummary(null);
+    setBlockAnalytics(null);
   };
   
   // Refresh map data
@@ -171,6 +183,12 @@ export const FilterProvider: React.FC<{ children: ReactNode }> = ({ children }) 
         setShowDetailPanel,
         detailPanelType,
         setDetailPanelType,
+        
+        // Analytics data
+        contractorSummary,
+        setContractorSummary,
+        blockAnalytics,
+        setBlockAnalytics,
         
         // Map actions
         refreshData

@@ -14,6 +14,7 @@
     "bootstrap": "^5.3.3",
     "bootstrap-icons": "^1.11.3",
     "leaflet": "^1.9.4",
+    "mapbox-gl": "^3.10.0",
     "maplibre-gl": "^4.7.1",
     "next": "15.1.6",
     "next-transpile-modules": "^10.0.1",
@@ -22,7 +23,7 @@
     "react-dom": "^19.0.0",
     "react-icons": "^5.4.0",
     "react-leaflet": "^5.0.0",
-    "react-map-gl": "^7.1.9"
+    "react-map-gl": "^7.1.6"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",

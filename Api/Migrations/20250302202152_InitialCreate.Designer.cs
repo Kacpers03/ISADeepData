@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Api.Migrations
 {
     [DbContext(typeof(MyDbContext))]
-    [Migration("20250227191511_InitialCreate")]
+    [Migration("20250302202152_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -203,15 +203,24 @@ namespace Api.Migrations
                         .HasMaxLength(255)
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("Category")
+                        .HasColumnType("TEXT");
+
                     b.Property<double>("CenterLatitude")
                         .HasColumnType("REAL");
 
                     b.Property<double>("CenterLongitude")
                         .HasColumnType("REAL");
 
+                    b.Property<double>("EconomicValue")
+                        .HasColumnType("REAL");
+
                     b.Property<string>("GeoJsonBoundary")
                         .IsRequired()
                         .HasColumnType("TEXT");
+
+                    b.Property<double>("ResourceDensity")
+                        .HasColumnType("REAL");
 
                     b.Property<string>("Status")
                         .IsRequired()
@@ -497,6 +506,9 @@ namespace Api.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
+                    b.Property<int?>("ContractorAreaBlockId")
+                        .HasColumnType("INTEGER");
+
                     b.Property<int>("CruiseId")
                         .HasColumnType("INTEGER");
 
@@ -517,6 +529,8 @@ namespace Api.Migrations
                         .HasColumnType("TEXT");
 
                     b.HasKey("StationId");
+
+                    b.HasIndex("ContractorAreaBlockId");
 
                     b.HasIndex("CruiseId");
 
@@ -668,11 +682,17 @@ namespace Api.Migrations
 
             modelBuilder.Entity("Models.Stations.Station", b =>
                 {
+                    b.HasOne("Models.Contractors.ContractorAreaBlock", "ContractorAreaBlock")
+                        .WithMany()
+                        .HasForeignKey("ContractorAreaBlockId");
+
                     b.HasOne("Models.Cruises.Cruise", "Cruise")
                         .WithMany("Stations")
                         .HasForeignKey("CruiseId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("ContractorAreaBlock");
 
                     b.Navigation("Cruise");
                 });

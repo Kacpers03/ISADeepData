@@ -29,8 +29,8 @@ namespace Models.Contractors
         public double CenterLongitude { get; set; }
         public double AreaSizeKm2 { get; set; }
         
-        // Nye analytiske felt
-        public string Category { get; set; }
+        // Nye analytiske felt - make Category nullable by adding ?
+        public string? Category { get; set; }
         public double ResourceDensity { get; set; }
         public double EconomicValue { get; set; }
     }
