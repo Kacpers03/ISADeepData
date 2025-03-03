@@ -256,7 +256,8 @@ namespace Api.Data
                     GeoJsonBoundary = GeoJsonHelper.GenerateRectangleGeoJson(11.8, -120.0, 12.8, -118.0),
                     CenterLatitude = 12.3,
                     CenterLongitude = -119.0,
-                    AreaSizeKm2 = 24000
+                    AreaSizeKm2 = 24000,
+                    Category = "N/A"
                 },
                 new ContractorAreaBlock { 
                     BlockId = 2, 
@@ -267,7 +268,8 @@ namespace Api.Data
                     GeoJsonBoundary = GeoJsonHelper.GenerateRectangleGeoJson(10.0, -124.5, 11.4, -123.5),
                     CenterLatitude = 10.7,
                     CenterLongitude = -124.0,
-                    AreaSizeKm2 = 22000
+                    AreaSizeKm2 = 22000,
+                    Category = "N/A"
                 },
                 new ContractorAreaBlock { 
                     BlockId = 3, 
@@ -278,7 +280,8 @@ namespace Api.Data
                     GeoJsonBoundary = GeoJsonHelper.GenerateRectangleGeoJson(13.0, -127.0, 14.2, -125.5),
                     CenterLatitude = 13.6,
                     CenterLongitude = -126.25,
-                    AreaSizeKm2 = 25000
+                    AreaSizeKm2 = 25000,
+                    Category = "N/A"
                 },
                 new ContractorAreaBlock { 
                     BlockId = 4, 
@@ -289,7 +292,8 @@ namespace Api.Data
                     GeoJsonBoundary = GeoJsonHelper.GenerateRectangleGeoJson(16.2, -126.0, 17.5, -124.8),
                     CenterLatitude = 16.85,
                     CenterLongitude = -125.4,
-                    AreaSizeKm2 = 20000
+                    AreaSizeKm2 = 20000,
+                    Category = "N/A"
                 },
                 new ContractorAreaBlock { 
                     BlockId = 5, 
@@ -300,7 +304,8 @@ namespace Api.Data
                     GeoJsonBoundary = GeoJsonHelper.GenerateRectangleGeoJson(10.3, -149.5, 10.7, -148.5),
                     CenterLatitude = 10.5,
                     CenterLongitude = -149.0,
-                    AreaSizeKm2 = 23000
+                    AreaSizeKm2 = 23000,
+                    Category = "N/A"
                 }
             );
 
@@ -316,7 +321,8 @@ namespace Api.Data
                     GeoJsonBoundary = GeoJsonHelper.GenerateRectangleGeoJson(26.0, -44.9, 26.3, -44.6),
                     CenterLatitude = 26.15,
                     CenterLongitude = -44.75,
-                    AreaSizeKm2 = 3000
+                    AreaSizeKm2 = 3000,
+                    Category = "N/A"
                 },
                 new ContractorAreaBlock { 
                     BlockId = 7, 
@@ -327,9 +333,9 @@ namespace Api.Data
                     GeoJsonBoundary = GeoJsonHelper.GenerateRectangleGeoJson(27.2, -44.7, 27.5, -44.4),
                     CenterLatitude = 27.35,
                     CenterLongitude = -44.55,
-                    AreaSizeKm2 = 3500
+                    AreaSizeKm2 = 3500,
+                    Category = "N/A"
                 },
-                
                 // Indian Ocean blocks
                 new ContractorAreaBlock { 
                     BlockId = 8, 
@@ -340,7 +346,8 @@ namespace Api.Data
                     GeoJsonBoundary = GeoJsonHelper.GenerateRectangleGeoJson(-10.2, 65.8, -9.8, 66.3),
                     CenterLatitude = -10.0,
                     CenterLongitude = 66.05,
-                    AreaSizeKm2 = 2500
+                    AreaSizeKm2 = 2500,
+                    Category = "N/A"
                 },
                 new ContractorAreaBlock { 
                     BlockId = 9, 
@@ -351,9 +358,9 @@ namespace Api.Data
                     GeoJsonBoundary = GeoJsonHelper.GenerateRectangleGeoJson(-9.5, 67.0, -9.0, 67.5),
                     CenterLatitude = -9.25,
                     CenterLongitude = 67.25,
-                    AreaSizeKm2 = 2800
+                    AreaSizeKm2 = 2800,
+                    Category = "N/A"
                 },
-                
                 // Western Pacific blocks
                 new ContractorAreaBlock { 
                     BlockId = 10, 
@@ -364,7 +371,8 @@ namespace Api.Data
                     GeoJsonBoundary = GeoJsonHelper.GenerateRectangleGeoJson(15.8, 156.2, 16.3, 156.7),
                     CenterLatitude = 16.05,
                     CenterLongitude = 156.45,
-                    AreaSizeKm2 = 3200
+                    AreaSizeKm2 = 3200,
+                    Category = "N/A"
                 },
                 new ContractorAreaBlock { 
                     BlockId = 11, 
@@ -375,7 +383,8 @@ namespace Api.Data
                     GeoJsonBoundary = GeoJsonHelper.GenerateRectangleGeoJson(16.7, 157.2, 17.2, 157.7),
                     CenterLatitude = 16.95,
                     CenterLongitude = 157.45,
-                    AreaSizeKm2 = 3500
+                    AreaSizeKm2 = 3500,
+                    Category = "N/A"
                 }
             );
 
