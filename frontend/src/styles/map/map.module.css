@@ -8,6 +8,105 @@
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
 }
+/* === Boks for Layers === */
+.layersBox {
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  width: 180px;
+  background: white;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  z-index: 5;
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+/* === Boks for Map Styles === */
+.styleBox {
+  position: absolute;
+  bottom: 120px; /* slik at den ligger over .layersBox */
+  right: 20px;
+  width: 180px;
+  background: white;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  z-index: 5;
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+/* --- Standard (lukket) høyde for boksene: kun headeren vises. */
+.layersBox,
+.styleBox {
+  height: 40px; /* viser kun header-linjen */
+}
+
+/* Når boksene er "open", utvider vi høyden for å vise innholdet i .boxBody */
+.openBox {
+  height: auto; /* lar innholdet bestemme høyden */
+}
+
+/* Header-linjen */
+.boxHeader {
+  background: #f0f0f0;
+  padding: 8px 10px;
+  font-weight: bold;
+  text-align: center;
+  font-size: 0.9rem;
+}
+
+/* Body-innholdet */
+.boxBody {
+  padding: 10px;
+}
+
+/* Toggle-linje for hvert lag */
+.layerToggleItem {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 8px;
+  font-size: 0.85rem;
+  color: #455a64;
+}
+
+/* For knappen "Associate Stations with Blocks" */
+.associateButton {
+  margin-top: 8px;
+  width: 100%;
+  background-color: #0277bd;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 6px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+.associateButton:hover {
+  background-color: #01579b;
+}
+.associateButton:disabled {
+  background-color: #aaa;
+  cursor: not-allowed;
+}
+
+/* For <select> i map style-boksen */
+.styleSelect {
+  width: 100%;
+  padding: 6px;
+  font-size: 0.85rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.styleSelect:focus {
+  outline: none;
+  border-color: #0277bd;
+}
 
 /* --- BLOCK ANALYTICS PANEL STYLES --- */
 .analyticsSection {
@@ -480,28 +579,110 @@
 }
 
 /* FILTER PANEL STYLES */
-.filterPanelInner {
-  padding: 20px;
+/* Add these new dropdown styles to your map.module.css file */
+
+/* Filter label styling */
+.filterLabel {
+  font-size: 0.85rem;
+  color: #546e7a;
+  margin-bottom: 6px;
+  font-weight: 500;
+  display: block;
 }
 
-.filterPanelLoading {
-  padding: 20px;
-  text-align: center;
-  color: #555;
+/* Custom select wrapper and styling */
+.customSelectWrapper {
+  position: relative;
+  width: 100%;
+}
+
+.customSelect {
+  padding: 10px 12px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  background-color: white;
+  color: #37474f;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.customSelect:hover {
+  border-color: #90a4ae;
+  background-color: #f9f9f9;
+}
+
+.customSelect.activeFilter {
+  border-color: #0277bd;
+  background-color: #e1f5fe;
+}
+
+.selectArrow {
+  font-size: 0.8rem;
+  transition: transform 0.2s ease;
+  color: #546e7a;
+}
+
+.selectArrow.up {
+  transform: rotate(180deg);
+}
+
+/* Options dropdown styling */
+.optionsList {
+  position: absolute;
+  z-index: 100;
+  top: calc(100% + 5px);
+  left: 0;
+  width: 100%;
+  max-height: 200px;
+  overflow-y: auto;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e0e0e0;
+}
+
+.optionItem {
+  padding: 10px 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 0.9rem;
+  color: #37474f;
+}
+
+.optionItem:hover {
+  background-color: #f5f5f5;
+}
+
+.optionItem.selected {
+  background-color: #e1f5fe;
+  color: #0277bd;
+  font-weight: 500;
+}
+
+/* Filter panel upgrade */
+.filterPanelInner {
+  padding: 24px;
+  background-color: #ffffff;
+  border-radius: 12px;
 }
 
 .filterHeader {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
+  margin-bottom: 24px;
   border-bottom: 2px solid #eaeaea;
   padding-bottom: 15px;
 }
 
 .filterHeader h2 {
   margin: 0;
-  font-size: 1.3rem;
+  font-size: 1.2rem;
   font-weight: 600;
   color: #263238;
 }
@@ -522,64 +703,24 @@
   color: #263238;
 }
 
-.resetButton:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
 .filterGrid {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 15px;
-  margin-bottom: 20px;
+  gap: 18px;
+  margin-bottom: 24px;
 }
 
 .filterGroup {
   display: flex;
   flex-direction: column;
-}
-
-.filterGroup label {
-  font-size: 0.85rem;
-  color: #546e7a;
-  margin-bottom: 6px;
-  font-weight: 500;
-}
-
-.filterGroup select {
-  padding: 10px 12px;
-  border: 1px solid #e0e0e0;
-  border-radius: 6px;
-  font-size: 0.95rem;
-  background-color: white;
-  color: #37474f;
-  appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23546e7a' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 12px center;
-  cursor: pointer;
+  background-color: #f8f9fa;
+  padding: 12px;
+  border-radius: 8px;
   transition: all 0.2s ease;
 }
 
-.filterGroup select:hover {
-  border-color: #90a4ae;
-}
-
-.filterGroup select:focus {
-  border-color: #0277bd;
-  box-shadow: 0 0 0 2px rgba(2, 119, 189, 0.1);
-  outline: none;
-}
-
-.filterGroup select:disabled {
-  opacity: 0.7;
-  cursor: not-allowed;
-  background-color: #f5f5f5;
-}
-
-.activeFilter {
-  border-color: #0277bd !important;
-  background-color: #e1f5fe !important;
+.filterGroup:hover {
+  background-color: #f2f4f6;
 }
 
 .resultsInfo {
@@ -587,31 +728,7 @@
   color: #546e7a;
   padding-top: 12px;
   border-top: 1px solid #eaeaea;
-  margin-bottom: 16px;
-}
-
-.filterTips {
-  background-color: #f8f9fa;
-  border-radius: 8px;
-  padding: 12px;
-  margin-top: 16px;
-}
-
-.filterTips h4 {
-  margin: 0 0 8px 0;
-  font-size: 0.95rem;
-  color: #37474f;
-}
-
-.filterTips ul {
-  margin: 0;
-  padding-left: 20px;
-}
-
-.filterTips li {
-  font-size: 0.85rem;
-  color: #546e7a;
-  margin-bottom: 4px;
+  margin-top: 8px;
 }
 
 /* MAP LEGEND STYLES */

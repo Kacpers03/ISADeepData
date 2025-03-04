@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import styles from '../../styles/map/map.module.css';
 
-// Custom dropdown that stays within the sidebar
+// Enhanced custom dropdown that stays within the sidebar
 export const CustomDropdown = ({ 
   id, 
   label, 
@@ -39,7 +39,7 @@ export const CustomDropdown = ({
   
   return (
     <div className={styles.filterGroup} ref={dropdownRef}>
-      <label htmlFor={id}>{label}</label>
+      <label htmlFor={id} className={styles.filterLabel}>{label}</label>
       <div className={styles.customSelectWrapper}>
         <div 
           className={`${styles.customSelect} ${isActive ? styles.activeFilter : ''}`}
