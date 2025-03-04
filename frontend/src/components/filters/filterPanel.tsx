@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useFilter } from '../../contexts/filterContext';
-import styles from '../../styles/map/map.module.css';
+import styles from '../../styles/map/filter.module.css';
 import { CustomDropdown } from './CustomDropdown';
 
 export const ImprovedFilterPanel = () => {

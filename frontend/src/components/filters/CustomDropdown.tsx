@@ -1,26 +1,32 @@
 import React, { useState, useRef, useEffect } from 'react';
-import styles from '../../styles/map/map.module.css';
+import styles from '../../styles/map/filter.module.css';
 
-// Enhanced custom dropdown that stays within the sidebar
-export const CustomDropdown = ({ 
-  id, 
-  label, 
-  options, 
-  value, 
+interface CustomDropdownProps {
+  id: string;
+  label: string;
+  options: { value: string; label: string }[];
+  value: string;
+  onChange: (e: { target: { value: string } }) => void;
+  isActive?: boolean;
+  disabled?: boolean;
+}
+
+export const CustomDropdown: React.FC<CustomDropdownProps> = ({
+  id,
+  label,
+  options,
+  value,
   onChange,
-  isActive,
-  disabled
+  isActive = false,
+  disabled = false
 }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const dropdownRef = useRef(null);
-  
-  // Find the selected option name to display
-  const selectedOption = options.find(opt => opt.value === value) || options[0];
+  const dropdownRef = useRef<HTMLDivElement>(null);
   
   // Close dropdown when clicking outside
   useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
         setIsOpen(false);
       }
     };
@@ -31,38 +37,47 @@ export const CustomDropdown = ({
     };
   }, []);
   
-  // Handle selecting an option
-  const handleSelect = (optionValue) => {
-    onChange({ target: { value: optionValue } });
+  const handleToggle = () => {
+    if (!disabled) {
+      setIsOpen(!isOpen);
+    }
+  };
+  
+  const handleSelect = (selectedValue: string) => {
+    onChange({ target: { value: selectedValue } });
     setIsOpen(false);
   };
   
+  const selectedOption = options.find(option => option.value === value);
+  
   return (
-    <div className={styles.filterGroup} ref={dropdownRef}>
-      <label htmlFor={id} className={styles.filterLabel}>{label}</label>
-      <div className={styles.customSelectWrapper}>
-        <div 
-          className={`${styles.customSelect} ${isActive ? styles.activeFilter : ''}`}
-          onClick={() => !disabled && setIsOpen(!isOpen)}
-        >
-          {selectedOption.label}
-          <span className={`${styles.selectArrow} ${isOpen ? styles.up : ''}`}>▼</span>
-        </div>
-        
-        {isOpen && !disabled && (
-          <div className={styles.optionsList}>
-            {options.map((option) => (
-              <div
-                key={option.value}
-                className={`${styles.optionItem} ${value === option.value ? styles.selected : ''}`}
-                onClick={() => handleSelect(option.value)}
-              >
-                {option.label}
-              </div>
-            ))}
-          </div>
-        )}
+    <div className={styles.customSelectWrapper} ref={dropdownRef}>
+      <label htmlFor={id} className={styles.filterLabel}>
+        {label}
+      </label>
+      
+      <div 
+        className={`${styles.customSelect} ${isActive ? styles.activeFilter : ''}`}
+        onClick={handleToggle}
+        style={{ opacity: disabled ? 0.6 : 1, cursor: disabled ? 'not-allowed' : 'pointer' }}
+      >
+        <span>{selectedOption?.label || 'Select...'}</span>
+        <span className={`${styles.selectArrow} ${isOpen ? styles.up : ''}`}>▼</span>
       </div>
+      
+      {isOpen && !disabled && (
+        <div className={styles.optionsList}>
+          {options.map(option => (
+            <div
+              key={option.value}
+              className={`${styles.optionItem} ${option.value === value ? styles.selected : ''}`}
+              onClick={() => handleSelect(option.value)}
+            >
+              {option.label}
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 };
