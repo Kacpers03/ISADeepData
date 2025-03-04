@@ -14,6 +14,7 @@ import { DetailPanel } from "./detailPanel";
 import { BlockAnalyticsPanel } from "./blockAnalyticsPanel";
 import { ContractorSummaryPanel } from "./contractorSummaryPanel";
 import { Station, Contractor, Cruise, GeoJsonFeature } from "../../types/filter-types";
+import LayerControls from "./LayerControls";
 
 const EnhancedMapComponent: React.FC = () => {
   // Debug logging for Mapbox token
@@ -46,8 +47,10 @@ const EnhancedMapComponent: React.FC = () => {
 
   const [viewState, setViewState] = useState({
     longitude: 0,
-    latitude: 20,
-    zoom: 1.5,
+    latitude: 0,
+    zoom: 1.0,
+    bearing: 0,
+    pitch: 0
   });
 
   const mapRef = useRef<any>(null);
@@ -85,7 +88,7 @@ const EnhancedMapComponent: React.FC = () => {
   const [showBlocks, setShowBlocks] = useState(true);
   const [showStations, setShowStations] = useState(true);
 
-  // --- Samme for “associate stations” ---
+  // --- Samme for "associate stations" ---
   const [associating, setAssociating] = useState(false);
 
   // --- Toast notification ---
@@ -102,10 +105,6 @@ const EnhancedMapComponent: React.FC = () => {
   // --- Map Style state ---
   const [mapStyle, setMapStyle] = useState("mapbox://styles/mapbox/outdoors-v11");
 
-  // --- Lokal state for å “åpne/lukke” boksene nederst til høyre ---
-  const [layersOpen, setLayersOpen] = useState(false);
-  const [styleOpen, setStyleOpen] = useState(false);
-
   // --- Hent GeoJSON ved valg av kontraktør ---
   useEffect(() => {
     if (selectedContractorId) {
@@ -113,6 +112,14 @@ const EnhancedMapComponent: React.FC = () => {
     } else {
       setAreaLayers([]);
       setSelectedContractorInfo(null);
+      
+      // Return to world view when contractor is deselected
+      if (mapRef.current) {
+        mapRef.current.fitBounds(
+          [[-180, -60], [180, 85]],
+          { padding: 20, duration: 1500, easing: (t) => t * (2 - t) }
+        );
+      }
     }
   }, [selectedContractorId, mapData?.contractors]);
   
@@ -185,10 +192,15 @@ const EnhancedMapComponent: React.FC = () => {
           }
         });
         
-        const pad = 1; 
+        // Add padding for better view
+        const pad = 1;
+        
+        // Use a variable to track if the zoom operation has been completed
+        let hasZoomed = false;
+        
         mapRef.current.fitBounds(
           [[minLon - pad, minLat - pad], [maxLon + pad, maxLat + pad]],
-          { padding: 40, duration: 1000 }
+          { padding: 40, duration: 1500, easing: (t) => t * (2 - t) }
         );
       }
     } catch (error) {
@@ -328,18 +340,41 @@ const EnhancedMapComponent: React.FC = () => {
     setViewState(evt.viewState);
   };
 
-  // --- Filtrer ut fra viewport (valgfritt) ---
-  const applyViewportFilter = () => {
+  // Reset map to default view
+  const resetMapView = () => {
     if (mapRef.current) {
-      const bounds = mapRef.current.getBounds();
-      setFilter('minLat', bounds.getSouth());
-      setFilter('maxLat', bounds.getNorth());
-      setFilter('minLon', bounds.getWest());
-      setFilter('maxLon', bounds.getEast());
-      setToastMessage('Map view filter applied');
-      setShowToast(true);
+      mapRef.current.fitBounds(
+        [[-180, -60], [180, 85]],
+        { padding: 20, duration: 1500, easing: (t) => t * (2 - t) } // Smooth easing
+      );
     }
   };
+  
+  // Find and add click listener to compass button
+  useEffect(() => {
+    const handleCompassClick = () => {
+      // Kjør standardfunksjonen (Nullstiller bearing)
+      // ...pluss at du vil zoome ut el.l.:
+      resetMapView();
+    };
+  
+    setTimeout(() => {
+      // Hent selve kompass‐knappen:
+      const compassButton = document.querySelector('button.mapboxgl-ctrl-compass');
+      if (compassButton) {
+        compassButton.addEventListener('click', handleCompassClick);
+      }
+    }, 1000);
+  
+    // Rydd opp ved unmount
+    return () => {
+      const compassButton = document.querySelector('button.mapboxgl-ctrl-compass');
+      if (compassButton) {
+        compassButton.removeEventListener('click', handleCompassClick);
+      }
+    };
+  }, []);
+  
 
   // --- Klikk på stasjonsmarkør -> sidepanel ---
   const handleMarkerClick = (station: Station) => {
@@ -458,6 +493,20 @@ const EnhancedMapComponent: React.FC = () => {
         </div>
       )}
 
+      {/* Map Layer Controls */}
+      <LayerControls 
+        showAreas={showAreas}
+        setShowAreas={setShowAreas}
+        showBlocks={showBlocks}
+        setShowBlocks={setShowBlocks}
+        showStations={showStations}
+        setShowStations={setShowStations}
+        mapStyle={mapStyle}
+        setMapStyle={setMapStyle}
+        associateStationsWithBlocks={associateStationsWithBlocks}
+        associating={associating}
+      />
+
       {/* SELVE KARTET */}
       <Map
         {...viewState}
@@ -473,9 +522,24 @@ const EnhancedMapComponent: React.FC = () => {
         mapStyle={mapStyle}
         mapboxAccessToken={process.env.NEXT_PUBLIC_MAPBOX_TOKEN}
         onError={(e) => console.error('Mapbox Error:', e)}
-        onLoad={() => console.log("Map successfully loaded!")}
+        onLoad={() => {
+          console.log("Map successfully loaded!");
+          // Only fit to world bounds if no contractor is selected
+          if (mapRef.current && !selectedContractorId) {
+            mapRef.current.fitBounds(
+              [[-180, -60], [180, 85]],
+              {  padding: 20, duration: 1500, easing: (t) => t * (2 - t) }
+            );
+          }
+        }}
       >
-        <NavigationControl position="top-right" showCompass={true} />
+        <NavigationControl 
+          position="top-right" 
+          showCompass={true}
+          showZoom={true}
+          onViewportChange={resetMapView}
+          visualizePitch={false}
+        />
         
         {/* Koordinater nede til høyre */}
         <div className={styles.coordinateDisplay}>
@@ -630,80 +694,6 @@ const EnhancedMapComponent: React.FC = () => {
           </Popup>
         )}
       </Map>
-      
-      {/* --- LAYERS-BOKS (nederst til høyre) --- */}
-      <div 
-        className={`${styles.layersBox} ${layersOpen ? styles.openBox : ''}`}
-      >
-        <div 
-          className={styles.boxHeader}
-          onClick={() => setLayersOpen(!layersOpen)}
-        >
-          {layersOpen ? 'Close Layers' : 'Map Layers'}
-        </div>
-
-        {layersOpen && (
-          <div className={styles.boxBody}>
-            <label className={styles.layerToggleItem}>
-              <input
-                type="checkbox"
-                checked={showAreas}
-                onChange={() => setShowAreas(!showAreas)}
-              />
-              Areas
-            </label>
-            <label className={styles.layerToggleItem}>
-              <input
-                type="checkbox"
-                checked={showBlocks}
-                onChange={() => setShowBlocks(!showBlocks)}
-              />
-              Blocks
-            </label>
-            <label className={styles.layerToggleItem}>
-              <input
-                type="checkbox"
-                checked={showStations}
-                onChange={() => setShowStations(!showStations)}
-              />
-              Stations
-            </label>
-
-            <button
-              className={styles.associateButton}
-              onClick={associateStationsWithBlocks}
-              disabled={associating}
-            >
-              {associating ? 'Processing...' : 'Associate Stations with Blocks'}
-            </button>
-          </div>
-        )}
-      </div>
-
-      {/* --- STYLE-BOKS (nederst til høyre, litt over Layers-boksen) --- */}
-      <div 
-        className={`${styles.styleBox} ${styleOpen ? styles.openBox : ''}`}
-      >
-        <div 
-          className={styles.boxHeader}
-          onClick={() => setStyleOpen(!styleOpen)}
-        >
-          {styleOpen ? 'Close Style' : 'Map Style'}
-        </div>
-        {styleOpen && (
-          <div className={styles.boxBody}>
-            <select
-              className={styles.styleSelect}
-              value={mapStyle}
-              onChange={(e) => setMapStyle(e.target.value)}
-            >
-              <option value="mapbox://styles/mapbox/streets-v11">Streets</option>
-              <option value="mapbox://styles/mapbox/outdoors-v11">Outdoors</option>
-              <option value="mapbox://styles/mapbox/satellite-v9">Satellite</option>
-            </select>
-          </div>
-        )}
-      </div>
       
       {/* Sidepaneler */}
       {showDetailPanel && detailPanelType === 'station' && (

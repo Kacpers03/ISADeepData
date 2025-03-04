@@ -8,101 +8,183 @@
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
 }
-/* === Boks for Layers === */
-.layersBox {
+/* These styles should be added to your map.module.css file */
+
+/* These styles should be added to your map.module.css file */
+
+/* Layer Controls Container */
+.layerControlsContainer {
   position: absolute;
-  bottom: 20px;
-  right: 20px;
-  width: 180px;
-  background: white;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  z-index: 5;
-  overflow: hidden;
+  bottom: 50px;
+  right: 10px;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Main controls */
+.layerControlsMain {
+  display: flex;
+  flex-direction: column-reverse;
+  gap: 8px;
+  align-items: flex-end;
+}
+
+/* Control buttons */
+.controlsButton {
+  background-color: white;
+  border-radius: 6px;
+  padding: 10px 15px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #37474f;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
   cursor: pointer;
-  transition: all 0.2s ease-in-out;
-}
-
-/* === Boks for Map Styles === */
-.styleBox {
-  position: absolute;
-  bottom: 120px; /* slik at den ligger over .layersBox */
-  right: 20px;
-  width: 180px;
-  background: white;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  z-index: 5;
-  overflow: hidden;
-  cursor: pointer;
-  transition: all 0.2s ease-in-out;
-}
-
-/* --- Standard (lukket) høyde for boksene: kun headeren vises. */
-.layersBox,
-.styleBox {
-  height: 40px; /* viser kun header-linjen */
-}
-
-/* Når boksene er "open", utvider vi høyden for å vise innholdet i .boxBody */
-.openBox {
-  height: auto; /* lar innholdet bestemme høyden */
-}
-
-/* Header-linjen */
-.boxHeader {
-  background: #f0f0f0;
-  padding: 8px 10px;
-  font-weight: bold;
-  text-align: center;
-  font-size: 0.9rem;
-}
-
-/* Body-innholdet */
-.boxBody {
-  padding: 10px;
-}
-
-/* Toggle-linje for hvert lag */
-.layerToggleItem {
+  transition: all 0.2s ease;
   display: flex;
   align-items: center;
-  gap: 6px;
-  margin-bottom: 8px;
-  font-size: 0.85rem;
+  gap: 8px;
+  width: 150px;
+  justify-content: center;
+}
+
+.controlsButton:hover {
+  background-color: #f5f5f5;
+}
+
+.activeButton {
+  background-color: #e3f2fd;
+  color: #0277bd;
+  box-shadow: 0 2px 8px rgba(2, 119, 189, 0.2);
+}
+
+.buttonIcon {
+  font-size: 16px;
+}
+
+/* Panel width should match buttons */
+.layerControlsPanel {
+  position: absolute;
+  right: 0;
+  bottom: 100px;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  width: 150px;
+  overflow: hidden;
+  animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Panel header */
+.panelHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 15px;
+  background-color: #f8f9fa;
+  border-bottom: 1px solid #eaeaea;
+}
+
+.panelHeader h3 {
+  margin: 0;
+  font-size: 16px;
+  color: #263238;
+  font-weight: 600;
+}
+
+.closePanel {
+  background: none;
+  border: none;
+  font-size: 22px;
+  line-height: 1;
+  color: #78909c;
+  cursor: pointer;
+  padding: 0;
+}
+
+.closePanel:hover {
   color: #455a64;
 }
 
-/* For knappen "Associate Stations with Blocks" */
+/* Panel content */
+.panelContent {
+  padding: 15px;
+}
+
+/* Layer toggle items */
+.layerToggleItem {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 0;
+  font-size: 14px;
+  color: #455a64;
+  cursor: pointer;
+}
+
+.layerToggleItem input {
+  width: 16px;
+  height: 16px;
+  accent-color: #0277bd;
+  cursor: pointer;
+}
+
+/* Associate button */
 .associateButton {
-  margin-top: 8px;
   width: 100%;
   background-color: #0277bd;
   color: white;
   border: none;
   border-radius: 4px;
-  padding: 6px;
-  font-size: 0.85rem;
+  padding: 10px;
+  font-size: 14px;
+  margin-top: 15px;
   cursor: pointer;
   transition: background-color 0.2s ease;
 }
+
 .associateButton:hover {
   background-color: #01579b;
 }
+
 .associateButton:disabled {
-  background-color: #aaa;
+  background-color: #b0bec5;
   cursor: not-allowed;
 }
 
-/* For <select> i map style-boksen */
+/* Style options */
+.styleOptions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.styleLabel {
+  font-size: 14px;
+  color: #455a64;
+  font-weight: 500;
+}
+
 .styleSelect {
-  width: 100%;
-  padding: 6px;
-  font-size: 0.85rem;
-  border: 1px solid #ccc;
+  padding: 8px 10px;
+  border: 1px solid #e0e0e0;
   border-radius: 4px;
+  font-size: 14px;
+  color: #37474f;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23455a64' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 16px;
+  padding-right: 30px;
   cursor: pointer;
 }
+
 .styleSelect:focus {
   outline: none;
   border-color: #0277bd;
