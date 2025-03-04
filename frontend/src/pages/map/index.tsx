@@ -3,7 +3,7 @@ import dynamic from "next/dynamic";
 import Head from "next/head";
 import { FilterProvider } from "../../contexts/filterContext";
 import styles from "../../styles/map/mapPage.module.css";
-import { FilterPanel } from "../../components/filters/filterPanel";
+import { ImprovedFilterPanel } from "../../components/filters/filterPanel";
 
 // Dynamically import MapComponent without SSR
 const EnhancedMapComponent = dynamic(
@@ -31,12 +31,12 @@ export default function MapPage() {
         
         {/* New layout with side-by-side filter panel and map */}
         <div className={styles.mapLayout}>
-          {/* Side filter panel */}
+          {/* Side filter panel with integrated search */}
           <div className={styles.sideFilterPanel}>
-            <FilterPanel />
+            <ImprovedFilterPanel />
           </div>
           
-          {/* Map container */}
+          {/* Map container without separate search box */}
           <div className={styles.mapSection}>
             <EnhancedMapComponent />
           </div>
@@ -44,28 +44,45 @@ export default function MapPage() {
         
         <div className={styles.mapInfoSection}>
           <div className={styles.infoCard}>
-            <div className={styles.infoIcon}>🔍</div>
+            <div className={styles.infoIcon}>
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+              </svg>
+            </div>
             <h3>Explore Contract Areas</h3>
             <p>
-              Click on markers to view detailed information about exploration contracts,
-              including mineral types, sponsoring states, and contract dates.
+              Use the search function to quickly find contractors, areas, blocks, 
+              and stations. Click on markers for detailed information.
             </p>
           </div>
           
           <div className={styles.infoCard}>
-            <div className={styles.infoIcon}>🌊</div>
+            <div className={styles.infoIcon}>
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                <circle cx="12" cy="10" r="3"></circle>
+              </svg>
+            </div>
             <h3>Deep Seabed Resources</h3>
             <p>
-              The ISA regulates exploration and exploitation of minerals in the international
-              seabed area, which covers approximately 54% of the total area of the world's oceans.
+              The ISA regulates exploration of minerals in the international
+              seabed area, which covers approximately 54% of the world's oceans.
             </p>
           </div>
           
           <div className={styles.infoCard}>
-            <div className={styles.infoIcon}>📊</div>
+            <div className={styles.infoIcon}>
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M3 3v18h18"></path>
+                <path d="M18 17V9"></path>
+                <path d="M13 17V5"></path>
+                <path d="M8 17v-3"></path>
+              </svg>
+            </div>
             <h3>Data Transparency</h3>
             <p>
-              All contract information is made available as part of ISA's commitment to
+              All contract information is available as part of ISA's commitment to
               transparency in deep seabed activities and environmental protection.
             </p>
           </div>

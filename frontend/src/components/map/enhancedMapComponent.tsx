@@ -14,15 +14,14 @@ import { DetailPanel } from "./detailPanel";
 import { BlockAnalyticsPanel } from "./blockAnalyticsPanel";
 import { ContractorSummaryPanel } from "./contractorSummaryPanel";
 import { Station, Contractor, Cruise, GeoJsonFeature } from "../../types/filter-types";
-import LayerControls from "./LayerControls";
+import { ImprovedFilterPanel } from "../filters/filterPanel";
+import CompactLayerControls from "./layerControls";
 
-const EnhancedMapComponent: React.FC = () => {
+const EnhancedMapComponent = () => {
   // Debug logging for Mapbox token
   useEffect(() => {
     console.log('Mapbox Token on mount:', process.env.NEXT_PUBLIC_MAPBOX_TOKEN);
   }, []);
-  
-  console.log("Mapbox Token during render:", process.env.NEXT_PUBLIC_MAPBOX_TOKEN);
 
   const {
     mapData,
@@ -53,32 +52,23 @@ const EnhancedMapComponent: React.FC = () => {
     pitch: 0
   });
 
-  const mapRef = useRef<any>(null);
+  const mapRef = useRef(null);
+  
+  // Make map instance available globally for search function
+  useEffect(() => {
+    if (mapRef.current) {
+      window.mapInstance = mapRef.current.getMap();
+    }
+    
+    return () => {
+      window.mapInstance = null;
+    };
+  }, [mapRef.current]);
   
   // --- GeoJSON for areas/blocks ---
-  const [areaLayers, setAreaLayers] = useState<{ 
-    areaId: number;
-    areaName: string;
-    geoJson: GeoJsonFeature;
-    centerLatitude: number;
-    centerLongitude: number; 
-    totalAreaSizeKm2: number;
-    blocks: Array<{
-      blockId: number;
-      blockName: string;
-      geoJson: GeoJsonFeature;
-      status: string;
-      centerLatitude: number;
-      centerLongitude: number;
-      areaSizeKm2: number;
-    }>
-  }[]>([]);
+  const [areaLayers, setAreaLayers] = useState([]);
   
-  const [selectedContractorInfo, setSelectedContractorInfo] = useState<{
-    name: string;
-    totalAreas: number;
-    totalBlocks: number;
-  } | null>(null);
+  const [selectedContractorInfo, setSelectedContractorInfo] = useState(null);
 
   const [blockAnalytics, setBlockAnalytics] = useState(null);
   const [contractorSummary, setContractorSummary] = useState(null);
@@ -97,10 +87,6 @@ const EnhancedMapComponent: React.FC = () => {
 
   // --- Koordinater til musen ---
   const [cursorPosition, setCursorPosition] = useState({ latitude: 0, longitude: 0 });
-
-  // --- Søk ---
-  const [searchQuery, setSearchQuery] = useState('');
-  const [searchResults, setSearchResults] = useState<any[]>([]);
 
   // --- Map Style state ---
   const [mapStyle, setMapStyle] = useState("mapbox://styles/mapbox/outdoors-v11");
@@ -132,7 +118,7 @@ const EnhancedMapComponent: React.FC = () => {
     }
   }, [filters.contractorId, selectedContractorId, setSelectedContractorId]);
 
-  const fetchGeoJsonForContractor = async (contractorId: number) => {
+  const fetchGeoJsonForContractor = async (contractorId) => {
     try {
       const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5062/api';
       const response = await fetch(`${API_BASE_URL}/MapFilter/contractor-areas-geojson/${contractorId}`);
@@ -143,14 +129,14 @@ const EnhancedMapComponent: React.FC = () => {
       
       const areasData = await response.json();
       
-      const formattedLayers = areasData.map((area: any) => ({
+      const formattedLayers = areasData.map((area) => ({
         areaId: area.areaId,
         areaName: area.areaName,
         geoJson: typeof area.geoJson === 'string' ? JSON.parse(area.geoJson) : area.geoJson,
         centerLatitude: area.centerLat,
         centerLongitude: area.centerLon,
         totalAreaSizeKm2: area.totalAreaSizeKm2,
-        blocks: area.blocks.map((block: any) => ({
+        blocks: area.blocks.map((block) => ({
           blockId: block.blockId,
           blockName: block.blockName,
           status: block.status,
@@ -183,7 +169,7 @@ const EnhancedMapComponent: React.FC = () => {
           if (area.geoJson.geometry && area.geoJson.geometry.coordinates) {
             // For polygon-lag
             const coordinates = area.geoJson.geometry.coordinates[0];
-            coordinates.forEach(([lon, lat]: any) => {
+            coordinates.forEach(([lon, lat]) => {
               minLon = Math.min(minLon, lon);
               maxLon = Math.max(maxLon, lon);
               minLat = Math.min(minLat, lat);
@@ -194,9 +180,6 @@ const EnhancedMapComponent: React.FC = () => {
         
         // Add padding for better view
         const pad = 1;
-        
-        // Use a variable to track if the zoom operation has been completed
-        let hasZoomed = false;
         
         mapRef.current.fitBounds(
           [[minLon - pad, minLat - pad], [maxLon + pad, maxLat + pad]],
@@ -209,7 +192,7 @@ const EnhancedMapComponent: React.FC = () => {
   };
 
   // --- Hent block analytics ---
-  const fetchBlockAnalytics = async (blockId: number) => {
+  const fetchBlockAnalytics = async (blockId) => {
     try {
       const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5062/api';
       const response = await fetch(`${API_BASE_URL}/Analytics/block/${blockId}`);
@@ -230,7 +213,7 @@ const EnhancedMapComponent: React.FC = () => {
   };
 
   // --- Hent contractor summary ---
-  const fetchContractorSummary = async (contractorId: number) => {
+  const fetchContractorSummary = async (contractorId) => {
     try {
       const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5062/api';
       const response = await fetch(`${API_BASE_URL}/Analytics/contractor/${contractorId}/summary`);
@@ -264,7 +247,7 @@ const EnhancedMapComponent: React.FC = () => {
       }
       
       const result = await response.json();
-      setToastMessage(result.message);
+      setToastMessage(result.message || 'Stations associated with blocks successfully');
       setShowToast(true);
       refreshData();
     } catch (error) {
@@ -275,48 +258,9 @@ const EnhancedMapComponent: React.FC = () => {
       setAssociating(false);
     }
   };
-  
-  // --- Søkefunksjon ---
-  const handleSearch = () => {
-    if (!searchQuery.trim()) {
-      setSearchResults([]);
-      return;
-    }
-    const query = searchQuery.toLowerCase();
-    
-    // Finn blokker
-    const matchingBlocks: any[] = [];
-    areaLayers.forEach(area => {
-      area.blocks.forEach(block => {
-        if (block.blockName.toLowerCase().includes(query)) {
-          matchingBlocks.push({
-            type: 'block',
-            id: block.blockId,
-            name: block.blockName,
-            parent: area.areaName,
-            centerLatitude: block.centerLatitude,
-            centerLongitude: block.centerLongitude
-          });
-        }
-      });
-    });
-    
-    // Finn stasjoner
-    const matchingStations = stations
-      .filter(s => s.stationCode.toLowerCase().includes(query))
-      .map(s => ({
-        type: 'station',
-        id: s.stationId,
-        name: s.stationCode,
-        latitude: s.latitude,
-        longitude: s.longitude
-      }));
-    
-    setSearchResults([...matchingBlocks, ...matchingStations]);
-  };
 
   // --- Farge for block status ---
-  const getBlockStatusColor = (status: string) => {
+  const getBlockStatusColor = (status) => {
     switch (status.toLowerCase()) {
       case 'active': return '#4CAF50';
       case 'pending': return '#FFC107';
@@ -327,7 +271,7 @@ const EnhancedMapComponent: React.FC = () => {
   };
 
   // --- Hent stasjoner fra mapData ---
-  const stations: Station[] = mapData
+  const stations = mapData
     ? mapData.cruises.flatMap(c => c.stations || [])
     : [];
   
@@ -336,7 +280,7 @@ const EnhancedMapComponent: React.FC = () => {
   const selectedCruise = mapData?.cruises.find(c => c.cruiseId === selectedCruiseId) || null;
 
   // --- Oppdater viewState ved pan/zoom ---
-  const handleViewStateChange = (evt: ViewStateChangeEvent) => {
+  const handleViewStateChange = (evt) => {
     setViewState(evt.viewState);
   };
 
@@ -345,39 +289,13 @@ const EnhancedMapComponent: React.FC = () => {
     if (mapRef.current) {
       mapRef.current.fitBounds(
         [[-180, -60], [180, 85]],
-        { padding: 20, duration: 1500, easing: (t) => t * (2 - t) } // Smooth easing
+        { padding: 20, duration: 1500, easing: (t) => t * (2 - t) }
       );
     }
   };
-  
-  // Find and add click listener to compass button
-  useEffect(() => {
-    const handleCompassClick = () => {
-      // Kjør standardfunksjonen (Nullstiller bearing)
-      // ...pluss at du vil zoome ut el.l.:
-      resetMapView();
-    };
-  
-    setTimeout(() => {
-      // Hent selve kompass‐knappen:
-      const compassButton = document.querySelector('button.mapboxgl-ctrl-compass');
-      if (compassButton) {
-        compassButton.addEventListener('click', handleCompassClick);
-      }
-    }, 1000);
-  
-    // Rydd opp ved unmount
-    return () => {
-      const compassButton = document.querySelector('button.mapboxgl-ctrl-compass');
-      if (compassButton) {
-        compassButton.removeEventListener('click', handleCompassClick);
-      }
-    };
-  }, []);
-  
 
   // --- Klikk på stasjonsmarkør -> sidepanel ---
-  const handleMarkerClick = (station: Station) => {
+  const handleMarkerClick = (station) => {
     setSelectedStation(station);
     setDetailPanelType('station');
     setShowDetailPanel(true);
@@ -393,14 +311,6 @@ const EnhancedMapComponent: React.FC = () => {
     }
   };
 
-  // --- Datoformatering ---
-  const formatDate = (dateString: string) =>
-    new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric'
-    });
-
   // --- Loading/error ---
   if (loading) {
     return <div className={styles.mapLoading}>Loading map data...</div>;
@@ -411,12 +321,12 @@ const EnhancedMapComponent: React.FC = () => {
 
   return (
     <div className={styles.mapContainer}>
-      {/* Kontraktørinfo oppe til høyre */}
+      {/* Contractor info box */}
       {selectedContractorInfo && (
         <div className={styles.contractorInfoBox}>
           <h3>{selectedContractorInfo.name}</h3>
           <div className={styles.contractorStats}>
-            <span>{selectedContractorInfo.totalAreas} exploration area{selectedContractorInfo.totalAreas !== 1 ? 's' : ''}</span>
+            <span>{selectedContractorInfo.totalAreas} area{selectedContractorInfo.totalAreas !== 1 ? 's' : ''}</span>
             <span>{selectedContractorInfo.totalBlocks} block{selectedContractorInfo.totalBlocks !== 1 ? 's' : ''}</span>
           </div>
           <button 
@@ -428,73 +338,8 @@ const EnhancedMapComponent: React.FC = () => {
         </div>
       )}
 
-      {/* Søkefelt oppe til venstre */}
-      <div className={styles.searchContainer}>
-        <input
-          type="text"
-          placeholder="Search stations and blocks..."
-          value={searchQuery}
-          onChange={e => setSearchQuery(e.target.value)}
-          onKeyPress={e => e.key === 'Enter' && handleSearch()}
-          className={styles.searchInput}
-        />
-        <button 
-          onClick={handleSearch}
-          className={styles.searchButton}
-        >
-          Search
-        </button>
-      </div>
-      
-      {/* Resultater fra søk */}
-      {searchResults.length > 0 && (
-        <div className={styles.searchResults}>
-          <div className={styles.searchResultsHeader}>
-            <h4>Search Results ({searchResults.length})</h4>
-            <button 
-              onClick={() => setSearchResults([])}
-              className={styles.closeResultsButton}
-            >
-              ×
-            </button>
-          </div>
-          <ul className={styles.resultsList}>
-            {searchResults.map(result => (
-              <li 
-                key={`${result.type}-${result.id}`}
-                onClick={() => {
-                  if (mapRef.current) {
-                    mapRef.current.flyTo({
-                      center: [
-                        result.type === 'block' ? result.centerLongitude : result.longitude,
-                        result.type === 'block' ? result.centerLatitude : result.latitude
-                      ],
-                      zoom: result.type === 'block' ? 8 : 10
-                    });
-                  }
-                  setSearchResults([]);
-                }}
-                className={styles.resultItem}
-              >
-                <span 
-                  className={`${styles.resultType} ${styles[`resultType${result.type}`]}`}
-                >
-                  {result.type}
-                </span>
-                <span className={styles.resultName}>{result.name}</span>
-                {result.parent && (
-                  <span className={styles.resultParent}>
-                    in {result.parent}
-                  </span>
-                )}
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
-
-      {/* Map Layer Controls */}
-      <LayerControls 
+      {/* Compact Layer Controls */}
+      <CompactLayerControls 
         showAreas={showAreas}
         setShowAreas={setShowAreas}
         showBlocks={showBlocks}
@@ -507,7 +352,7 @@ const EnhancedMapComponent: React.FC = () => {
         associating={associating}
       />
 
-      {/* SELVE KARTET */}
+      {/* THE MAP */}
       <Map
         {...viewState}
         ref={mapRef}
@@ -537,11 +382,9 @@ const EnhancedMapComponent: React.FC = () => {
           position="top-right" 
           showCompass={true}
           showZoom={true}
-          onViewportChange={resetMapView}
-          visualizePitch={false}
         />
         
-        {/* Koordinater nede til høyre */}
+        {/* Coordinates display */}
         <div className={styles.coordinateDisplay}>
           Lat: {cursorPosition.latitude}, Lon: {cursorPosition.longitude}
         </div>
@@ -645,8 +488,6 @@ const EnhancedMapComponent: React.FC = () => {
               className={`${styles.mapMarker} ${station.contractorAreaBlockId ? styles.associatedMarker : ''}`}
               style={{ 
                 backgroundColor: station.contractorAreaBlockId ? '#4CAF50' : '#2196F3',
-                width: `30px`,
-                height: `30px`
               }}
             >
               <div className={styles.markerPulse} 
@@ -658,7 +499,7 @@ const EnhancedMapComponent: React.FC = () => {
           </Marker>
         ))}
 
-        {/* Popup for valgt stasjon (hvis sidepanelet ikke er oppe) */}
+        {/* Popup for selected station (if sidebar not open) */}
         {selectedStation && !showDetailPanel && (
           <Popup
             longitude={selectedStation.longitude}
@@ -695,7 +536,7 @@ const EnhancedMapComponent: React.FC = () => {
         )}
       </Map>
       
-      {/* Sidepaneler */}
+      {/* Detail panels */}
       {showDetailPanel && detailPanelType === 'station' && (
         <DetailPanel
           type={'station'}

@@ -13,91 +13,111 @@ const LayerControls = ({
   associateStationsWithBlocks,
   associating
 }) => {
-  const [expanded, setExpanded] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
   const [activePanel, setActivePanel] = useState(null);
-
-  const togglePanel = (panel) => {
-    if (activePanel === panel) {
-      setActivePanel(null);
+  
+  const toggleControls = () => {
+    setIsOpen(!isOpen);
+    if (!isOpen) {
+      setActivePanel('layers'); // Default to layers panel when opening
     } else {
-      setActivePanel(panel);
-      setExpanded(true);
+      setActivePanel(null);
     }
   };
 
+  const switchPanel = (panel) => {
+    setActivePanel(panel);
+  };
+
   return (
-    <div className={styles.layerControlsContainer}>
-      <div className={styles.layerControlsMain}>
-        <div 
-          className={`${styles.controlsButton} ${activePanel === 'layers' ? styles.activeButton : ''}`}
-          onClick={() => togglePanel('layers')}
-        >
-          <span className={styles.buttonIcon}>🔍</span>
-          Map Layers
-        </div>
-        
-        <div 
-          className={`${styles.controlsButton} ${activePanel === 'style' ? styles.activeButton : ''}`}
-          onClick={() => togglePanel('style')}
-        >
-          <span className={styles.buttonIcon}>🎨</span>
-          Map Style
-        </div>
-      </div>
+    <div className={styles.compactControls}>
+      {/* Main toggle button */}
+      <button 
+        className={`${styles.controlsToggle} ${isOpen ? styles.controlsToggleActive : ''}`}
+        onClick={toggleControls}
+        aria-expanded={isOpen}
+        aria-label="Toggle map controls"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"></polygon>
+          <line x1="8" y1="2" x2="8" y2="18"></line>
+          <line x1="16" y1="6" x2="16" y2="22"></line>
+        </svg>
+        <span className={styles.controlsToggleLabel}>Map Controls</span>
+      </button>
       
-      {activePanel && (
-        <div className={styles.layerControlsPanel}>
-          <div className={styles.panelHeader}>
-            <h3>{activePanel === 'layers' ? 'Map Layers' : 'Map Style'}</h3>
+      {/* Controls panel */}
+      {isOpen && (
+        <div className={styles.controlsPanel}>
+          <div className={styles.controlsTabs}>
             <button 
-              className={styles.closePanel}
-              onClick={() => setActivePanel(null)}
+              className={`${styles.controlsTab} ${activePanel === 'layers' ? styles.controlsTabActive : ''}`}
+              onClick={() => switchPanel('layers')}
             >
-              ×
+              Layers
+            </button>
+            <button 
+              className={`${styles.controlsTab} ${activePanel === 'style' ? styles.controlsTabActive : ''}`}
+              onClick={() => switchPanel('style')}
+            >
+              Style
             </button>
           </div>
           
-          <div className={styles.panelContent}>
+          <div className={styles.controlsContent}>
             {activePanel === 'layers' && (
-              <>
-                <label className={styles.layerToggleItem}>
-                  <input
-                    type="checkbox"
-                    checked={showAreas}
-                    onChange={() => setShowAreas(!showAreas)}
-                  />
-                  Areas
-                </label>
-                <label className={styles.layerToggleItem}>
-                  <input
-                    type="checkbox"
-                    checked={showBlocks}
-                    onChange={() => setShowBlocks(!showBlocks)}
-                  />
-                  Blocks
-                </label>
-                <label className={styles.layerToggleItem}>
-                  <input
-                    type="checkbox"
-                    checked={showStations}
-                    onChange={() => setShowStations(!showStations)}
-                  />
-                  Stations
-                </label>
-
+              <div className={styles.layersPanel}>
+                <div className={styles.layerToggles}>
+                  <label className={styles.layerToggle}>
+                    <input
+                      type="checkbox"
+                      checked={showAreas}
+                      onChange={() => setShowAreas(!showAreas)}
+                    />
+                    <span className={styles.layerToggleLabel}>Areas</span>
+                  </label>
+                  
+                  <label className={styles.layerToggle}>
+                    <input
+                      type="checkbox"
+                      checked={showBlocks}
+                      onChange={() => setShowBlocks(!showBlocks)}
+                    />
+                    <span className={styles.layerToggleLabel}>Blocks</span>
+                  </label>
+                  
+                  <label className={styles.layerToggle}>
+                    <input
+                      type="checkbox"
+                      checked={showStations}
+                      onChange={() => setShowStations(!showStations)}
+                    />
+                    <span className={styles.layerToggleLabel}>Stations</span>
+                  </label>
+                </div>
+                
                 <button
                   className={styles.associateButton}
                   onClick={associateStationsWithBlocks}
                   disabled={associating}
                 >
-                  {associating ? 'Processing...' : 'Associate Stations with Blocks'}
+                  {associating ? (
+                    <span className={styles.loadingSpinner}></span>
+                  ) : (
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                      <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+                      <line x1="12" y1="22.08" x2="12" y2="12"></line>
+                    </svg>
+                  )}
+                  <span>{associating ? 'Processing...' : 'Associate Stations'}</span>
                 </button>
-              </>
+              </div>
             )}
             
             {activePanel === 'style' && (
-              <div className={styles.styleOptions}>
-                <label className={styles.styleLabel}>Select Map Style</label>
+              <div className={styles.stylePanel}>
+                <label className={styles.styleSelectLabel}>Map Style</label>
                 <select
                   className={styles.styleSelect}
                   value={mapStyle}
