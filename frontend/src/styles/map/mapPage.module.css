@@ -30,8 +30,8 @@
 .mapLayout {
   display: flex;
   gap: 24px;
-  margin-bottom: px;
-  height: px;
+  margin-bottom: 30px;
+  height: 550px; /* Match the map container height */
 }
 
 /* Side filter panel */
