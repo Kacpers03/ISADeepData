@@ -271,9 +271,9 @@ const EnhancedMapComponent = () => {
   };
 
   // --- Hent stasjoner fra mapData ---
-  const stations = mapData
-    ? mapData.cruises.flatMap(c => c.stations || [])
-    : [];
+  const stations = mapData ? mapData.cruises.flatMap(c => c.stations || []) : [];
+
+
   
   // --- Velg contractor/cruise i data ---
   const selectedContractor = mapData?.contractors.find(c => c.contractorId === selectedContractorId) || null;

@@ -98,36 +98,69 @@ export const FilterProvider: React.FC<{ children: ReactNode }> = ({ children }) 
     refreshData();
   }, [filters]);
   
-  // Set filter value
+  // Ensure selectedContractorId and filters.contractorId stay in sync
+  useEffect(() => {
+    if (filters.contractorId !== undefined && filters.contractorId !== selectedContractorId) {
+      setSelectedContractorId(filters.contractorId);
+    } else if (selectedContractorId && filters.contractorId === undefined) {
+      setSelectedContractorId(null);
+    }
+  }, [filters.contractorId, selectedContractorId]);
+  
+  // Simple, clean filter setter
   const setFilter = (key: keyof MapFilterParams, value: any) => {
-    setFilters(prev => {
-      if (value === undefined || value === null || value === '') {
+    try {
+      setFilters(prev => {
         const newFilters = { ...prev };
-        delete newFilters[key];
+        
+        // Remove filter if value is empty
+        if (value === undefined || value === null || value === '' || value === 'all') {
+          delete newFilters[key];
+        } else {
+          // Set the new filter value
+          newFilters[key] = value;
+        }
+        
+        // Log the new filters for debugging
+        console.log(`Updated filters:`, newFilters);
+        
         return newFilters;
-      }
-      return { ...prev, [key]: value };
-    });
+      });
+    } catch (error) {
+      console.error("Error setting filter:", error);
+      // Don't crash the app, just log the error
+    }
   };
   
   // Reset all filters
-  const resetFilters = () => {
-    setFilters({});
-    setSelectedContractorId(null);
-    setSelectedCruiseId(null);
-    setSelectedStation(null);
-    setShowDetailPanel(false);
-    setDetailPanelType(null);
-    setContractorSummary(null);
-    setBlockAnalytics(null);
-  };
+  // Reset all filters
+const resetFilters = () => {
+  console.log("Resetting all filters");
   
+  // Sett filters til null først for å sikre at useEffect trigger
+  setFilters({});
+  
+  // Nullstill alle andre tilstander
+  setSelectedContractorId(null);
+  setSelectedCruiseId(null);
+  setSelectedStation(null);
+  setShowDetailPanel(false);
+  setDetailPanelType(null);
+  setContractorSummary(null);
+  setBlockAnalytics(null);
+  
+  // Kall refreshData direkte for å sikre ny data lastes
+  setTimeout(() => {
+    console.log("Calling refreshData after reset");
+    refreshData();
+  }, 10);
+};
   // Refresh map data
   const refreshData = async () => {
-    setLoading(true);
-    setError(null);
-    
     try {
+      setLoading(true);
+      setError(null);
+      
       // Combine filters with view bounds if available
       const combinedFilters = { ...filters };
       
@@ -138,11 +171,33 @@ export const FilterProvider: React.FC<{ children: ReactNode }> = ({ children }) 
         combinedFilters.maxLon = viewBounds.maxLon;
       }
       
+      console.log("Fetching map data with filters:", combinedFilters);
       const data = await apiService.getMapData(combinedFilters);
-      setMapData(data);
+      
+      // Log what we received for debugging
+      console.log("Received data with:", {
+        contractors: data?.contractors?.length || 0,
+        cruises: data?.cruises?.length || 0,
+        stations: data?.cruises?.flatMap(c => c.stations || []).length || 0
+      });
+      
+      // Safety check - make sure data is in expected format
+      if (data && typeof data === 'object') {
+        if (!data.contractors) data.contractors = [];
+        if (!data.cruises) data.cruises = [];
+        
+        // Set the data even if empty - the UI will handle showing appropriate messages
+        setMapData(data);
+      } else {
+        console.error("Received invalid data format:", data);
+        setError("Received invalid data from server");
+      }
     } catch (err) {
       console.error('Failed to load map data:', err);
       setError('Failed to load map data. Please try again later.');
+      
+      // Make sure mapData isn't left in an inconsistent state
+      setMapData({ contractors: [], cruises: [] });
     } finally {
       setLoading(false);
     }
