@@ -30,8 +30,8 @@
 .mapLayout {
   display: flex;
   gap: 24px;
-  margin-bottom: 50px;
-  height: 600px;
+  margin-bottom: 30px;
+  height: 550px; /* Match the map container height */
 }
 
 /* Side filter panel */
@@ -41,6 +41,20 @@
   overflow-y: auto;
   position: relative;
   border-radius: 12px;
+  max-width: 380px;
+  width: 380px;
+}
+
+@media (max-width: 768px) {
+  .sideFilterPanel {
+    width: 100%;
+    max-width: 100%;
+    margin-bottom: 20px;
+  }
+  
+  .mapLayout {
+    flex-direction: column;
+  }
 }
 
 /* Map section takes remaining space */
