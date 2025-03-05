@@ -6,7 +6,7 @@ const MiningCode: React.FC = () => {
     <div className={styles.container}>
       {/* HERO SECTION */}
       <section className={styles.hero}>
-        <div className={styles.heroContent}>
+        <div className={styles.heroText}>
           <h1 className={styles.heroTitle}>The Mining Code</h1>
           <p className={styles.heroSubtitle}>
             A comprehensive set of rules, regulations and procedures for
@@ -70,7 +70,7 @@ const MiningCode: React.FC = () => {
 
         <div className={styles.imageBlock}>
           <img
-            src="/images/mining-code-overview.jpg"
+            src="../image/MiningCode.jpg"
             alt="Mining Code overview"
             className={styles.image}
           />
