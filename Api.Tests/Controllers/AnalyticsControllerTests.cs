@@ -41,96 +41,79 @@ public class AnalyticsControllerTests
     }
 
     private void SeedDatabase()
+{
+    _dbContext.Database.EnsureDeleted(); // ✅ Clears existing records and identity values
+    _dbContext.Database.EnsureCreated(); // ✅ Recreates tables with fresh identity values
+
+    var contractor = new Contractor
     {
-        var contractor = new Contractor
-        {
-            ContractorId = 1,
-            ContractorName = "Test Contractor",
-            ContractTypeId = 1,
-            ContractStatusId = 1,
-            ContractNumber = "123",
-            SponsoringState = "USA",
-            ContractualYear = 2024,
-            Remarks = "Test remarks"
-        };
-        _dbContext.Contractors.Add(contractor);
+        ContractorId = 2,  // EF Core InMemory requires manually setting the key
+        ContractorName = "Test Contractor",
+        ContractTypeId = 2,
+        ContractStatusId = 2,
+        ContractNumber = "123",
+        SponsoringState = "USA",
+        ContractualYear = 2024,
+        Remarks = "Test remarks"
+    };
+    _dbContext.Contractors.Add(contractor);
 
-        var cruise = new Cruise
-        {
-            CruiseId = 1,
-            ContractorId = 1,
-            CruiseName = "Test Cruise",
-            ResearchVessel = "Test Vessel",
-            StartDate = new System.DateTime(2024, 1, 1),
-            EndDate = new System.DateTime(2024, 1, 10)
-        };
-        _dbContext.Cruises.Add(cruise);
+    var cruise = new Cruise
+    {
+        CruiseId = 2,
+        ContractorId = 2,
+        CruiseName = "Test Cruise",
+        ResearchVessel = "Test Vessel",
+        StartDate = new System.DateTime(2024, 1, 1),
+        EndDate = new System.DateTime(2024, 1, 10)
+    };
+    _dbContext.Cruises.Add(cruise);
 
-        var station = new Station
-        {
-            StationId = 1,
-            CruiseId = 1,
-            StationCode = "ST-001",
-            Latitude = 10.0,
-            Longitude = 20.0,
-            StationType = "Research"
-        };
-        _dbContext.Stations.Add(station);
+    _dbContext.SaveChanges(); // ✅ Save incrementally to prevent ID conflicts
 
-        var sample = new Sample
-        {
-            SampleId = 1,
-            StationId = 1,
-            SampleCode = "SMP-001",
-            SampleType = "Water",
-            MatrixType = "Sediment",
-            HabitatType = "Deep Sea",
-            SamplingDevice = "Core Sampler",
-            DepthLower = 100,
-            DepthUpper = 50,
-            SampleDescription = "Test Sample"
-        };
-        _dbContext.Samples.Add(sample);
+    var station = new Station
+    {
+        StationId = 2,
+        CruiseId = 2,
+        StationCode = "ST-001",
+        Latitude = 10.0,
+        Longitude = 20.0,
+        StationType = "Research"
+    };
+    _dbContext.Stations.Add(station);
 
-        var envResult = new EnvResult
-        {
-            EnvResultId = 1,
-            SampleId = 1,
-            AnalysisCategory = "Chemical",
-            AnalysisName = "pH Level",
-            AnalysisValue = 8.1,
-            Units = "pH",
-            Remarks = "Stable"
-        };
-        _dbContext.EnvResults.Add(envResult);
+    var sample = new Sample
+    {
+        SampleId = 2,
+        StationId = 2,
+        SampleCode = "SMP-001",
+        SampleType = "Water",
+        MatrixType = "Sediment",
+        HabitatType = "Deep Sea",
+        SamplingDevice = "Core Sampler",
+        DepthLower = 100,
+        DepthUpper = 50,
+        SampleDescription = "Test Sample"
+    };
+    _dbContext.Samples.Add(sample);
 
-        var geoResult = new GeoResult
-        {
-            GeoResultId = 1,
-            SampleId = 1,
-            Category = "Mineral Content",
-            Analysis = "Silica",
-            Value = 55.2,
-            Units = "%",
-            Qualifier = "High",
-            Remarks = "Expected"
-        };
-        _dbContext.GeoResults.Add(geoResult);
+    _dbContext.SaveChanges(); // ✅ Save in smaller steps to prevent primary key reuse
 
-        var photoVideo = new PhotoVideo
-        {
-            MediaId = 1,
-            SampleId = 1,
-            FileName = "sample1.jpg",
-            MediaType = "Photo",
-            CameraSpecs = "4K HD",
-            CaptureDate = new System.DateTime(2024, 1, 5),
-            Remarks = "Good clarity"
-        };
-        _dbContext.PhotoVideos.Add(photoVideo);
+    var photoVideo = new PhotoVideo
+    {
+        MediaId = 2,
+        SampleId = 2,
+        FileName = "sample1.jpg",
+        MediaType = "Photo",
+        CameraSpecs = "4K HD",
+        CaptureDate = new System.DateTime(2024, 1, 5),
+        Remarks = "Good clarity"
+    };
+    _dbContext.PhotoVideos.Add(photoVideo);
 
-        _dbContext.SaveChanges();
-    }
+    _dbContext.SaveChanges(); // ✅ Final commit
+}
+
 
     [Fact]
     public async Task GetContractorSummary_ExistingContractor_ReturnsSummary()

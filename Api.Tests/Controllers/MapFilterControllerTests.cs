@@ -37,71 +37,83 @@ public class MapFilterControllerTests
     }
 
     private void SeedDatabase()
+{
+    _dbContext.Database.EnsureDeleted(); // ✅ Clears all data and resets identity values
+    _dbContext.Database.EnsureCreated(); // ✅ Recreates schema with reset identity
+
+    // Add Contractor
+    var contractor = new Contractor
     {
-        var contractor = new Contractor
-        {
-            ContractorId = 1,
-            ContractorName = "Test Contractor",
-            ContractTypeId = 1,
-            ContractStatusId = 1,
-            ContractNumber = "123",
-            SponsoringState = "USA",
-            ContractualYear = 2024,
-            Remarks = "Test remarks"
-        };
-        _dbContext.Contractors.Add(contractor);
+        ContractorId = 1, 
+        ContractorName = "Test Contractor",
+        ContractTypeId = 1,
+        ContractStatusId = 1,
+        ContractNumber = "123",
+        SponsoringState = "USA",
+        ContractualYear = 2024,
+        Remarks = "Test remarks"
+    };
+    _dbContext.Contractors.Add(contractor);
+    _dbContext.SaveChanges(); // ✅ Save incrementally to prevent duplicate key conflicts
 
-        var cruise = new Cruise
-        {
-            CruiseId = 1,
-            ContractorId = 1,
-            CruiseName = "Test Cruise",
-            ResearchVessel = "Test Vessel",
-            StartDate = new System.DateTime(2024, 1, 1),
-            EndDate = new System.DateTime(2024, 1, 10)
-        };
-        _dbContext.Cruises.Add(cruise);
+    // Add Cruise
+    var cruise = new Cruise
+    {
+        CruiseId = 1,
+        ContractorId = 1,
+        CruiseName = "Test Cruise",
+        ResearchVessel = "Test Vessel",
+        StartDate = new System.DateTime(2024, 1, 1),
+        EndDate = new System.DateTime(2024, 1, 10)
+    };
+    _dbContext.Cruises.Add(cruise);
+    _dbContext.SaveChanges();
 
-        var station = new Station
-        {
-            StationId = 1,
-            CruiseId = 1,
-            StationCode = "ST-001",
-            Latitude = 10.0,
-            Longitude = 20.0,
-            StationType = "Research"
-        };
-        _dbContext.Stations.Add(station);
+    // Add Station
+    var station = new Station
+    {
+        StationId = 1,
+        CruiseId = 1,
+        StationCode = "ST-001",
+        Latitude = 10.0,
+        Longitude = 20.0,
+        StationType = "Research"
+    };
+    _dbContext.Stations.Add(station);
+    _dbContext.SaveChanges();
 
-        var sample = new Sample
-        {
-            SampleId = 1,
-            StationId = 1,
-            SampleCode = "SMP-001",
-            SampleType = "Water",
-            MatrixType = "Sediment",
-            HabitatType = "Deep Sea",
-            SamplingDevice = "Core Sampler",
-            DepthLower = 100,
-            DepthUpper = 50,
-            SampleDescription = "Test Sample"
-        };
-        _dbContext.Samples.Add(sample);
+    // Add Sample
+    var sample = new Sample
+    {
+        SampleId = 1,
+        StationId = 1,
+        SampleCode = "SMP-001",
+        SampleType = "Water",
+        MatrixType = "Sediment",
+        HabitatType = "Deep Sea",
+        SamplingDevice = "Core Sampler",
+        DepthLower = 100,
+        DepthUpper = 50,
+        SampleDescription = "Test Sample"
+    };
+    _dbContext.Samples.Add(sample);
+    _dbContext.SaveChanges();
 
-        var photoVideo = new PhotoVideo
-        {
-            MediaId = 1,
-            SampleId = 1,
-            FileName = "sample1.jpg",
-            MediaType = "Photo",
-            CameraSpecs = "4K HD",
-            CaptureDate = new System.DateTime(2024, 1, 5),
-            Remarks = "Good clarity"
-        };
-        _dbContext.PhotoVideos.Add(photoVideo);
+    // Add Photo/Video
+    var photoVideo = new PhotoVideo
+    {
+        MediaId = 1,
+        SampleId = 1,
+        FileName = "sample1.jpg",
+        MediaType = "Photo",
+        CameraSpecs = "4K HD",
+        CaptureDate = new System.DateTime(2024, 1, 5),
+        Remarks = "Good clarity"
+    };
+    _dbContext.PhotoVideos.Add(photoVideo);
+    _dbContext.SaveChanges();
+}
 
-        _dbContext.SaveChanges();
-    }
 
     [Fact]
     public async Task GetContractors_ReturnsAllContractors()
