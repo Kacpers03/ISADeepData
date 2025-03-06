@@ -4,7 +4,7 @@ import styles from '../../styles/map/filter.module.css';
 interface CustomDropdownProps {
   id: string;
   label: string;
-  options: { value: string; label: string }[];
+  options: { value: string; label: string; disabled?: boolean }[];
   value: string;
   onChange: (e: { target: { value: string } }) => void;
   isActive?: boolean;
@@ -43,7 +43,10 @@ export const CustomDropdown: React.FC<CustomDropdownProps> = ({
     }
   };
   
-  const handleSelect = (selectedValue: string) => {
+  const handleSelect = (selectedValue: string, optionDisabled?: boolean) => {
+    // Don't allow selecting disabled options
+    if (optionDisabled) return;
+    
     onChange({ target: { value: selectedValue } });
     setIsOpen(false);
   };
@@ -70,8 +73,12 @@ export const CustomDropdown: React.FC<CustomDropdownProps> = ({
           {options.map(option => (
             <div
               key={option.value}
-              className={`${styles.optionItem} ${option.value === value ? styles.selected : ''}`}
-              onClick={() => handleSelect(option.value)}
+              className={`${styles.optionItem} ${option.value === value ? styles.selected : ''} ${option.disabled ? styles.disabled : ''}`}
+              onClick={() => handleSelect(option.value, option.disabled)}
+              style={{
+                opacity: option.disabled ? 0.5 : 1,
+                cursor: option.disabled ? 'not-allowed' : 'pointer'
+              }}
             >
               {option.label}
             </div>

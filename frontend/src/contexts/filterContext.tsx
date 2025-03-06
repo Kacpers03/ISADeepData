@@ -13,6 +13,7 @@ interface FilterContextValue {
   
   // Map data
   mapData: MapData | null;
+  originalMapData: MapData | null; // This is the key addition - storing the full dataset
   
   // Map view state
   viewBounds: { minLat: number; maxLat: number; minLon: number; maxLon: number } | null;
@@ -57,6 +58,7 @@ export const FilterProvider: React.FC<{ children: ReactNode }> = ({ children }) 
   
   // Map data
   const [mapData, setMapData] = useState<MapData | null>(null);
+  const [originalMapData, setOriginalMapData] = useState<MapData | null>(null);
   
   // Map view state
   const [viewBounds, setViewBounds] = useState<{ minLat: number; maxLat: number; minLon: number; maxLon: number } | null>(null);
@@ -93,86 +95,94 @@ export const FilterProvider: React.FC<{ children: ReactNode }> = ({ children }) 
     loadFilterOptions();
   }, []);
   
-  // Load map data when filters change
+  // Load initial data on mount 
   useEffect(() => {
-    refreshData();
+    if (!originalMapData) {
+      console.log("Loading initial data...");
+      refreshData();
+    }
+  }, []);
+  
+  // Filter existing data when filters change 
+  useEffect(() => {
+    if (originalMapData && Object.keys(filters).length > 0) {
+      console.log("Applying filters to existing data:", filters);
+      filterExistingData();
+    }
   }, [filters]);
   
-  // Ensure selectedContractorId and filters.contractorId stay in sync
-  useEffect(() => {
-    if (filters.contractorId !== undefined && filters.contractorId !== selectedContractorId) {
-      setSelectedContractorId(filters.contractorId);
-    } else if (selectedContractorId && filters.contractorId === undefined) {
-      setSelectedContractorId(null);
+  // Apply filters to existing data in memory
+  const filterExistingData = () => {
+    if (!originalMapData) return;
+    
+    console.log("Filtering existing data with:", filters);
+    
+    // Start with a copy of the original data
+    const filteredData: MapData = {
+      contractors: [...originalMapData.contractors],
+      cruises: [...originalMapData.cruises]
+    };
+    
+    // Apply contractor filters
+    if (filters.contractorId) {
+      filteredData.contractors = filteredData.contractors.filter(c => c.contractorId === filters.contractorId);
+      // Also filter cruises to match the selected contractor
+      filteredData.cruises = filteredData.cruises.filter(c => c.contractorId === filters.contractorId);
     }
-  }, [filters.contractorId, selectedContractorId]);
-  
-  // Simple, clean filter setter
-  const setFilter = (key: keyof MapFilterParams, value: any) => {
-    try {
-      setFilters(prev => {
-        const newFilters = { ...prev };
-        
-        // Remove filter if value is empty
-        if (value === undefined || value === null || value === '' || value === 'all') {
-          delete newFilters[key];
-        } else {
-          // Set the new filter value
-          newFilters[key] = value;
-        }
-        
-        // Log the new filters for debugging
-        console.log(`Updated filters:`, newFilters);
-        
-        return newFilters;
-      });
-    } catch (error) {
-      console.error("Error setting filter:", error);
-      // Don't crash the app, just log the error
+    
+    if (filters.contractTypeId) {
+      filteredData.contractors = filteredData.contractors.filter(c => c.contractTypeId === filters.contractTypeId);
+      // Filter cruises to match the remaining contractors
+      const contractorIds = filteredData.contractors.map(c => c.contractorId);
+      filteredData.cruises = filteredData.cruises.filter(c => contractorIds.includes(c.contractorId));
     }
+    
+    if (filters.contractStatusId) {
+      filteredData.contractors = filteredData.contractors.filter(c => c.contractStatusId === filters.contractStatusId);
+      // Filter cruises to match the remaining contractors
+      const contractorIds = filteredData.contractors.map(c => c.contractorId);
+      filteredData.cruises = filteredData.cruises.filter(c => contractorIds.includes(c.contractorId));
+    }
+    
+    if (filters.sponsoringState) {
+      filteredData.contractors = filteredData.contractors.filter(c => c.sponsoringState === filters.sponsoringState);
+      // Filter cruises to match the remaining contractors
+      const contractorIds = filteredData.contractors.map(c => c.contractorId);
+      filteredData.cruises = filteredData.cruises.filter(c => contractorIds.includes(c.contractorId));
+    }
+    
+    if (filters.year) {
+      filteredData.contractors = filteredData.contractors.filter(c => c.contractualYear === filters.year);
+      // Filter cruises to match the remaining contractors
+      const contractorIds = filteredData.contractors.map(c => c.contractorId);
+      filteredData.cruises = filteredData.cruises.filter(c => contractorIds.includes(c.contractorId));
+    }
+    
+    // Apply cruise filters
+    if (filters.cruiseId) {
+      filteredData.cruises = filteredData.cruises.filter(c => c.cruiseId === filters.cruiseId);
+    }
+    
+    console.log("Filtered data:", {
+      contractors: filteredData.contractors.length,
+      cruises: filteredData.cruises.length
+    });
+    
+    // Set the filtered data
+    setMapData(filteredData);
   };
   
-  // Reset all filters
-  // Reset all filters
-const resetFilters = () => {
-  console.log("Resetting all filters");
-  
-  // Sett filters til null først for å sikre at useEffect trigger
-  setFilters({});
-  
-  // Nullstill alle andre tilstander
-  setSelectedContractorId(null);
-  setSelectedCruiseId(null);
-  setSelectedStation(null);
-  setShowDetailPanel(false);
-  setDetailPanelType(null);
-  setContractorSummary(null);
-  setBlockAnalytics(null);
-  
-  // Kall refreshData direkte for å sikre ny data lastes
-  setTimeout(() => {
-    console.log("Calling refreshData after reset");
-    refreshData();
-  }, 10);
-};
-  // Refresh map data
+  // Fetch complete fresh data
   const refreshData = async () => {
     try {
       setLoading(true);
       setError(null);
       
-      // Combine filters with view bounds if available
-      const combinedFilters = { ...filters };
+      // Prepare filter params (don't include view bounds for regular filtering)
+      const apiFilters = { ...filters };
       
-      if (viewBounds) {
-        combinedFilters.minLat = viewBounds.minLat;
-        combinedFilters.maxLat = viewBounds.maxLat;
-        combinedFilters.minLon = viewBounds.minLon;
-        combinedFilters.maxLon = viewBounds.maxLon;
-      }
-      
-      console.log("Fetching map data with filters:", combinedFilters);
-      const data = await apiService.getMapData(combinedFilters);
+      console.log("Fetching fresh map data with filters:", apiFilters);
+      const data = await apiService.getMapData(apiFilters);
       
       // Log what we received for debugging
       console.log("Received data with:", {
@@ -186,7 +196,13 @@ const resetFilters = () => {
         if (!data.contractors) data.contractors = [];
         if (!data.cruises) data.cruises = [];
         
-        // Set the data even if empty - the UI will handle showing appropriate messages
+        // If this is a complete data load (no filters), save it as the original
+        if (Object.keys(filters).length === 0) {
+          console.log("Saving as original data");
+          setOriginalMapData(data);
+        }
+        
+        // Always set as current map data
         setMapData(data);
       } else {
         console.error("Received invalid data format:", data);
@@ -203,6 +219,55 @@ const resetFilters = () => {
     }
   };
   
+  // Simple, clean filter setter
+  const setFilter = (key: keyof MapFilterParams, value: any) => {
+    try {
+      setFilters(prev => {
+        const newFilters = { ...prev };
+        
+        // Remove filter if value is empty
+        if (value === undefined || value === null || value === '' || value === 'all') {
+          delete newFilters[key];
+        } else {
+          // Set the new filter value
+          newFilters[key] = value;
+        }
+        
+        console.log(`Updated filters:`, newFilters);
+        return newFilters;
+      });
+    } catch (error) {
+      console.error("Error setting filter:", error);
+    }
+  };
+  
+  // Reset all filters and restore original data
+  const resetFilters = () => {
+    console.log("Resetting all filters");
+    
+    // Clear filters
+    setFilters({});
+    
+    // Reset selection states
+    setSelectedContractorId(null);
+    setSelectedCruiseId(null);
+    setSelectedStation(null);
+    setShowDetailPanel(false);
+    setDetailPanelType(null);
+    setContractorSummary(null);
+    setBlockAnalytics(null);
+    
+    // If we have original data, restore it
+    if (originalMapData) {
+      console.log("Restoring original data");
+      setMapData(originalMapData);
+    } else {
+      // Otherwise fetch fresh data
+      console.log("No original data to restore, fetching fresh data");
+      refreshData();
+    }
+  };
+  
   return (
     <FilterContext.Provider
       value={{
@@ -216,6 +281,7 @@ const resetFilters = () => {
         
         // Map data
         mapData,
+        originalMapData,
         
         // Map view state
         viewBounds,

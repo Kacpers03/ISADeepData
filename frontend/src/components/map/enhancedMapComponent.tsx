@@ -44,6 +44,7 @@ const EnhancedMapComponent = () => {
     refreshData
   } = useFilter();
 
+  // Store the initial view state
   const [viewState, setViewState] = useState({
     longitude: 0,
     latitude: 0,
@@ -52,7 +53,16 @@ const EnhancedMapComponent = () => {
     pitch: 0
   });
 
+  // Reference to maintain current view state across rerenders
   const mapRef = useRef(null);
+  const initialLoadRef = useRef(true);
+  
+  // Keep track of whether the view has been manually set
+  const [userHasSetView, setUserHasSetView] = useState(false);
+  
+  // Store all loaded GeoJSON data so we can filter without losing it
+  const [allAreaLayers, setAllAreaLayers] = useState([]);
+  const [visibleAreaLayers, setVisibleAreaLayers] = useState([]);
   
   // Make map instance available globally for search function
   useEffect(() => {
@@ -65,42 +75,64 @@ const EnhancedMapComponent = () => {
     };
   }, [mapRef.current]);
   
-  // --- GeoJSON for areas/blocks ---
-  const [areaLayers, setAreaLayers] = useState([]);
-  
+  // State variables
   const [selectedContractorInfo, setSelectedContractorInfo] = useState(null);
-
   const [blockAnalytics, setBlockAnalytics] = useState(null);
   const [contractorSummary, setContractorSummary] = useState(null);
-
-  // --- Vis/skjul lag ---
   const [showAreas, setShowAreas] = useState(true);
   const [showBlocks, setShowBlocks] = useState(true);
   const [showStations, setShowStations] = useState(true);
-
-  // --- Samme for "associate stations" ---
   const [associating, setAssociating] = useState(false);
-
-  // --- Toast notification ---
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
-
-  // --- Koordinater til musen ---
   const [cursorPosition, setCursorPosition] = useState({ latitude: 0, longitude: 0 });
-
-  // --- Map Style state ---
   const [mapStyle, setMapStyle] = useState("mapbox://styles/mapbox/outdoors-v11");
 
-  // --- Hent GeoJSON ved valg av kontraktør ---
+  // Update visible area layers when filters change
+  useEffect(() => {
+    if (allAreaLayers.length > 0) {
+      filterVisibleLayers();
+    } else if (Object.keys(filters).length === 0 && mapData?.contractors?.length > 0) {
+      // If filters are reset but we have no layers loaded, reload them
+      loadAllVisibleContractors();
+    }
+  }, [filters, allAreaLayers, mapData?.contractors]);
+  
+  // Function to filter visible layers based on current filters
+  const filterVisibleLayers = () => {
+    if (!mapData || !allAreaLayers.length) return;
+    
+    // Get IDs of contractors that match the current filters
+    const contractorIds = mapData.contractors.map(c => c.contractorId);
+    
+    // Filter area layers to only those belonging to the filtered contractors
+    const filtered = allAreaLayers.filter(area => {
+      // If we have a specific contractorId filter, only show that one
+      if (selectedContractorId) {
+        return area.contractorId === selectedContractorId;
+      }
+      
+      // Otherwise show all areas belonging to the filtered contractors
+      return contractorIds.includes(area.contractorId);
+    });
+    
+    setVisibleAreaLayers(filtered);
+  };
+  
+  // Get all GeoJSON for a contractor and store it
   useEffect(() => {
     if (selectedContractorId) {
       fetchGeoJsonForContractor(selectedContractorId);
+    } else if (mapData?.contractors) {
+      // If no contractor is selected, try to load all visible contractors
+      loadAllVisibleContractors();
     } else {
-      setAreaLayers([]);
+      setVisibleAreaLayers([]);
       setSelectedContractorInfo(null);
       
-      // Return to world view when contractor is deselected
-      if (mapRef.current) {
+      // Only reset view on initial load or reset filters
+      if (initialLoadRef.current && mapRef.current) {
+        initialLoadRef.current = false;
         mapRef.current.fitBounds(
           [[-180, -60], [180, 85]],
           { padding: 20, duration: 1500, easing: (t) => t * (2 - t) }
@@ -109,16 +141,33 @@ const EnhancedMapComponent = () => {
     }
   }, [selectedContractorId, mapData?.contractors]);
   
-  // --- Lytt til filter for contractorId ---
-  useEffect(() => {
-    if (filters.contractorId && filters.contractorId !== selectedContractorId) {
-      setSelectedContractorId(filters.contractorId);
-    } else if (!filters.contractorId && selectedContractorId) {
-      setSelectedContractorId(null);
+  // Load GeoJSON for all visible contractors (useful when filters change)
+  const loadAllVisibleContractors = async () => {
+    if (!mapData?.contractors.length) return;
+    
+    try {
+      // Load GeoJSON for each visible contractor
+      const contractorIds = mapData.contractors.map(c => c.contractorId);
+      const promises = contractorIds.map(id => fetchContractorGeoJson(id));
+      
+      // Wait for all to complete
+      const results = await Promise.allSettled(promises);
+      
+      // Collect all successful results
+      const allAreas = results
+        .filter(result => result.status === 'fulfilled' && result.value)
+        .flatMap(result => result.value);
+      
+      setAllAreaLayers(allAreas);
+      // Initially set visible layers to all layers
+      setVisibleAreaLayers(allAreas);
+    } catch (error) {
+      console.error('Error loading all contractor GeoJSON:', error);
     }
-  }, [filters.contractorId, selectedContractorId, setSelectedContractorId]);
-
-  const fetchGeoJsonForContractor = async (contractorId) => {
+  };
+  
+  // Helper function to fetch GeoJSON for a contractor
+  const fetchContractorGeoJson = async (contractorId) => {
     try {
       const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5062/api';
       const response = await fetch(`${API_BASE_URL}/MapFilter/contractor-areas-geojson/${contractorId}`);
@@ -129,7 +178,9 @@ const EnhancedMapComponent = () => {
       
       const areasData = await response.json();
       
-      const formattedLayers = areasData.map((area) => ({
+      // Add contractorId to each area for filtering later
+      return areasData.map((area) => ({
+        contractorId: contractorId,
         areaId: area.areaId,
         areaName: area.areaName,
         geoJson: typeof area.geoJson === 'string' ? JSON.parse(area.geoJson) : area.geoJson,
@@ -146,45 +197,65 @@ const EnhancedMapComponent = () => {
           areaSizeKm2: block.areaSizeKm2
         }))
       }));
+    } catch (error) {
+      console.error(`Error fetching GeoJSON for contractor ${contractorId}:`, error);
+      return [];
+    }
+  };
+
+  const fetchGeoJsonForContractor = async (contractorId) => {
+    try {
+      const areas = await fetchContractorGeoJson(contractorId);
       
-      setAreaLayers(formattedLayers);
-      
-      // Oppdater info-boks for contractor
-      if (mapData?.contractors) {
-        const contractor = mapData.contractors.find(c => c.contractorId === contractorId);
-        if (contractor) {
-          setSelectedContractorInfo({
-            name: contractor.contractorName,
-            totalAreas: formattedLayers.length,
-            totalBlocks: formattedLayers.reduce((acc, area) => acc + area.blocks.length, 0)
-          });
-        }
-      }
-      
-      // Auto-zoom til områdene
-      if (formattedLayers.length > 0 && mapRef.current) {
-        let minLat = 90, maxLat = -90, minLon = 180, maxLon = -180;
-        
-        formattedLayers.forEach(area => {
-          if (area.geoJson.geometry && area.geoJson.geometry.coordinates) {
-            // For polygon-lag
-            const coordinates = area.geoJson.geometry.coordinates[0];
-            coordinates.forEach(([lon, lat]) => {
-              minLon = Math.min(minLon, lon);
-              maxLon = Math.max(maxLon, lon);
-              minLat = Math.min(minLat, lat);
-              maxLat = Math.max(maxLat, lat);
-            });
-          }
+      if (areas && areas.length > 0) {
+        // Store all areas in the allAreaLayers state
+        setAllAreaLayers(prevLayers => {
+          // Remove any existing areas for this contractor
+          const filtered = prevLayers.filter(area => area.contractorId !== contractorId);
+          // Add the new areas
+          return [...filtered, ...areas];
         });
         
-        // Add padding for better view
-        const pad = 1;
+        // Update visible layers
+        setVisibleAreaLayers(areas);
         
-        mapRef.current.fitBounds(
-          [[minLon - pad, minLat - pad], [maxLon + pad, maxLat + pad]],
-          { padding: 40, duration: 1500, easing: (t) => t * (2 - t) }
-        );
+        // Update info-box for contractor
+        if (mapData?.contractors) {
+          const contractor = mapData.contractors.find(c => c.contractorId === contractorId);
+          if (contractor) {
+            setSelectedContractorInfo({
+              name: contractor.contractorName,
+              totalAreas: areas.length,
+              totalBlocks: areas.reduce((acc, area) => acc + area.blocks.length, 0)
+            });
+          }
+        }
+        
+        // Zoom to the areas only if user hasn't set a view manually
+        if (!userHasSetView && mapRef.current) {
+          let minLat = 90, maxLat = -90, minLon = 180, maxLon = -180;
+          
+          areas.forEach(area => {
+            if (area.geoJson.geometry && area.geoJson.geometry.coordinates) {
+              // For polygon-lag
+              const coordinates = area.geoJson.geometry.coordinates[0];
+              coordinates.forEach(([lon, lat]) => {
+                minLon = Math.min(minLon, lon);
+                maxLon = Math.max(maxLon, lon);
+                minLat = Math.min(minLat, lat);
+                maxLat = Math.max(maxLat, lat);
+              });
+            }
+          });
+          
+          // Add padding for better view
+          const pad = 1;
+          
+          mapRef.current.fitBounds(
+            [[minLon - pad, minLat - pad], [maxLon + pad, maxLat + pad]],
+            { padding: 40, duration: 1500, easing: (t) => t * (2 - t) }
+          );
+        }
       }
     } catch (error) {
       console.error('Error loading GeoJSON data:', error);
@@ -272,21 +343,35 @@ const EnhancedMapComponent = () => {
 
   // --- Hent stasjoner fra mapData ---
   const stations = mapData ? mapData.cruises.flatMap(c => c.stations || []) : [];
-
-
   
   // --- Velg contractor/cruise i data ---
   const selectedContractor = mapData?.contractors.find(c => c.contractorId === selectedContractorId) || null;
   const selectedCruise = mapData?.cruises.find(c => c.cruiseId === selectedCruiseId) || null;
 
-  // --- Oppdater viewState ved pan/zoom ---
+  // --- Oppdater viewState ved pan/zoom, and mark as user-set ---
   const handleViewStateChange = (evt) => {
     setViewState(evt.viewState);
+    // User has manually changed the view
+    setUserHasSetView(true);
+    
+    // Update view bounds for future API requests
+    if (mapRef.current) {
+      const bounds = mapRef.current.getMap().getBounds();
+      setViewBounds({
+        minLat: bounds.getSouth(),
+        maxLat: bounds.getNorth(),
+        minLon: bounds.getWest(),
+        maxLon: bounds.getEast()
+      });
+    }
   };
 
   // Reset map to default view
   const resetMapView = () => {
     if (mapRef.current) {
+      // Reset user view state flag
+      setUserHasSetView(false);
+      
       mapRef.current.fitBounds(
         [[-180, -60], [180, 85]],
         { padding: 20, duration: 1500, easing: (t) => t * (2 - t) }
@@ -369,11 +454,12 @@ const EnhancedMapComponent = () => {
         onError={(e) => console.error('Mapbox Error:', e)}
         onLoad={() => {
           console.log("Map successfully loaded!");
-          // Only fit to world bounds if no contractor is selected
-          if (mapRef.current && !selectedContractorId) {
+          // Only fit to world bounds if no contractor is selected and first load
+          if (mapRef.current && !selectedContractorId && initialLoadRef.current) {
+            initialLoadRef.current = false;
             mapRef.current.fitBounds(
               [[-180, -60], [180, 85]],
-              {  padding: 20, duration: 1500, easing: (t) => t * (2 - t) }
+              { padding: 20, duration: 1500, easing: (t) => t * (2 - t) }
             );
           }
         }}
@@ -389,8 +475,8 @@ const EnhancedMapComponent = () => {
           Lat: {cursorPosition.latitude}, Lon: {cursorPosition.longitude}
         </div>
 
-        {/* Areas + blocks */}
-        {showAreas && areaLayers.map(area => (
+        {/* Areas + blocks - only show visible layers */}
+        {showAreas && visibleAreaLayers.map(area => (
           <React.Fragment key={`area-${area.areaId}`}>
             <Source id={`area-source-${area.areaId}`} type="geojson" data={area.geoJson}>
               <Layer

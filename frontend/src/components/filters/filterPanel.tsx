@@ -15,24 +15,17 @@ export const ImprovedFilterPanel = () => {
     setViewBounds
   } = useFilter();
   
-  // State for contractor names
-  const [contractorNames, setContractorNames] = useState([]);
+  // State for filtered dropdown options
+  const [filteredContractors, setFilteredContractors] = useState([]);
+  const [filteredMineralTypes, setFilteredMineralTypes] = useState([]);
+  const [filteredContractStatuses, setFilteredContractStatuses] = useState([]);
+  const [filteredSponsoringStates, setFilteredSponsoringStates] = useState([]);
+  const [filteredYears, setFilteredYears] = useState([]);
   
   // Search functionality
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState([]);
   const [showResults, setShowResults] = useState(false);
-  
-  // Populate contractor names from mapData when it changes
-  useEffect(() => {
-    if (mapData?.contractors) {
-      const names = mapData.contractors.map(contractor => ({
-        id: contractor.contractorId,
-        name: contractor.contractorName
-      }));
-      setContractorNames(names);
-    }
-  }, [mapData]);
   
   // Count active filters
   const activeFilterCount = Object.keys(filters).filter(key => 
@@ -44,21 +37,117 @@ export const ImprovedFilterPanel = () => {
   const stationCount = mapData?.cruises.reduce((total, cruise) => 
     total + (cruise.stations?.length || 0), 0) || 0;
   
-  // Handle select change
+  // Update filtered options whenever mapData or filterOptions change
+  useEffect(() => {
+    if (!mapData || !filterOptions) return;
+    
+    // Process the available options based on current data
+    updateFilteredOptions();
+  }, [mapData, filterOptions, filters]);
+  
+  // This function updates all the dropdown options based on the current filters and data
+  const updateFilteredOptions = () => {
+    const { contractors, cruises } = mapData || { contractors: [], cruises: [] };
+    
+    // Extract all available values from the current filtered data
+    
+    // 1. Extract mineral types (contractTypes) from visible data
+    const availableMineralTypes = new Set();
+    contractors.forEach(contractor => {
+      availableMineralTypes.add(contractor.contractType);
+    });
+    
+    // 2. Extract contract statuses from visible data
+    const availableContractStatuses = new Set();
+    contractors.forEach(contractor => {
+      availableContractStatuses.add(contractor.contractStatus);
+    });
+    
+    // 3. Extract sponsoring states from visible data
+    const availableSponsoringStates = new Set();
+    contractors.forEach(contractor => {
+      availableSponsoringStates.add(contractor.sponsoringState);
+    });
+    
+    // 4. Extract years from visible data
+    const availableYears = new Set();
+    contractors.forEach(contractor => {
+      availableYears.add(contractor.contractualYear);
+    });
+    
+    // 5. Process for dropdown display
+    
+    // Update mineral types options - keep all options but mark unavailable ones
+    if (filterOptions.contractTypes) {
+      const updatedMineralTypes = filterOptions.contractTypes.map(type => ({
+        value: type.contractTypeId.toString(),
+        label: type.contractTypeName,
+        disabled: filters.mineralTypeId === undefined && 
+                 !availableMineralTypes.has(type.contractTypeName)
+      }));
+      setFilteredMineralTypes(updatedMineralTypes);
+    }
+    
+    // Update contract statuses options
+    if (filterOptions.contractStatuses) {
+      const updatedContractStatuses = filterOptions.contractStatuses.map(status => ({
+        value: status.contractStatusId.toString(),
+        label: status.contractStatusName,
+        disabled: filters.contractStatusId === undefined && 
+                 !availableContractStatuses.has(status.contractStatusName)
+      }));
+      setFilteredContractStatuses(updatedContractStatuses);
+    }
+    
+    // Update sponsoring states options
+    if (filterOptions.sponsoringStates) {
+      const updatedSponsoringStates = filterOptions.sponsoringStates.map(state => ({
+        value: state,
+        label: state,
+        disabled: filters.sponsoringState === undefined && 
+                 !availableSponsoringStates.has(state)
+      }));
+      setFilteredSponsoringStates(updatedSponsoringStates);
+    }
+    
+    // Update years options
+    if (filterOptions.contractualYears) {
+      const updatedYears = filterOptions.contractualYears.map(year => ({
+        value: year.toString(),
+        label: year.toString(),
+        disabled: filters.year === undefined && 
+                 !availableYears.has(year)
+      }));
+      setFilteredYears(updatedYears);
+    }
+    
+    // Update contractor names from mapData
+    if (mapData?.contractors) {
+      const contractorOptions = mapData.contractors.map(contractor => ({
+        value: contractor.contractorId.toString(),
+        label: contractor.contractorName
+      }));
+      setFilteredContractors(contractorOptions);
+    }
+  };
+  
+  // Handle select change with proper type conversion
   const handleSelectChange = (e, key) => {
     const value = e.target.value;
     
+    if (value === 'all') {
+      // When "All" is selected, remove that filter
+      setFilter(key, undefined);
+      return;
+    }
+    
     // For number values
     if (['mineralTypeId', 'contractStatusId', 'year', 'cruiseId', 'contractorId'].includes(key)) {
-      if (value === 'all') {
-        setFilter(key, undefined);
-      } else {
-        setFilter(key, parseInt(value, 10));
-      }
+      setFilter(key, parseInt(value, 10));
     } 
     // For string values
     else {
-      setFilter(key, value === 'all' ? undefined : value);
+      setFilter(key, value);
     }
   };
   
@@ -71,7 +160,7 @@ export const ImprovedFilterPanel = () => {
     }
   };
   
-  // Handle search submit
+  // Handle search submit with improved searching logic
   const handleSearch = () => {
     if (!searchQuery.trim()) {
       setSearchResults([]);
@@ -146,7 +235,7 @@ export const ImprovedFilterPanel = () => {
     setShowResults(true);
   };
   
-  // Handle search result click
+  // Handle search result click without resetting view
   const handleResultClick = (result) => {
     setShowResults(false);
     setSearchQuery('');
@@ -157,20 +246,19 @@ export const ImprovedFilterPanel = () => {
         setFilter('contractorId', result.id);
         break;
       case 'station':
-        // Set the map view to focus on this station
-        if (result.latitude && result.longitude) {
-          // We'll need to implement flyTo in the map component
-          if (window.mapInstance) {
-            window.mapInstance.flyTo({
-              center: [result.longitude, result.latitude],
-              zoom: 10,
-              duration: 1500
-            });
-          }
+        // Set the map view to focus on this station WITHOUT resetting other filters
+        if (result.latitude && result.longitude && window.mapInstance) {
+          // Keep current zoom level but center on point
+          const currentZoom = window.mapInstance.getZoom();
+          window.mapInstance.flyTo({
+            center: [result.longitude, result.latitude],
+            zoom: Math.max(currentZoom, 10), // Don't zoom out, only in if needed
+            duration: 1500
+          });
         }
         break;
       default:
-        // For other types, we might need additional handling
+        // For other types, handle as needed
         break;
     }
   };
@@ -182,6 +270,7 @@ export const ImprovedFilterPanel = () => {
     }
   };
   
+  // If filter options aren't loaded yet, show loading
   if (!filterOptions) {
     return (
       <div className={styles.filterPanelLoading}>
@@ -190,42 +279,30 @@ export const ImprovedFilterPanel = () => {
     );
   }
   
-  // Format options for custom dropdowns
+  // Format options for custom dropdowns with "All" option first
   const contractorOptions = [
     { value: 'all', label: 'All Contractors' },
-    ...contractorNames.map(c => ({ value: c.id.toString(), label: c.name }))
+    ...filteredContractors
   ];
   
   const mineralTypeOptions = [
     { value: 'all', label: 'All Mineral Types' },
-    ...filterOptions.contractTypes.map(type => ({ 
-      value: type.contractTypeId.toString(), 
-      label: type.contractTypeName 
-    }))
+    ...filteredMineralTypes
   ];
   
   const contractStatusOptions = [
     { value: 'all', label: 'All Statuses' },
-    ...filterOptions.contractStatuses.map(status => ({ 
-      value: status.contractStatusId.toString(), 
-      label: status.contractStatusName 
-    }))
+    ...filteredContractStatuses
   ];
   
   const sponsoringStateOptions = [
     { value: 'all', label: 'All States' },
-    ...filterOptions.sponsoringStates.map(state => ({ 
-      value: state, 
-      label: state 
-    }))
+    ...filteredSponsoringStates
   ];
   
   const yearOptions = [
     { value: 'all', label: 'All Years' },
-    ...filterOptions.contractualYears.map(year => ({ 
-      value: year.toString(), 
-      label: year.toString() 
-    }))
+    ...filteredYears
   ];
   
   return (
