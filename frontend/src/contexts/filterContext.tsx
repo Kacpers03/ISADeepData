@@ -60,6 +60,9 @@ export const FilterProvider: React.FC<{ children: ReactNode }> = ({ children }) 
   const [mapData, setMapData] = useState<MapData | null>(null);
   const [originalMapData, setOriginalMapData] = useState<MapData | null>(null);
   
+  // Flag to track when initial data is loaded
+  const [initialDataLoaded, setInitialDataLoaded] = useState<boolean>(false);
+  
   // Map view state
   const [viewBounds, setViewBounds] = useState<{ minLat: number; maxLat: number; minLon: number; maxLon: number } | null>(null);
   
@@ -80,6 +83,12 @@ export const FilterProvider: React.FC<{ children: ReactNode }> = ({ children }) 
   const [contractorSummary, setContractorSummary] = useState<ContractorSummary | null>(null);
   const [blockAnalytics, setBlockAnalytics] = useState<BlockAnalytics | null>(null);
   
+  // Helper to ensure map data updates are reactive
+  const updateMapData = (newData: MapData) => {
+    // Create a new copy to ensure React detects the change
+    setMapData({...newData});
+  };
+  
   // Load filter options on mount
   useEffect(() => {
     const loadFilterOptions = async () => {
@@ -95,95 +104,41 @@ export const FilterProvider: React.FC<{ children: ReactNode }> = ({ children }) 
     loadFilterOptions();
   }, []);
   
-  // Load initial data on mount 
+  // Check map data consistency (debugging)
   useEffect(() => {
-    if (!originalMapData) {
-      console.log("Loading initial data...");
-      refreshData();
-    }
-  }, []);
-  
-  // Filter existing data when filters change 
-  useEffect(() => {
-    if (originalMapData && Object.keys(filters).length > 0) {
-      console.log("Applying filters to existing data:", filters);
-      filterExistingData();
-    }
-  }, [filters]);
-  
-  // Apply filters to existing data in memory
-  const filterExistingData = () => {
-    if (!originalMapData) return;
-    
-    console.log("Filtering existing data with:", filters);
-    
-    // Start with a copy of the original data
-    const filteredData: MapData = {
-      contractors: [...originalMapData.contractors],
-      cruises: [...originalMapData.cruises]
+    const checkMapDataConsistency = () => {
+      if (mapData) {
+        console.log("Current MapData structure:", {
+          contractorsCount: mapData.contractors?.length || 0,
+          cruisesCount: mapData.cruises?.length || 0,
+          cruisesWithStations: mapData.cruises?.filter(c => c.stations && c.stations.length > 0).length || 0,
+          totalStations: mapData.cruises?.reduce((acc, c) => acc + (c.stations?.length || 0), 0) || 0
+        });
+      }
     };
     
-    // Apply contractor filters
-    if (filters.contractorId) {
-      filteredData.contractors = filteredData.contractors.filter(c => c.contractorId === filters.contractorId);
-      // Also filter cruises to match the selected contractor
-      filteredData.cruises = filteredData.cruises.filter(c => c.contractorId === filters.contractorId);
-    }
-    
-    // Fix for mineralTypeId filter - use ContractType (name) instead of contractTypeId
-    if (filters.mineralTypeId && filterOptions) {
-      // Get the contract type name for the selected mineralTypeId
-      const selectedContractType = filterOptions.contractTypes.find(
-        type => type.contractTypeId === filters.mineralTypeId
-      );
-      
-      if (selectedContractType) {
-        filteredData.contractors = filteredData.contractors.filter(
-          c => c.contractType === selectedContractType.contractTypeName
-        );
-        
-        // Filter cruises to match the remaining contractors
-        const contractorIds = filteredData.contractors.map(c => c.contractorId);
-        filteredData.cruises = filteredData.cruises.filter(c => contractorIds.includes(c.contractorId));
-      }
-    }
-    
-    if (filters.contractStatusId) {
-      filteredData.contractors = filteredData.contractors.filter(c => c.contractStatusId === filters.contractStatusId);
-      // Filter cruises to match the remaining contractors
-      const contractorIds = filteredData.contractors.map(c => c.contractorId);
-      filteredData.cruises = filteredData.cruises.filter(c => contractorIds.includes(c.contractorId));
-    }
-    
-    if (filters.sponsoringState) {
-      filteredData.contractors = filteredData.contractors.filter(c => c.sponsoringState === filters.sponsoringState);
-      // Filter cruises to match the remaining contractors
-      const contractorIds = filteredData.contractors.map(c => c.contractorId);
-      filteredData.cruises = filteredData.cruises.filter(c => contractorIds.includes(c.contractorId));
-    }
-    
-    if (filters.year) {
-      filteredData.contractors = filteredData.contractors.filter(c => c.contractualYear === filters.year);
-      // Filter cruises to match the remaining contractors
-      const contractorIds = filteredData.contractors.map(c => c.contractorId);
-      filteredData.cruises = filteredData.cruises.filter(c => contractorIds.includes(c.contractorId));
-    }
-    
-    // Apply cruise filters
-    if (filters.cruiseId) {
-      filteredData.cruises = filteredData.cruises.filter(c => c.cruiseId === filters.cruiseId);
-    }
-    
-    console.log("Filtered data:", {
-      contractors: filteredData.contractors.length,
-      cruises: filteredData.cruises.length,
-      stations: filteredData.cruises.flatMap(c => c.stations || []).length
-    });
-    
-    // Set the filtered data
-    setMapData(filteredData);
-  };
+    checkMapDataConsistency();
+  }, [mapData]);
   
+  // Improved data loading and filtering effect
+  useEffect(() => {
+    // On initial load, fetch data
+    if (!initialDataLoaded) {
+      console.log("Initial load - fetching data");
+      refreshData();
+    } 
+    // When initial data is loaded and filters change, filter existing data
+    else if (Object.keys(filters).length > 0 && originalMapData) {
+      console.log("Filters changed, applying filters to data");
+      filterExistingData();
+    }
+    // When filters are cleared, restore original data
+    else if (Object.keys(filters).length === 0 && originalMapData) {
+      console.log("No filters active, restoring original data");
+      updateMapData(originalMapData);
+    }
+  }, [filters, initialDataLoaded]);
+
   // Fetch complete fresh data
   const refreshData = async () => {
     try {
@@ -221,7 +176,10 @@ export const FilterProvider: React.FC<{ children: ReactNode }> = ({ children }) 
         }
         
         // Always set as current map data
-        setMapData(data);
+        updateMapData(data);
+        
+        // Signal that initial data is loaded
+        setInitialDataLoaded(true);
       } else {
         console.error("Received invalid data format:", data);
         setError("Received invalid data from server");
@@ -231,35 +189,129 @@ export const FilterProvider: React.FC<{ children: ReactNode }> = ({ children }) 
       setError('Failed to load map data. Please try again later.');
       
       // Make sure mapData isn't left in an inconsistent state
-      setMapData({ contractors: [], cruises: [] });
+      updateMapData({ contractors: [], cruises: [] });
     } finally {
       setLoading(false);
     }
   };
   
-  // Simple, clean filter setter
-  const setFilter = (key: keyof MapFilterParams, value: any) => {
+  // Apply filters to existing data in memory - completely rewritten for robustness
+  const filterExistingData = () => {
+    if (!originalMapData) {
+      console.log("No original data available for filtering");
+      return;
+    }
+    
+    console.log("Filtering existing data with:", filters);
+    
     try {
-      setFilters(prev => {
-        const newFilters = { ...prev };
+      // Special handling for contractorId filter - direct and efficient
+      if (filters.contractorId) {
+        console.log(`Direct filtering by contractorId: ${filters.contractorId}`);
         
-        // Remove filter if value is empty
-        if (value === undefined || value === null || value === '' || value === 'all') {
-          delete newFilters[key];
-        } else {
-          // Set the new filter value
-          newFilters[key] = value;
+        const filteredData = {
+          contractors: originalMapData.contractors.filter(c => c.contractorId === filters.contractorId),
+          cruises: originalMapData.cruises.filter(c => c.contractorId === filters.contractorId)
+        };
+        
+        console.log("After contractorId filtering:", {
+          contractors: filteredData.contractors.length,
+          cruises: filteredData.cruises.length,
+          stations: filteredData.cruises.flatMap(c => c.stations || []).length
+        });
+        
+        updateMapData(filteredData);
+        return; // Exit early for this special case
+      }
+      
+      // Create deep copies to avoid reference issues
+      const filteredData = {
+        contractors: JSON.parse(JSON.stringify(originalMapData.contractors)),
+        cruises: JSON.parse(JSON.stringify(originalMapData.cruises))
+      };
+      
+      // STEP 1: Filter contractors based on applied filters
+      let filteredContractors = [...originalMapData.contractors];
+      
+      // Filter by mineral/contract type if specified
+      if (filters.mineralTypeId && filterOptions) {
+        const selectedContractType = filterOptions.contractTypes.find(
+          type => type.contractTypeId === filters.mineralTypeId
+        );
+        
+        if (selectedContractType) {
+          console.log(`Filtering by mineralType: ${selectedContractType.contractTypeName}`);
+          filteredContractors = filteredContractors.filter(c => 
+            c.contractType === selectedContractType.contractTypeName
+          );
         }
-        
-        console.log(`Updated filters:`, newFilters);
-        return newFilters;
+      }
+      
+      // Filter by contract status if specified
+      if (filters.contractStatusId) {
+        console.log(`Filtering by contractStatusId: ${filters.contractStatusId}`);
+        filteredContractors = filteredContractors.filter(c => 
+          c.contractStatusId === filters.contractStatusId
+        );
+      }
+      
+      // Filter by sponsoring state if specified
+      if (filters.sponsoringState) {
+        console.log(`Filtering by sponsoringState: ${filters.sponsoringState}`);
+        filteredContractors = filteredContractors.filter(c => 
+          c.sponsoringState === filters.sponsoringState
+        );
+      }
+      
+      // Filter by year if specified
+      if (filters.year) {
+        console.log(`Filtering by year: ${filters.year}`);
+        filteredContractors = filteredContractors.filter(c => 
+          c.contractualYear === filters.year
+        );
+      }
+      
+      // Update the filtered contractors in the result
+      filteredData.contractors = filteredContractors;
+      
+      // STEP 2: Filter cruises based on related contractors
+      let filteredCruises = [...originalMapData.cruises];
+      
+      // If specific cruise filter exists
+      if (filters.cruiseId) {
+        console.log(`Filtering by cruiseId: ${filters.cruiseId}`);
+        filteredCruises = filteredCruises.filter(c => c.cruiseId === filters.cruiseId);
+      }
+      // Otherwise filter based on filtered contractors
+      else if (filteredContractors.length > 0) {
+        const relatedContractorIds = filteredContractors.map(c => c.contractorId);
+        console.log(`Filtering cruises by ${relatedContractorIds.length} related contractors`);
+        filteredCruises = filteredCruises.filter(c => 
+          relatedContractorIds.includes(c.contractorId)
+        );
+      }
+      
+      // Update the filtered cruises in the result
+      filteredData.cruises = filteredCruises;
+      
+      // Log and set the resulting filtered data
+      console.log("Filtered data results:", {
+        contractors: filteredData.contractors.length,
+        cruises: filteredData.cruises.length,
+        stations: filteredData.cruises.flatMap(c => c.stations || []).length
       });
+      
+      updateMapData(filteredData);
     } catch (error) {
-      console.error("Error setting filter:", error);
+      console.error("Error during filtering:", error);
+      // On error, use original data to avoid showing empty data
+      if (originalMapData) {
+        updateMapData(originalMapData);
+      }
     }
   };
   
-  // Reset all filters and restore original data
+  // Improved reset filters function
   const resetFilters = () => {
     console.log("Resetting all filters");
     
@@ -275,14 +327,53 @@ export const FilterProvider: React.FC<{ children: ReactNode }> = ({ children }) 
     setContractorSummary(null);
     setBlockAnalytics(null);
     
-    // If we have original data, restore it
+    // Restore original data if available
     if (originalMapData) {
-      console.log("Restoring original data");
-      setMapData(originalMapData);
+      console.log("Restoring original data from cache");
+      updateMapData(originalMapData);
     } else {
-      // Otherwise fetch fresh data
-      console.log("No original data to restore, fetching fresh data");
+      // If no original data exists, fetch fresh data
+      console.log("No original data cached, fetching fresh data");
       refreshData();
+    }
+  };
+  
+  // Improved set filter function
+  const setFilter = (key: keyof MapFilterParams, value: any) => {
+    try {
+      console.log(`Setting filter: ${key} = ${value}`);
+      
+      setFilters(prev => {
+        const newFilters = { ...prev };
+        
+        // Remove filter if value is empty/invalid
+        if (value === undefined || value === null || value === '' || value === 'all') {
+          console.log(`Removing filter: ${key}`);
+          delete newFilters[key];
+          
+          // If it's a major filter that affects the whole dataset, consider refreshing
+          if (key === 'contractorId' || key === 'mineralTypeId' || 
+              key === 'contractStatusId' || key === 'sponsoringState' || key === 'year') {
+            // Schedule a refresh if no filters remain
+            if (Object.keys(newFilters).length === 0) {
+              setTimeout(() => {
+                if (originalMapData) {
+                  console.log(`After removing ${key}, restoring original data`);
+                  updateMapData(originalMapData);
+                }
+              }, 0);
+            }
+          }
+        } else {
+          // Set the new filter value
+          newFilters[key] = value;
+        }
+        
+        console.log(`Updated filters:`, newFilters);
+        return newFilters;
+      });
+    } catch (error) {
+      console.error("Error setting filter:", error);
     }
   };
   
