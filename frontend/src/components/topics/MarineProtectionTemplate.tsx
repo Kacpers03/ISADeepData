@@ -6,7 +6,7 @@ const MarineProtection: React.FC = () => {
     <div className={styles.container}>
       {/* HERO SECTION */}
       <section className={styles.hero}>
-        <div className={styles.heroContent}>
+        <div className={styles.heroText}>
           <h1 className={styles.heroTitle}>
             Protection of the Marine Environment
           </h1>

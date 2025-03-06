@@ -5,12 +5,13 @@ const Workshops: React.FC = () => {
   return (
     <div className={styles.container}>
       {/* HERO SECTION */}
+
       <section className={styles.hero}>
-        <div className={styles.heroContent}>
-          <h1 className={styles.heroTitle}>Workshops &amp; Webinars</h1>
+        <div className={styles.heroText}>
+          <h1 className={styles.heroTitle}>Workshops </h1>
           <p className={styles.heroSubtitle}>
             Expanding knowledge and fostering collaboration through interactive
-            events.
+            events.{" "}
           </p>
         </div>
       </section>

@@ -1,5 +1,6 @@
 import React from "react";
 import styles from "../../styles/topics/MiningCode.module.css";
+import { FaGem, FaVial, FaLayerGroup } from "react-icons/fa";
 
 const MiningCode: React.FC = () => {
   return (
@@ -30,36 +31,30 @@ const MiningCode: React.FC = () => {
 
           <div className={styles.features}>
             <div className={styles.feature}>
-              <img
-                src="/icons/polymetallic.svg"
-                alt="Polymetallic nodules"
-                className={styles.icon}
-              />
-              <h3>Polymetallic Nodules</h3>
+              <div className={styles.featureHeader}>
+                <h3>Polymetallic Nodules</h3>
+                <FaGem className={styles.icon} />
+              </div>
               <p>
                 Regulations for exploring nodules rich in nickel, copper,
                 cobalt, and manganese.
               </p>
             </div>
             <div className={styles.feature}>
-              <img
-                src="/icons/sulphides.svg"
-                alt="Polymetallic sulphides"
-                className={styles.icon}
-              />
-              <h3>Polymetallic Sulphides</h3>
+              <div className={styles.featureHeader}>
+                <h3>Polymetallic Sulphides</h3>
+                <FaVial className={styles.icon} />
+              </div>
               <p>
                 Guidance on sustainable exploration of seafloor massive
                 sulphides.
               </p>
             </div>
             <div className={styles.feature}>
-              <img
-                src="/icons/cobalt.svg"
-                alt="Cobalt crusts"
-                className={styles.icon}
-              />
-              <h3>Cobalt-Rich Crusts</h3>
+              <div className={styles.featureHeader}>
+                <h3>Cobalt-Rich Crusts</h3>
+                <FaLayerGroup className={styles.icon} />
+              </div>
               <p>
                 Regulations for crusts containing cobalt, iron, and other
                 metals.
@@ -80,6 +75,7 @@ const MiningCode: React.FC = () => {
       {/* DETAILS SECTION */}
       <section className={styles.details}>
         <h2 className={styles.sectionTitle}>Regulatory Framework</h2>
+
         <p>
           The Mining Code is continually evolving to address new technologies
           and environmental considerations. It is supplemented by
