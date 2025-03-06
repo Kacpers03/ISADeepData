@@ -13,7 +13,7 @@ interface FilterContextValue {
   
   // Map data
   mapData: MapData | null;
-  originalMapData: MapData | null; // This is the key addition - storing the full dataset
+  originalMapData: MapData | null; 
   
   // Map view state
   viewBounds: { minLat: number; maxLat: number; minLon: number; maxLon: number } | null;
@@ -130,11 +130,22 @@ export const FilterProvider: React.FC<{ children: ReactNode }> = ({ children }) 
       filteredData.cruises = filteredData.cruises.filter(c => c.contractorId === filters.contractorId);
     }
     
-    if (filters.contractTypeId) {
-      filteredData.contractors = filteredData.contractors.filter(c => c.contractTypeId === filters.contractTypeId);
-      // Filter cruises to match the remaining contractors
-      const contractorIds = filteredData.contractors.map(c => c.contractorId);
-      filteredData.cruises = filteredData.cruises.filter(c => contractorIds.includes(c.contractorId));
+    // Fix for mineralTypeId filter - use ContractType (name) instead of contractTypeId
+    if (filters.mineralTypeId && filterOptions) {
+      // Get the contract type name for the selected mineralTypeId
+      const selectedContractType = filterOptions.contractTypes.find(
+        type => type.contractTypeId === filters.mineralTypeId
+      );
+      
+      if (selectedContractType) {
+        filteredData.contractors = filteredData.contractors.filter(
+          c => c.contractType === selectedContractType.contractTypeName
+        );
+        
+        // Filter cruises to match the remaining contractors
+        const contractorIds = filteredData.contractors.map(c => c.contractorId);
+        filteredData.cruises = filteredData.cruises.filter(c => contractorIds.includes(c.contractorId));
+      }
     }
     
     if (filters.contractStatusId) {
@@ -165,7 +176,8 @@ export const FilterProvider: React.FC<{ children: ReactNode }> = ({ children }) 
     
     console.log("Filtered data:", {
       contractors: filteredData.contractors.length,
-      cruises: filteredData.cruises.length
+      cruises: filteredData.cruises.length,
+      stations: filteredData.cruises.flatMap(c => c.stations || []).length
     });
     
     // Set the filtered data
@@ -180,6 +192,12 @@ export const FilterProvider: React.FC<{ children: ReactNode }> = ({ children }) 
       
       // Prepare filter params (don't include view bounds for regular filtering)
       const apiFilters = { ...filters };
+      
+      // Fix Issue #1: Map mineralTypeId to contractTypeId for API call
+      if (apiFilters.mineralTypeId) {
+        apiFilters.contractTypeId = apiFilters.mineralTypeId;
+        delete apiFilters.mineralTypeId;
+      }
       
       console.log("Fetching fresh map data with filters:", apiFilters);
       const data = await apiService.getMapData(apiFilters);
