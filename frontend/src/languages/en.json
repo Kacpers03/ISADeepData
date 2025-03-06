@@ -1,0 +1,145 @@
+{
+    "header": {
+      "home": "ISA DeepData",
+      "subtitle": "International Seabed Authority"
+    },
+    "nav": {
+      "about": "About ISA",
+      "aboutSubItems": {
+        "about": "About",
+        "purpose": "Purpose",
+        "missions": "Missions"
+      },
+      "map": "Map",
+      "library": "Library",
+      "librarySubItems": {
+        "reports": "Reports",
+        "publications": "Publications",
+        "research": "Research"
+      },
+      "gallery": "Gallery",
+      "documents": "Documents"
+    },
+    "home": {
+      "title": "Welcome to ISA DeepData",
+      "subtitle": "Explore the ocean's depths with our interactive maps and resources."
+    },
+    "languages": {
+      "en": "English",
+      "es": "Spanish",
+      "fr": "French"
+    },
+
+"footer": {
+  "contact": "Contact",
+  "topics": "Topics",
+  "information": "Information",
+  "address": "14 - 20 Port Royal Street, Kingston, Jamaica",
+  "email": "news@isa.org.jm",
+  "phone": "+1 (876) 922-9105",
+  "termsOfUse": "Terms of Use",
+  "strategicPlan": "Strategic Plan",
+  "miningCode": "Mining Code",
+  "marineProtection": "Protection of the Marine Environment",
+  "explorationContracts": "Exploration Contracts",
+  "workshops": "Workshops",
+  "copyright": "© 2025 All rights reserved."
+},
+
+
+
+"about": {
+  "title": "About ISA DeepData",
+  "leadText": "ISA DeepData provides innovative solutions for deep-sea data analysis.",
+  "description": "Our platform harnesses cutting-edge technology to transform raw marine data into actionable insights, empowering stakeholders to make informed decisions about sustainable marine resource management.",
+  "features": {
+    "innovativeAnalytics": {
+      "title": "Innovative Analytics",
+      "description": "Transform raw marine data into clear, actionable insights."
+    },
+    "marineInsights": {
+      "title": "Marine Insights",
+      "description": "Leverage expert analysis for sustainable marine management."
+    },
+    "collaborativeExpertise": {
+      "title": "Collaborative Expertise",
+      "description": "Partner with industry leaders to drive innovation and excellence."
+    }
+  },
+  "joinSection": {
+    "title": "Join Our Deep Data Revolution",
+    "description": "Discover how ISA DeepData is transforming the marine industry. Explore our interactive tools, comprehensive reports, and cutting-edge research to stay ahead in the world of deep-sea data."
+  }
+},
+
+
+"strategicPlan": {
+  "hero": {
+    "title": "ISA Strategic Plan",
+    "subtitle": "Guiding the sustainable future of deep seabed mining."
+  },
+  "about": {
+    "title": "About the Strategic Plan",
+    "description": "The ISA Strategic Plan outlines our vision for a balanced, sustainable, and scientifically informed approach to deep seabed resource management. It provides a roadmap for effective regulation, research, and capacity-building, ensuring that exploration and exploitation benefit all of humanity."
+  },
+  "features": {
+    "regulation": {
+      "title": "Robust Regulation",
+      "description": "Establishing strong frameworks to govern seabed activities.",
+      "details": "Our robust regulatory framework is designed to provide clear guidelines and enforceable measures. By incorporating periodic reviews and continuous stakeholder engagement, we ensure that our regulations remain responsive and effective, fostering an environment of accountability and transparency."
+    },
+    "environment": {
+      "title": "Environmental Protection",
+      "description": "Preserving marine ecosystems for future generations.",
+      "details": "Environmental protection is at the heart of our mission. We implement comprehensive conservation measures, including regular environmental assessments and proactive monitoring programs, to ensure the sustainable management of marine ecosystems. This approach not only protects biodiversity but also promotes long-term ecological resilience."
+    },
+    "collaboration": {
+      "title": "Global Collaboration",
+      "description": "Fostering partnerships with stakeholders worldwide.",
+      "details": "Global collaboration is essential for harnessing the collective expertise of our international partners. By working closely with global stakeholders, regulatory bodies, and scientific communities, we strive to build a cohesive and innovative framework that benefits all parties involved. This spirit of partnership ensures that we share knowledge, harmonize best practices, and jointly address the challenges of deep seabed mining."
+    }
+  },
+  "download": {
+    "title": "Download the Strategic Plan",
+    "description": "Access the full ISA Strategic Plan document and explore the key objectives, regulations, and initiatives shaping the future of deep seabed mining.",
+    "button": "View and Download PDF"
+  }
+},
+
+
+"miningCode": {
+  "hero": {
+    "title": "The Mining Code",
+    "subtitle": "A comprehensive set of rules, regulations and procedures for sustainable exploration and exploitation of marine minerals."
+  },
+  "about": {
+    "title": "About the Mining Code",
+    "description": "The \"Mining Code\" refers to the complete framework issued by the International Seabed Authority to regulate prospecting, exploration, and exploitation of marine minerals in the international seabed Area. It encompasses regulations, recommendations, and procedures designed to ensure that seabed activities are carried out responsibly and benefit all of humankind."
+  },
+  "features": {
+    "polymetallic": {
+      "title": "Polymetallic Nodules",
+      "description": "Regulations for exploring nodules rich in nickel, copper, cobalt, and manganese."
+    },
+    "sulphides": {
+      "title": "Polymetallic Sulphides",
+      "description": "Guidance on sustainable exploration of seafloor massive sulphides."
+    },
+    "cobalt": {
+      "title": "Cobalt-Rich Crusts",
+      "description": "Regulations for crusts containing cobalt, iron, and other metals."
+    }
+  },
+  "details": {
+    "title": "Regulatory Framework",
+    "description1": "The Mining Code is continually evolving to address new technologies and environmental considerations. It is supplemented by recommendations from the Legal and Technical Commission, ensuring that the best available scientific and technical information is integrated into regulations.",
+    "description2": "The ISA also works on <strong>draft exploitation regulations</strong>, commonly referred to as the \"Mining Code,\" which outline the responsibilities of contractors and States sponsoring them, environmental protection measures, and financial payment structures."
+  },
+  "cta": {
+    "title": "Explore the Code Further",
+    "description": "Learn how the Mining Code fosters sustainable management of seabed resources, promotes international cooperation, and balances economic development with marine environmental protection.",
+    "button": "Contact Us"
+  }
+}
+
+  }

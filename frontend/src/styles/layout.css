@@ -159,3 +159,18 @@ footer {
   font-size: 1.25rem;
   margin-bottom: 2rem;
 }
+
+
+.dropdown-item {
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background-color 0.2s;
+}
+
+.dropdown-item:hover {
+  background-color: #f8f9fa;
+}
+
+.dropdown-item.fw-bold {
+  background-color: #f1f8ff;
+}

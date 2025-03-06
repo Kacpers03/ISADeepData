@@ -1,13 +1,17 @@
+// frontend/src/shared/footer.tsx
 import Link from "next/link";
 import React from "react";
+import { useLanguage } from "../contexts/languageContext";
 
 export default function Footer() {
+  const { t } = useLanguage();
+  
   return (
     <footer
       className="text-white"
       style={{ backgroundColor: "#45526e", marginTop: 0 }}
     >
-      {/* Øvre seksjon: Contact, Topics og Information */}
+      {/* Upper section: Contact, Topics and Information */}
       <div className="container p-4">
         <div className="row">
           {/* Contact Section */}
@@ -20,17 +24,16 @@ export default function Footer() {
                 paddingBottom: "5px",
               }}
             >
-              Contact
+              {t('footer.contact')}
             </h6>
             <p className="mt-3">
-              <i className="fas fa-home mr-3"></i> 14 - 20 Port Royal Street,
-              Kingston, Jamaica
+              <i className="fas fa-home mr-3"></i> {t('footer.address')}
             </p>
             <p>
-              <i className="fas fa-envelope mr-3"></i> news@isa.org.jm
+              <i className="fas fa-envelope mr-3"></i> {t('footer.email')}
             </p>
             <p>
-              <i className="fas fa-phone mr-3"></i> +1 (876) 922-9105
+              <i className="fas fa-phone mr-3"></i> {t('footer.phone')}
             </p>
           </div>
 
@@ -44,14 +47,14 @@ export default function Footer() {
                 paddingBottom: "5px",
               }}
             >
-              Topics
+              {t('footer.topics')}
             </h6>
             <p className="mt-3">
               <Link
                 href="/topics/StrategicPlan"
                 className="text-white text-decoration-none"
               >
-                Strategic Plan
+                {t('footer.strategicPlan')}
               </Link>
             </p>
             <p>
@@ -59,7 +62,7 @@ export default function Footer() {
                 href="/topics/MiningCode"
                 className="text-white text-decoration-none"
               >
-                Mining Code
+                {t('footer.miningCode')}
               </Link>
             </p>
             <p>
@@ -67,7 +70,7 @@ export default function Footer() {
                 href="/topics/MarineProtection"
                 className="text-white text-decoration-none"
               >
-                Protection of the Marine Environment
+                {t('footer.marineProtection')}
               </Link>
             </p>
             <p>
@@ -75,7 +78,7 @@ export default function Footer() {
                 href="/topics/ExplorationContracts"
                 className="text-white text-decoration-none"
               >
-                Exploration Contracts
+                {t('footer.explorationContracts')}
               </Link>
             </p>
 
@@ -84,7 +87,7 @@ export default function Footer() {
                 href="/topics/Workshops"
                 className="text-white text-decoration-none"
               >
-                Workshops
+                {t('footer.workshops')}
               </Link>
             </p>
           </div>
@@ -99,21 +102,21 @@ export default function Footer() {
                 paddingBottom: "5px",
               }}
             >
-              Information
+              {t('footer.information')}
             </h6>
             <p className="mt-3">
               <Link
                 href="/information/terms"
                 className="text-white text-decoration-none"
               >
-                Terms of Use
+                {t('footer.termsOfUse')}
               </Link>
             </p>
           </div>
         </div>
       </div>
 
-      {/* Kreativ divider uten mellomrom */}
+      {/* Creative divider without space */}
       <div className="container">
         <div className="row">
           <div className="col-12">
@@ -143,14 +146,14 @@ export default function Footer() {
         </div>
       </div>
 
-      {/* Nedre seksjon: Copyright og sosiale lenker */}
+      {/* Lower section: Copyright and social links */}
       <div className="container">
         <div className="row d-flex align-items-center">
-          {/* Venstre side */}
+          {/* Left side */}
           <div className="col-md-7 col-lg-8 text-center text-md-start">
-            <div className="p-3">© 2025 All rights reserved.</div>
+            <div className="p-3">{t('footer.copyright')}</div>
           </div>
-          {/* Høyre side: Sosiale ikoner */}
+          {/* Right side: Social icons */}
           <div className="col-md-5 col-lg-4 ml-lg-0 text-center text-md-end">
             <a
               href="https://www.facebook.com/ISBAHeadquarters"

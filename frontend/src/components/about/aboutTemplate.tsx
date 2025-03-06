@@ -1,5 +1,9 @@
 // components/AboutTemplate.tsx
+import { useLanguage } from "../../contexts/languageContext";
+
 export default function AboutTemplate() {
+  const { t } = useLanguage();
+  
   return (
     <section className="py-3 py-md-5">
       <div className="container">
@@ -15,16 +19,12 @@ export default function AboutTemplate() {
           <div className="col-12 col-lg-6 col-xl-7">
             <div className="row justify-content-xl-center">
               <div className="col-12 col-xl-11">
-                <h2 className="mb-3">About ISA DeepData</h2>
+                <h2 className="mb-3">{t('about.title')}</h2>
                 <p className="lead fs-4 text-secondary mb-3">
-                  ISA DeepData provides innovative solutions for deep-sea data
-                  analysis.
+                  {t('about.leadText')}
                 </p>
                 <p className="mb-5">
-                  Our platform harnesses cutting-edge technology to transform
-                  raw marine data into actionable insights, empowering
-                  stakeholders to make informed decisions about sustainable
-                  marine resource management.
+                  {t('about.description')}
                 </p>
                 <div className="row gy-4 gy-md-0 gx-xxl-5">
                   <div className="col-12 col-md-4">
@@ -45,10 +45,9 @@ export default function AboutTemplate() {
                         </svg>
                       </div>
                       <div>
-                        <h2 className="h5 mb-2">Innovative Analytics</h2>
+                        <h2 className="h5 mb-2">{t('about.features.innovativeAnalytics.title')}</h2>
                         <p className="text-secondary mb-0">
-                          Transform raw marine data into clear, actionable
-                          insights.
+                          {t('about.features.innovativeAnalytics.description')}
                         </p>
                       </div>
                     </div>
@@ -69,10 +68,9 @@ export default function AboutTemplate() {
                         </svg>
                       </div>
                       <div>
-                        <h2 className="h5 mb-2">Marine Insights</h2>
+                        <h2 className="h5 mb-2">{t('about.features.marineInsights.title')}</h2>
                         <p className="text-secondary mb-0">
-                          Leverage expert analysis for sustainable marine
-                          management.
+                          {t('about.features.marineInsights.description')}
                         </p>
                       </div>
                     </div>
@@ -96,23 +94,19 @@ export default function AboutTemplate() {
                         </svg>
                       </div>
                       <div>
-                        <h2 className="h5 mb-2">Collaborative Expertise</h2>
+                        <h2 className="h5 mb-2">{t('about.features.collaborativeExpertise.title')}</h2>
                         <p className="text-secondary mb-0">
-                          Partner with industry leaders to drive innovation and
-                          excellence.
+                          {t('about.features.collaborativeExpertise.description')}
                         </p>
                       </div>
                     </div>
                   </div>
                 </div>
-                {/* Ekstra innhold – f.eks. en call-to-action */}
+                {/* Extra content - e.g. a call-to-action */}
                 <div className="mt-5">
-                  <h3 className="mb-3">Join Our Deep Data Revolution</h3>
+                  <h3 className="mb-3">{t('about.joinSection.title')}</h3>
                   <p className="text-secondary">
-                    Discover how ISA DeepData is transforming the marine
-                    industry. Explore our interactive tools, comprehensive
-                    reports, and cutting-edge research to stay ahead in the
-                    world of deep-sea data.
+                    {t('about.joinSection.description')}
                   </p>
                 </div>
               </div>

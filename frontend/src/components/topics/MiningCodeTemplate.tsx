@@ -1,16 +1,18 @@
 import React from "react";
 import styles from "../../styles/topics/MiningCode.module.css";
+import { useLanguage } from "../../contexts/languageContext";
 
 const MiningCode: React.FC = () => {
+  const { t } = useLanguage();
+  
   return (
     <div className={styles.container}>
       {/* HERO SECTION */}
       <section className={styles.hero}>
         <div className={styles.heroText}>
-          <h1 className={styles.heroTitle}>The Mining Code</h1>
+          <h1 className={styles.heroTitle}>{t('miningCode.hero.title')}</h1>
           <p className={styles.heroSubtitle}>
-            A comprehensive set of rules, regulations and procedures for
-            sustainable exploration and exploitation of marine minerals.
+            {t('miningCode.hero.subtitle')}
           </p>
         </div>
       </section>
@@ -18,14 +20,9 @@ const MiningCode: React.FC = () => {
       {/* ABOUT SECTION */}
       <section className={styles.about}>
         <div className={styles.textBlock}>
-          <h2>About the Mining Code</h2>
+          <h2>{t('miningCode.about.title')}</h2>
           <p>
-            The “Mining Code” refers to the complete framework issued by the
-            International Seabed Authority to regulate prospecting, exploration,
-            and exploitation of marine minerals in the international seabed
-            Area. It encompasses regulations, recommendations, and procedures
-            designed to ensure that seabed activities are carried out
-            responsibly and benefit all of humankind.
+            {t('miningCode.about.description')}
           </p>
 
           <div className={styles.features}>
@@ -35,10 +32,9 @@ const MiningCode: React.FC = () => {
                 alt="Polymetallic nodules"
                 className={styles.icon}
               />
-              <h3>Polymetallic Nodules</h3>
+              <h3>{t('miningCode.features.polymetallic.title')}</h3>
               <p>
-                Regulations for exploring nodules rich in nickel, copper,
-                cobalt, and manganese.
+                {t('miningCode.features.polymetallic.description')}
               </p>
             </div>
             <div className={styles.feature}>
@@ -47,10 +43,9 @@ const MiningCode: React.FC = () => {
                 alt="Polymetallic sulphides"
                 className={styles.icon}
               />
-              <h3>Polymetallic Sulphides</h3>
+              <h3>{t('miningCode.features.sulphides.title')}</h3>
               <p>
-                Guidance on sustainable exploration of seafloor massive
-                sulphides.
+                {t('miningCode.features.sulphides.description')}
               </p>
             </div>
             <div className={styles.feature}>
@@ -59,10 +54,9 @@ const MiningCode: React.FC = () => {
                 alt="Cobalt crusts"
                 className={styles.icon}
               />
-              <h3>Cobalt-Rich Crusts</h3>
+              <h3>{t('miningCode.features.cobalt.title')}</h3>
               <p>
-                Regulations for crusts containing cobalt, iron, and other
-                metals.
+                {t('miningCode.features.cobalt.description')}
               </p>
             </div>
           </div>
@@ -79,32 +73,21 @@ const MiningCode: React.FC = () => {
 
       {/* DETAILS SECTION */}
       <section className={styles.details}>
-        <h2 className={styles.sectionTitle}>Regulatory Framework</h2>
+        <h2 className={styles.sectionTitle}>{t('miningCode.details.title')}</h2>
         <p>
-          The Mining Code is continually evolving to address new technologies
-          and environmental considerations. It is supplemented by
-          recommendations from the Legal and Technical Commission, ensuring that
-          the best available scientific and technical information is integrated
-          into regulations.
+          {t('miningCode.details.description1')}
         </p>
-        <p>
-          The ISA also works on <strong>draft exploitation regulations</strong>,
-          commonly referred to as the “Mining Code,” which outline the
-          responsibilities of contractors and States sponsoring them,
-          environmental protection measures, and financial payment structures.
-        </p>
+        <p dangerouslySetInnerHTML={{ __html: t('miningCode.details.description2') }} />
       </section>
 
       {/* CTA SECTION */}
       <section className={styles.cta}>
-        <h2>Explore the Code Further</h2>
+        <h2>{t('miningCode.cta.title')}</h2>
         <p>
-          Learn how the Mining Code fosters sustainable management of seabed
-          resources, promotes international cooperation, and balances economic
-          development with marine environmental protection.
+          {t('miningCode.cta.description')}
         </p>
         <a href="/contact" className={styles.ctaButton}>
-          Contact Us
+          {t('miningCode.cta.button')}
         </a>
       </section>
     </div>
