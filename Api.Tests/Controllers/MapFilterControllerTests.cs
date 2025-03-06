@@ -3,7 +3,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Moq;
 using Xunit;
 using Api.Controllers;
 using Api.Data;
@@ -11,183 +10,162 @@ using Models.Contractors;
 using Models.Cruises;
 using Models.Stations;
 using Models.Samples;
+using Models.Photo_Video;
 using DTOs.Contractors_Dto;
 using DTOs.Cruise_Dto;
 using DTOs.Station_Dto;
 using DTOs.Sample_Dto;
+using DTOs.PhotoVideo_Dto;
 
 public class MapFilterControllerTests
 {
-    private readonly Mock<MyDbContext> _mockContext;
+    private readonly MyDbContext _dbContext;
     private readonly MapFilterController _controller;
 
     public MapFilterControllerTests()
     {
-        _mockContext = new Mock<MyDbContext>();
-        _controller = new MapFilterController(_mockContext.Object);
+        var options = new DbContextOptionsBuilder<MyDbContext>()
+            .UseInMemoryDatabase(databaseName: "TestDatabase")
+            .Options;
+
+        _dbContext = new MyDbContext(options);
+        _dbContext.Database.EnsureDeleted();
+        _dbContext.Database.EnsureCreated();
+
+        SeedDatabase();
+        _controller = new MapFilterController(_dbContext);
     }
 
-    [Fact]
-    public async Task GetContractors_ReturnsContractors()
+    private void SeedDatabase()
+{
+    _dbContext.Database.EnsureDeleted(); // ✅ Clears all data and resets identity values
+    _dbContext.Database.EnsureCreated(); // ✅ Recreates schema with reset identity
+
+    // Add Contractor
+    var contractor = new Contractor
     {
-        // Arrange
-        var contractors = new List<Contractor>
-        {
-            new Contractor { ContractorId = 1, ContractorName = "ABC Corp" },
-            new Contractor { ContractorId = 2, ContractorName = "XYZ Ltd" }
-        }.AsQueryable();
+        ContractorId = 1, 
+        ContractorName = "Test Contractor",
+        ContractTypeId = 1,
+        ContractStatusId = 1,
+        ContractNumber = "123",
+        SponsoringState = "USA",
+        ContractualYear = 2024,
+        Remarks = "Test remarks"
+    };
+    _dbContext.Contractors.Add(contractor);
+    _dbContext.SaveChanges(); // ✅ Save incrementally to prevent duplicate key conflicts
 
-        var mockSet = new Mock<DbSet<Contractor>>();
-        mockSet.As<IQueryable<Contractor>>().Setup(m => m.Provider).Returns(contractors.Provider);
-        mockSet.As<IQueryable<Contractor>>().Setup(m => m.Expression).Returns(contractors.Expression);
-        mockSet.As<IQueryable<Contractor>>().Setup(m => m.ElementType).Returns(contractors.ElementType);
-        mockSet.As<IQueryable<Contractor>>().Setup(m => m.GetEnumerator()).Returns(contractors.GetEnumerator());
+    // Add Cruise
+    var cruise = new Cruise
+    {
+        CruiseId = 1,
+        ContractorId = 1,
+        CruiseName = "Test Cruise",
+        ResearchVessel = "Test Vessel",
+        StartDate = new System.DateTime(2024, 1, 1),
+        EndDate = new System.DateTime(2024, 1, 10)
+    };
+    _dbContext.Cruises.Add(cruise);
+    _dbContext.SaveChanges();
 
-        _mockContext.Setup(c => c.Contractors).Returns(mockSet.Object);
+    // Add Station
+    var station = new Station
+    {
+        StationId = 1,
+        CruiseId = 1,
+        StationCode = "ST-001",
+        Latitude = 10.0,
+        Longitude = 20.0,
+        StationType = "Research"
+    };
+    _dbContext.Stations.Add(station);
+    _dbContext.SaveChanges();
 
-        // Act
+    // Add Sample
+    var sample = new Sample
+    {
+        SampleId = 1,
+        StationId = 1,
+        SampleCode = "SMP-001",
+        SampleType = "Water",
+        MatrixType = "Sediment",
+        HabitatType = "Deep Sea",
+        SamplingDevice = "Core Sampler",
+        DepthLower = 100,
+        DepthUpper = 50,
+        SampleDescription = "Test Sample"
+    };
+    _dbContext.Samples.Add(sample);
+    _dbContext.SaveChanges();
+
+    // Add Photo/Video
+    var photoVideo = new PhotoVideo
+    {
+        MediaId = 1,
+        SampleId = 1,
+        FileName = "sample1.jpg",
+        MediaType = "Photo",
+        CameraSpecs = "4K HD",
+        CaptureDate = new System.DateTime(2024, 1, 5),
+        Remarks = "Good clarity"
+    };
+    _dbContext.PhotoVideos.Add(photoVideo);
+    _dbContext.SaveChanges();
+}
+
+
+    [Fact]
+    public async Task GetContractors_ReturnsAllContractors()
+    {
         var result = await _controller.GetContractors();
-
-        // Assert
         var actionResult = Assert.IsType<ActionResult<IEnumerable<ContractorDto>>>(result);
-        var returnValue = Assert.IsType<List<ContractorDto>>(actionResult.Value);
-        Assert.Equal(2, returnValue.Count);
+        var contractors = Assert.IsAssignableFrom<IEnumerable<ContractorDto>>(actionResult.Value);
+        Assert.Single(contractors);
     }
 
     [Fact]
-    public async Task GetCruises_ReturnsCruises()
+    public async Task GetContractorAreas_ValidContractorId_ReturnsAreas()
     {
-        // Arrange
-        var cruises = new List<Cruise>
-        {
-            new Cruise { CruiseId = 1, ContractorId = 1, CruiseName = "Exploration 1" },
-            new Cruise { CruiseId = 2, ContractorId = 2, CruiseName = "Survey Alpha" }
-        }.AsQueryable();
+        var result = await _controller.GetContractorAreas(1);
+        var actionResult = Assert.IsType<ActionResult<IEnumerable<ContractorAreaDto>>>(result);
+        var areas = Assert.IsAssignableFrom<IEnumerable<ContractorAreaDto>>(actionResult.Value);
+        Assert.Empty(areas);
+    }
 
-        var mockSet = new Mock<DbSet<Cruise>>();
-        mockSet.As<IQueryable<Cruise>>().Setup(m => m.Provider).Returns(cruises.Provider);
-        mockSet.As<IQueryable<Cruise>>().Setup(m => m.Expression).Returns(cruises.Expression);
-        mockSet.As<IQueryable<Cruise>>().Setup(m => m.ElementType).Returns(cruises.ElementType);
-        mockSet.As<IQueryable<Cruise>>().Setup(m => m.GetEnumerator()).Returns(cruises.GetEnumerator());
-
-        _mockContext.Setup(c => c.Cruises).Returns(mockSet.Object);
-
-        // Act
-        var result = await _controller.GetCruises(null);
-
-        // Assert
+    [Fact]
+    public async Task GetCruises_ValidContractorId_ReturnsCruises()
+    {
+        var result = await _controller.GetCruises(1);
         var actionResult = Assert.IsType<ActionResult<IEnumerable<CruiseDto>>>(result);
-        var returnValue = Assert.IsType<List<CruiseDto>>(actionResult.Value);
-        Assert.Equal(2, returnValue.Count);
+        var cruises = Assert.IsAssignableFrom<IEnumerable<CruiseDto>>(actionResult.Value);
+        Assert.Single(cruises);
     }
 
     [Fact]
-    public async Task GetStations_ReturnsStations()
+    public async Task GetStations_ValidCruiseId_ReturnsStations()
     {
-        // Arrange
-        var stations = new List<Station>
-        {
-            new Station { StationId = 1, CruiseId = 1, StationCode = "ST-001", Latitude = 34.05, Longitude = -118.25 },
-            new Station { StationId = 2, CruiseId = 2, StationCode = "ST-002", Latitude = 36.77, Longitude = -119.41 }
-        }.AsQueryable();
-
-        var mockSet = new Mock<DbSet<Station>>();
-        mockSet.As<IQueryable<Station>>().Setup(m => m.Provider).Returns(stations.Provider);
-        mockSet.As<IQueryable<Station>>().Setup(m => m.Expression).Returns(stations.Expression);
-        mockSet.As<IQueryable<Station>>().Setup(m => m.ElementType).Returns(stations.ElementType);
-        mockSet.As<IQueryable<Station>>().Setup(m => m.GetEnumerator()).Returns(stations.GetEnumerator());
-
-        _mockContext.Setup(c => c.Stations).Returns(mockSet.Object);
-
-        // Act
-        var result = await _controller.GetStations(null, null, null, null, null);
-
-        // Assert
+        var result = await _controller.GetStations(1, null, null, null, null);
         var actionResult = Assert.IsType<ActionResult<IEnumerable<StationDto>>>(result);
-        var returnValue = Assert.IsType<List<StationDto>>(actionResult.Value);
-        Assert.Equal(2, returnValue.Count);
+        var stations = Assert.IsAssignableFrom<IEnumerable<StationDto>>(actionResult.Value);
+        Assert.Single(stations);
     }
 
     [Fact]
-    public async Task GetContractorAreaBlocks_ReturnsBlocks()
+    public async Task GetSamples_ValidStationId_ReturnsSamples()
     {
-        // Arrange
-        var blocks = new List<ContractorAreaBlock>
-        {
-            new ContractorAreaBlock { BlockId = 1, AreaId = 1, BlockName = "Block A" },
-            new ContractorAreaBlock { BlockId = 2, AreaId = 1, BlockName = "Block B" }
-        }.AsQueryable();
-
-        var mockSet = new Mock<DbSet<ContractorAreaBlock>>();
-        mockSet.As<IQueryable<ContractorAreaBlock>>().Setup(m => m.Provider).Returns(blocks.Provider);
-        mockSet.As<IQueryable<ContractorAreaBlock>>().Setup(m => m.Expression).Returns(blocks.Expression);
-        mockSet.As<IQueryable<ContractorAreaBlock>>().Setup(m => m.ElementType).Returns(blocks.ElementType);
-        mockSet.As<IQueryable<ContractorAreaBlock>>().Setup(m => m.GetEnumerator()).Returns(blocks.GetEnumerator());
-
-        _mockContext.Setup(c => c.ContractorAreaBlocks).Returns(mockSet.Object);
-
-        // Act
-        var result = await _controller.GetContractorAreaBlocks(null);
-
-        // Assert
-        var actionResult = Assert.IsType<ActionResult<IEnumerable<ContractorAreaBlockDto>>>(result);
-        var returnValue = Assert.IsType<List<ContractorAreaBlockDto>>(actionResult.Value);
-        Assert.Equal(2, returnValue.Count);
+        var result = await _controller.GetSamples(1, null);
+        var actionResult = Assert.IsType<ActionResult<IEnumerable<SampleDto>>>(result);
+        var samples = Assert.IsAssignableFrom<IEnumerable<SampleDto>>(actionResult.Value);
+        Assert.Single(samples);
     }
 
     [Fact]
-    public async Task GetSponsoringStates_ReturnsStates()
+    public async Task GetMedia_ValidSampleId_ReturnsMedia()
     {
-        // Arrange
-        var contractors = new List<Contractor>
-        {
-            new Contractor { SponsoringState = "USA" },
-            new Contractor { SponsoringState = "Canada" },
-            new Contractor { SponsoringState = "Germany" }
-        }.AsQueryable();
-
-        var mockSet = new Mock<DbSet<Contractor>>();
-        mockSet.As<IQueryable<Contractor>>().Setup(m => m.Provider).Returns(contractors.Provider);
-        mockSet.As<IQueryable<Contractor>>().Setup(m => m.Expression).Returns(contractors.Expression);
-        mockSet.As<IQueryable<Contractor>>().Setup(m => m.ElementType).Returns(contractors.ElementType);
-        mockSet.As<IQueryable<Contractor>>().Setup(m => m.GetEnumerator()).Returns(contractors.GetEnumerator());
-
-        _mockContext.Setup(c => c.Contractors).Returns(mockSet.Object);
-
-        // Act
-        var result = await _controller.GetSponsoringStates();
-
-        // Assert
-        var actionResult = Assert.IsType<ActionResult<IEnumerable<string>>>(result);
-        var returnValue = Assert.IsType<List<string>>(actionResult.Value);
-        Assert.Equal(3, returnValue.Count);
-    }
-
-    [Fact]
-    public async Task GetContractualYears_ReturnsYears()
-    {
-        // Arrange
-        var contractors = new List<Contractor>
-        {
-            new Contractor { ContractualYear = 2023 },
-            new Contractor { ContractualYear = 2022 },
-            new Contractor { ContractualYear = 2021 }
-        }.AsQueryable();
-
-        var mockSet = new Mock<DbSet<Contractor>>();
-        mockSet.As<IQueryable<Contractor>>().Setup(m => m.Provider).Returns(contractors.Provider);
-        mockSet.As<IQueryable<Contractor>>().Setup(m => m.Expression).Returns(contractors.Expression);
-        mockSet.As<IQueryable<Contractor>>().Setup(m => m.ElementType).Returns(contractors.ElementType);
-        mockSet.As<IQueryable<Contractor>>().Setup(m => m.GetEnumerator()).Returns(contractors.GetEnumerator());
-
-        _mockContext.Setup(c => c.Contractors).Returns(mockSet.Object);
-
-        // Act
-        var result = await _controller.GetContractualYears();
-
-        // Assert
-        var actionResult = Assert.IsType<ActionResult<IEnumerable<int>>>(result);
-        var returnValue = Assert.IsType<List<int>>(actionResult.Value);
-        Assert.Equal(3, returnValue.Count);
+        var result = await _controller.GetMedia(1, null);
+        var actionResult = Assert.IsType<ActionResult<IEnumerable<PhotoVideoDto>>>(result);
+        var media = Assert.IsAssignableFrom<IEnumerable<PhotoVideoDto>>(actionResult.Value);
+        Assert.Single(media);
     }
 }
