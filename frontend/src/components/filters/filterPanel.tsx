@@ -12,7 +12,8 @@ export const ImprovedFilterPanel = () => {
     loading,
     mapData,
     viewBounds,
-    setViewBounds
+    setViewBounds,
+    refreshData 
   } = useFilter();
   
   // State for filtered dropdown options
@@ -132,24 +133,34 @@ export const ImprovedFilterPanel = () => {
   };
   
   // Handle select change with proper type conversion
-  const handleSelectChange = (e, key) => {
-    const value = e.target.value;
+ // I ImprovedFilterPanel.tsx
+const handleSelectChange = (e, key) => {
+  const value = e.target.value;
+  
+  if (value === 'all') {
+    // Når "All" er valgt, fjern filteret
+    setFilter(key, undefined);
     
-    if (value === 'all') {
-      // When "All" is selected, remove that filter
-      setFilter(key, undefined);
-      return;
+    // Sjekk om det er noen aktive filtre igjen
+    const updatedFilters = {...filters};
+    delete updatedFilters[key];
+    
+    // Hvis det ikke er flere filtre igjen, last inn alt på nytt
+    if (Object.keys(updatedFilters).length === 0) {
+      refreshData();
     }
-    
-    // For number values
+  } 
+  else {
+    // For nummer-verdier
     if (['mineralTypeId', 'contractStatusId', 'year', 'cruiseId', 'contractorId'].includes(key)) {
       setFilter(key, parseInt(value, 10));
     } 
-    // For string values
+    // For streng-verdier
     else {
       setFilter(key, value);
     }
-  };
+  }
+};
   
   // Handle search query change
   const handleSearchChange = (e) => {
