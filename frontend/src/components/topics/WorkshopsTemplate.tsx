@@ -6,7 +6,7 @@ const Workshops: React.FC = () => {
     <div className={styles.container}>
       {/* HERO SECTION */}
       <section className={styles.hero}>
-        <div className={styles.heroContent}>
+        <div className={styles.heroText}>
           <h1 className={styles.heroTitle}>Workshops &amp; Webinars</h1>
           <p className={styles.heroSubtitle}>
             Expanding knowledge and fostering collaboration through interactive

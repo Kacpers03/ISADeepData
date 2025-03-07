@@ -8,26 +8,47 @@
 
 /* HERO SECTION */
 .hero {
-  background: url("/images/marine-hero.jpg") no-repeat center center/cover;
-  text-align: center;
-  color: white;
-  padding: 80px 20px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #f7f9fb; /* lighter background to mimic DeepData style */
+  margin-bottom: 40px;
+  border-radius: 8px;
+  overflow: hidden;
 }
 
-.heroContent {
-  background-color: rgba(0, 0, 0, 0.5);
-  display: inline-block;
-  padding: 20px 40px;
+.heroText {
+  flex: 1 1 50%;
+  padding: 40px;
 }
 
 .heroTitle {
-  font-size: 3rem;
+  font-size: 2.5rem;
   margin: 0;
+  color: #003366; /* deep navy/blue color for a UN/ISA feel */
 }
 
 .heroSubtitle {
   font-size: 1.2rem;
   margin-top: 10px;
+  color: #555;
+  max-width: 500px;
+}
+
+.heroImage {
+  flex: 1 1 50%;
+  max-height: 400px;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.heroImage img {
+  width: 100%;
+  height: auto;
+  object-fit: cover;
 }
 
 /* ABOUT SECTION */

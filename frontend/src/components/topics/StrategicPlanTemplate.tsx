@@ -17,9 +17,9 @@ const StrategicPlan: React.FC = () => {
       {/* HERO SECTION */}
       <section className={styles.hero}>
         <div className={styles.heroText}>
-          <h1 className={styles.heroTitle}>{t('strategicPlan.hero.title')}</h1>
+          <h1 className={styles.heroTitle}>{t("strategicPlan.hero.title")}</h1>
           <p className={styles.heroSubtitle}>
-            {t('strategicPlan.hero.subtitle')}
+            {t("strategicPlan.hero.subtitle")}
           </p>
         </div>
       </section>
@@ -27,47 +27,45 @@ const StrategicPlan: React.FC = () => {
       {/* ABOUT SECTION */}
       <section className={styles.about}>
         <div className={styles.aboutContent}>
-          <h2>{t('strategicPlan.about.title')}</h2>
-          <p>
-            {t('strategicPlan.about.description')}
-          </p>
+          <h2>{t("strategicPlan.about.title")}</h2>
+          <p>{t("strategicPlan.about.description")}</p>
           <div className={styles.features}>
             <div className={styles.feature}>
               <div className={styles.featureHeader}>
-                <h3>{t('strategicPlan.features.regulation.title')}</h3>
+                <h3>{t("strategicPlan.features.regulation.title")}</h3>
                 <FaBalanceScale className={styles.icon} />
               </div>
               <p className={styles.featureSummary}>
-                {t('strategicPlan.features.regulation.description')}
+                {t("strategicPlan.features.regulation.description")}
               </p>
               <p className={styles.featureDetails}>
-                {t('strategicPlan.features.regulation.details')}
+                {t("strategicPlan.features.regulation.details")}
               </p>
             </div>
 
             <div className={styles.feature}>
               <div className={styles.featureHeader}>
-                <h3>{t('strategicPlan.features.environment.title')}</h3>
+                <h3>{t("strategicPlan.features.environment.title")}</h3>
                 <FaLeaf className={styles.icon} />
               </div>
               <p className={styles.featureSummary}>
-                {t('strategicPlan.features.environment.description')}
+                {t("strategicPlan.features.environment.description")}
               </p>
               <p className={styles.featureDetails}>
-                {t('strategicPlan.features.environment.details')}
+                {t("strategicPlan.features.environment.details")}
               </p>
             </div>
 
             <div className={styles.feature}>
               <div className={styles.featureHeader}>
-                <h3>{t('strategicPlan.features.collaboration.title')}</h3>
+                <h3>{t("strategicPlan.features.collaboration.title")}</h3>
                 <FaGlobeAmericas className={styles.icon} />
               </div>
               <p className={styles.featureSummary}>
-                {t('strategicPlan.features.collaboration.description')}
+                {t("strategicPlan.features.collaboration.description")}
               </p>
               <p className={styles.featureDetails}>
-                {t('strategicPlan.features.collaboration.details')}
+                {t("strategicPlan.features.collaboration.details")}
               </p>
             </div>
           </div>
@@ -84,12 +82,10 @@ const StrategicPlan: React.FC = () => {
 
       {/* DOWNLOAD SECTION */}
       <section className={styles.downloadSection}>
-        <h2>{t('strategicPlan.download.title')}</h2>
-        <p>
-          {t('strategicPlan.download.description')}
-        </p>
+        <h2>{t("strategicPlan.download.title")}</h2>
+        <p>{t("strategicPlan.download.description")}</p>
         <button className={styles.downloadButton} onClick={handleDownloadClick}>
-          {t('strategicPlan.download.button')}
+          {t("strategicPlan.download.button")}
         </button>
       </section>
     </div>
