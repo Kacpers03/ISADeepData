@@ -4,60 +4,35 @@ import { useLanguage } from "../../contexts/languageContext";
 
 const MiningCode: React.FC = () => {
   const { t } = useLanguage();
-  
+
   return (
     <div className={styles.container}>
       {/* HERO SECTION */}
       <section className={styles.hero}>
         <div className={styles.heroText}>
-          <h1 className={styles.heroTitle}>{t('miningCode.hero.title')}</h1>
-          <p className={styles.heroSubtitle}>
-            {t('miningCode.hero.subtitle')}
-          </p>
+          <h1 className={styles.heroTitle}>{t("miningCode.hero.title")}</h1>
+          <p className={styles.heroSubtitle}>{t("miningCode.hero.subtitle")}</p>
         </div>
       </section>
 
       {/* ABOUT SECTION */}
       <section className={styles.about}>
         <div className={styles.textBlock}>
-          <h2>{t('miningCode.about.title')}</h2>
-          <p>
-            {t('miningCode.about.description')}
-          </p>
+          <h2>{t("miningCode.about.title")}</h2>
+          <p>{t("miningCode.about.description")}</p>
 
           <div className={styles.features}>
             <div className={styles.feature}>
-              <img
-                src="/icons/polymetallic.svg"
-                alt="Polymetallic nodules"
-                className={styles.icon}
-              />
-              <h3>{t('miningCode.features.polymetallic.title')}</h3>
-              <p>
-                {t('miningCode.features.polymetallic.description')}
-              </p>
+              <h3>{t("miningCode.features.polymetallic.title")}</h3>
+              <p>{t("miningCode.features.polymetallic.description")}</p>
             </div>
             <div className={styles.feature}>
-              <img
-                src="/icons/sulphides.svg"
-                alt="Polymetallic sulphides"
-                className={styles.icon}
-              />
-              <h3>{t('miningCode.features.sulphides.title')}</h3>
-              <p>
-                {t('miningCode.features.sulphides.description')}
-              </p>
+              <h3>{t("miningCode.features.sulphides.title")}</h3>
+              <p>{t("miningCode.features.sulphides.description")}</p>
             </div>
             <div className={styles.feature}>
-              <img
-                src="/icons/cobalt.svg"
-                alt="Cobalt crusts"
-                className={styles.icon}
-              />
-              <h3>{t('miningCode.features.cobalt.title')}</h3>
-              <p>
-                {t('miningCode.features.cobalt.description')}
-              </p>
+              <h3>{t("miningCode.features.cobalt.title")}</h3>
+              <p>{t("miningCode.features.cobalt.description")}</p>
             </div>
           </div>
         </div>
@@ -73,21 +48,21 @@ const MiningCode: React.FC = () => {
 
       {/* DETAILS SECTION */}
       <section className={styles.details}>
-        <h2 className={styles.sectionTitle}>{t('miningCode.details.title')}</h2>
-        <p>
-          {t('miningCode.details.description1')}
-        </p>
-        <p dangerouslySetInnerHTML={{ __html: t('miningCode.details.description2') }} />
+        <h2 className={styles.sectionTitle}>{t("miningCode.details.title")}</h2>
+        <p>{t("miningCode.details.description1")}</p>
+        <p
+          dangerouslySetInnerHTML={{
+            __html: t("miningCode.details.description2"),
+          }}
+        />
       </section>
 
       {/* CTA SECTION */}
       <section className={styles.cta}>
-        <h2>{t('miningCode.cta.title')}</h2>
-        <p>
-          {t('miningCode.cta.description')}
-        </p>
+        <h2>{t("miningCode.cta.title")}</h2>
+        <p>{t("miningCode.cta.description")}</p>
         <a href="/contact" className={styles.ctaButton}>
-          {t('miningCode.cta.button')}
+          {t("miningCode.cta.button")}
         </a>
       </section>
     </div>

@@ -29,20 +29,10 @@ const MarineProtection: React.FC = () => {
 
           <div className={styles.features}>
             <div className={styles.feature}>
-              <img
-                src="/icons/conservation.svg"
-                alt="Conservation icon"
-                className={styles.icon}
-              />
               <h3>Conservation Measures</h3>
               <p>Implementing robust measures to safeguard marine habitats.</p>
             </div>
             <div className={styles.feature}>
-              <img
-                src="/icons/monitoring.svg"
-                alt="Monitoring icon"
-                className={styles.icon}
-              />
               <h3>Environmental Monitoring</h3>
               <p>
                 Utilizing advanced technology to monitor ocean health in real
@@ -50,11 +40,6 @@ const MarineProtection: React.FC = () => {
               </p>
             </div>
             <div className={styles.feature}>
-              <img
-                src="/icons/research.svg"
-                alt="Research icon"
-                className={styles.icon}
-              />
               <h3>Scientific Research</h3>
               <p>
                 Supporting research initiatives to understand and mitigate

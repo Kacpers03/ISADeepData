@@ -29,29 +29,14 @@ const Workshops: React.FC = () => {
 
           <div className={styles.features}>
             <div className={styles.feature}>
-              <img
-                src="/icons/training.svg"
-                alt="Training icon"
-                className={styles.icon}
-              />
               <h3>Capacity Building</h3>
               <p>Hands-on training sessions to enhance skills and expertise.</p>
             </div>
             <div className={styles.feature}>
-              <img
-                src="/icons/knowledge.svg"
-                alt="Knowledge icon"
-                className={styles.icon}
-              />
               <h3>Knowledge Sharing</h3>
               <p>Exchange ideas and best practices with global stakeholders.</p>
             </div>
             <div className={styles.feature}>
-              <img
-                src="/icons/network.svg"
-                alt="Networking icon"
-                className={styles.icon}
-              />
               <h3>Networking</h3>
               <p>
                 Connect with professionals, researchers, and industry leaders.
