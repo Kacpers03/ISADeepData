@@ -1,7 +1,20 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useFilter } from '../../contexts/filterContext';
 import styles from '../../styles/map/filter.module.css';
 import { CustomDropdown } from './CustomDropdown';
+
+// Create a simple debounce function instead of importing from lodash
+const debounce = (func, wait) => {
+  let timeout;
+  return function executedFunction(...args) {
+    const later = () => {
+      clearTimeout(timeout);
+      func(...args);
+    };
+    clearTimeout(timeout);
+    timeout = setTimeout(later, wait);
+  };
+};
 
 export const ImprovedFilterPanel = () => {
   const { 
@@ -29,14 +42,17 @@ export const ImprovedFilterPanel = () => {
   const [showResults, setShowResults] = useState(false);
   
   // Count active filters
-  const activeFilterCount = Object.keys(filters).filter(key => 
-    filters[key] !== undefined && filters[key] !== null).length;
+  const activeFilterCount = useMemo(() => 
+    Object.keys(filters).filter(key => 
+      filters[key] !== undefined && filters[key] !== null
+    ).length, [filters]);
   
   // Count results if available
-  const contractorCount = mapData?.contractors.length || 0;
-  const cruiseCount = mapData?.cruises.length || 0;
-  const stationCount = mapData?.cruises.reduce((total, cruise) => 
-    total + (cruise.stations?.length || 0), 0) || 0;
+  const contractorCount = useMemo(() => mapData?.contractors.length || 0, [mapData]);
+  const cruiseCount = useMemo(() => mapData?.cruises.length || 0, [mapData]);
+  const stationCount = useMemo(() => 
+    mapData?.cruises.reduce((total, cruise) => 
+      total + (cruise.stations?.length || 0), 0) || 0, [mapData]);
   
   // Update filtered options whenever mapData or filterOptions change
   useEffect(() => {
@@ -47,8 +63,10 @@ export const ImprovedFilterPanel = () => {
   }, [mapData, filterOptions, filters]);
   
   // This function updates all the dropdown options based on the current filters and data
-  const updateFilteredOptions = () => {
-    const { contractors, cruises } = mapData || { contractors: [], cruises: [] };
+  const updateFilteredOptions = useCallback(() => {
+    if (!mapData || !filterOptions) return;
+    
+    const { contractors, cruises } = mapData;
     
     // Extract all available values from the current filtered data
     
@@ -130,49 +148,43 @@ export const ImprovedFilterPanel = () => {
       }));
       setFilteredContractors(contractorOptions);
     }
-  };
+  }, [mapData, filterOptions, filters]);
   
   // Handle select change with proper type conversion
- // I ImprovedFilterPanel.tsx
-const handleSelectChange = (e, key) => {
-  const value = e.target.value;
-  
-  if (value === 'all') {
-    // Når "All" er valgt, fjern filteret
-    setFilter(key, undefined);
-    
-    // Sjekk om det er noen aktive filtre igjen
-    const updatedFilters = {...filters};
-    delete updatedFilters[key];
-    
-    // Hvis det ikke er flere filtre igjen, last inn alt på nytt
-    if (Object.keys(updatedFilters).length === 0) {
-      refreshData();
-    }
-  } 
-  else {
-    // For nummer-verdier
-    if (['mineralTypeId', 'contractStatusId', 'year', 'cruiseId', 'contractorId'].includes(key)) {
-      setFilter(key, parseInt(value, 10));
+  const handleSelectChange = useCallback((key, value) => {
+    if (value === 'all') {
+      // When "All" is selected, just remove the filter
+      setFilter(key, undefined);
     } 
-    // For streng-verdier
     else {
-      setFilter(key, value);
+      // For number values
+      if (['mineralTypeId', 'contractStatusId', 'year', 'cruiseId', 'contractorId'].includes(key)) {
+        setFilter(key, parseInt(value, 10));
+      } 
+      // For string values
+      else {
+        setFilter(key, value);
+      }
     }
-  }
-};
+  }, [setFilter]);
+  
+  // Debounced select change handler to prevent rapid state updates
+  const debouncedSelectChange = useMemo(() => 
+    debounce((key, value) => {
+      handleSelectChange(key, value);
+    }, 300), [handleSelectChange]);
   
   // Handle search query change
-  const handleSearchChange = (e) => {
+  const handleSearchChange = useCallback((e) => {
     setSearchQuery(e.target.value);
     if (e.target.value.trim() === '') {
       setSearchResults([]);
       setShowResults(false);
     }
-  };
+  }, []);
   
   // Handle search submit with improved searching logic
-  const handleSearch = () => {
+  const handleSearch = useCallback(() => {
     if (!searchQuery.trim()) {
       setSearchResults([]);
       setShowResults(false);
@@ -244,10 +256,10 @@ const handleSelectChange = (e, key) => {
     
     setSearchResults(results.slice(0, 10)); // Limit to 10 results
     setShowResults(true);
-  };
+  }, [searchQuery, mapData]);
   
   // Handle search result click without resetting view
-  const handleResultClick = (result) => {
+  const handleResultClick = useCallback((result) => {
     setShowResults(false);
     setSearchQuery('');
     
@@ -272,14 +284,14 @@ const handleSelectChange = (e, key) => {
         // For other types, handle as needed
         break;
     }
-  };
+  }, [setFilter]);
   
   // Handle search on Enter key
-  const handleKeyPress = (e) => {
+  const handleKeyPress = useCallback((e) => {
     if (e.key === 'Enter') {
       handleSearch();
     }
-  };
+  }, [handleSearch]);
   
   // If filter options aren't loaded yet, show loading
   if (!filterOptions) {
@@ -417,7 +429,7 @@ const handleSelectChange = (e, key) => {
           label="Contractor Name"
           options={contractorOptions}
           value={filters.contractorId?.toString() || 'all'}
-          onChange={(e) => handleSelectChange(e, 'contractorId')}
+          onChange={(e) => debouncedSelectChange('contractorId', e.target.value)}
           isActive={!!filters.contractorId}
           disabled={loading}
         />
@@ -428,7 +440,7 @@ const handleSelectChange = (e, key) => {
           label="Mineral Type"
           options={mineralTypeOptions}
           value={filters.mineralTypeId?.toString() || 'all'}
-          onChange={(e) => handleSelectChange(e, 'mineralTypeId')}
+          onChange={(e) => debouncedSelectChange('mineralTypeId', e.target.value)}
           isActive={!!filters.mineralTypeId}
           disabled={loading}
         />
@@ -439,7 +451,7 @@ const handleSelectChange = (e, key) => {
           label="Contract Status"
           options={contractStatusOptions}
           value={filters.contractStatusId?.toString() || 'all'}
-          onChange={(e) => handleSelectChange(e, 'contractStatusId')}
+          onChange={(e) => debouncedSelectChange('contractStatusId', e.target.value)}
           isActive={!!filters.contractStatusId}
           disabled={loading}
         />
@@ -450,7 +462,7 @@ const handleSelectChange = (e, key) => {
           label="Sponsoring State"
           options={sponsoringStateOptions}
           value={filters.sponsoringState || 'all'}
-          onChange={(e) => handleSelectChange(e, 'sponsoringState')}
+          onChange={(e) => debouncedSelectChange('sponsoringState', e.target.value)}
           isActive={!!filters.sponsoringState}
           disabled={loading}
         />
@@ -461,7 +473,7 @@ const handleSelectChange = (e, key) => {
           label="Contract Year"
           options={yearOptions}
           value={filters.year?.toString() || 'all'}
-          onChange={(e) => handleSelectChange(e, 'year')}
+          onChange={(e) => debouncedSelectChange('year', e.target.value)}
           isActive={!!filters.year}
           disabled={loading}
         />
