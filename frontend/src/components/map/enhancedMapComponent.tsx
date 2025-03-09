@@ -185,59 +185,73 @@ const EnhancedMapComponent = () => {
   }, [selectedContractorId, allAreaLayers, filters]);
 
   // Update summary data based on what's currently visible
-  const updateSummaryData = useCallback(() => {
-    if (!mapData) return;
+ // Improved updateSummaryData function for EnhancedMapComponent
+
+const updateSummaryData = useCallback(() => {
+  if (!mapData) return;
+  
+  // Get visible contractors based on filters
+  const visibleContractors = mapData.contractors || [];
+  
+  // Prepare summary data with safe defaults
+  const summary = {
+    contractorCount: visibleContractors.length,
+    areaCount: 0,
+    blockCount: 0,
+    stationCount: 0,
+    totalAreaSizeKm2: 0,
+    contractTypes: {},
+    sponsoringStates: {}
+  };
+  
+  // Count areas and blocks from visible allAreaLayers
+  if (allAreaLayers.length > 0) {
+    const visibleContractorIds = visibleContractors.map(c => c.contractorId);
+    const visibleAreas = allAreaLayers.filter(area => 
+      visibleContractorIds.includes(area.contractorId)
+    );
     
-    // Get visible contractors based on filters
-    const visibleContractors = mapData.contractors || [];
+    summary.areaCount = visibleAreas.length;
     
-    // Prepare summary data
-    const summary = {
-      contractorCount: visibleContractors.length,
-      areaCount: 0,
-      blockCount: 0,
-      stationCount: 0,
-      totalAreaSizeKm2: 0,
-      contractTypes: {},
-      sponsoringStates: {}
-    };
+    // Calculate blocks with a safe fallback
+    summary.blockCount = visibleAreas.reduce((total, area) => 
+      total + ((area.blocks && Array.isArray(area.blocks)) ? area.blocks.length : 0), 0);
     
-    // Count areas and blocks from visible allAreaLayers
-    if (allAreaLayers.length > 0) {
-      const visibleContractorIds = visibleContractors.map(c => c.contractorId);
-      const visibleAreas = allAreaLayers.filter(area => 
-        visibleContractorIds.includes(area.contractorId)
-      );
-      
-      summary.areaCount = visibleAreas.length;
-      summary.blockCount = visibleAreas.reduce((total, area) => total + (area.blocks?.length || 0), 0);
-      summary.totalAreaSizeKm2 = visibleAreas.reduce((total, area) => total + (area.totalAreaSizeKm2 || 0), 0);
+    // Calculate total area with a safe fallback and sanitize
+    summary.totalAreaSizeKm2 = visibleAreas.reduce((total, area) => {
+      const areaSize = typeof area.totalAreaSizeKm2 === 'number' ? area.totalAreaSizeKm2 : 0;
+      return total + areaSize;
+    }, 0);
+  }
+  
+  // Count stations from mapData with safe handling
+  if (mapData.cruises && Array.isArray(mapData.cruises)) {
+    summary.stationCount = mapData.cruises.reduce((total, cruise) => {
+      if (cruise.stations && Array.isArray(cruise.stations)) {
+        return total + cruise.stations.length;
+      }
+      return total;
+    }, 0);
+  }
+  
+  // Aggregate contract types and sponsoring states
+  visibleContractors.forEach(contractor => {
+    // Contract types
+    if (contractor.contractType) {
+      summary.contractTypes[contractor.contractType] = 
+        (summary.contractTypes[contractor.contractType] || 0) + 1;
     }
     
-    // Count stations from mapData
-    if (mapData.cruises) {
-      summary.stationCount = mapData.cruises.reduce((total, cruise) => 
-        total + (cruise.stations?.length || 0), 0);
+    // Sponsoring states
+    if (contractor.sponsoringState) {
+      summary.sponsoringStates[contractor.sponsoringState] = 
+        (summary.sponsoringStates[contractor.sponsoringState] || 0) + 1;
     }
-    
-    // Aggregate contract types and sponsoring states
-    visibleContractors.forEach(contractor => {
-      // Contract types
-      if (contractor.contractType) {
-        summary.contractTypes[contractor.contractType] = 
-          (summary.contractTypes[contractor.contractType] || 0) + 1;
-      }
-      
-      // Sponsoring states
-      if (contractor.sponsoringState) {
-        summary.sponsoringStates[contractor.sponsoringState] = 
-          (summary.sponsoringStates[contractor.sponsoringState] || 0) + 1;
-      }
-    });
-    
-    // Set the summary data
-    setSummaryData(summary);
-  }, [mapData, allAreaLayers]);
+  });
+  
+  // Set the summary data
+  setSummaryData(summary);
+}, [mapData, allAreaLayers]);
 
   // Memoize visible area layers
   const visibleAreaLayers = useMemo(() => {
@@ -398,29 +412,53 @@ const EnhancedMapComponent = () => {
     }
   };
 
-  // Contractor summary fetch
-  const fetchContractorSummary = async (contractorId) => {
-    try {
-      const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5062/api';
-      const response = await fetch(`${API_BASE_URL}/Analytics/contractor/${contractorId}/summary`);
-      
-      if (!response.ok) {
-        throw new Error(`Failed to fetch contractor summary: ${response.status}`);
-      }
-      
-      const data = await response.json();
-      setContractorSummary(data);
-      
-      // If we're showing the detail panel, update its type
-      if (showDetailPanel) {
-        setDetailPanelType('contractorSummary');
-      }
-    } catch (error) {
-      console.error('Error fetching contractor summary:', error);
-      setToastMessage('Error fetching contractor summary');
-      setShowToast(true);
+// Improved fetchContractorSummary function with proper caching
+
+// Add this state variable to cache summaries
+const [contractorSummaryCache, setContractorSummaryCache] = useState({});
+
+// Improved fetch function
+const fetchContractorSummary = async (contractorId) => {
+  // Check if we already have this data in cache
+  if (contractorSummaryCache[contractorId]) {
+    console.log(`Using cached summary for contractor ${contractorId}`);
+    setContractorSummary(contractorSummaryCache[contractorId]);
+    return contractorSummaryCache[contractorId];
+  }
+  
+  try {
+    console.log(`Fetching contractor summary for ${contractorId}`);
+    setLocalLoading(true);
+    
+    const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5062/api';
+    const response = await fetch(`${API_BASE_URL}/Analytics/contractor/${contractorId}/summary`);
+    
+    if (!response.ok) {
+      throw new Error(`Failed to fetch contractor summary: ${response.status}`);
     }
-  };
+    
+    const data = await response.json();
+    
+    // Update the cache
+    setContractorSummaryCache(prev => ({
+      ...prev,
+      [contractorId]: data
+    }));
+    
+    // Set the current summary
+    setContractorSummary(data);
+    
+    // Return the data for chaining
+    return data;
+  } catch (error) {
+    console.error('Error fetching contractor summary:', error);
+    setToastMessage('Error fetching contractor summary');
+    setShowToast(true);
+    return null;
+  } finally {
+    setLocalLoading(false);
+  }
+};
 
   // Associate stations with blocks
   const associateStationsWithBlocks = async () => {
@@ -503,11 +541,33 @@ const EnhancedMapComponent = () => {
   
   // Handle panel close
   const handlePanelClose = () => {
+    // Only reset the UI state, but keep the contractor summary data
     setShowDetailPanel(false);
     setDetailPanelType(null);
+    
+    // Only reset station selection, keep contractor selection and data
     setSelectedStation(null);
+    
+    // Don't reset these when closing the panel:
+    // setSelectedContractorId(null);
+    // setContractorSummary(null);
+    
+    // Only reset block analytics
     setBlockAnalytics(null);
-    setContractorSummary(null);
+  };
+  
+  // Also add a handler for the View Detailed Summary button
+  const handleViewContractorSummary = () => {
+    if (selectedContractorId && contractorSummary) {
+      setDetailPanelType('contractorSummary');
+      setShowDetailPanel(true);
+    } else if (selectedContractorId) {
+      // If we have the ID but no summary, fetch it first
+      fetchContractorSummary(selectedContractorId).then(() => {
+        setDetailPanelType('contractorSummary');
+        setShowDetailPanel(true);
+      });
+    }
   };
   
   // Handle reset filters with smart zooming
@@ -527,21 +587,15 @@ const EnhancedMapComponent = () => {
 
   return (
     <div className={styles.mapContainer}>
-      {/* Summary Panel - new component */}
-      {showSummaryPanel && summaryData && (
-        <SummaryPanel 
-          data={summaryData} 
-          onClose={() => setShowSummaryPanel(false)}
-          selectedContractorInfo={selectedContractorInfo}
-          contractorSummary={contractorSummary}
-          onViewContractorSummary={() => {
-            if (selectedContractorId) {
-              setDetailPanelType('contractorSummary');
-              setShowDetailPanel(true);
-            }
-          }}
-        />
-      )}
+    {showSummaryPanel && summaryData && (
+  <SummaryPanel 
+    data={summaryData} 
+    onClose={() => setShowSummaryPanel(false)}
+    selectedContractorInfo={selectedContractorInfo}
+    contractorSummary={contractorSummary}
+    onViewContractorSummary={handleViewContractorSummary}
+  />
+)}
       
       {/* Compact Layer Controls */}
       <CompactLayerControls 

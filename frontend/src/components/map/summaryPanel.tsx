@@ -1,27 +1,7 @@
 import React, { useState } from 'react';
 import styles from '../../styles/map/summary.module.css';
 
-interface SummaryPanelProps {
-  data: {
-    contractorCount: number;
-    areaCount: number;
-    blockCount: number;
-    stationCount: number;
-    totalAreaSizeKm2: number;
-    contractTypes: Record<string, number>;
-    sponsoringStates: Record<string, number>;
-  };
-  selectedContractorInfo: {
-    name: string;
-    totalAreas: number;
-    totalBlocks: number;
-  } | null;
-  contractorSummary: any | null;
-  onClose: () => void;
-  onViewContractorSummary: () => void;
-}
-
-const SummaryPanel: React.FC<SummaryPanelProps> = ({
+const SummaryPanel = ({
   data,
   selectedContractorInfo,
   contractorSummary,
@@ -31,7 +11,8 @@ const SummaryPanel: React.FC<SummaryPanelProps> = ({
   const [isCollapsed, setIsCollapsed] = useState(false);
   
   // Format large numbers with commas
-  const formatNumber = (num: number) => {
+  const formatNumber = (num) => {
+    if (num === undefined || num === null) return "0";
     return num.toLocaleString();
   };
   
@@ -62,14 +43,14 @@ const SummaryPanel: React.FC<SummaryPanelProps> = ({
           {/* Selected Contractor View */}
           {selectedContractorInfo && (
             <div className={styles.selectedContractorSection}>
-              <h4>{selectedContractorInfo.name}</h4>
+              <h4>{selectedContractorInfo.name || "Selected Contractor"}</h4>
               <div className={styles.statsGrid}>
                 <div className={styles.statItem}>
-                  <div className={styles.statValue}>{selectedContractorInfo.totalAreas}</div>
+                  <div className={styles.statValue}>{selectedContractorInfo.totalAreas || 0}</div>
                   <div className={styles.statLabel}>Areas</div>
                 </div>
                 <div className={styles.statItem}>
-                  <div className={styles.statValue}>{selectedContractorInfo.totalBlocks}</div>
+                  <div className={styles.statValue}>{selectedContractorInfo.totalBlocks || 0}</div>
                   <div className={styles.statLabel}>Blocks</div>
                 </div>
                 {contractorSummary && (
@@ -79,7 +60,7 @@ const SummaryPanel: React.FC<SummaryPanelProps> = ({
                       <div className={styles.statLabel}>Total Area</div>
                     </div>
                     <div className={styles.statItem}>
-                      <div className={styles.statValue}>{contractorSummary.summary.totalStations}</div>
+                      <div className={styles.statValue}>{formatNumber(contractorSummary.summary.totalStations)}</div>
                       <div className={styles.statLabel}>Stations</div>
                     </div>
                   </>
@@ -99,32 +80,44 @@ const SummaryPanel: React.FC<SummaryPanelProps> = ({
             <div className={styles.globalSummarySection}>
               <div className={styles.statsGrid}>
                 <div className={styles.statItem}>
-                  <div className={styles.statValue}>{data.contractorCount}</div>
+                  <div className={styles.statValue}>{data?.contractorCount || 0}</div>
                   <div className={styles.statLabel}>Contractors</div>
                 </div>
                 <div className={styles.statItem}>
-                  <div className={styles.statValue}>{data.areaCount}</div>
+                  <div className={styles.statValue}>{data?.areaCount || 0}</div>
                   <div className={styles.statLabel}>Areas</div>
                 </div>
                 <div className={styles.statItem}>
-                  <div className={styles.statValue}>{data.blockCount}</div>
+                  <div className={styles.statValue}>{data?.blockCount || 0}</div>
                   <div className={styles.statLabel}>Blocks</div>
                 </div>
                 <div className={styles.statItem}>
-                  <div className={styles.statValue}>{data.stationCount}</div>
+                  <div className={styles.statValue}>{data?.stationCount || 0}</div>
                   <div className={styles.statLabel}>Stations</div>
                 </div>
               </div>
               
-              {data.totalAreaSizeKm2 > 0 && (
+              {data && data.totalAreaSizeKm2 > 0 && (
                 <div className={styles.totalArea}>
                   <span className={styles.areaLabel}>Total Exploration Area:</span>
                   <span className={styles.areaValue}>{formatNumber(data.totalAreaSizeKm2)} km²</span>
                 </div>
               )}
               
+              {/* Default message if no data is available or no filters are applied */}
+              {(!data || (data.contractorCount === 0 && data.areaCount === 0 && data.blockCount === 0)) && (
+                <div className={styles.noDataMessage}>
+                  <p>No exploration data is currently visible. Try the following:</p>
+                  <ul className={styles.suggestionList}>
+                    <li>Select a contractor from the filter panel</li>
+                    <li>Reset filters to see all available data</li>
+                    <li>Try zooming out to see more areas</li>
+                  </ul>
+                </div>
+              )}
+              
               {/* Only show breakdowns if we have data */}
-              {Object.keys(data.contractTypes).length > 0 && (
+              {data && Object.keys(data.contractTypes || {}).length > 0 && (
                 <div className={styles.breakdownSection}>
                   <h5>Contract Types</h5>
                   <div className={styles.breakdownGrid}>
@@ -138,7 +131,7 @@ const SummaryPanel: React.FC<SummaryPanelProps> = ({
                 </div>
               )}
               
-              {Object.keys(data.sponsoringStates).length > 0 && (
+              {data && Object.keys(data.sponsoringStates || {}).length > 0 && (
                 <div className={styles.breakdownSection}>
                   <h5>Sponsoring States</h5>
                   <div className={styles.breakdownGrid}>
