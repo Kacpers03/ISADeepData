@@ -36,7 +36,7 @@ export default function MapPage() {
             <ImprovedFilterPanel />
           </div>
           
-          {/* Map container without separate search box */}
+          {/* Map container */}
           <div className={styles.mapSection}>
             <EnhancedMapComponent />
           </div>

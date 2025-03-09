@@ -293,31 +293,34 @@ export const FilterProvider: React.FC<{ children: ReactNode }> = ({ children }) 
   }, [filters, filterOptions, originalMapData, updateMapData]);
   
   // Improved reset filters function
-  const resetFilters = useCallback(() => {
-    console.log("Resetting all filters");
-    
-    // Clear filters
-    setFilters({});
-    
-    // Reset selection states
-    setSelectedContractorId(null);
-    setSelectedCruiseId(null);
-    setSelectedStation(null);
-    setShowDetailPanel(false);
-    setDetailPanelType(null);
-    setContractorSummary(null);
-    setBlockAnalytics(null);
-    
-    // Restore original data if available
-    if (originalMapData) {
-      console.log("Restoring original data from cache");
-      updateMapData(originalMapData);
-    } else {
-      // If no original data exists, fetch fresh data
-      console.log("No original data cached, fetching fresh data");
-      refreshData();
-    }
-  }, [originalMapData, refreshData, updateMapData]);
+ // Improved reset filters function
+const resetFilters = useCallback(() => {
+  console.log("Resetting all filters");
+  
+  // Clear filters
+  setFilters({});
+  
+  // Reset selection states
+  setSelectedContractorId(null);
+  setSelectedCruiseId(null);
+  setSelectedStation(null);
+  setShowDetailPanel(false);
+  setDetailPanelType(null);
+  setContractorSummary(null);
+  setBlockAnalytics(null);
+  
+  // Restore original data if available
+  if (originalMapData) {
+    console.log("Restoring original data from cache");
+    updateMapData(originalMapData);
+  } else {
+    // If no original data exists, fetch fresh data
+    console.log("No original data cached, fetching fresh data");
+    refreshData();
+  }
+  
+  // Note: The map component will handle zooming after reset
+}, [originalMapData, refreshData, updateMapData]);
   
   // Improved set filter function - optimized to handle "All" selections efficiently
   const setFilter = useCallback((key: keyof MapFilterParams, value: any) => {

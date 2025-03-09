@@ -26,7 +26,9 @@ export const ImprovedFilterPanel = () => {
     mapData,
     viewBounds,
     setViewBounds,
-    refreshData 
+    refreshData,
+    selectedContractorId,
+    setSelectedContractorId
   } = useFilter();
   
   // State for filtered dropdown options
@@ -155,18 +157,29 @@ export const ImprovedFilterPanel = () => {
     if (value === 'all') {
       // When "All" is selected, just remove the filter
       setFilter(key, undefined);
+      
+      // If we're resetting the contractorId, also clear the selection
+      if (key === 'contractorId') {
+        setSelectedContractorId(null);
+      }
     } 
     else {
       // For number values
-      if (['mineralTypeId', 'contractStatusId', 'year', 'cruiseId', 'contractorId'].includes(key)) {
+      if (['mineralTypeId', 'contractStatusId', 'year', 'cruiseId'].includes(key)) {
         setFilter(key, parseInt(value, 10));
       } 
+      // Special handling for contractorId to enable smart zooming
+      else if (key === 'contractorId') {
+        const contractorId = parseInt(value, 10);
+        setFilter(key, contractorId);
+        setSelectedContractorId(contractorId);
+      }
       // For string values
       else {
         setFilter(key, value);
       }
     }
-  }, [setFilter]);
+  }, [setFilter, setSelectedContractorId]);
   
   // Debounced select change handler to prevent rapid state updates
   const debouncedSelectChange = useMemo(() => 
@@ -258,7 +271,7 @@ export const ImprovedFilterPanel = () => {
     setShowResults(true);
   }, [searchQuery, mapData]);
   
-  // Handle search result click without resetting view
+  // Handle search result click
   const handleResultClick = useCallback((result) => {
     setShowResults(false);
     setSearchQuery('');
@@ -266,7 +279,9 @@ export const ImprovedFilterPanel = () => {
     // Handle different result types
     switch (result.type) {
       case 'contractor':
+        // Set both filter and selectedContractorId to trigger smart zoom
         setFilter('contractorId', result.id);
+        setSelectedContractorId(result.id);
         break;
       case 'station':
         // Set the map view to focus on this station WITHOUT resetting other filters
@@ -284,7 +299,7 @@ export const ImprovedFilterPanel = () => {
         // For other types, handle as needed
         break;
     }
-  }, [setFilter]);
+  }, [setFilter, setSelectedContractorId]);
   
   // Handle search on Enter key
   const handleKeyPress = useCallback((e) => {
@@ -292,6 +307,13 @@ export const ImprovedFilterPanel = () => {
       handleSearch();
     }
   }, [handleSearch]);
+  
+  // Handle reset filters
+  const handleResetFilters = () => {
+    resetFilters();
+    // No need to do anything else - resetFilters handles clearing selection
+    // and the map component will automatically zoom out
+  };
   
   // If filter options aren't loaded yet, show loading
   if (!filterOptions) {
@@ -335,7 +357,7 @@ export const ImprovedFilterPanel = () => {
         {activeFilterCount > 0 && (
           <button 
             className={styles.resetButton} 
-            onClick={resetFilters}
+            onClick={handleResetFilters}
             disabled={loading}
           >
             Reset ({activeFilterCount})

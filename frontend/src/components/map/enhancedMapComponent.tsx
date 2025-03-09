@@ -17,15 +17,10 @@ import { ContractorSummaryPanel } from "./contractorSummaryPanel";
 import { Station, Contractor, Cruise, GeoJsonFeature } from "../../types/filter-types";
 import { ImprovedFilterPanel } from "../filters/filterPanel";
 import CompactLayerControls from "./layerControls";
-
-
+import SummaryPanel from "./summaryPanel";
 
 const EnhancedMapComponent = () => {
-  // Debug logging for Mapbox token
-  useEffect(() => {
-    console.log('Mapbox Token on mount:', process.env.NEXT_PUBLIC_MAPBOX_TOKEN);
-  }, []);
-
+  // Context and state
   const {
     mapData,
     loading,
@@ -45,7 +40,7 @@ const EnhancedMapComponent = () => {
     filters,
     setFilter,
     refreshData,
-   
+    resetFilters
   } = useFilter();
 
   // Store the initial view state
@@ -60,13 +55,12 @@ const EnhancedMapComponent = () => {
   // Reference to maintain current view state across rerenders
   const mapRef = useRef(null);
   const initialLoadRef = useRef(true);
- 
-// At the top of your component, with all other state variables
-const [localLoading, setLocalLoading] = useState(false);
-  // Keep track of whether the view has been manually set
+  const [localLoading, setLocalLoading] = useState(false);
+  
+  // User has manually set the view (to prevent auto-zooming when unwanted)
   const [userHasSetView, setUserHasSetView] = useState(false);
   
-  // Store all loaded GeoJSON data so we can filter without losing it
+  // Store all loaded GeoJSON data
   const [allAreaLayers, setAllAreaLayers] = useState([]);
   
   // State variables
@@ -81,8 +75,12 @@ const [localLoading, setLocalLoading] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
   const [cursorPosition, setCursorPosition] = useState({ latitude: 0, longitude: 0 });
   const [mapStyle, setMapStyle] = useState("mapbox://styles/mapbox/outdoors-v11");
+  
+  // New state for the summary panel
+  const [showSummaryPanel, setShowSummaryPanel] = useState(true);
+  const [summaryData, setSummaryData] = useState(null);
 
-  // Helper function to fetch GeoJSON for a contractor - DEFINE THIS BEFORE IT'S USED
+  // Helper function to fetch GeoJSON for a contractor
   const fetchContractorGeoJson = useCallback(async (contractorId) => {
     try {
       const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5062/api';
@@ -119,8 +117,14 @@ const [localLoading, setLocalLoading] = useState(false);
     }
   }, []);
   
-  const zoomToFilteredData = useCallback(() => {
-    if (!mapData || !mapRef.current) return;
+  // Smart zoom function - will be called when a new contractor is selected or filters are reset
+  const smartZoom = useCallback(() => {
+    if (!mapRef.current) return;
+    
+    // If user has manually panned or zoomed, don't auto-zoom unless filters are reset
+    if (userHasSetView && Object.keys(filters).length > 0) {
+      return;
+    }
     
     // If a specific contractor is selected, zoom to their areas
     if (selectedContractorId && allAreaLayers.length > 0) {
@@ -129,8 +133,9 @@ const [localLoading, setLocalLoading] = useState(false);
       );
       
       if (contractorAreas.length > 0) {
-        // Calculate bounds manually instead of using mapboxgl.LngLatBounds
+        // Calculate bounds manually
         let minLat = 90, maxLat = -90, minLon = 180, maxLon = -180;
+        let boundsSet = false;
         
         contractorAreas.forEach(area => {
           if (area.geoJson && area.geoJson.geometry && area.geoJson.geometry.coordinates) {
@@ -141,6 +146,7 @@ const [localLoading, setLocalLoading] = useState(false);
               maxLon = Math.max(maxLon, lon);
               minLat = Math.min(minLat, lat);
               maxLat = Math.max(maxLat, lat);
+              boundsSet = true;
             });
           } else if (area.centerLongitude && area.centerLatitude) {
             // Fallback to center coordinates
@@ -148,36 +154,92 @@ const [localLoading, setLocalLoading] = useState(false);
             maxLon = Math.max(maxLon, area.centerLongitude);
             minLat = Math.min(minLat, area.centerLatitude);
             maxLat = Math.max(maxLat, area.centerLatitude);
+            boundsSet = true;
           }
         });
         
-        // Add padding for better view
-        const pad = 1;
-        
-        if (minLon < maxLon && minLat < maxLat) {
+        // Only zoom if we have valid bounds
+        if (boundsSet && minLon < maxLon && minLat < maxLat) {
+          // Add padding for better view
+          const pad = 1;
+          
           mapRef.current.fitBounds(
             [[minLon - pad, minLat - pad], [maxLon + pad, maxLat + pad]],
             { padding: 50, duration: 1000, maxZoom: 10 }
           );
+          
+          console.log("Smart zoomed to contractor areas");
+          return;
         }
-        return;
       }
     }
     
     // Reset to world view if no specific filters
-    if (Object.keys(filters).length === 0 || (selectedContractorId === null && !selectedStation)) {
+    if (Object.keys(filters).length === 0 || !selectedContractorId) {
       mapRef.current.fitBounds(
         [[-180, -60], [180, 85]],
         { padding: 20, duration: 1000 }
       );
+      console.log("Reset to world view");
     }
-  }, [selectedContractorId, mapData, allAreaLayers, filters, selectedStation]);
-// Also tie this to the reset filters function
-const handleResetFilters = () => {
-  resetFilters();
-  // The world view zoom will be handled by the effect above
-};
-  // 1. Memoize visibleAreaLayers calculation to prevent unnecessary re-renders
+  }, [selectedContractorId, allAreaLayers, filters]);
+
+  // Update summary data based on what's currently visible
+  const updateSummaryData = useCallback(() => {
+    if (!mapData) return;
+    
+    // Get visible contractors based on filters
+    const visibleContractors = mapData.contractors || [];
+    
+    // Prepare summary data
+    const summary = {
+      contractorCount: visibleContractors.length,
+      areaCount: 0,
+      blockCount: 0,
+      stationCount: 0,
+      totalAreaSizeKm2: 0,
+      contractTypes: {},
+      sponsoringStates: {}
+    };
+    
+    // Count areas and blocks from visible allAreaLayers
+    if (allAreaLayers.length > 0) {
+      const visibleContractorIds = visibleContractors.map(c => c.contractorId);
+      const visibleAreas = allAreaLayers.filter(area => 
+        visibleContractorIds.includes(area.contractorId)
+      );
+      
+      summary.areaCount = visibleAreas.length;
+      summary.blockCount = visibleAreas.reduce((total, area) => total + (area.blocks?.length || 0), 0);
+      summary.totalAreaSizeKm2 = visibleAreas.reduce((total, area) => total + (area.totalAreaSizeKm2 || 0), 0);
+    }
+    
+    // Count stations from mapData
+    if (mapData.cruises) {
+      summary.stationCount = mapData.cruises.reduce((total, cruise) => 
+        total + (cruise.stations?.length || 0), 0);
+    }
+    
+    // Aggregate contract types and sponsoring states
+    visibleContractors.forEach(contractor => {
+      // Contract types
+      if (contractor.contractType) {
+        summary.contractTypes[contractor.contractType] = 
+          (summary.contractTypes[contractor.contractType] || 0) + 1;
+      }
+      
+      // Sponsoring states
+      if (contractor.sponsoringState) {
+        summary.sponsoringStates[contractor.sponsoringState] = 
+          (summary.sponsoringStates[contractor.sponsoringState] || 0) + 1;
+      }
+    });
+    
+    // Set the summary data
+    setSummaryData(summary);
+  }, [mapData, allAreaLayers]);
+
+  // Memoize visible area layers
   const visibleAreaLayers = useMemo(() => {
     if (!allAreaLayers.length) return [];
     
@@ -212,39 +274,36 @@ const handleResetFilters = () => {
     };
   }, [mapRef.current]);
   
- 
-
-// Then in your useCallback
-const loadAllVisibleContractors = useCallback(async () => {
-  if (!mapData?.contractors.length) return;
+  // Load all visible contractors' GeoJSON
+  const loadAllVisibleContractors = useCallback(async () => {
+    if (!mapData?.contractors.length) return;
+    
+    try {
+      setLocalLoading(true);
+      
+      // Load GeoJSON for each visible contractor
+      const contractorIds = mapData.contractors.map(c => c.contractorId);
+      console.log(`Loading GeoJSON for ${contractorIds.length} visible contractors`);
+      
+      const promises = contractorIds.map(id => fetchContractorGeoJson(id));
+      
+      // Wait for all to complete
+      const results = await Promise.allSettled(promises);
+      
+      // Collect all successful results
+      const allAreas = results
+        .filter(result => result.status === 'fulfilled' && result.value)
+        .flatMap(result => result.value);
+      
+      setAllAreaLayers(allAreas);
+    } catch (error) {
+      console.error('Error loading all contractor GeoJSON:', error);
+    } finally {
+      setLocalLoading(false);
+    }
+  }, [mapData?.contractors, fetchContractorGeoJson]);
   
-  try {
-    // Use the local loading state you defined
-    setLocalLoading(true);
-    
-    // Load GeoJSON for each visible contractor
-    const contractorIds = mapData.contractors.map(c => c.contractorId);
-    console.log(`Loading GeoJSON for ${contractorIds.length} visible contractors`);
-    
-    const promises = contractorIds.map(id => fetchContractorGeoJson(id));
-    
-    // Wait for all to complete
-    const results = await Promise.allSettled(promises);
-    
-    // Collect all successful results
-    const allAreas = results
-      .filter(result => result.status === 'fulfilled' && result.value)
-      .flatMap(result => result.value);
-    
-    setAllAreaLayers(allAreas);
-  } catch (error) {
-    console.error('Error loading all contractor GeoJSON:', error);
-  } finally {
-    setLocalLoading(false);
-  }
-}, [mapData?.contractors, fetchContractorGeoJson, setAllAreaLayers]);
-  
-  // 3. Improve useEffect for filtering visible area layers
+  // Load GeoJSON when filters change
   useEffect(() => {
     if (mapData?.contractors && (!allAreaLayers.length || Object.keys(filters).length === 0)) {
       // Load all visible contractors if:
@@ -254,15 +313,27 @@ const loadAllVisibleContractors = useCallback(async () => {
     }
   }, [filters, mapData?.contractors, allAreaLayers.length, loadAllVisibleContractors]);
   
+  // Effect for smart zooming when selection changes
+  useEffect(() => {
+    // When contractor selection changes, trigger smart zoom
+    if (mapRef.current) {
+      smartZoom();
+    }
+  }, [selectedContractorId, smartZoom]);
+  
+  // Effect to update summary when relevant data changes
+  useEffect(() => {
+    updateSummaryData();
+  }, [mapData, allAreaLayers, filters, selectedContractorId, updateSummaryData]);
+  
   // Get all GeoJSON for a contractor and store it
   useEffect(() => {
     if (selectedContractorId) {
       fetchGeoJsonForContractor(selectedContractorId);
     } else if (mapData?.contractors) {
-      // If no contractor is selected, try to load all visible contractors
       loadAllVisibleContractors();
     } else {
-      // Only reset view on initial load or reset filters
+      // Only reset view on initial load
       if (initialLoadRef.current && mapRef.current) {
         initialLoadRef.current = false;
         mapRef.current.fitBounds(
@@ -271,7 +342,7 @@ const loadAllVisibleContractors = useCallback(async () => {
         );
       }
     }
-  }, [selectedContractorId, mapData?.contractors]);
+  }, [selectedContractorId, mapData?.contractors, loadAllVisibleContractors]);
 
   const fetchGeoJsonForContractor = useCallback(async (contractorId) => {
     try {
@@ -298,38 +369,15 @@ const loadAllVisibleContractors = useCallback(async () => {
           }
         }
         
-        // Zoom to the areas only if user hasn't set a view manually
-        if (!userHasSetView && mapRef.current) {
-          let minLat = 90, maxLat = -90, minLon = 180, maxLon = -180;
-          
-          areas.forEach(area => {
-            if (area.geoJson.geometry && area.geoJson.geometry.coordinates) {
-              // For polygon-lag
-              const coordinates = area.geoJson.geometry.coordinates[0];
-              coordinates.forEach(([lon, lat]) => {
-                minLon = Math.min(minLon, lon);
-                maxLon = Math.max(maxLon, lon);
-                minLat = Math.min(minLat, lat);
-                maxLat = Math.max(maxLat, lat);
-              });
-            }
-          });
-          
-          // Add padding for better view
-          const pad = 1;
-          
-          mapRef.current.fitBounds(
-            [[minLon - pad, minLat - pad], [maxLon + pad, maxLat + pad]],
-            { padding: 40, duration: 1500, easing: (t) => t * (2 - t) }
-          );
-        }
+        // Fetch contractor summary for the summary panel
+        fetchContractorSummary(contractorId);
       }
     } catch (error) {
       console.error('Error loading GeoJSON data:', error);
     }
-  }, [fetchContractorGeoJson, mapData?.contractors, userHasSetView]);
+  }, [fetchContractorGeoJson, mapData?.contractors]);
 
-  // --- Hent block analytics ---
+  // Block analytics fetch
   const fetchBlockAnalytics = async (blockId) => {
     try {
       const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5062/api';
@@ -350,7 +398,7 @@ const loadAllVisibleContractors = useCallback(async () => {
     }
   };
 
-  // --- Hent contractor summary ---
+  // Contractor summary fetch
   const fetchContractorSummary = async (contractorId) => {
     try {
       const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5062/api';
@@ -362,8 +410,11 @@ const loadAllVisibleContractors = useCallback(async () => {
       
       const data = await response.json();
       setContractorSummary(data);
-      setDetailPanelType('contractorSummary');
-      setShowDetailPanel(true);
+      
+      // If we're showing the detail panel, update its type
+      if (showDetailPanel) {
+        setDetailPanelType('contractorSummary');
+      }
     } catch (error) {
       console.error('Error fetching contractor summary:', error);
       setToastMessage('Error fetching contractor summary');
@@ -371,7 +422,7 @@ const loadAllVisibleContractors = useCallback(async () => {
     }
   };
 
-  // --- Koble stasjoner til blokker ---
+  // Associate stations with blocks
   const associateStationsWithBlocks = async () => {
     try {
       setAssociating(true);
@@ -397,7 +448,7 @@ const loadAllVisibleContractors = useCallback(async () => {
     }
   };
 
-  // --- Farge for block status ---
+  // Color function for block status
   const getBlockStatusColor = (status) => {
     switch (status.toLowerCase()) {
       case 'active': return '#059669';    // Green
@@ -408,14 +459,14 @@ const loadAllVisibleContractors = useCallback(async () => {
     }
   };
 
-  // --- Hent stasjoner fra mapData ---
+  // Get stations from mapData
   const stations = mapData ? mapData.cruises.flatMap(c => c.stations || []) : [];
   
-  // --- Velg contractor/cruise i data ---
+  // Get selected contractor/cruise
   const selectedContractor = mapData?.contractors.find(c => c.contractorId === selectedContractorId) || null;
   const selectedCruise = mapData?.cruises.find(c => c.cruiseId === selectedCruiseId) || null;
 
-  // --- Oppdater viewState ved pan/zoom, and mark as user-set ---
+  // Handle view state change
   const handleViewStateChange = (evt) => {
     setViewState(evt.viewState);
     // User has manually changed the view
@@ -433,7 +484,7 @@ const loadAllVisibleContractors = useCallback(async () => {
     }
   };
 
-  // --- Klikk på stasjonsmarkør -> sidepanel ---
+  // Handle marker click
   const handleMarkerClick = (station) => {
     setSelectedStation(station);
     setDetailPanelType('station');
@@ -449,61 +500,49 @@ const loadAllVisibleContractors = useCallback(async () => {
       }
     }
   };
+  
+  // Handle panel close
   const handlePanelClose = () => {
     setShowDetailPanel(false);
     setDetailPanelType(null);
-    setSelectedStation(null); // Important: clear selected station completely
+    setSelectedStation(null);
     setBlockAnalytics(null);
     setContractorSummary(null);
   };
-
-  // 4. Improved updateMapData function with error handling
-  const updateMapData = (newData) => {
-    // Verify data is valid to prevent displaying empty maps
-    if (!newData || (newData.contractors?.length === 0 && newData.cruises?.length === 0)) {
-      console.warn('Attempted to update with empty map data, preserving current state');
-      return; // Keep current state instead of showing empty map
-    }
-    
-    // Create a new copy to ensure React detects the change
-    setMapData({...newData});
-    
-    // Schedule a GeoJSON refresh if needed
-    if (newData.contractors?.length > 0 && allAreaLayers.length === 0) {
-      setTimeout(() => {
-        loadAllVisibleContractors();
-      }, 0);
-    }
+  
+  // Handle reset filters with smart zooming
+  const handleResetFilters = () => {
+    resetFilters();
+    setUserHasSetView(false); // Allow auto-zooming after reset
+    // The global view zoom will be handled by the smartZoom effect
   };
 
-  // --- Loading/error ---
-  if (loading) {
+  // Loading/error states
+  if (loading && !mapData) {
     return <div className={styles.mapLoading}>Loading map data...</div>;
   }
   if (error) {
     return <div className={styles.mapError}>Error: {error}</div>;
   }
 
-  // 5. Improved map render to ensure it's always visible, even during loading
   return (
     <div className={styles.mapContainer}>
-      {/* Contractor info box */}
-      {selectedContractorInfo && (
-        <div className={styles.contractorInfoBox}>
-          <h3>{selectedContractorInfo.name}</h3>
-          <div className={styles.contractorStats}>
-            <span>{selectedContractorInfo.totalAreas} area{selectedContractorInfo.totalAreas !== 1 ? 's' : ''}</span>
-            <span>{selectedContractorInfo.totalBlocks} block{selectedContractorInfo.totalBlocks !== 1 ? 's' : ''}</span>
-          </div>
-          <button 
-            className={styles.summaryButton}
-            onClick={() => selectedContractorId && fetchContractorSummary(selectedContractorId)}
-          >
-            View Full Summary
-          </button>
-        </div>
+      {/* Summary Panel - new component */}
+      {showSummaryPanel && summaryData && (
+        <SummaryPanel 
+          data={summaryData} 
+          onClose={() => setShowSummaryPanel(false)}
+          selectedContractorInfo={selectedContractorInfo}
+          contractorSummary={contractorSummary}
+          onViewContractorSummary={() => {
+            if (selectedContractorId) {
+              setDetailPanelType('contractorSummary');
+              setShowDetailPanel(true);
+            }
+          }}
+        />
       )}
-
+      
       {/* Compact Layer Controls */}
       <CompactLayerControls 
         showAreas={showAreas}
@@ -516,9 +555,11 @@ const loadAllVisibleContractors = useCallback(async () => {
         setMapStyle={setMapStyle}
         associateStationsWithBlocks={associateStationsWithBlocks}
         associating={associating}
+        showSummary={showSummaryPanel}
+        setShowSummary={setShowSummaryPanel}
       />
 
-      {/* THE MAP - ALWAYS VISIBLE */}
+      {/* THE MAP */}
       <Map
         {...viewState}
         ref={mapRef}
@@ -535,16 +576,12 @@ const loadAllVisibleContractors = useCallback(async () => {
         onError={(e) => console.error('Mapbox Error:', e)}
         onLoad={() => {
           console.log("Map successfully loaded!");
-          // Set map instance for global access (needed for search operations)
           window.mapInstance = mapRef.current?.getMap();
           
-          // Only fit to world bounds if no contractor is selected and first load
-          if (mapRef.current && !selectedContractorId && initialLoadRef.current) {
+          // Initial view on first load
+          if (mapRef.current && initialLoadRef.current) {
             initialLoadRef.current = false;
-            mapRef.current.fitBounds(
-              [[-180, -60], [180, 85]],
-              { padding: 20, duration: 1500, easing: (t) => t * (2 - t) }
-            );
+            smartZoom();
           }
         }}
       >
@@ -559,111 +596,109 @@ const loadAllVisibleContractors = useCallback(async () => {
           Lat: {cursorPosition.latitude}, Lon: {cursorPosition.longitude}
         </div>
 
-        {/* Areas + blocks - using memoized visibleAreaLayers */}
+        {/* Areas + blocks */}
         {showAreas && visibleAreaLayers.map(area => (
           <React.Fragment key={`area-${area.areaId}`}>
             <Source id={`area-source-${area.areaId}`} type="geojson" data={area.geoJson}>
-  <Layer
-    id={`area-fill-${area.areaId}`}
-    type="fill"
-    paint={{
-      'fill-color': '#0077b6',
-      'fill-opacity': 0.15,
-    }}
-  />
-  <Layer
-    id={`area-line-${area.areaId}`}
-    type="line"
-    paint={{
-      'line-color': '#0077b6',
-      'line-width': 2.5,
-      'line-dasharray': [3, 2]
-    }}
-  />
-  <Layer
-    id={`area-label-${area.areaId}`}
-    type="symbol"
-    layout={{
-      'text-field': area.areaName,
-      'text-size': 12,
-      'text-anchor': 'center',
-      'text-offset': [0, 0],
-      'text-allow-overlap': false
-    }}
-    paint={{
-      'text-color': '#0077b6',
-      'text-halo-color': 'rgba(255, 255, 255, 0.9)',
-      'text-halo-width': 2
-    }}
-  />
-</Source>
+              <Layer
+                id={`area-fill-${area.areaId}`}
+                type="fill"
+                paint={{
+                  'fill-color': '#0077b6',
+                  'fill-opacity': 0.15,
+                }}
+              />
+              <Layer
+                id={`area-line-${area.areaId}`}
+                type="line"
+                paint={{
+                  'line-color': '#0077b6',
+                  'line-width': 2.5,
+                  'line-dasharray': [3, 2]
+                }}
+              />
+              <Layer
+                id={`area-label-${area.areaId}`}
+                type="symbol"
+                layout={{
+                  'text-field': area.areaName,
+                  'text-size': 12,
+                  'text-anchor': 'center',
+                  'text-offset': [0, 0],
+                  'text-allow-overlap': false
+                }}
+                paint={{
+                  'text-color': '#0077b6',
+                  'text-halo-color': 'rgba(255, 255, 255, 0.9)',
+                  'text-halo-width': 2
+                }}
+              />
+            </Source>
             
-            {showBlocks && area.blocks.map(block => (
-             <Source 
-             key={`block-source-${block.blockId}`}
-             id={`block-source-${block.blockId}`}
-             type="geojson" 
-             data={block.geoJson}
-           >
-             <Layer
-               id={`block-fill-${block.blockId}`}
-               type="fill"
-               paint={{
-                 'fill-color': getBlockStatusColor(block.status),
-                 'fill-opacity': 0.25,
-               }}
-               onClick={() => fetchBlockAnalytics(block.blockId)}
-             />
-             <Layer
-               id={`block-line-${block.blockId}`}
-               type="line"
-               paint={{
-                 'line-color': getBlockStatusColor(block.status),
-                 'line-width': 1.5,
-               }}
-             />
-             <Layer
-               id={`block-label-${block.blockId}`}
-               type="symbol"
-               layout={{
-                 'text-field': block.blockName,
-                 'text-size': 10,
-                 'text-anchor': 'center',
-                 'text-offset': [0, 0],
-                 'text-allow-overlap': false
-               }}
-               paint={{
-                 'text-color': '#1e3a8a', // Dark blue for better readability
-                 'text-halo-color': 'rgba(255, 255, 255, 0.9)',
-                 'text-halo-width': 2
-               }}
-             />
-           </Source>
+            {showBlocks && area.blocks && area.blocks.map(block => (
+              <Source 
+                key={`block-source-${block.blockId}`}
+                id={`block-source-${block.blockId}`}
+                type="geojson" 
+                data={block.geoJson}
+              >
+                <Layer
+                  id={`block-fill-${block.blockId}`}
+                  type="fill"
+                  paint={{
+                    'fill-color': getBlockStatusColor(block.status),
+                    'fill-opacity': 0.25,
+                  }}
+                  onClick={() => fetchBlockAnalytics(block.blockId)}
+                />
+                <Layer
+                  id={`block-line-${block.blockId}`}
+                  type="line"
+                  paint={{
+                    'line-color': getBlockStatusColor(block.status),
+                    'line-width': 1.5,
+                  }}
+                />
+                <Layer
+                  id={`block-label-${block.blockId}`}
+                  type="symbol"
+                  layout={{
+                    'text-field': block.blockName,
+                    'text-size': 10,
+                    'text-anchor': 'center',
+                    'text-offset': [0, 0],
+                    'text-allow-overlap': false
+                  }}
+                  paint={{
+                    'text-color': '#1e3a8a',
+                    'text-halo-color': 'rgba(255, 255, 255, 0.9)',
+                    'text-halo-width': 2
+                  }}
+                />
+              </Source>
             ))}
           </React.Fragment>
         ))}
         
-        {/* Stations - always show stations that belong to visible contractors */}
+        {/* Stations */}
         {showStations && stations.map(station => (
-  <Marker
-    key={station.stationId}
-    longitude={station.longitude}
-    latitude={station.latitude}
-    onClick={e => {
-      e.originalEvent.stopPropagation();
-      handleMarkerClick(station);
-    }}
-  >
-    <div 
-      className={`${styles.mapMarker} ${station.contractorAreaBlockId ? styles.associatedMarker : ''}`}
-    />
-  </Marker>
-))}
+          <Marker
+            key={station.stationId}
+            longitude={station.longitude}
+            latitude={station.latitude}
+            onClick={e => {
+              e.originalEvent.stopPropagation();
+              handleMarkerClick(station);
+            }}
+          >
+            <div 
+              className={`${styles.mapMarker} ${station.contractorAreaBlockId ? styles.associatedMarker : ''}`}
+            />
+          </Marker>
+        ))}
 
-       
-
-        {/* Loading overlay when fetching data */}
-        {loading && (
+        {/* Loading overlay */}
+        {(loading || localLoading) && (
           <div className={styles.mapLoadingOverlay}>
             <div className={styles.spinner}></div>
             <p>Loading map data...</p>
@@ -673,24 +708,24 @@ const loadAllVisibleContractors = useCallback(async () => {
       
       {/* Detail panels */}
       {showDetailPanel && detailPanelType === 'station' && (
-  <DetailPanel
-    type={'station'}
-    station={selectedStation}
-    contractor={null}
-    cruise={null}
-    onClose={handlePanelClose}
-  />
-)}
-
-{showDetailPanel && detailPanelType === 'contractor' && (
-  <DetailPanel
-    type={'contractor'}
-    station={null}
-    contractor={selectedContractor}
-    cruise={null}
-    onClose={handlePanelClose}
-  />
-)}
+        <DetailPanel
+          type={'station'}
+          station={selectedStation}
+          contractor={null}
+          cruise={null}
+          onClose={handlePanelClose}
+        />
+      )}
+      
+      {showDetailPanel && detailPanelType === 'contractor' && (
+        <DetailPanel
+          type={'contractor'}
+          station={null}
+          contractor={selectedContractor}
+          cruise={null}
+          onClose={handlePanelClose}
+        />
+      )}
       
       {showDetailPanel && detailPanelType === 'cruise' && (
         <DetailPanel
@@ -698,52 +733,23 @@ const loadAllVisibleContractors = useCallback(async () => {
           station={null}
           contractor={null}
           cruise={selectedCruise}
-          onClose={() => {
-            setShowDetailPanel(false);
-            setDetailPanelType(null);
-          }}
+          onClose={handlePanelClose}
         />
       )}
       
-      {showDetailPanel && detailPanelType === 'station' && (
-  <DetailPanel
-    type={'station'}
-    station={selectedStation}
-    contractor={null}
-    cruise={null}
-    onClose={handlePanelClose}
-  />
-)}
-
-{showDetailPanel && detailPanelType === 'blockAnalytics' && (
-  <DetailPanel
-    type={'bloackAnalytics'}
-    station={null}
-    contractor={selectedContractor}
-    cruise={null}
-    onClose={handlePanelClose}
-  />
-)}
+      {showDetailPanel && detailPanelType === 'blockAnalytics' && blockAnalytics && (
+        <BlockAnalyticsPanel
+          data={blockAnalytics}
+          onClose={handlePanelClose}
+        />
+      )}
       
-      {showDetailPanel && detailPanelType === 'station' && (
-  <DetailPanel
-    type={'station'}
-    station={selectedStation}
-    contractor={null}
-    cruise={null}
-    onClose={handlePanelClose}
-  />
-)}
-
-{showDetailPanel && detailPanelType === 'contractorSummary' && (
-  <DetailPanel
-    type={'contractorSummary'}
-    station={null}
-    contractor={selectedContractor}
-    cruise={null}
-    onClose={handlePanelClose}
-  />
-)}
+      {showDetailPanel && detailPanelType === 'contractorSummary' && contractorSummary && (
+        <ContractorSummaryPanel
+          data={contractorSummary}
+          onClose={handlePanelClose}
+        />
+      )}
 
       {/* Toast */}
       {showToast && (

@@ -11,7 +11,9 @@ const LayerControls = ({
   mapStyle,
   setMapStyle,
   associateStationsWithBlocks,
-  associating
+  associating,
+  showSummary,
+  setShowSummary
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [activePanel, setActivePanel] = useState(null);
@@ -61,6 +63,12 @@ const LayerControls = ({
               onClick={() => switchPanel('style')}
             >
               Style
+            </button>
+            <button 
+              className={`${styles.controlsTab} ${activePanel === 'display' ? styles.controlsTabActive : ''}`}
+              onClick={() => switchPanel('display')}
+            >
+              Display
             </button>
           </div>
           
@@ -129,6 +137,28 @@ const LayerControls = ({
                   <option value="mapbox://styles/mapbox/light-v10">Light</option>
                   <option value="mapbox://styles/mapbox/dark-v10">Dark</option>
                 </select>
+              </div>
+            )}
+            
+            {activePanel === 'display' && (
+              <div className={styles.displayPanel}>
+                <label className={styles.layerToggle}>
+                  <input
+                    type="checkbox"
+                    checked={showSummary}
+                    onChange={() => setShowSummary(!showSummary)}
+                  />
+                  <span className={styles.layerToggleLabel}>Show Summary Panel</span>
+                </label>
+                <div className={styles.infoText}>
+                  The summary panel displays statistics about currently visible exploration data.
+                </div>
+                <div className={styles.displayTip}>
+                  <div className={styles.tipIcon}>💡</div>
+                  <div className={styles.tipText}>
+                    When you select a contractor, the map will automatically zoom to its areas.
+                  </div>
+                </div>
               </div>
             )}
           </div>

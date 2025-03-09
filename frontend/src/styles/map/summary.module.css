@@ -1,0 +1,218 @@
+/* src/styles/map/summary.module.css */
+
+.summaryPanel {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    max-width: 350px;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+    z-index: 10;
+    overflow: hidden;
+    transition: all 0.3s ease;
+  }
+  
+  .collapsed {
+    width: 180px;
+  }
+  
+  .summaryHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    background-color: #0077b6;
+    color: white;
+  }
+  
+  .summaryHeader h3 {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 600;
+  }
+  
+  .headerControls {
+    display: flex;
+    gap: 8px;
+  }
+  
+  .collapseButton,
+  .closeButton {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 1.2rem;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background-color 0.2s ease;
+  }
+  
+  .collapseButton:hover,
+  .closeButton:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+  }
+  
+  .summaryContent {
+    padding: 16px;
+  }
+  
+  .statsGrid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+  
+  .statItem {
+    background-color: #f8f9fa;
+    border-radius: 6px;
+    padding: 12px;
+    text-align: center;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  
+  .statItem:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+  }
+  
+  .statValue {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #0077b6;
+    margin-bottom: 4px;
+  }
+  
+  .statLabel {
+    font-size: 0.8rem;
+    color: #64748b;
+    font-weight: 500;
+  }
+  
+  .totalArea {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #f1f9ff;
+    padding: 10px 12px;
+    border-radius: 6px;
+    margin-bottom: 16px;
+  }
+  
+  .areaLabel {
+    font-size: 0.9rem;
+    color: #334155;
+    font-weight: 500;
+  }
+  
+  .areaValue {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #0077b6;
+  }
+  
+  .breakdownSection {
+    margin-top: 20px;
+  }
+  
+  .breakdownSection h5 {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #334155;
+    margin: 0 0 8px 0;
+    border-bottom: 1px solid #e2e8f0;
+    padding-bottom: 6px;
+  }
+  
+  .breakdownGrid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
+  
+  .breakdownItem {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px 8px;
+    background-color: #f8fafc;
+    border-radius: 4px;
+    font-size: 0.85rem;
+  }
+  
+  .breakdownLabel {
+    color: #475569;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 80%;
+  }
+  
+  .breakdownValue {
+    font-weight: 600;
+    color: #0284c7;
+  }
+  
+  .moreItem {
+    grid-column: span 2;
+    text-align: center;
+    padding: 6px;
+    color: #64748b;
+    font-size: 0.8rem;
+    font-style: italic;
+  }
+  
+  .selectedContractorSection h4 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #0f172a;
+    margin: 0 0 12px 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  
+  .viewDetailsButton {
+    width: 100%;
+    background-color: #0077b6;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 10px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+  }
+  
+  .viewDetailsButton:hover {
+    background-color: #0369a1;
+  }
+  
+  /* Animation */
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  
+  .globalSummarySection,
+  .selectedContractorSection {
+    animation: fadeIn 0.3s ease-out;
+  }
+  
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
+    .summaryPanel {
+      max-width: 280px;
+    }
+    
+    .statsGrid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
