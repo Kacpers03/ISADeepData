@@ -7,6 +7,7 @@ import Map, {
   Layer,
   ViewStateChangeEvent 
 } from 'react-map-gl';
+import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { useFilter } from "../../contexts/filterContext";
 import styles from "../../styles/map/map.module.css";
@@ -16,6 +17,8 @@ import { ContractorSummaryPanel } from "./contractorSummaryPanel";
 import { Station, Contractor, Cruise, GeoJsonFeature } from "../../types/filter-types";
 import { ImprovedFilterPanel } from "../filters/filterPanel";
 import CompactLayerControls from "./layerControls";
+
+
 
 const EnhancedMapComponent = () => {
   // Debug logging for Mapbox token
@@ -116,6 +119,64 @@ const [localLoading, setLocalLoading] = useState(false);
     }
   }, []);
   
+  const zoomToFilteredData = useCallback(() => {
+    if (!mapData || !mapRef.current) return;
+    
+    // If a specific contractor is selected, zoom to their areas
+    if (selectedContractorId && allAreaLayers.length > 0) {
+      const contractorAreas = allAreaLayers.filter(area => 
+        area.contractorId === selectedContractorId
+      );
+      
+      if (contractorAreas.length > 0) {
+        // Calculate bounds manually instead of using mapboxgl.LngLatBounds
+        let minLat = 90, maxLat = -90, minLon = 180, maxLon = -180;
+        
+        contractorAreas.forEach(area => {
+          if (area.geoJson && area.geoJson.geometry && area.geoJson.geometry.coordinates) {
+            // For polygon types
+            const coordinates = area.geoJson.geometry.coordinates[0];
+            coordinates.forEach(([lon, lat]) => {
+              minLon = Math.min(minLon, lon);
+              maxLon = Math.max(maxLon, lon);
+              minLat = Math.min(minLat, lat);
+              maxLat = Math.max(maxLat, lat);
+            });
+          } else if (area.centerLongitude && area.centerLatitude) {
+            // Fallback to center coordinates
+            minLon = Math.min(minLon, area.centerLongitude);
+            maxLon = Math.max(maxLon, area.centerLongitude);
+            minLat = Math.min(minLat, area.centerLatitude);
+            maxLat = Math.max(maxLat, area.centerLatitude);
+          }
+        });
+        
+        // Add padding for better view
+        const pad = 1;
+        
+        if (minLon < maxLon && minLat < maxLat) {
+          mapRef.current.fitBounds(
+            [[minLon - pad, minLat - pad], [maxLon + pad, maxLat + pad]],
+            { padding: 50, duration: 1000, maxZoom: 10 }
+          );
+        }
+        return;
+      }
+    }
+    
+    // Reset to world view if no specific filters
+    if (Object.keys(filters).length === 0 || (selectedContractorId === null && !selectedStation)) {
+      mapRef.current.fitBounds(
+        [[-180, -60], [180, 85]],
+        { padding: 20, duration: 1000 }
+      );
+    }
+  }, [selectedContractorId, mapData, allAreaLayers, filters, selectedStation]);
+// Also tie this to the reset filters function
+const handleResetFilters = () => {
+  resetFilters();
+  // The world view zoom will be handled by the effect above
+};
   // 1. Memoize visibleAreaLayers calculation to prevent unnecessary re-renders
   const visibleAreaLayers = useMemo(() => {
     if (!allAreaLayers.length) return [];
@@ -339,11 +400,11 @@ const loadAllVisibleContractors = useCallback(async () => {
   // --- Farge for block status ---
   const getBlockStatusColor = (status) => {
     switch (status.toLowerCase()) {
-      case 'active': return '#4CAF50';
-      case 'pending': return '#FFC107';
-      case 'inactive': return '#9E9E9E';
-      case 'reserved': return '#2196F3';
-      default: return '#4CAF50';
+      case 'active': return '#059669';    // Green
+      case 'pending': return '#d97706';   // Amber
+      case 'inactive': return '#6b7280';  // Gray
+      case 'reserved': return '#3b82f6';  // Blue
+      default: return '#059669';          // Default green
     }
   };
 
@@ -378,7 +439,7 @@ const loadAllVisibleContractors = useCallback(async () => {
     setDetailPanelType('station');
     setShowDetailPanel(true);
     
-    // Finn cruise
+    // Find cruise
     if (mapData) {
       const cruise = mapData.cruises.find(c => 
         c.stations?.some(s => s.stationId === station.stationId)
@@ -387,6 +448,13 @@ const loadAllVisibleContractors = useCallback(async () => {
         setSelectedCruiseId(cruise.cruiseId);
       }
     }
+  };
+  const handlePanelClose = () => {
+    setShowDetailPanel(false);
+    setDetailPanelType(null);
+    setSelectedStation(null); // Important: clear selected station completely
+    setBlockAnalytics(null);
+    setContractorSummary(null);
   };
 
   // 4. Improved updateMapData function with error handling
@@ -495,147 +563,104 @@ const loadAllVisibleContractors = useCallback(async () => {
         {showAreas && visibleAreaLayers.map(area => (
           <React.Fragment key={`area-${area.areaId}`}>
             <Source id={`area-source-${area.areaId}`} type="geojson" data={area.geoJson}>
-              <Layer
-                id={`area-fill-${area.areaId}`}
-                type="fill"
-                paint={{
-                  'fill-color': '#0277bd',
-                  'fill-opacity': 0.2,
-                }}
-              />
-              <Layer
-                id={`area-line-${area.areaId}`}
-                type="line"
-                paint={{
-                  'line-color': '#0277bd',
-                  'line-width': 2,
-                  'line-dasharray': [3, 2]
-                }}
-              />
-              <Layer
-                id={`area-label-${area.areaId}`}
-                type="symbol"
-                layout={{
-                  'text-field': area.areaName,
-                  'text-size': 12,
-                  'text-anchor': 'center',
-                  'text-offset': [0, 0],
-                  'text-allow-overlap': false
-                }}
-                paint={{
-                  'text-color': '#0277bd',
-                  'text-halo-color': 'rgba(255, 255, 255, 0.8)',
-                  'text-halo-width': 1.5
-                }}
-              />
-            </Source>
+  <Layer
+    id={`area-fill-${area.areaId}`}
+    type="fill"
+    paint={{
+      'fill-color': '#0077b6',
+      'fill-opacity': 0.15,
+    }}
+  />
+  <Layer
+    id={`area-line-${area.areaId}`}
+    type="line"
+    paint={{
+      'line-color': '#0077b6',
+      'line-width': 2.5,
+      'line-dasharray': [3, 2]
+    }}
+  />
+  <Layer
+    id={`area-label-${area.areaId}`}
+    type="symbol"
+    layout={{
+      'text-field': area.areaName,
+      'text-size': 12,
+      'text-anchor': 'center',
+      'text-offset': [0, 0],
+      'text-allow-overlap': false
+    }}
+    paint={{
+      'text-color': '#0077b6',
+      'text-halo-color': 'rgba(255, 255, 255, 0.9)',
+      'text-halo-width': 2
+    }}
+  />
+</Source>
             
             {showBlocks && area.blocks.map(block => (
-              <Source 
-                key={`block-source-${block.blockId}`}
-                id={`block-source-${block.blockId}`}
-                type="geojson" 
-                data={block.geoJson}
-              >
-                <Layer
-                  id={`block-fill-${block.blockId}`}
-                  type="fill"
-                  paint={{
-                    'fill-color': getBlockStatusColor(block.status),
-                    'fill-opacity': 0.4,
-                  }}
-                  onClick={() => fetchBlockAnalytics(block.blockId)}
-                />
-                <Layer
-                  id={`block-line-${block.blockId}`}
-                  type="line"
-                  paint={{
-                    'line-color': getBlockStatusColor(block.status),
-                    'line-width': 1,
-                  }}
-                />
-                <Layer
-                  id={`block-label-${block.blockId}`}
-                  type="symbol"
-                  layout={{
-                    'text-field': block.blockName,
-                    'text-size': 10,
-                    'text-anchor': 'center',
-                    'text-offset': [0, 0],
-                    'text-allow-overlap': false
-                  }}
-                  paint={{
-                    'text-color': '#006400',
-                    'text-halo-color': 'rgba(255, 255, 255, 0.8)',
-                    'text-halo-width': 1.5
-                  }}
-                />
-              </Source>
+             <Source 
+             key={`block-source-${block.blockId}`}
+             id={`block-source-${block.blockId}`}
+             type="geojson" 
+             data={block.geoJson}
+           >
+             <Layer
+               id={`block-fill-${block.blockId}`}
+               type="fill"
+               paint={{
+                 'fill-color': getBlockStatusColor(block.status),
+                 'fill-opacity': 0.25,
+               }}
+               onClick={() => fetchBlockAnalytics(block.blockId)}
+             />
+             <Layer
+               id={`block-line-${block.blockId}`}
+               type="line"
+               paint={{
+                 'line-color': getBlockStatusColor(block.status),
+                 'line-width': 1.5,
+               }}
+             />
+             <Layer
+               id={`block-label-${block.blockId}`}
+               type="symbol"
+               layout={{
+                 'text-field': block.blockName,
+                 'text-size': 10,
+                 'text-anchor': 'center',
+                 'text-offset': [0, 0],
+                 'text-allow-overlap': false
+               }}
+               paint={{
+                 'text-color': '#1e3a8a', // Dark blue for better readability
+                 'text-halo-color': 'rgba(255, 255, 255, 0.9)',
+                 'text-halo-width': 2
+               }}
+             />
+           </Source>
             ))}
           </React.Fragment>
         ))}
         
         {/* Stations - always show stations that belong to visible contractors */}
         {showStations && stations.map(station => (
-          <Marker
-            key={station.stationId}
-            longitude={station.longitude}
-            latitude={station.latitude}
-            onClick={e => {
-              e.originalEvent.stopPropagation();
-              handleMarkerClick(station);
-            }}
-          >
-            <div 
-              className={`${styles.mapMarker} ${station.contractorAreaBlockId ? styles.associatedMarker : ''}`}
-              style={{ 
-                backgroundColor: station.contractorAreaBlockId ? '#4CAF50' : '#2196F3',
-              }}
-            >
-              <div className={styles.markerPulse} 
-                style={{ 
-                  borderColor: station.contractorAreaBlockId ? '#4CAF50' : '#2196F3'
-                }}
-              ></div>
-            </div>
-          </Marker>
-        ))}
+  <Marker
+    key={station.stationId}
+    longitude={station.longitude}
+    latitude={station.latitude}
+    onClick={e => {
+      e.originalEvent.stopPropagation();
+      handleMarkerClick(station);
+    }}
+  >
+    <div 
+      className={`${styles.mapMarker} ${station.contractorAreaBlockId ? styles.associatedMarker : ''}`}
+    />
+  </Marker>
+))}
 
-        {/* Popup for selected station (if sidebar not open) */}
-        {selectedStation && !showDetailPanel && (
-          <Popup
-            longitude={selectedStation.longitude}
-            latitude={selectedStation.latitude}
-            anchor="bottom"
-            onClose={() => setSelectedStation(null)}
-            closeButton={true}
-            closeOnClick={false}
-            className={styles.mapPopup}
-          >
-            <div className={styles.popupContent}>
-              <h3>{selectedStation.stationCode}</h3>
-              <div className={styles.popupGrid}>
-                <div className={styles.popupItem}>
-                  <span className={styles.popupLabel}>Station Type:</span>
-                  <span>{selectedStation.stationType}</span>
-                </div>
-                <div className={styles.popupItem}>
-                  <span className={styles.popupLabel}>Coordinates:</span>
-                  <span>{selectedStation.latitude.toFixed(4)}, {selectedStation.longitude.toFixed(4)}</span>
-                </div>
-              </div>
-              <button 
-                className={styles.viewDetailsButton}
-                onClick={() => {
-                  setDetailPanelType('station');
-                  setShowDetailPanel(true);
-                }}
-              >
-                View Complete Details
-              </button>
-            </div>
-          </Popup>
-        )}
+       
 
         {/* Loading overlay when fetching data */}
         {loading && (
@@ -648,30 +673,24 @@ const loadAllVisibleContractors = useCallback(async () => {
       
       {/* Detail panels */}
       {showDetailPanel && detailPanelType === 'station' && (
-        <DetailPanel
-          type={'station'}
-          station={selectedStation}
-          contractor={null}
-          cruise={null}
-          onClose={() => {
-            setShowDetailPanel(false);
-            setDetailPanelType(null);
-          }}
-        />
-      )}
-      
-      {showDetailPanel && detailPanelType === 'contractor' && (
-        <DetailPanel
-          type={'contractor'}
-          station={null}
-          contractor={selectedContractor}
-          cruise={null}
-          onClose={() => {
-            setShowDetailPanel(false);
-            setDetailPanelType(null);
-          }}
-        />
-      )}
+  <DetailPanel
+    type={'station'}
+    station={selectedStation}
+    contractor={null}
+    cruise={null}
+    onClose={handlePanelClose}
+  />
+)}
+
+{showDetailPanel && detailPanelType === 'contractor' && (
+  <DetailPanel
+    type={'contractor'}
+    station={null}
+    contractor={selectedContractor}
+    cruise={null}
+    onClose={handlePanelClose}
+  />
+)}
       
       {showDetailPanel && detailPanelType === 'cruise' && (
         <DetailPanel
@@ -686,27 +705,45 @@ const loadAllVisibleContractors = useCallback(async () => {
         />
       )}
       
-      {showDetailPanel && detailPanelType === 'blockAnalytics' && blockAnalytics && (
-        <BlockAnalyticsPanel
-          data={blockAnalytics}
-          onClose={() => {
-            setShowDetailPanel(false);
-            setDetailPanelType(null);
-            setBlockAnalytics(null);
-          }}
-        />
-      )}
+      {showDetailPanel && detailPanelType === 'station' && (
+  <DetailPanel
+    type={'station'}
+    station={selectedStation}
+    contractor={null}
+    cruise={null}
+    onClose={handlePanelClose}
+  />
+)}
+
+{showDetailPanel && detailPanelType === 'blockAnalytics' && (
+  <DetailPanel
+    type={'bloackAnalytics'}
+    station={null}
+    contractor={selectedContractor}
+    cruise={null}
+    onClose={handlePanelClose}
+  />
+)}
       
-      {showDetailPanel && detailPanelType === 'contractorSummary' && contractorSummary && (
-        <ContractorSummaryPanel
-          data={contractorSummary}
-          onClose={() => {
-            setShowDetailPanel(false);
-            setDetailPanelType(null);
-            setContractorSummary(null);
-          }}
-        />
-      )}
+      {showDetailPanel && detailPanelType === 'station' && (
+  <DetailPanel
+    type={'station'}
+    station={selectedStation}
+    contractor={null}
+    cruise={null}
+    onClose={handlePanelClose}
+  />
+)}
+
+{showDetailPanel && detailPanelType === 'contractorSummary' && (
+  <DetailPanel
+    type={'contractorSummary'}
+    station={null}
+    contractor={selectedContractor}
+    cruise={null}
+    onClose={handlePanelClose}
+  />
+)}
 
       {/* Toast */}
       {showToast && (
