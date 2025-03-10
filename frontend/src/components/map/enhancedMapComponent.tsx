@@ -19,7 +19,6 @@ import CompactLayerControls from "./layerControls";
 import SummaryPanel from "./summaryPanel";
 
 import StationMarker from "./stationMarker";
-import AreaBlockLayer from "./areaBlockLayer";
 
 const EnhancedMapComponent = () => {
   // Context and state from filter context
@@ -74,7 +73,6 @@ const EnhancedMapComponent = () => {
   const [showStations, setShowStations] = useState(true);
   
   // Other UI state variables
-  const [associating, setAssociating] = useState(false);
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
   const [cursorPosition, setCursorPosition] = useState({ latitude: 0, longitude: 0 });
@@ -91,6 +89,8 @@ const EnhancedMapComponent = () => {
   const [clusterIndex, setClusterIndex] = useState(null);
   const [clusters, setClusters] = useState([]);
   const [clusterZoom, setClusterZoom] = useState(viewState.zoom);
+  const [hoveredBlockId, setHoveredBlockId] = useState(null);
+  
   // Helper function to fetch GeoJSON for a contractor
   const fetchContractorGeoJson = useCallback(async (contractorId) => {
     try {
@@ -127,6 +127,42 @@ const EnhancedMapComponent = () => {
       return [];
     }
   }, []);
+  
+  // Get appropriate icon based on station type
+  const getBlockStatusColor = (status) => {
+    switch (status?.toLowerCase()) {
+      case 'active': return '#059669';    // Green
+      case 'pending': return '#d97706';   // Amber
+      case 'inactive': return '#6b7280';  // Gray
+      case 'reserved': return '#3b82f6';  // Blue
+      default: return '#059669';          // Default green
+    }
+  };
+  
+  // Dynamically set layer paint properties based on zoom level
+  const getAreaPaint = useMemo(() => ({
+    'fill-color': '#0077b6',
+    'fill-opacity': [
+      'interpolate',
+      ['linear'],
+      ['zoom'],
+      2, 0.08,   // Less opacity when zoomed out
+      6, 0.15    // More opacity when zoomed in
+    ],
+    'fill-outline-color': '#0077b6'
+  }), []);
+  
+  const getAreaLinePaint = useMemo(() => ({
+    'line-color': '#0077b6',
+    'line-width': [
+      'interpolate',
+      ['linear'],
+      ['zoom'],
+      2, 1.5,    // Thinner line when zoomed out
+      6, 2.5     // Thicker line when zoomed in
+    ],
+    'line-dasharray': [3, 2]
+  }), []);
   
   // Smart zoom function - will be called when a new contractor is selected or filters are reset
   const smartZoom = useCallback(() => {
@@ -194,36 +230,37 @@ const EnhancedMapComponent = () => {
       console.log("Reset to world view");
     }
   }, [selectedContractorId, allAreaLayers, filters]);
-// CORRECTED CODE:
-useEffect(() => {
-  if (!mapData || !mapData.cruises) return;
-  
-  // Get stations from mapData
-  const stationsData = mapData.cruises.flatMap(c => c.stations || []);
-  if (!stationsData.length) return;
-  
-  const supercluster = new Supercluster({
-    radius: 40,
-    maxZoom: 16
+
+  // Cluster functionality for stations
+  useEffect(() => {
+    if (!mapData || !mapData.cruises) return;
     
-  });
-  
-  // Format points for supercluster
-  const points = stationsData.map(station => ({
-    type: 'Feature',
-    properties: { 
-      stationId: station.stationId,
-      stationData: station 
-    },
-    geometry: {
-      type: 'Point',
-      coordinates: [station.longitude, station.latitude]
-    }
-  }));
-  
-  supercluster.load(points);
-  setClusterIndex(supercluster);
-}, [mapData]); // Use mapData as dependency instead
+    // Get stations from mapData
+    const stationsData = mapData.cruises.flatMap(c => c.stations || []);
+    if (!stationsData.length) return;
+    
+    const supercluster = new Supercluster({
+      radius: 40,
+      maxZoom: 16
+    });
+    
+    // Format points for supercluster
+    const points = stationsData.map(station => ({
+      type: 'Feature',
+      properties: { 
+        stationId: station.stationId,
+        stationData: station 
+      },
+      geometry: {
+        type: 'Point',
+        coordinates: [station.longitude, station.latitude]
+      }
+    }));
+    
+    supercluster.load(points);
+    setClusterIndex(supercluster);
+  }, [mapData]);
+
   // Update clusters when the map moves or zoom changes
   useEffect(() => {
     if (!clusterIndex || !mapRef.current) return;
@@ -247,114 +284,7 @@ useEffect(() => {
       setClusters(clusterData);
     }
   }, [viewState, clusterIndex, clusterZoom]);
-  // Update summary data based on what's currently visible
-  const updateSummaryData = useCallback(() => {
-    if (!mapData) return;
-    
-    // Get visible contractors based on filters
-    const visibleContractors = mapData.contractors || [];
-    
-    // Prepare summary data with safe defaults
-    const summary = {
-      contractorCount: visibleContractors.length,
-      areaCount: 0,
-      blockCount: 0,
-      stationCount: 0,
-      totalAreaSizeKm2: 0,
-      contractTypes: {},
-      sponsoringStates: {}
-    };
-    
-    // Count areas and blocks from visible allAreaLayers
-    if (allAreaLayers.length > 0) {
-      // Filter areas to match current filter selection
-      const visibleContractorIds = visibleContractors.map(c => c.contractorId);
-      const visibleAreas = allAreaLayers.filter(area => 
-        visibleContractorIds.includes(area.contractorId)
-      );
-      
-      summary.areaCount = visibleAreas.length;
-      
-      // Calculate blocks with a safe fallback
-      summary.blockCount = visibleAreas.reduce((total, area) => 
-        total + ((area.blocks && Array.isArray(area.blocks)) ? area.blocks.length : 0), 0);
-      
-      // Calculate total area with a safe fallback and sanitize
-      summary.totalAreaSizeKm2 = visibleAreas.reduce((total, area) => {
-        const areaSize = typeof area.totalAreaSizeKm2 === 'number' ? area.totalAreaSizeKm2 : 0;
-        return total + areaSize;
-      }, 0);
-    }
-    
-    // Count stations from mapData with safe handling
-    if (mapData.cruises && Array.isArray(mapData.cruises)) {
-      summary.stationCount = mapData.cruises.reduce((total, cruise) => {
-        if (cruise.stations && Array.isArray(cruise.stations)) {
-          return total + cruise.stations.length;
-        }
-        return total;
-      }, 0);
-    }
-    
-    // Aggregate contract types and sponsoring states
-    visibleContractors.forEach(contractor => {
-      // Contract types
-      if (contractor.contractType) {
-        summary.contractTypes[contractor.contractType] = 
-          (summary.contractTypes[contractor.contractType] || 0) + 1;
-      }
-      
-      // Sponsoring states
-      if (contractor.sponsoringState) {
-        summary.sponsoringStates[contractor.sponsoringState] = 
-          (summary.sponsoringStates[contractor.sponsoringState] || 0) + 1;
-      }
-    });
-    
-    // Set the summary data
-    setSummaryData(summary);
-    
-    // Clear selected contractor info if no contractor is selected
-    if (!selectedContractorId && selectedContractorInfo) {
-      setSelectedContractorInfo(null);
-    }
-  }, [mapData, allAreaLayers, selectedContractorId, selectedContractorInfo]);
-  
-  // Memoize visible area layers
-  const visibleAreaLayers = useMemo(() => {
-    if (!allAreaLayers.length) return [];
-    
-    // If filters are reset but we have no layers loaded, reload them  
-    if (Object.keys(filters).length === 0) {
-      return allAreaLayers;
-    }
-    
-    // Get IDs of contractors that match the current filters
-    const contractorIds = mapData?.contractors.map(c => c.contractorId) || [];
-    
-    // Filter area layers to only those belonging to the filtered contractors
-    return allAreaLayers.filter(area => {
-      // If we have a specific contractorId filter, only show that one
-      if (selectedContractorId) {
-        return area.contractorId === selectedContractorId;
-      }
-      
-      // Otherwise show all areas belonging to the filtered contractors
-      return contractorIds.includes(area.contractorId);
-    });
-  }, [allAreaLayers, mapData, filters, selectedContractorId]);
-  
-  // Make map instance available globally for search function
-  useEffect(() => {
-    if (mapRef.current) {
-      window.mapInstance = mapRef.current.getMap();
-    }
-    
-    return () => {
-      window.mapInstance = null;
-    };
-  }, [mapRef.current]);
-  
+
   // Load all visible contractors' GeoJSON
   const loadAllVisibleContractors = useCallback(async () => {
     if (!mapData?.contractors.length) return;
@@ -402,44 +332,40 @@ useEffect(() => {
     }
   }, [selectedContractorId, smartZoom]);
   
-  // Effect to update summary when relevant data changes
-  useEffect(() => {
-    updateSummaryData();
-  }, [mapData, allAreaLayers, filters, selectedContractorId, updateSummaryData]);
-  
-  // Load GeoJSON for a specific contractor and store it
-  const fetchGeoJsonForContractor = useCallback(async (contractorId) => {
-    try {
-      const areas = await fetchContractorGeoJson(contractorId);
-      
-      if (areas && areas.length > 0) {
-        // Store all areas in the allAreaLayers state
-        setAllAreaLayers(prevLayers => {
-          // Remove any existing areas for this contractor
-          const filtered = prevLayers.filter(area => area.contractorId !== contractorId);
-          // Add the new areas
-          return [...filtered, ...areas];
-        });
-        
-        // Update info-box for contractor
-        if (mapData?.contractors) {
-          const contractor = mapData.contractors.find(c => c.contractorId === contractorId);
-          if (contractor) {
-            setSelectedContractorInfo({
-              name: contractor.contractorName,
-              totalAreas: areas.length,
-              totalBlocks: areas.reduce((acc, area) => acc + area.blocks.length, 0)
-            });
-          }
-        }
-        
-        // Fetch contractor summary for the summary panel
-        fetchContractorSummary(contractorId);
-      }
-    } catch (error) {
-      console.error('Error loading GeoJSON data:', error);
+  // Memoize visible area layers
+  const visibleAreaLayers = useMemo(() => {
+    if (!allAreaLayers.length) return [];
+    
+    // If filters are reset but we have no layers loaded, reload them  
+    if (Object.keys(filters).length === 0) {
+      return allAreaLayers;
     }
-  }, [fetchContractorGeoJson, mapData?.contractors]);
+    
+    // Get IDs of contractors that match the current filters
+    const contractorIds = mapData?.contractors.map(c => c.contractorId) || [];
+    
+    // Filter area layers to only those belonging to the filtered contractors
+    return allAreaLayers.filter(area => {
+      // If we have a specific contractorId filter, only show that one
+      if (selectedContractorId) {
+        return area.contractorId === selectedContractorId;
+      }
+      
+      // Otherwise show all areas belonging to the filtered contractors
+      return contractorIds.includes(area.contractorId);
+    });
+  }, [allAreaLayers, mapData, filters, selectedContractorId]);
+  
+  // Make map instance available globally for search function
+  useEffect(() => {
+    if (mapRef.current) {
+      window.mapInstance = mapRef.current.getMap();
+    }
+    
+    return () => {
+      window.mapInstance = null;
+    };
+  }, [mapRef.current]);
 
   // Block analytics fetch
   const fetchBlockAnalytics = async (blockId) => {
@@ -508,54 +434,24 @@ useEffect(() => {
     }
   };
 
-  // Associate stations with blocks
-  const associateStationsWithBlocks = async () => {
-    try {
-      setAssociating(true);
-      const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5062/api';
-      const response = await fetch(`${API_BASE_URL}/Analytics/associate-stations-blocks`, {
-        method: 'POST'
-      });
-      
-      if (!response.ok) {
-        throw new Error('Failed to associate stations with blocks');
-      }
-      
-      const result = await response.json();
-      setToastMessage(result.message || 'Stations associated with blocks successfully');
-      setShowToast(true);
-      refreshData();
-    } catch (error) {
-      console.error('Error:', error);
-      setToastMessage('Error associating stations with blocks');
-      setShowToast(true);
-    } finally {
-      setAssociating(false);
-    }
-  };
-
   // Get stations from mapData
-  // In your EnhancedMapComponent.tsx
-
-// Replace this:
-const stations = mapData ? mapData.cruises.flatMap(c => c.stations || []) : [];
-
-// With this:
-const getAllStations = useCallback(() => {
-  if (!mapData) return [];
+  const getAllStations = useCallback(() => {
+    if (!mapData) return [];
+    
+    // Get contractors that match current filters
+    const filteredContractorIds = mapData.contractors.map(c => c.contractorId);
+    
+    // Only get stations from cruises that belong to filtered contractors
+    return mapData.cruises
+      .filter(cruise => {
+        // Only include cruises from contractors that match the filter
+        return filteredContractorIds.includes(cruise.contractorId);
+      })
+      .flatMap(c => c.stations || []);
+  }, [mapData, filters]);
   
-  // Get contractors that match current filters
-  const filteredContractorIds = mapData.contractors.map(c => c.contractorId);
-  
-  // Only get stations from cruises that belong to filtered contractors
-  return mapData.cruises
-    .filter(cruise => {
-      // Only include cruises from contractors that match the filter
-      return filteredContractorIds.includes(cruise.contractorId);
-    })
-    .flatMap(c => c.stations || []);
-}, [mapData, filters]);
-
+  // Get all stations
+  const stations = getAllStations();
   
   // Get selected contractor/cruise
   const selectedContractor = mapData?.contractors.find(c => c.contractorId === selectedContractorId) || null;
@@ -661,16 +557,15 @@ const getAllStations = useCallback(() => {
   return (
     <div className={styles.mapContainer}>
       {/* Summary Panel */}
-    
       {showSummaryPanel && (
-  <SummaryPanel 
-    data={summaryData} 
-    onClose={() => setShowSummaryPanel(false)}
-    selectedContractorInfo={selectedContractorId ? selectedContractorInfo : null}
-    contractorSummary={selectedContractorId ? contractorSummary : null}
-    onViewContractorSummary={handleViewContractorSummary} // This is crucial
-  />
-)}
+        <SummaryPanel 
+          data={summaryData} 
+          onClose={() => setShowSummaryPanel(false)}
+          selectedContractorInfo={selectedContractorId ? selectedContractorInfo : null}
+          contractorSummary={selectedContractorId ? contractorSummary : null}
+          onViewContractorSummary={handleViewContractorSummary}
+        />
+      )}
       
       {/* Compact Layer Controls */}
       <CompactLayerControls 
@@ -682,13 +577,9 @@ const getAllStations = useCallback(() => {
         setShowStations={setShowStations}
         mapStyle={mapStyle}
         setMapStyle={setMapStyle}
-        associateStationsWithBlocks={associateStationsWithBlocks}
-        associating={associating}
         showSummary={showSummaryPanel}
         setShowSummary={setShowSummaryPanel}
       />
-
-     
 
       {/* THE MAP */}
       <Map
@@ -729,58 +620,163 @@ const getAllStations = useCallback(() => {
           {cursorPosition.latitude}, {cursorPosition.longitude}
         </div>
 
-        {/* Areas and Blocks */}
+        {/* Areas Layer - Rendered independently */}
         {showAreas && visibleAreaLayers.map(area => (
-          <AreaBlockLayer
-            key={`area-layer-${area.areaId}`}
-            area={area}
-            showBlocks={showBlocks}
-            onBlockClick={fetchBlockAnalytics}
-          />
+          <Source 
+            key={`area-source-${area.areaId}`} 
+            id={`area-source-${area.areaId}`} 
+            type="geojson" 
+            data={area.geoJson}
+          >
+            {/* Area Fill */}
+            <Layer
+              id={`area-fill-${area.areaId}`}
+              type="fill"
+              paint={getAreaPaint}
+              beforeId="settlement-label"
+            />
+            
+            {/* Area Outline */}
+            <Layer
+              id={`area-line-${area.areaId}`}
+              type="line"
+              paint={getAreaLinePaint}
+              beforeId="settlement-label"
+            />
+            
+            {/* Area Label */}
+            <Layer
+              id={`area-label-${area.areaId}`}
+              type="symbol"
+              layout={{
+                'text-field': area.areaName,
+                'text-size': [
+                  'interpolate', ['linear'], ['zoom'],
+                  2, 10,  // Smaller text when zoomed out
+                  6, 14   // Larger text when zoomed in
+                ],
+                'text-anchor': 'center',
+                'text-justify': 'center',
+                'text-offset': [0, 0],
+                'text-allow-overlap': false,
+                'text-ignore-placement': false,
+                'text-optional': true,
+                'symbol-z-order': 'source'
+              }}
+              paint={{
+                'text-color': '#0077b6',
+                'text-halo-color': 'rgba(255, 255, 255, 0.9)',
+                'text-halo-width': 1.5
+              }}
+              beforeId="settlement-label"
+            />
+          </Source>
         ))}
         
+        {/* Blocks Layer - Rendered independently */}
+        {showBlocks && visibleAreaLayers.flatMap(area => 
+          area.blocks ? area.blocks.map(block => (
+            <Source 
+              key={`block-source-${block.blockId}`}
+              id={`block-source-${block.blockId}`}
+              type="geojson" 
+              data={block.geoJson}
+            >
+              {/* Block Fill */}
+              <Layer
+                id={`block-fill-${block.blockId}`}
+                type="fill"
+                paint={{
+                  'fill-color': getBlockStatusColor(block.status),
+                  'fill-opacity': hoveredBlockId === block.blockId ? 0.6 : 0.3,
+                  'fill-outline-color': getBlockStatusColor(block.status)
+                }}
+                beforeId="settlement-label"
+                onClick={() => fetchBlockAnalytics(block.blockId)}
+              />
+              
+              {/* Block Outline */}
+              <Layer
+                id={`block-line-${block.blockId}`}
+                type="line"
+                paint={{
+                  'line-color': getBlockStatusColor(block.status),
+                  'line-width': hoveredBlockId === block.blockId ? 2 : 1.5,
+                }}
+                beforeId="settlement-label"
+              />
+              
+              {/* Block Label */}
+              <Layer
+                id={`block-label-${block.blockId}`}
+                type="symbol"
+                layout={{
+                  'text-field': block.blockName,
+                  'text-size': [
+                    'interpolate', ['linear'], ['zoom'],
+                    4, 0,    // Hide text when zoomed out
+                    5, 10,   // Start showing small text
+                    8, 12    // Larger text when zoomed in
+                  ],
+                  'text-anchor': 'center',
+                  'text-justify': 'center',
+                  'text-allow-overlap': false,
+                  'text-ignore-placement': false,
+                  'text-optional': true
+                }}
+                paint={{
+                  'text-color': '#1e3a8a',
+                  'text-halo-color': 'rgba(255, 255, 255, 0.9)',
+                  'text-halo-width': 1.5
+                }}
+                beforeId="settlement-label"
+              />
+            </Source>
+          )) : []
+        )}
+        
         {/* Stations */}
-        {showStations && stations.length > 0 && clusters.map(cluster => {
-  // Only show clusters/markers for stations that match the current filter
-  const isCluster = cluster.properties.cluster;
-  const clusterId = isCluster ? `cluster-${cluster.properties.cluster_id}` : `station-${cluster.properties.stationId}`;
-  
-  if (isCluster) {
-    return (
-      <ClusterMarker
-        key={clusterId}
-        cluster={{
-          id: clusterId,
-          longitude: cluster.geometry.coordinates[0],
-          latitude: cluster.geometry.coordinates[1],
-          count: cluster.properties.point_count,
-          expansionZoom: clusterIndex.getClusterExpansionZoom(cluster.properties.cluster_id)
-        }}
-        onClick={() => {
-          // Zoom in when cluster is clicked
-          const [longitude, latitude] = cluster.geometry.coordinates;
-          const expansionZoom = clusterIndex.getClusterExpansionZoom(cluster.properties.cluster_id);
+        {showStations && clusters.map(cluster => {
+          // Is this a cluster?
+          const isCluster = cluster.properties.cluster;
+          const clusterId = isCluster ? `cluster-${cluster.properties.cluster_id}` : `station-${cluster.properties.stationId}`;
           
-          mapRef.current.flyTo({
-            center: [longitude, latitude],
-            zoom: expansionZoom,
-            duration: 500
-          });
-        }}
-      />
-    );
-  } else {
-    // It's a single station
-    const station = cluster.properties.stationData;
-    return (
-      <StationMarker
-        key={clusterId}
-        station={station}
-        onClick={handleMarkerClick}
-      />
-    );
-  }
-})}
+          if (isCluster) {
+            return (
+              <ClusterMarker
+                key={clusterId}
+                cluster={{
+                  id: clusterId,
+                  longitude: cluster.geometry.coordinates[0],
+                  latitude: cluster.geometry.coordinates[1],
+                  count: cluster.properties.point_count,
+                  expansionZoom: clusterIndex.getClusterExpansionZoom(cluster.properties.cluster_id)
+                }}
+                onClick={() => {
+                  // Zoom in when cluster is clicked
+                  const [longitude, latitude] = cluster.geometry.coordinates;
+                  const expansionZoom = clusterIndex.getClusterExpansionZoom(cluster.properties.cluster_id);
+                  
+                  mapRef.current.flyTo({
+                    center: [longitude, latitude],
+                    zoom: expansionZoom,
+                    duration: 500
+                  });
+                }}
+              />
+            );
+          } else {
+            // It's a single station
+            const station = cluster.properties.stationData;
+            return (
+              <StationMarker
+                key={clusterId}
+                station={station}
+                onClick={handleMarkerClick}
+              />
+            );
+          }
+        })}
 
         {/* Popup for station info */}
         {popupInfo && (
