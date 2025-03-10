@@ -68,89 +68,95 @@ export const ImprovedFilterPanel = () => {
   const updateFilteredOptions = useCallback(() => {
     if (!mapData || !filterOptions) return;
     
-    const { contractors, cruises } = mapData;
+    const { contractors } = mapData;
+    
+    // Create a set to track what values are available based on current filtered data
+    const availableMineralTypes = new Set();
+    const availableContractStatuses = new Set();
+    const availableSponsoringStates = new Set();
+    const availableYears = new Set();
+    const availableContractorIds = new Set();
     
     // Extract all available values from the current filtered data
-    
-    // 1. Extract mineral types (contractTypes) from visible data
-    const availableMineralTypes = new Set();
     contractors.forEach(contractor => {
       availableMineralTypes.add(contractor.contractType);
-    });
-    
-    // 2. Extract contract statuses from visible data
-    const availableContractStatuses = new Set();
-    contractors.forEach(contractor => {
       availableContractStatuses.add(contractor.contractStatus);
-    });
-    
-    // 3. Extract sponsoring states from visible data
-    const availableSponsoringStates = new Set();
-    contractors.forEach(contractor => {
       availableSponsoringStates.add(contractor.sponsoringState);
-    });
-    
-    // 4. Extract years from visible data
-    const availableYears = new Set();
-    contractors.forEach(contractor => {
       availableYears.add(contractor.contractualYear);
+      availableContractorIds.add(contractor.contractorId);
     });
     
-    // 5. Process for dropdown display
-    
-    // Update mineral types options - keep all options but mark unavailable ones
+    // Update mineral types options - keep all options but mark unavailable ones as disabled
     if (filterOptions.contractTypes) {
-      const updatedMineralTypes = filterOptions.contractTypes.map(type => ({
-        value: type.contractTypeId.toString(),
-        label: type.contractTypeName,
-        disabled: filters.mineralTypeId === undefined && 
-                 !availableMineralTypes.has(type.contractTypeName)
-      }));
+      const updatedMineralTypes = filterOptions.contractTypes.map(type => {
+        // Check if this mineral type is available based on current filters
+        const isAvailable = availableMineralTypes.has(type.contractTypeName);
+        
+        return {
+          value: type.contractTypeId.toString(),
+          label: type.contractTypeName,
+          disabled: !isAvailable
+        };
+      });
       setFilteredMineralTypes(updatedMineralTypes);
     }
     
     // Update contract statuses options
     if (filterOptions.contractStatuses) {
-      const updatedContractStatuses = filterOptions.contractStatuses.map(status => ({
-        value: status.contractStatusId.toString(),
-        label: status.contractStatusName,
-        disabled: filters.contractStatusId === undefined && 
-                 !availableContractStatuses.has(status.contractStatusName)
-      }));
+      const updatedContractStatuses = filterOptions.contractStatuses.map(status => {
+        // Check if this status is available based on current filters
+        const isAvailable = availableContractStatuses.has(status.contractStatusName);
+        
+        return {
+          value: status.contractStatusId.toString(),
+          label: status.contractStatusName,
+          disabled: !isAvailable
+        };
+      });
       setFilteredContractStatuses(updatedContractStatuses);
     }
     
     // Update sponsoring states options
     if (filterOptions.sponsoringStates) {
-      const updatedSponsoringStates = filterOptions.sponsoringStates.map(state => ({
-        value: state,
-        label: state,
-        disabled: filters.sponsoringState === undefined && 
-                 !availableSponsoringStates.has(state)
-      }));
+      const updatedSponsoringStates = filterOptions.sponsoringStates.map(state => {
+        // Check if this state is available based on current filters
+        const isAvailable = availableSponsoringStates.has(state);
+        
+        return {
+          value: state,
+          label: state,
+          disabled: !isAvailable
+        };
+      });
       setFilteredSponsoringStates(updatedSponsoringStates);
     }
     
     // Update years options
     if (filterOptions.contractualYears) {
-      const updatedYears = filterOptions.contractualYears.map(year => ({
-        value: year.toString(),
-        label: year.toString(),
-        disabled: filters.year === undefined && 
-                 !availableYears.has(year)
-      }));
+      const updatedYears = filterOptions.contractualYears.map(year => {
+        // Check if this year is available based on current filters
+        const isAvailable = availableYears.has(year);
+        
+        return {
+          value: year.toString(),
+          label: year.toString(),
+          disabled: !isAvailable
+        };
+      });
       setFilteredYears(updatedYears);
     }
     
-    // Update contractor names from mapData
+    // Update contractor options from mapData
     if (mapData?.contractors) {
       const contractorOptions = mapData.contractors.map(contractor => ({
         value: contractor.contractorId.toString(),
-        label: contractor.contractorName
+        label: contractor.contractorName,
+        // No need to disable contractor options from the current filtered data
+        // since they're already filtered in the mapData
       }));
       setFilteredContractors(contractorOptions);
     }
-  }, [mapData, filterOptions, filters]);
+  }, [mapData, filterOptions]);
   
   // Handle select change with proper type conversion
   const handleSelectChange = useCallback((key, value) => {

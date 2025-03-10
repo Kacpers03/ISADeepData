@@ -79,6 +79,9 @@ export const CustomDropdown: React.FC<CustomDropdownProps> = ({
                 opacity: option.disabled ? 0.5 : 1,
                 cursor: option.disabled ? 'not-allowed' : 'pointer'
               }}
+              aria-disabled={option.disabled}
+              role="option"
+              aria-selected={option.value === value}
             >
               {option.label}
             </div>
