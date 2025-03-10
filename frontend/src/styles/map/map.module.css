@@ -1311,19 +1311,7 @@
 }
 
 /* TOOLTIP FOR BLOCK INTERACTION */
-.blockTooltip {
-  position: absolute;
-  background-color: white;
-  border-radius: 4px;
-  padding: 8px 12px;
-  font-size: 13px;
-  color: #334155;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  pointer-events: none;
-  z-index: 10;
-  max-width: 220px;
-  white-space: normal;
-}
+
 
 /* IMPROVED MAP LOADING OVERLAY */
 .mapLoadingOverlay {
