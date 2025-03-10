@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import styles from '../../styles/map/map.module.css';
 
-const LayerControls = ({ 
+const CompactLayerControls = ({ 
   showAreas, 
   setShowAreas, 
   showBlocks, 
@@ -34,12 +34,6 @@ const LayerControls = ({
     setActivePanel(panel);
   };
 
-  // Handle close button click
-  const handleClose = () => {
-    setIsOpen(false);
-    setActivePanel(null);
-  };
-
   // Calculate fixed position for the controls panel to prevent it from moving when opened/closed
   useEffect(() => {
     if (controlsRef.current && panelRef.current && isOpen) {
@@ -70,15 +64,7 @@ const LayerControls = ({
       {/* Controls panel - fixed positioning to avoid jumping */}
       {isOpen && (
         <div className={styles.controlsPanel} ref={panelRef}>
-          {/* Close button */}
-          <button 
-            className={styles.controlsCloseButton}
-            onClick={handleClose}
-            aria-label="Close panel"
-            title="Close panel"
-          >
-            ×
-          </button>
+          {/* Close button removed as requested */}
           
           <div className={styles.controlsTabs}>
             <button 
@@ -171,7 +157,7 @@ const LayerControls = ({
             
             {activePanel === 'display' && (
               <div className={styles.displayPanel}>
-                {/* Change from checkbox to a button for showing the summary panel */}
+                {/* Button for showing/hiding the summary panel */}
                 <button 
                   className={styles.toggleSummaryButton}
                   onClick={() => setShowSummary(!showSummary)}
@@ -196,4 +182,4 @@ const LayerControls = ({
   );
 };
 
-export default LayerControls;
+export default CompactLayerControls;

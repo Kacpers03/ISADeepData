@@ -21,7 +21,7 @@ const SummaryPanel = ({
   useEffect(() => {
     if (contentRef.current) {
       // Make sure scrolling works properly with dynamic content
-      contentRef.current.style.maxHeight = '400px'; // Limit height with scrolling
+      contentRef.current.style.maxHeight = '300px'; // Reduced height to make panel less intrusive
     }
   }, [data, selectedContractorInfo]);
   
@@ -88,32 +88,41 @@ const SummaryPanel = ({
             </div>
           )}
 
-          {/* Overall Summary or "No contractor chosen" message */}
+          {/* No contractor selected message or Overall Summary */}
           {!selectedContractorInfo && (
             <div className={styles.globalSummarySection}>
               {(!data || (data.contractorCount === 0 && data.areaCount === 0 && data.blockCount === 0)) ? (
                 <div className={styles.noContractorMessage}>
-                  <p>No contractor chosen</p>
+                  <p>No contractor selected</p>
                   <p className={styles.noContractorSubtext}>Select a contractor from the filter panel to view detailed information.</p>
+                  <div className={styles.selectionHint}>
+                    <div className={styles.hintIcon}>↑</div>
+                    <p className={styles.hintText}>Use the filters on the left to select a contractor and visualize their exploration areas.</p>
+                  </div>
                 </div>
               ) : (
                 <>
-                  <div className={styles.statsGrid}>
-                    <div className={styles.statItem}>
-                      <div className={styles.statValue}>{data?.contractorCount || 0}</div>
-                      <div className={styles.statLabel}>Contractors</div>
+                  {/* Reduced to more compact layout */}
+                  <div className={styles.globalStats}>
+                    <div className={styles.statsRow}>
+                      <div className={styles.statItem}>
+                        <div className={styles.statValue}>{data?.contractorCount || 0}</div>
+                        <div className={styles.statLabel}>Contractors</div>
+                      </div>
+                      <div className={styles.statItem}>
+                        <div className={styles.statValue}>{data?.areaCount || 0}</div>
+                        <div className={styles.statLabel}>Areas</div>
+                      </div>
                     </div>
-                    <div className={styles.statItem}>
-                      <div className={styles.statValue}>{data?.areaCount || 0}</div>
-                      <div className={styles.statLabel}>Areas</div>
-                    </div>
-                    <div className={styles.statItem}>
-                      <div className={styles.statValue}>{data?.blockCount || 0}</div>
-                      <div className={styles.statLabel}>Blocks</div>
-                    </div>
-                    <div className={styles.statItem}>
-                      <div className={styles.statValue}>{data?.stationCount || 0}</div>
-                      <div className={styles.statLabel}>Stations</div>
+                    <div className={styles.statsRow}>
+                      <div className={styles.statItem}>
+                        <div className={styles.statValue}>{data?.blockCount || 0}</div>
+                        <div className={styles.statLabel}>Blocks</div>
+                      </div>
+                      <div className={styles.statItem}>
+                        <div className={styles.statValue}>{data?.stationCount || 0}</div>
+                        <div className={styles.statLabel}>Stations</div>
+                      </div>
                     </div>
                   </div>
                   
@@ -124,42 +133,46 @@ const SummaryPanel = ({
                     </div>
                   )}
                   
-                  {/* Only show breakdowns if we have data */}
+                  {/* Consolidated breakdown sections for space efficiency */}
                   {data && Object.keys(data.contractTypes || {}).length > 0 && (
-                    <div className={styles.breakdownSection}>
-                      <h5>Contract Types</h5>
-                      <div className={styles.breakdownGrid}>
-                        {Object.entries(data.contractTypes).map(([type, count]) => (
-                          <div key={type} className={styles.breakdownItem}>
-                            <div className={styles.breakdownLabel}>{type}</div>
-                            <div className={styles.breakdownValue}>{count}</div>
-                          </div>
-                        ))}
-                      </div>
+                    <div className={styles.breakdownButton} onClick={() => document.getElementById('contractTypesBreakdown').classList.toggle(styles.expanded)}>
+                      <span>Contract Types</span>
+                      <span className={styles.expandIcon}>+</span>
                     </div>
                   )}
                   
-                  {data && Object.keys(data.sponsoringStates || {}).length > 0 && (
-                    <div className={styles.breakdownSection}>
-                      <h5>Sponsoring States</h5>
-                      <div className={styles.breakdownGrid}>
-                        {Object.entries(data.sponsoringStates)
-                          .sort((a, b) => b[1] - a[1]) // Sort by count descending
-                          .slice(0, 6) // Show top 6 only
-                          .map(([state, count]) => (
-                            <div key={state} className={styles.breakdownItem}>
-                              <div className={styles.breakdownLabel}>{state}</div>
-                              <div className={styles.breakdownValue}>{count}</div>
-                            </div>
-                          ))}
-                        {Object.keys(data.sponsoringStates).length > 6 && (
-                          <div className={styles.moreItem}>
-                            +{Object.keys(data.sponsoringStates).length - 6} more
-                          </div>
-                        )}
+                  <div id="contractTypesBreakdown" className={styles.breakdownSection}>
+                    {data && Object.entries(data.contractTypes || {}).map(([type, count]) => (
+                      <div key={type} className={styles.breakdownItem}>
+                        <div className={styles.breakdownLabel}>{type}</div>
+                        <div className={styles.breakdownValue}>{count}</div>
                       </div>
+                    ))}
+                  </div>
+                  
+                  {data && Object.keys(data.sponsoringStates || {}).length > 0 && (
+                    <div className={styles.breakdownButton} onClick={() => document.getElementById('sponsoringStatesBreakdown').classList.toggle(styles.expanded)}>
+                      <span>Sponsoring States</span>
+                      <span className={styles.expandIcon}>+</span>
                     </div>
                   )}
+                  
+                  <div id="sponsoringStatesBreakdown" className={styles.breakdownSection}>
+                    {data && Object.entries(data.sponsoringStates || {})
+                      .sort((a, b) => b[1] - a[1])
+                      .slice(0, 5)
+                      .map(([state, count]) => (
+                        <div key={state} className={styles.breakdownItem}>
+                          <div className={styles.breakdownLabel}>{state}</div>
+                          <div className={styles.breakdownValue}>{count}</div>
+                        </div>
+                      ))}
+                    {data && Object.keys(data.sponsoringStates || {}).length > 5 && (
+                      <div className={styles.moreItem}>
+                        +{Object.keys(data.sponsoringStates).length - 5} more
+                      </div>
+                    )}
+                  </div>
                 </>
               )}
             </div>

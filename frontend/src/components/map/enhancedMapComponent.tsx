@@ -187,7 +187,7 @@ const EnhancedMapComponent = () => {
   // Update summary data based on what's currently visible
  // Improved updateSummaryData function for EnhancedMapComponent
 
-const updateSummaryData = useCallback(() => {
+ const updateSummaryData = useCallback(() => {
   if (!mapData) return;
   
   // Get visible contractors based on filters
@@ -206,6 +206,7 @@ const updateSummaryData = useCallback(() => {
   
   // Count areas and blocks from visible allAreaLayers
   if (allAreaLayers.length > 0) {
+    // Filter areas to match current filter selection
     const visibleContractorIds = visibleContractors.map(c => c.contractorId);
     const visibleAreas = allAreaLayers.filter(area => 
       visibleContractorIds.includes(area.contractorId)
@@ -251,7 +252,17 @@ const updateSummaryData = useCallback(() => {
   
   // Set the summary data
   setSummaryData(summary);
-}, [mapData, allAreaLayers]);
+  
+  // Clear selected contractor info if no contractor is selected
+  if (!selectedContractorId && selectedContractorInfo) {
+    setSelectedContractorInfo(null);
+  }
+}, [mapData, allAreaLayers, selectedContractorId, selectedContractorInfo]);
+
+// Use in the component
+useEffect(() => {
+  updateSummaryData();
+}, [mapData, allAreaLayers, filters, selectedContractorId, updateSummaryData]);
 
   // Memoize visible area layers
   const visibleAreaLayers = useMemo(() => {
@@ -557,18 +568,20 @@ const fetchContractorSummary = async (contractorId) => {
   };
   
   // Also add a handler for the View Detailed Summary button
-  const handleViewContractorSummary = () => {
+  const handleViewContractorSummary = useCallback(() => {
     if (selectedContractorId && contractorSummary) {
       setDetailPanelType('contractorSummary');
       setShowDetailPanel(true);
     } else if (selectedContractorId) {
       // If we have the ID but no summary, fetch it first
-      fetchContractorSummary(selectedContractorId).then(() => {
-        setDetailPanelType('contractorSummary');
-        setShowDetailPanel(true);
+      fetchContractorSummary(selectedContractorId).then((summary) => {
+        if (summary) {
+          setDetailPanelType('contractorSummary');
+          setShowDetailPanel(true);
+        }
       });
     }
-  };
+  }, [selectedContractorId, contractorSummary, setDetailPanelType, setShowDetailPanel, fetchContractorSummary]);
   
   // Handle reset filters with smart zooming
   const handleResetFilters = () => {
@@ -587,12 +600,12 @@ const fetchContractorSummary = async (contractorId) => {
 
   return (
     <div className={styles.mapContainer}>
-  {showSummaryPanel && summaryData && (
+ {showSummaryPanel && (
   <SummaryPanel 
     data={summaryData} 
     onClose={() => setShowSummaryPanel(false)}
-    selectedContractorInfo={selectedContractorInfo}
-    contractorSummary={contractorSummary}
+    selectedContractorInfo={selectedContractorId ? selectedContractorInfo : null}
+    contractorSummary={selectedContractorId ? contractorSummary : null}
     onViewContractorSummary={handleViewContractorSummary}
   />
 )}
