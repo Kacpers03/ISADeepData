@@ -566,7 +566,21 @@ const fetchContractorSummary = async (contractorId) => {
     // Only reset block analytics
     setBlockAnalytics(null);
   };
-  
+  const handleCloseAllPanels = useCallback(() => {
+    // Close the detail panel
+    setShowDetailPanel(false);
+    setDetailPanelType(null);
+    
+    // Close the summary panel
+    setShowSummaryPanel(false);
+    
+    // Reset selected items
+    setSelectedStation(null);
+    
+    // Reset analytics data but don't clear selection
+    setBlockAnalytics(null);
+    setContractorSummary(null);
+  }, [setShowDetailPanel, setDetailPanelType, setShowSummaryPanel, setSelectedStation, setBlockAnalytics, setContractorSummary]);
   // Also add a handler for the View Detailed Summary button
   const handleViewContractorSummary = useCallback(() => {
     if (selectedContractorId && contractorSummary) {
@@ -812,11 +826,12 @@ const fetchContractorSummary = async (contractorId) => {
       )}
       
       {showDetailPanel && detailPanelType === 'contractorSummary' && contractorSummary && (
-        <ContractorSummaryPanel
-          data={contractorSummary}
-          onClose={handlePanelClose}
-        />
-      )}
+  <ContractorSummaryPanel
+    data={contractorSummary}
+    onClose={handlePanelClose}
+    onCloseAll={handleCloseAllPanels} // Add new handler to close all panels
+  />
+)}
 
       {/* Toast */}
       {showToast && (
