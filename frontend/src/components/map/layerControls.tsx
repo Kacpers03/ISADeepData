@@ -10,8 +10,6 @@ const CompactLayerControls = ({
   setShowStations,
   mapStyle,
   setMapStyle,
-  associateStationsWithBlocks,
-  associating,
   showSummary,
   setShowSummary
 }) => {
@@ -41,6 +39,11 @@ const CompactLayerControls = ({
       panelRef.current.style.position = 'absolute';
       panelRef.current.style.right = '0';
       panelRef.current.style.bottom = '50px'; // Position above the toggle button
+      
+      // Set max-height to ensure the panel doesn't overflow viewport
+      const maxHeight = window.innerHeight - 100; // Keep some space from top/bottom edges
+      panelRef.current.style.maxHeight = `${maxHeight}px`;
+      panelRef.current.style.overflowY = 'auto';
     }
   }, [isOpen]);
 
@@ -64,8 +67,7 @@ const CompactLayerControls = ({
       {/* Controls panel - fixed positioning to avoid jumping */}
       {isOpen && (
         <div className={styles.controlsPanel} ref={panelRef}>
-          {/* Close button removed as requested */}
-          
+          {/* Tabs navigation */}
           <div className={styles.controlsTabs}>
             <button 
               className={`${styles.controlsTab} ${activePanel === 'layers' ? styles.controlsTabActive : ''}`}
@@ -84,6 +86,12 @@ const CompactLayerControls = ({
               onClick={() => switchPanel('display')}
             >
               Display
+            </button>
+            <button 
+              className={`${styles.controlsTab} ${activePanel === 'info' ? styles.controlsTabActive : ''}`}
+              onClick={() => switchPanel('info')}
+            >
+              Info
             </button>
           </div>
           
@@ -118,23 +126,6 @@ const CompactLayerControls = ({
                     <span className={styles.layerToggleLabel}>Stations</span>
                   </label>
                 </div>
-                
-                <button
-                  className={styles.associateButton}
-                  onClick={associateStationsWithBlocks}
-                  disabled={associating}
-                >
-                  {associating ? (
-                    <span className={styles.loadingSpinner}></span>
-                  ) : (
-                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
-                      <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
-                      <line x1="12" y1="22.08" x2="12" y2="12"></line>
-                    </svg>
-                  )}
-                  <span>{associating ? 'Processing...' : 'Associate Stations'}</span>
-                </button>
               </div>
             )}
             
@@ -171,6 +162,43 @@ const CompactLayerControls = ({
                   <div className={styles.tipIcon}>💡</div>
                   <div className={styles.tipText}>
                     When you select a contractor, the map will automatically zoom to its areas.
+                  </div>
+                </div>
+              </div>
+            )}
+            
+            {activePanel === 'info' && (
+              <div className={styles.infoPanel}>
+                <div className={styles.mapLegendCompact}>
+                  <div className={styles.legendItem}>
+                    <div className={styles.stationMarkerIcon}></div>
+                    <div>
+                      <strong>Stations</strong>
+                      <div className={styles.legendDescription}>Exploration or research sites with collected data</div>
+                    </div>
+                  </div>
+                  
+                  <div className={styles.legendItem}>
+                    <div className={styles.blockIcon}></div>
+                    <div>
+                      <strong>Blocks</strong>
+                      <div className={styles.legendDescription}>Designated exploration areas by contractor</div>
+                    </div>
+                  </div>
+                  
+                  <div className={styles.legendItem}>
+                    <div className={styles.areaIcon}></div>
+                    <div>
+                      <strong>Areas</strong>
+                      <div className={styles.legendDescription}>Larger zones containing multiple blocks</div>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className={styles.infoTip}>
+                  <div className={styles.tipIcon}>ℹ️</div>
+                  <div className={styles.tipText}>
+                    Use filters on the left to search by contractor or region
                   </div>
                 </div>
               </div>

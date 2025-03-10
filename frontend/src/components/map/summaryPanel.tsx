@@ -136,7 +136,7 @@ const SummaryPanel = ({
                   {/* Consolidated breakdown sections for space efficiency */}
                   {data && Object.keys(data.contractTypes || {}).length > 0 && (
                     <div className={styles.breakdownButton} onClick={() => document.getElementById('contractTypesBreakdown').classList.toggle(styles.expanded)}>
-                      <span>Contract Types</span>
+                      <span>Mineral Types</span>
                       <span className={styles.expandIcon}>+</span>
                     </div>
                   )}
