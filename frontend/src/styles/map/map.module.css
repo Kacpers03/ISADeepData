@@ -1033,3 +1033,580 @@
   background-color: rgba(0, 0, 0, 0.05);
   color: #334155;
 }
+/* Enhanced Map Styles - Add to your map.module.css */
+
+/* AREA STYLES - More distinct regions */
+.areaLayer {
+  fill: rgba(0, 119, 182, 0.08);
+  fill-opacity: 0.3;
+  stroke: #0077b6;
+  stroke-width: 2.5;
+  stroke-dasharray: 5, 3;
+  stroke-linecap: round;
+}
+
+.areaHover {
+  fill: rgba(0, 119, 182, 0.15);
+  stroke: #0077b6;
+  stroke-width: 3;
+}
+
+.areaLabel {
+  font-size: 13px;
+  font-weight: 500;
+  color: #0077b6;
+  text-shadow: 
+    -1px -1px 0 rgba(255, 255, 255, 0.9),
+    1px -1px 0 rgba(255, 255, 255, 0.9),
+    -1px 1px 0 rgba(255, 255, 255, 0.9),
+    1px 1px 0 rgba(255, 255, 255, 0.9);
+}
+
+/* BLOCK STYLES - More defined than areas */
+.blockLayer {
+  stroke-width: 1.5;
+  stroke-linecap: butt;
+}
+
+.blockFill {
+  fill-opacity: 0.4;
+  transition: fill-opacity 0.3s ease;
+}
+
+.blockHover {
+  fill-opacity: 0.6;
+  cursor: pointer;
+}
+
+.blockLabel {
+  font-size: 12px;
+  font-weight: 500;
+  text-shadow: 
+    -1px -1px 0 rgba(255, 255, 255, 0.9),
+    1px -1px 0 rgba(255, 255, 255, 0.9),
+    -1px 1px 0 rgba(255, 255, 255, 0.9),
+    1px 1px 0 rgba(255, 255, 255, 0.9);
+}
+
+/* STATION MARKER STYLES - More pronounced and interactive */
+.mapMarker {
+  width: 20px;
+  height: 20px;
+  background-color: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  position: relative;
+  transform: translate(-50%, -50%);
+  cursor: pointer;
+  z-index: 5;
+}
+
+.markerIcon {
+  width: 20px;
+  height: 20px;
+  background-color: #dc2626; /* Bright red */
+  border: 2px solid white;
+  border-radius: 50%;
+  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.2), 0 3px 6px rgba(0, 0, 0, 0.3);
+  position: absolute;
+  top: 0;
+  left: 0;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.markerIcon::after {
+  content: '';
+  position: absolute;
+  bottom: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 2px;
+  height: 8px;
+  background-color: #dc2626;
+}
+
+.markerHover .markerIcon {
+  transform: scale(1.1);
+  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.2), 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.stationTooltip {
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: rgba(0, 0, 0, 0.8);
+  color: white;
+  padding: 5px 10px;
+  border-radius: 4px;
+  font-size: 12px;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s ease, visibility 0.2s ease;
+  z-index: 10;
+}
+
+.stationTooltip::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 5px;
+  border-style: solid;
+  border-color: rgba(0, 0, 0, 0.8) transparent transparent transparent;
+}
+
+.markerHover .stationTooltip {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* ASSOCIATED STATION MARKER STYLES */
+.associatedMarker .markerIcon {
+  background-color: #15803d !important; /* Dark green */
+  border: 2px solid white;
+}
+
+.associatedMarker .markerIcon::after {
+  background-color: #15803d;
+}
+
+/* POPUP STYLES */
+.mapPopup {
+  max-width: 350px !important;
+  border-radius: 8px;
+  overflow: hidden;
+  padding: 0 !important;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+}
+
+.mapPopup .mapboxgl-popup-content {
+  padding: 0;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.mapPopup .mapboxgl-popup-close-button {
+  font-size: 20px;
+  color: #64748b;
+  padding: 8px;
+  right: 5px;
+  top: 5px;
+  background-color: rgba(255, 255, 255, 0.8);
+  border-radius: 50%;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s ease;
+  z-index: 2;
+}
+
+.mapPopup .mapboxgl-popup-close-button:hover {
+  background-color: rgba(255, 255, 255, 1);
+}
+
+/* INTERACTIVE LEGENDS */
+.mapLegend {
+  position: absolute;
+  bottom: 100px;
+  left: 20px;
+  background-color: rgba(255, 255, 255, 0.95);
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  padding: 15px;
+  z-index: 5;
+  max-width: 220px;
+  font-size: 13px;
+  opacity: 0.9;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.mapLegend:hover {
+  opacity: 1;
+  transform: translateY(-2px);
+}
+
+.mapLegend h3 {
+  margin: 0 0 12px 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: #263238;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.legendItems {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.legendItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: #455a64;
+}
+
+.legendMarker {
+  display: block;
+  width: 14px;
+  height: 14px;
+  border-radius: 3px;
+}
+
+.legendIcon {
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* STATUS COLOR INDICATORS */
+.statusActive {
+  background-color: #059669;
+}
+
+.statusPending {
+  background-color: #d97706;
+}
+
+.statusInactive {
+  background-color: #6b7280;
+}
+
+.statusReserved {
+  background-color: #3b82f6;
+}
+
+/* COORDINATE DISPLAY - More modern look */
+.coordinateDisplay {
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
+  background-color: rgba(255, 255, 255, 0.9);
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  color: #455a64;
+  z-index: 5;
+  font-family: 'Roboto Mono', monospace;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.coordinateDisplay::before {
+  content: '📍';
+  font-size: 14px;
+}
+
+/* TOOLTIP FOR BLOCK INTERACTION */
+.blockTooltip {
+  position: absolute;
+  background-color: white;
+  border-radius: 4px;
+  padding: 8px 12px;
+  font-size: 13px;
+  color: #334155;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  pointer-events: none;
+  z-index: 10;
+  max-width: 220px;
+  white-space: normal;
+}
+
+/* IMPROVED MAP LOADING OVERLAY */
+.mapLoadingOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(255, 255, 255, 0.8);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  backdrop-filter: blur(3px);
+}
+
+.spinnerContainer {
+  position: relative;
+  width: 50px;
+  height: 50px;
+  margin-bottom: 16px;
+}
+
+.spinner {
+  width: 100%;
+  height: 100%;
+  border: 4px solid rgba(0, 119, 182, 0.2);
+  border-top-color: #0077b6;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.loadingText {
+  font-size: 14px;
+  font-weight: 500;
+  color: #334155;
+}
+
+/* ZOOM CONTROLS ENHANCEMENT */
+.mapboxgl-ctrl-zoom-in,
+.mapboxgl-ctrl-zoom-out {
+  background-color: white !important;
+  color: #334155 !important;
+}
+
+.mapboxgl-ctrl-zoom-in:hover,
+.mapboxgl-ctrl-zoom-out:hover {
+  background-color: #f8fafc !important;
+}
+
+/* LAYER TOGGLE STYLING - More modern toggles */
+.layerToggle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  font-size: 0.875rem;
+  color: #334155;
+  padding: 8px;
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+}
+
+.layerToggle:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.layerToggle input {
+  appearance: none;
+  width: 40px;
+  height: 20px;
+  background-color: #e2e8f0;
+  border-radius: 20px;
+  position: relative;
+  transition: background-color 0.2s ease;
+  cursor: pointer;
+}
+
+.layerToggle input::before {
+  content: '';
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  top: 2px;
+  left: 2px;
+  background-color: white;
+  transition: transform 0.2s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.layerToggle input:checked {
+  background-color: #3b82f6;
+}
+
+.layerToggle input:checked::before {
+  transform: translateX(20px);
+}
+
+.layerToggleLabel {
+  font-weight: 500;
+}
+
+/* RESPONSIVE ADJUSTMENTS */
+@media (max-width: 768px) {
+  .mapLegend {
+    bottom: 70px;
+    left: 10px;
+    padding: 10px;
+    max-width: 180px;
+  }
+  
+  .legendItem {
+    font-size: 12px;
+  }
+}
+
+/* Add these styles to your map.module.css file */
+
+/* STATION MARKER STYLES - More pronounced and interactive */
+.mapMarker {
+  width: 20px;
+  height: 20px;
+  background-color: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  position: relative;
+  transform: translate(-50%, -50%) scale(var(--marker-scale, 1));
+  transform-origin: center;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  z-index: 5;
+}
+
+.markerIcon {
+  width: 20px;
+  height: 20px;
+  background-color: #dc2626; /* Bright red */
+  border: 2px solid white;
+  border-radius: 50%;
+  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.2), 0 3px 6px rgba(0, 0, 0, 0.3);
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.stationTypeIcon {
+  font-size: 10px;
+  line-height: 1;
+  transform: scale(0.9);
+}
+
+.markerIcon::after {
+  content: '';
+  position: absolute;
+  bottom: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 2px;
+  height: 8px;
+  background-color: #dc2626;
+}
+
+.markerHover .markerIcon {
+  transform: scale(1.1);
+  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.2), 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.stationTooltip {
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: rgba(0, 0, 0, 0.8);
+  color: white;
+  padding: 5px 10px;
+  border-radius: 4px;
+  font-size: 12px;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s ease, visibility 0.2s ease;
+  z-index: 10;
+  margin-bottom: 10px;
+}
+
+.stationTooltip::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 5px;
+  border-style: solid;
+  border-color: rgba(0, 0, 0, 0.8) transparent transparent transparent;
+}
+
+.markerHover .stationTooltip {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* ASSOCIATED STATION MARKER STYLES */
+.associatedMarker .markerIcon {
+  background-color: #15803d !important; /* Dark green */
+  border: 2px solid white;
+}
+
+.associatedMarker .markerIcon::after {
+  background-color: #15803d;
+}
+
+/* CLUSTER MARKER STYLES */
+.clusterMarker {
+  background: #ff4d4f;
+  border-radius: 50%;
+  box-shadow: 0 0 0 4px white, 0 0 0 5px rgba(0, 0, 0, 0.2), 0 4px 8px rgba(0, 0, 0, 0.3);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.clusterMarker:hover {
+  transform: scale(1.05);
+}
+
+.clusterCount {
+  font-weight: bold;
+  font-size: 14px;
+}
+
+/* Size variations based on count */
+.clusterMarker[style*="width: 45px"] .clusterCount {
+  font-size: 16px;
+}
+
+.clusterMarker[style*="width: 55px"] .clusterCount {
+  font-size: 18px;
+}
+
+.clusterMarker[style*="width: 65px"] .clusterCount {
+  font-size: 20px;
+}
+
+/* TOOLTIP FOR CLUSTER */
+.clusterMarker:hover::after {
+  content: 'Click to zoom in';
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: rgba(0, 0, 0, 0.8);
+  color: white;
+  padding: 5px 10px;
+  border-radius: 4px;
+  font-size: 12px;
+  white-space: nowrap;
+  margin-bottom: 10px;
+}
+
+.clusterMarker:hover::before {
+  content: '';
+  position: absolute;
+  top: -5px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 5px;
+  border-style: solid;
+  border-color: transparent transparent rgba(0, 0, 0, 0.8) transparent;
+  margin-top: -5px;
+}

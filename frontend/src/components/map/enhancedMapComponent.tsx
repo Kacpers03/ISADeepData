@@ -1,26 +1,28 @@
 import React, { useState, useEffect, useRef, useMemo, useCallback } from "react";
 import Map, { 
   NavigationControl, 
-  Marker, 
   Popup, 
   Source, 
   Layer,
   ViewStateChangeEvent 
 } from 'react-map-gl';
-import mapboxgl from 'mapbox-gl';
+import Supercluster from 'supercluster';
+
+import ClusterMarker from './clusterMarker';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { useFilter } from "../../contexts/filterContext";
 import styles from "../../styles/map/map.module.css";
 import { DetailPanel } from "./detailPanel";
 import { BlockAnalyticsPanel } from "./blockAnalyticsPanel";
 import { ContractorSummaryPanel } from "./contractorSummaryPanel";
-import { Station, Contractor, Cruise, GeoJsonFeature } from "../../types/filter-types";
-import { ImprovedFilterPanel } from "../filters/filterPanel";
 import CompactLayerControls from "./layerControls";
 import SummaryPanel from "./summaryPanel";
 
+import StationMarker from "./stationMarker";
+import AreaBlockLayer from "./areaBlockLayer";
+
 const EnhancedMapComponent = () => {
-  // Context and state
+  // Context and state from filter context
   const {
     mapData,
     loading,
@@ -43,7 +45,7 @@ const EnhancedMapComponent = () => {
     resetFilters
   } = useFilter();
 
-  // Store the initial view state
+  // Local state for map functionality
   const [viewState, setViewState] = useState({
     longitude: 0,
     latitude: 0,
@@ -60,26 +62,35 @@ const EnhancedMapComponent = () => {
   // User has manually set the view (to prevent auto-zooming when unwanted)
   const [userHasSetView, setUserHasSetView] = useState(false);
   
+  // Popup state
+  const [popupInfo, setPopupInfo] = useState(null);
+  
   // Store all loaded GeoJSON data
   const [allAreaLayers, setAllAreaLayers] = useState([]);
   
-  // State variables
-  const [selectedContractorInfo, setSelectedContractorInfo] = useState(null);
-  const [blockAnalytics, setBlockAnalytics] = useState(null);
-  const [contractorSummary, setContractorSummary] = useState(null);
+  // Layer visibility controls
   const [showAreas, setShowAreas] = useState(true);
   const [showBlocks, setShowBlocks] = useState(true);
   const [showStations, setShowStations] = useState(true);
+  
+  // Other UI state variables
   const [associating, setAssociating] = useState(false);
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
   const [cursorPosition, setCursorPosition] = useState({ latitude: 0, longitude: 0 });
   const [mapStyle, setMapStyle] = useState("mapbox://styles/mapbox/outdoors-v11");
   
-  // New state for the summary panel
+  // Summary panel state
   const [showSummaryPanel, setShowSummaryPanel] = useState(false);
   const [summaryData, setSummaryData] = useState(null);
-
+  
+  // Additional state for analytics
+  const [selectedContractorInfo, setSelectedContractorInfo] = useState(null);
+  const [blockAnalytics, setBlockAnalytics] = useState(null);
+  const [contractorSummary, setContractorSummary] = useState(null);
+  const [clusterIndex, setClusterIndex] = useState(null);
+  const [clusters, setClusters] = useState([]);
+  const [clusterZoom, setClusterZoom] = useState(viewState.zoom);
   // Helper function to fetch GeoJSON for a contractor
   const fetchContractorGeoJson = useCallback(async (contractorId) => {
     try {
@@ -183,87 +194,132 @@ const EnhancedMapComponent = () => {
       console.log("Reset to world view");
     }
   }, [selectedContractorId, allAreaLayers, filters]);
-
-  // Update summary data based on what's currently visible
- // Improved updateSummaryData function for EnhancedMapComponent
-
- const updateSummaryData = useCallback(() => {
-  if (!mapData) return;
+// CORRECTED CODE:
+useEffect(() => {
+  if (!mapData || !mapData.cruises) return;
   
-  // Get visible contractors based on filters
-  const visibleContractors = mapData.contractors || [];
+  // Get stations from mapData
+  const stationsData = mapData.cruises.flatMap(c => c.stations || []);
+  if (!stationsData.length) return;
   
-  // Prepare summary data with safe defaults
-  const summary = {
-    contractorCount: visibleContractors.length,
-    areaCount: 0,
-    blockCount: 0,
-    stationCount: 0,
-    totalAreaSizeKm2: 0,
-    contractTypes: {},
-    sponsoringStates: {}
-  };
-  
-  // Count areas and blocks from visible allAreaLayers
-  if (allAreaLayers.length > 0) {
-    // Filter areas to match current filter selection
-    const visibleContractorIds = visibleContractors.map(c => c.contractorId);
-    const visibleAreas = allAreaLayers.filter(area => 
-      visibleContractorIds.includes(area.contractorId)
-    );
+  const supercluster = new Supercluster({
+    radius: 40,
+    maxZoom: 16
     
-    summary.areaCount = visibleAreas.length;
-    
-    // Calculate blocks with a safe fallback
-    summary.blockCount = visibleAreas.reduce((total, area) => 
-      total + ((area.blocks && Array.isArray(area.blocks)) ? area.blocks.length : 0), 0);
-    
-    // Calculate total area with a safe fallback and sanitize
-    summary.totalAreaSizeKm2 = visibleAreas.reduce((total, area) => {
-      const areaSize = typeof area.totalAreaSizeKm2 === 'number' ? area.totalAreaSizeKm2 : 0;
-      return total + areaSize;
-    }, 0);
-  }
-  
-  // Count stations from mapData with safe handling
-  if (mapData.cruises && Array.isArray(mapData.cruises)) {
-    summary.stationCount = mapData.cruises.reduce((total, cruise) => {
-      if (cruise.stations && Array.isArray(cruise.stations)) {
-        return total + cruise.stations.length;
-      }
-      return total;
-    }, 0);
-  }
-  
-  // Aggregate contract types and sponsoring states
-  visibleContractors.forEach(contractor => {
-    // Contract types
-    if (contractor.contractType) {
-      summary.contractTypes[contractor.contractType] = 
-        (summary.contractTypes[contractor.contractType] || 0) + 1;
-    }
-    
-    // Sponsoring states
-    if (contractor.sponsoringState) {
-      summary.sponsoringStates[contractor.sponsoringState] = 
-        (summary.sponsoringStates[contractor.sponsoringState] || 0) + 1;
-    }
   });
   
-  // Set the summary data
-  setSummaryData(summary);
+  // Format points for supercluster
+  const points = stationsData.map(station => ({
+    type: 'Feature',
+    properties: { 
+      stationId: station.stationId,
+      stationData: station 
+    },
+    geometry: {
+      type: 'Point',
+      coordinates: [station.longitude, station.latitude]
+    }
+  }));
   
-  // Clear selected contractor info if no contractor is selected
-  if (!selectedContractorId && selectedContractorInfo) {
-    setSelectedContractorInfo(null);
-  }
-}, [mapData, allAreaLayers, selectedContractorId, selectedContractorInfo]);
-
-// Use in the component
-useEffect(() => {
-  updateSummaryData();
-}, [mapData, allAreaLayers, filters, selectedContractorId, updateSummaryData]);
-
+  supercluster.load(points);
+  setClusterIndex(supercluster);
+}, [mapData]); // Use mapData as dependency instead
+  // Update clusters when the map moves or zoom changes
+  useEffect(() => {
+    if (!clusterIndex || !mapRef.current) return;
+    
+    const map = mapRef.current.getMap();
+    const zoom = Math.round(map.getZoom());
+    
+    // Only recalculate clusters if zoom has changed significantly
+    if (Math.abs(zoom - clusterZoom) > 0.5) {
+      setClusterZoom(zoom);
+      
+      const bounds = map.getBounds();
+      const bbox = [
+        bounds.getWest(),
+        bounds.getSouth(),
+        bounds.getEast(),
+        bounds.getNorth()
+      ];
+      
+      const clusterData = clusterIndex.getClusters(bbox, Math.floor(zoom));
+      setClusters(clusterData);
+    }
+  }, [viewState, clusterIndex, clusterZoom]);
+  // Update summary data based on what's currently visible
+  const updateSummaryData = useCallback(() => {
+    if (!mapData) return;
+    
+    // Get visible contractors based on filters
+    const visibleContractors = mapData.contractors || [];
+    
+    // Prepare summary data with safe defaults
+    const summary = {
+      contractorCount: visibleContractors.length,
+      areaCount: 0,
+      blockCount: 0,
+      stationCount: 0,
+      totalAreaSizeKm2: 0,
+      contractTypes: {},
+      sponsoringStates: {}
+    };
+    
+    // Count areas and blocks from visible allAreaLayers
+    if (allAreaLayers.length > 0) {
+      // Filter areas to match current filter selection
+      const visibleContractorIds = visibleContractors.map(c => c.contractorId);
+      const visibleAreas = allAreaLayers.filter(area => 
+        visibleContractorIds.includes(area.contractorId)
+      );
+      
+      summary.areaCount = visibleAreas.length;
+      
+      // Calculate blocks with a safe fallback
+      summary.blockCount = visibleAreas.reduce((total, area) => 
+        total + ((area.blocks && Array.isArray(area.blocks)) ? area.blocks.length : 0), 0);
+      
+      // Calculate total area with a safe fallback and sanitize
+      summary.totalAreaSizeKm2 = visibleAreas.reduce((total, area) => {
+        const areaSize = typeof area.totalAreaSizeKm2 === 'number' ? area.totalAreaSizeKm2 : 0;
+        return total + areaSize;
+      }, 0);
+    }
+    
+    // Count stations from mapData with safe handling
+    if (mapData.cruises && Array.isArray(mapData.cruises)) {
+      summary.stationCount = mapData.cruises.reduce((total, cruise) => {
+        if (cruise.stations && Array.isArray(cruise.stations)) {
+          return total + cruise.stations.length;
+        }
+        return total;
+      }, 0);
+    }
+    
+    // Aggregate contract types and sponsoring states
+    visibleContractors.forEach(contractor => {
+      // Contract types
+      if (contractor.contractType) {
+        summary.contractTypes[contractor.contractType] = 
+          (summary.contractTypes[contractor.contractType] || 0) + 1;
+      }
+      
+      // Sponsoring states
+      if (contractor.sponsoringState) {
+        summary.sponsoringStates[contractor.sponsoringState] = 
+          (summary.sponsoringStates[contractor.sponsoringState] || 0) + 1;
+      }
+    });
+    
+    // Set the summary data
+    setSummaryData(summary);
+    
+    // Clear selected contractor info if no contractor is selected
+    if (!selectedContractorId && selectedContractorInfo) {
+      setSelectedContractorInfo(null);
+    }
+  }, [mapData, allAreaLayers, selectedContractorId, selectedContractorInfo]);
+  
   // Memoize visible area layers
   const visibleAreaLayers = useMemo(() => {
     if (!allAreaLayers.length) return [];
@@ -351,24 +407,7 @@ useEffect(() => {
     updateSummaryData();
   }, [mapData, allAreaLayers, filters, selectedContractorId, updateSummaryData]);
   
-  // Get all GeoJSON for a contractor and store it
-  useEffect(() => {
-    if (selectedContractorId) {
-      fetchGeoJsonForContractor(selectedContractorId);
-    } else if (mapData?.contractors) {
-      loadAllVisibleContractors();
-    } else {
-      // Only reset view on initial load
-      if (initialLoadRef.current && mapRef.current) {
-        initialLoadRef.current = false;
-        mapRef.current.fitBounds(
-          [[-180, -60], [180, 85]],
-          { padding: 20, duration: 1500, easing: (t) => t * (2 - t) }
-        );
-      }
-    }
-  }, [selectedContractorId, mapData?.contractors, loadAllVisibleContractors]);
-
+  // Load GeoJSON for a specific contractor and store it
   const fetchGeoJsonForContractor = useCallback(async (contractorId) => {
     try {
       const areas = await fetchContractorGeoJson(contractorId);
@@ -423,53 +462,51 @@ useEffect(() => {
     }
   };
 
-// Improved fetchContractorSummary function with proper caching
+  // Contractor summary cache
+  const [contractorSummaryCache, setContractorSummaryCache] = useState({});
 
-// Add this state variable to cache summaries
-const [contractorSummaryCache, setContractorSummaryCache] = useState({});
-
-// Improved fetch function
-const fetchContractorSummary = async (contractorId) => {
-  // Check if we already have this data in cache
-  if (contractorSummaryCache[contractorId]) {
-    console.log(`Using cached summary for contractor ${contractorId}`);
-    setContractorSummary(contractorSummaryCache[contractorId]);
-    return contractorSummaryCache[contractorId];
-  }
-  
-  try {
-    console.log(`Fetching contractor summary for ${contractorId}`);
-    setLocalLoading(true);
-    
-    const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5062/api';
-    const response = await fetch(`${API_BASE_URL}/Analytics/contractor/${contractorId}/summary`);
-    
-    if (!response.ok) {
-      throw new Error(`Failed to fetch contractor summary: ${response.status}`);
+  // Fetch contractor summary
+  const fetchContractorSummary = async (contractorId) => {
+    // Check if we already have this data in cache
+    if (contractorSummaryCache[contractorId]) {
+      console.log(`Using cached summary for contractor ${contractorId}`);
+      setContractorSummary(contractorSummaryCache[contractorId]);
+      return contractorSummaryCache[contractorId];
     }
     
-    const data = await response.json();
-    
-    // Update the cache
-    setContractorSummaryCache(prev => ({
-      ...prev,
-      [contractorId]: data
-    }));
-    
-    // Set the current summary
-    setContractorSummary(data);
-    
-    // Return the data for chaining
-    return data;
-  } catch (error) {
-    console.error('Error fetching contractor summary:', error);
-    setToastMessage('Error fetching contractor summary');
-    setShowToast(true);
-    return null;
-  } finally {
-    setLocalLoading(false);
-  }
-};
+    try {
+      console.log(`Fetching contractor summary for ${contractorId}`);
+      setLocalLoading(true);
+      
+      const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5062/api';
+      const response = await fetch(`${API_BASE_URL}/Analytics/contractor/${contractorId}/summary`);
+      
+      if (!response.ok) {
+        throw new Error(`Failed to fetch contractor summary: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      
+      // Update the cache
+      setContractorSummaryCache(prev => ({
+        ...prev,
+        [contractorId]: data
+      }));
+      
+      // Set the current summary
+      setContractorSummary(data);
+      
+      // Return the data for chaining
+      return data;
+    } catch (error) {
+      console.error('Error fetching contractor summary:', error);
+      setToastMessage('Error fetching contractor summary');
+      setShowToast(true);
+      return null;
+    } finally {
+      setLocalLoading(false);
+    }
+  };
 
   // Associate stations with blocks
   const associateStationsWithBlocks = async () => {
@@ -497,19 +534,28 @@ const fetchContractorSummary = async (contractorId) => {
     }
   };
 
-  // Color function for block status
-  const getBlockStatusColor = (status) => {
-    switch (status.toLowerCase()) {
-      case 'active': return '#059669';    // Green
-      case 'pending': return '#d97706';   // Amber
-      case 'inactive': return '#6b7280';  // Gray
-      case 'reserved': return '#3b82f6';  // Blue
-      default: return '#059669';          // Default green
-    }
-  };
-
   // Get stations from mapData
-  const stations = mapData ? mapData.cruises.flatMap(c => c.stations || []) : [];
+  // In your EnhancedMapComponent.tsx
+
+// Replace this:
+const stations = mapData ? mapData.cruises.flatMap(c => c.stations || []) : [];
+
+// With this:
+const getAllStations = useCallback(() => {
+  if (!mapData) return [];
+  
+  // Get contractors that match current filters
+  const filteredContractorIds = mapData.contractors.map(c => c.contractorId);
+  
+  // Only get stations from cruises that belong to filtered contractors
+  return mapData.cruises
+    .filter(cruise => {
+      // Only include cruises from contractors that match the filter
+      return filteredContractorIds.includes(cruise.contractorId);
+    })
+    .flatMap(c => c.stations || []);
+}, [mapData, filters]);
+
   
   // Get selected contractor/cruise
   const selectedContractor = mapData?.contractors.find(c => c.contractorId === selectedContractorId) || null;
@@ -538,6 +584,7 @@ const fetchContractorSummary = async (contractorId) => {
     setSelectedStation(station);
     setDetailPanelType('station');
     setShowDetailPanel(true);
+    setPopupInfo(null); // Close any open popup
     
     // Find cruise
     if (mapData) {
@@ -559,13 +606,10 @@ const fetchContractorSummary = async (contractorId) => {
     // Only reset station selection, keep contractor selection and data
     setSelectedStation(null);
     
-    // Don't reset these when closing the panel:
-    // setSelectedContractorId(null);
-    // setContractorSummary(null);
-    
     // Only reset block analytics
     setBlockAnalytics(null);
   };
+
   const handleCloseAllPanels = useCallback(() => {
     // Close the detail panel
     setShowDetailPanel(false);
@@ -580,8 +624,9 @@ const fetchContractorSummary = async (contractorId) => {
     // Reset analytics data but don't clear selection
     setBlockAnalytics(null);
     setContractorSummary(null);
-  }, [setShowDetailPanel, setDetailPanelType, setShowSummaryPanel, setSelectedStation, setBlockAnalytics, setContractorSummary]);
-  // Also add a handler for the View Detailed Summary button
+  }, [setShowDetailPanel, setDetailPanelType, setShowSummaryPanel, setSelectedStation]);
+
+  // View contractor summary
   const handleViewContractorSummary = useCallback(() => {
     if (selectedContractorId && contractorSummary) {
       setDetailPanelType('contractorSummary');
@@ -595,7 +640,7 @@ const fetchContractorSummary = async (contractorId) => {
         }
       });
     }
-  }, [selectedContractorId, contractorSummary, setDetailPanelType, setShowDetailPanel, fetchContractorSummary]);
+  }, [selectedContractorId, contractorSummary, setDetailPanelType, setShowDetailPanel]);
   
   // Handle reset filters with smart zooming
   const handleResetFilters = () => {
@@ -608,19 +653,22 @@ const fetchContractorSummary = async (contractorId) => {
   if (loading && !mapData) {
     return <div className={styles.mapLoading}>Loading map data...</div>;
   }
+  
   if (error) {
     return <div className={styles.mapError}>Error: {error}</div>;
   }
 
   return (
     <div className={styles.mapContainer}>
- {showSummaryPanel && (
+      {/* Summary Panel */}
+    
+      {showSummaryPanel && (
   <SummaryPanel 
     data={summaryData} 
     onClose={() => setShowSummaryPanel(false)}
     selectedContractorInfo={selectedContractorId ? selectedContractorInfo : null}
     contractorSummary={selectedContractorId ? contractorSummary : null}
-    onViewContractorSummary={handleViewContractorSummary}
+    onViewContractorSummary={handleViewContractorSummary} // This is crucial
   />
 )}
       
@@ -640,6 +688,8 @@ const fetchContractorSummary = async (contractorId) => {
         setShowSummary={setShowSummaryPanel}
       />
 
+     
+
       {/* THE MAP */}
       <Map
         {...viewState}
@@ -654,7 +704,9 @@ const fetchContractorSummary = async (contractorId) => {
         style={{ width: "100%", height: "100%" }}
         mapStyle={mapStyle}
         mapboxAccessToken={process.env.NEXT_PUBLIC_MAPBOX_TOKEN}
-        onError={(e) => console.error('Mapbox Error:', e)}
+        interactiveLayerIds={visibleAreaLayers.flatMap(area => 
+          area.blocks?.map(block => `block-fill-${block.blockId}`) || []
+        )}
         onLoad={() => {
           console.log("Map successfully loaded!");
           window.mapInstance = mapRef.current?.getMap();
@@ -674,115 +726,101 @@ const fetchContractorSummary = async (contractorId) => {
         
         {/* Coordinates display */}
         <div className={styles.coordinateDisplay}>
-          Lat: {cursorPosition.latitude}, Lon: {cursorPosition.longitude}
+          {cursorPosition.latitude}, {cursorPosition.longitude}
         </div>
 
-        {/* Areas + blocks */}
+        {/* Areas and Blocks */}
         {showAreas && visibleAreaLayers.map(area => (
-          <React.Fragment key={`area-${area.areaId}`}>
-            <Source id={`area-source-${area.areaId}`} type="geojson" data={area.geoJson}>
-              <Layer
-                id={`area-fill-${area.areaId}`}
-                type="fill"
-                paint={{
-                  'fill-color': '#0077b6',
-                  'fill-opacity': 0.15,
-                }}
-              />
-              <Layer
-                id={`area-line-${area.areaId}`}
-                type="line"
-                paint={{
-                  'line-color': '#0077b6',
-                  'line-width': 2.5,
-                  'line-dasharray': [3, 2]
-                }}
-              />
-              <Layer
-                id={`area-label-${area.areaId}`}
-                type="symbol"
-                layout={{
-                  'text-field': area.areaName,
-                  'text-size': 12,
-                  'text-anchor': 'center',
-                  'text-offset': [0, 0],
-                  'text-allow-overlap': false
-                }}
-                paint={{
-                  'text-color': '#0077b6',
-                  'text-halo-color': 'rgba(255, 255, 255, 0.9)',
-                  'text-halo-width': 2
-                }}
-              />
-            </Source>
-            
-            {showBlocks && area.blocks && area.blocks.map(block => (
-              <Source 
-                key={`block-source-${block.blockId}`}
-                id={`block-source-${block.blockId}`}
-                type="geojson" 
-                data={block.geoJson}
-              >
-                <Layer
-                  id={`block-fill-${block.blockId}`}
-                  type="fill"
-                  paint={{
-                    'fill-color': getBlockStatusColor(block.status),
-                    'fill-opacity': 0.25,
-                  }}
-                  onClick={() => fetchBlockAnalytics(block.blockId)}
-                />
-                <Layer
-                  id={`block-line-${block.blockId}`}
-                  type="line"
-                  paint={{
-                    'line-color': getBlockStatusColor(block.status),
-                    'line-width': 1.5,
-                  }}
-                />
-                <Layer
-                  id={`block-label-${block.blockId}`}
-                  type="symbol"
-                  layout={{
-                    'text-field': block.blockName,
-                    'text-size': 10,
-                    'text-anchor': 'center',
-                    'text-offset': [0, 0],
-                    'text-allow-overlap': false
-                  }}
-                  paint={{
-                    'text-color': '#1e3a8a',
-                    'text-halo-color': 'rgba(255, 255, 255, 0.9)',
-                    'text-halo-width': 2
-                  }}
-                />
-              </Source>
-            ))}
-          </React.Fragment>
+          <AreaBlockLayer
+            key={`area-layer-${area.areaId}`}
+            area={area}
+            showBlocks={showBlocks}
+            onBlockClick={fetchBlockAnalytics}
+          />
         ))}
         
         {/* Stations */}
-        {showStations && stations.map(station => (
-          <Marker
-            key={station.stationId}
-            longitude={station.longitude}
-            latitude={station.latitude}
-            onClick={e => {
-              e.originalEvent.stopPropagation();
-              handleMarkerClick(station);
-            }}
+        {showStations && stations.length > 0 && clusters.map(cluster => {
+  // Only show clusters/markers for stations that match the current filter
+  const isCluster = cluster.properties.cluster;
+  const clusterId = isCluster ? `cluster-${cluster.properties.cluster_id}` : `station-${cluster.properties.stationId}`;
+  
+  if (isCluster) {
+    return (
+      <ClusterMarker
+        key={clusterId}
+        cluster={{
+          id: clusterId,
+          longitude: cluster.geometry.coordinates[0],
+          latitude: cluster.geometry.coordinates[1],
+          count: cluster.properties.point_count,
+          expansionZoom: clusterIndex.getClusterExpansionZoom(cluster.properties.cluster_id)
+        }}
+        onClick={() => {
+          // Zoom in when cluster is clicked
+          const [longitude, latitude] = cluster.geometry.coordinates;
+          const expansionZoom = clusterIndex.getClusterExpansionZoom(cluster.properties.cluster_id);
+          
+          mapRef.current.flyTo({
+            center: [longitude, latitude],
+            zoom: expansionZoom,
+            duration: 500
+          });
+        }}
+      />
+    );
+  } else {
+    // It's a single station
+    const station = cluster.properties.stationData;
+    return (
+      <StationMarker
+        key={clusterId}
+        station={station}
+        onClick={handleMarkerClick}
+      />
+    );
+  }
+})}
+
+        {/* Popup for station info */}
+        {popupInfo && (
+          <Popup
+            longitude={popupInfo.longitude}
+            latitude={popupInfo.latitude}
+            anchor="bottom"
+            onClose={() => setPopupInfo(null)}
+            className={styles.mapPopup}
+            closeOnClick={false}
           >
-            <div 
-              className={`${styles.mapMarker} ${station.contractorAreaBlockId ? styles.associatedMarker : ''}`}
-            />
-          </Marker>
-        ))}
+            <div className={styles.popupContent}>
+              <h3>{popupInfo.stationCode}</h3>
+              <div className={styles.popupGrid}>
+                <div className={styles.popupItem}>
+                  <span className={styles.popupLabel}>Type</span>
+                  <span>{popupInfo.stationType || 'Unknown'}</span>
+                </div>
+                <div className={styles.popupItem}>
+                  <span className={styles.popupLabel}>Status</span>
+                  <span>{popupInfo.contractorAreaBlockId ? 'Associated' : 'Unassociated'}</span>
+                </div>
+              </div>
+              <button 
+                className={styles.viewDetailsButton}
+                onClick={() => handleMarkerClick(popupInfo)}
+              >
+                View Details
+              </button>
+            </div>
+          </Popup>
+        )}
 
         {/* Loading overlay */}
         {(loading || localLoading) && (
           <div className={styles.mapLoadingOverlay}>
-            <div className={styles.spinner}></div>
-            <p>Loading map data...</p>
+            <div className={styles.spinnerContainer}>
+              <div className={styles.spinner}></div>
+            </div>
+            <p className={styles.loadingText}>Loading map data...</p>
           </div>
         )}
       </Map>
@@ -826,12 +864,12 @@ const fetchContractorSummary = async (contractorId) => {
       )}
       
       {showDetailPanel && detailPanelType === 'contractorSummary' && contractorSummary && (
-  <ContractorSummaryPanel
-    data={contractorSummary}
-    onClose={handlePanelClose}
-    onCloseAll={handleCloseAllPanels} // Add new handler to close all panels
-  />
-)}
+        <ContractorSummaryPanel
+          data={contractorSummary}
+          onClose={handlePanelClose}
+          onCloseAll={handleCloseAllPanels}
+        />
+      )}
 
       {/* Toast */}
       {showToast && (
