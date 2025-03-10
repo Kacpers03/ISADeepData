@@ -77,7 +77,7 @@ const EnhancedMapComponent = () => {
   const [mapStyle, setMapStyle] = useState("mapbox://styles/mapbox/outdoors-v11");
   
   // New state for the summary panel
-  const [showSummaryPanel, setShowSummaryPanel] = useState(true);
+  const [showSummaryPanel, setShowSummaryPanel] = useState(false);
   const [summaryData, setSummaryData] = useState(null);
 
   // Helper function to fetch GeoJSON for a contractor
@@ -587,7 +587,7 @@ const fetchContractorSummary = async (contractorId) => {
 
   return (
     <div className={styles.mapContainer}>
-    {showSummaryPanel && summaryData && (
+  {showSummaryPanel && summaryData && (
   <SummaryPanel 
     data={summaryData} 
     onClose={() => setShowSummaryPanel(false)}

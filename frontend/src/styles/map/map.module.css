@@ -984,3 +984,52 @@
   }
 }
 
+/* Add these styles to your map.module.css file */
+
+/* Fix the controls panel positioning */
+.compactControls {
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+/* Ensure panel stays in position without moving */
+.controlsPanel {
+  position: absolute;
+  bottom: 50px; /* Position above the toggle button */
+  right: 0;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  width: 240px;
+  overflow: hidden;
+  z-index: 11; /* Ensure it's above other controls */
+}
+
+/* Add a close button to the controls panel */
+.controlsCloseButton {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: none;
+  border: none;
+  color: #64748b;
+  font-size: 18px;
+  cursor: pointer;
+  padding: 0;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+}
+
+.controlsCloseButton:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+  color: #334155;
+}

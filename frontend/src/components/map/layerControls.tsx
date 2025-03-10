@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import styles from '../../styles/map/map.module.css';
 
 const LayerControls = ({ 
@@ -17,7 +17,10 @@ const LayerControls = ({
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [activePanel, setActivePanel] = useState(null);
+  const controlsRef = useRef(null);
+  const panelRef = useRef(null);
   
+  // Function to toggle the controls panel
   const toggleControls = () => {
     setIsOpen(!isOpen);
     if (!isOpen) {
@@ -31,8 +34,24 @@ const LayerControls = ({
     setActivePanel(panel);
   };
 
+  // Handle close button click
+  const handleClose = () => {
+    setIsOpen(false);
+    setActivePanel(null);
+  };
+
+  // Calculate fixed position for the controls panel to prevent it from moving when opened/closed
+  useEffect(() => {
+    if (controlsRef.current && panelRef.current && isOpen) {
+      // This ensures the panel stays in a fixed position relative to the toggle button
+      panelRef.current.style.position = 'absolute';
+      panelRef.current.style.right = '0';
+      panelRef.current.style.bottom = '50px'; // Position above the toggle button
+    }
+  }, [isOpen]);
+
   return (
-    <div className={styles.compactControls}>
+    <div className={styles.compactControls} ref={controlsRef}>
       {/* Main toggle button */}
       <button 
         className={`${styles.controlsToggle} ${isOpen ? styles.controlsToggleActive : ''}`}
@@ -48,9 +67,19 @@ const LayerControls = ({
         <span className={styles.controlsToggleLabel}>Map Controls</span>
       </button>
       
-      {/* Controls panel */}
+      {/* Controls panel - fixed positioning to avoid jumping */}
       {isOpen && (
-        <div className={styles.controlsPanel}>
+        <div className={styles.controlsPanel} ref={panelRef}>
+          {/* Close button */}
+          <button 
+            className={styles.controlsCloseButton}
+            onClick={handleClose}
+            aria-label="Close panel"
+            title="Close panel"
+          >
+            ×
+          </button>
+          
           <div className={styles.controlsTabs}>
             <button 
               className={`${styles.controlsTab} ${activePanel === 'layers' ? styles.controlsTabActive : ''}`}
@@ -142,14 +171,13 @@ const LayerControls = ({
             
             {activePanel === 'display' && (
               <div className={styles.displayPanel}>
-                <label className={styles.layerToggle}>
-                  <input
-                    type="checkbox"
-                    checked={showSummary}
-                    onChange={() => setShowSummary(!showSummary)}
-                  />
-                  <span className={styles.layerToggleLabel}>Show Summary Panel</span>
-                </label>
+                {/* Change from checkbox to a button for showing the summary panel */}
+                <button 
+                  className={styles.toggleSummaryButton}
+                  onClick={() => setShowSummary(!showSummary)}
+                >
+                  {showSummary ? 'Hide Summary Panel' : 'Show Summary Panel'}
+                </button>
                 <div className={styles.infoText}>
                   The summary panel displays statistics about currently visible exploration data.
                 </div>
