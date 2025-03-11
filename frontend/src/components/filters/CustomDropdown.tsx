@@ -44,11 +44,11 @@ export const CustomDropdown: React.FC<CustomDropdownProps> = ({
   };
   
   const handleSelect = (selectedValue: string, optionDisabled?: boolean) => {
-    // Show a clearer visual indication that the option is unavailable
-    // but still allow selection - just provide feedback in the UI
+    // Don't allow selecting disabled options - this is the key change
+    if (optionDisabled) {
+      return; // Exit without doing anything if option is disabled
+    }
     
-    // Although we visually indicate disabled options, we allow them to be selected
-    // This maintains filter independence
     onChange({ target: { value: selectedValue } });
     setIsOpen(false);
   };
@@ -77,10 +77,11 @@ export const CustomDropdown: React.FC<CustomDropdownProps> = ({
               key={option.value}
               className={`${styles.optionItem} ${option.value === value ? styles.selected : ''} ${option.disabled ? styles.disabledOption : ''}`}
               onClick={() => handleSelect(option.value, option.disabled)}
-              // New - add a tooltip to show why option is disabled
-              title={option.disabled ? 'No results available with current filters' : ''}
+              title={option.disabled ? 'No results with current filters' : ''}
               role="option"
               aria-selected={option.value === value}
+              // Add pointer style only to enabled options
+              style={{ cursor: option.disabled ? 'not-allowed' : 'pointer' }}
             >
               {option.label}
               {option.value === value && (
@@ -88,7 +89,6 @@ export const CustomDropdown: React.FC<CustomDropdownProps> = ({
               )}
               {option.disabled && (
                 <span className={styles.disabledIndicator}>
-                  {/* Small muted indicator for disabled items but still clickable */}
                   <span className={styles.disabledText}>(0)</span>
                 </span>
               )}
