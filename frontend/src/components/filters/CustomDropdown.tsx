@@ -44,8 +44,10 @@ export const CustomDropdown: React.FC<CustomDropdownProps> = ({
   };
   
   const handleSelect = (selectedValue: string, optionDisabled?: boolean) => {
-    // Don't allow selecting disabled options
-    if (optionDisabled) return;
+    // Don't allow selecting disabled options - this is the key change
+    if (optionDisabled) {
+      return; // Exit without doing anything if option is disabled
+    }
     
     onChange({ target: { value: selectedValue } });
     setIsOpen(false);
@@ -73,17 +75,23 @@ export const CustomDropdown: React.FC<CustomDropdownProps> = ({
           {options.map(option => (
             <div
               key={option.value}
-              className={`${styles.optionItem} ${option.value === value ? styles.selected : ''} ${option.disabled ? styles.disabled : ''}`}
+              className={`${styles.optionItem} ${option.value === value ? styles.selected : ''} ${option.disabled ? styles.disabledOption : ''}`}
               onClick={() => handleSelect(option.value, option.disabled)}
-              style={{
-                opacity: option.disabled ? 0.5 : 1,
-                cursor: option.disabled ? 'not-allowed' : 'pointer'
-              }}
-              aria-disabled={option.disabled}
+              title={option.disabled ? 'No results with current filters' : ''}
               role="option"
               aria-selected={option.value === value}
+              // Add pointer style only to enabled options
+              style={{ cursor: option.disabled ? 'not-allowed' : 'pointer' }}
             >
               {option.label}
+              {option.value === value && (
+                <span className={styles.selectedCheck}>✓</span>
+              )}
+              {option.disabled && (
+                <span className={styles.disabledIndicator}>
+                  <span className={styles.disabledText}>(0)</span>
+                </span>
+              )}
             </div>
           ))}
         </div>

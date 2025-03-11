@@ -191,7 +191,7 @@ export const FilterProvider: React.FC<{ children: ReactNode }> = ({ children }) 
     }
   }, [filters, updateMapData]);
   
-  // Apply filters to existing data in memory - COMPLETELY IMPROVED for better relationship management
+  // Apply filters to existing data in memory - IMPROVED to maintain filter independence
   const filterExistingData = useCallback(() => {
     if (!originalMapData) {
       console.log("No original data available for filtering");
@@ -208,7 +208,6 @@ export const FilterProvider: React.FC<{ children: ReactNode }> = ({ children }) 
       };
       
       // STEP 1: Filter contractors based on ALL applied filters simultaneously
-      // This is crucial for maintaining proper filter dependencies
       let filteredContractors = [...filteredData.contractors];
       
       // Filter by contractor ID if specified
@@ -232,11 +231,17 @@ export const FilterProvider: React.FC<{ children: ReactNode }> = ({ children }) 
       }
       
       // Filter by contract status if specified
-      if (filters.contractStatusId) {
+      if (filters.contractStatusId && filterOptions) {
         console.log(`Filtering by contractStatusId: ${filters.contractStatusId}`);
-        filteredContractors = filteredContractors.filter(c => 
-          c.contractStatusId === filters.contractStatusId
+        const selectedStatus = filterOptions.contractStatuses.find(
+          status => status.contractStatusId === filters.contractStatusId
         );
+        
+        if (selectedStatus) {
+          filteredContractors = filteredContractors.filter(c => 
+            c.contractStatus === selectedStatus.contractStatusName
+          );
+        }
       }
       
       // Filter by sponsoring state if specified

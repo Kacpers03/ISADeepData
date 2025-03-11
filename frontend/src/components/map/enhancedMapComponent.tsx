@@ -260,7 +260,77 @@ const EnhancedMapComponent = () => {
     supercluster.load(points);
     setClusterIndex(supercluster);
   }, [mapData]);
+  
+// Add this useEffect along with your other useEffect hooks
+// This code shows the corrected summary data calculation section
+// from the EnhancedMapComponent.tsx file
 
+// Add this useEffect along with your other useEffect hooks
+// Add this useEffect to the EnhancedMapComponent.tsx file
+// This correctly calculates the summary data, including the total area
+useEffect(() => {
+  if (mapData) {
+    // Helper function to safely calculate total area for a contractor
+    const calculateContractorArea = (contractor) => {
+      if (!contractor.areas || !Array.isArray(contractor.areas)) {
+        return 0;
+      }
+      
+      return contractor.areas.reduce((total, area) => {
+        const areaSize = area.totalAreaSizeKm2;
+        // Check if the area size is a valid number
+        return total + (typeof areaSize === 'number' && !isNaN(areaSize) ? areaSize : 0);
+      }, 0);
+    };
+    
+    // Calculate summary statistics from the mapData
+    const summary = {
+      contractorCount: mapData.contractors.length,
+      areaCount: 0,
+      blockCount: 0,
+      stationCount: mapData.cruises.reduce((total, c) => total + (c.stations?.length || 0), 0),
+      totalAreaSizeKm2: 0,
+      contractTypes: {},
+      sponsoringStates: {}
+    };
+    
+    // Process contractors based on selection
+    mapData.contractors.forEach(contractor => {
+      // If a specific contractor is selected, only process that one
+      if (selectedContractorId && contractor.contractorId !== selectedContractorId) {
+        return;
+      }
+      
+      // Count areas
+      const areasCount = contractor.areas?.length || 0;
+      summary.areaCount += areasCount;
+      
+      // Count blocks
+      const blocksCount = contractor.areas?.reduce((total, area) => {
+        return total + (area.blocks?.length || 0);
+      }, 0) || 0;
+      summary.blockCount += blocksCount;
+      
+      // Calculate total area
+      summary.totalAreaSizeKm2 += calculateContractorArea(contractor);
+      
+      // Count by contract type
+      if (contractor.contractType) {
+        summary.contractTypes[contractor.contractType] = 
+          (summary.contractTypes[contractor.contractType] || 0) + 1;
+      }
+      
+      // Count by sponsoring state
+      if (contractor.sponsoringState) {
+        summary.sponsoringStates[contractor.sponsoringState] = 
+          (summary.sponsoringStates[contractor.sponsoringState] || 0) + 1;
+      }
+    });
+    
+    console.log("Updated summary data:", summary);
+    setSummaryData(summary);
+  }
+}, [mapData, selectedContractorId]); // Only depend on mapData and selectedContractorId// Only depend on mapData and selectedContractorId, not visibleAreaLayers
   // Update clusters when the map moves or zoom changes
   useEffect(() => {
     if (!clusterIndex || !mapRef.current) return;
@@ -558,14 +628,14 @@ const EnhancedMapComponent = () => {
     <div className={styles.mapContainer}>
       {/* Summary Panel */}
       {showSummaryPanel && (
-        <SummaryPanel 
-          data={summaryData} 
-          onClose={() => setShowSummaryPanel(false)}
-          selectedContractorInfo={selectedContractorId ? selectedContractorInfo : null}
-          contractorSummary={selectedContractorId ? contractorSummary : null}
-          onViewContractorSummary={handleViewContractorSummary}
-        />
-      )}
+  <SummaryPanel 
+    data={summaryData} 
+    onClose={() => setShowSummaryPanel(false)}
+    selectedContractorInfo={selectedContractorId ? selectedContractorInfo : null}
+    contractorSummary={selectedContractorId ? contractorSummary : null}
+    onViewContractorSummary={handleViewContractorSummary}
+  />
+)}
       
       {/* Compact Layer Controls */}
       <CompactLayerControls 

@@ -4,31 +4,30 @@
   position: absolute;
   top: 20px;
   left: 20px;
-  max-width: 280px; /* Reduced width to make it less intrusive */
+  width: 280px; /* Fixed width */
   background-color: white;
   border-radius: 8px;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
   z-index: 10;
   overflow: hidden;
-  transition: all 0.3s ease;
 }
 
 .collapsed {
-  width: 120px; /* Even smaller when collapsed */
+  width: 120px; /* Smaller when collapsed */
 }
 
 .summaryHeader {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 10px 12px; /* Smaller padding */
+  padding: 10px 12px;
   background-color: #0077b6;
   color: white;
 }
 
 .summaryHeader h3 {
   margin: 0;
-  font-size: 0.95rem; /* Smaller font */
+  font-size: 1rem;
   font-weight: 600;
 }
 
@@ -50,7 +49,6 @@
   justify-content: center;
   cursor: pointer;
   border-radius: 4px;
-  transition: background-color 0.2s ease;
 }
 
 .collapseButton:hover,
@@ -59,224 +57,196 @@
 }
 
 .summaryContent {
-  padding: 12px;
-  max-height: 300px; /* Control max height */
-  overflow-y: auto;
+  height: 300px; /* Fixed height */
+  overflow-y: auto; /* Always show scrollbar */
+  overflow-x: hidden;
+  padding: 8px; /* Reduced padding */
 }
 
-/* More compact stats grid */
+/* Stats grid - 2x2 grid with distinct boxes */
 .statsGrid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 8px;
-  margin-bottom: 12px;
-}
-
-.statsRow {
-  display: flex;
-  gap: 8px;
+  grid-template-columns: 1fr 1fr;
+  grid-gap: 8px;
+  width: 100%;
   margin-bottom: 8px;
 }
 
-.statItem {
-  background-color: #f8f9fa;
-  border-radius: 6px;
-  padding: 8px;
+/* Individual stat box styling - clearly defined boxes with shadows */
+.statBox {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 8px;
   text-align: center;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-  flex: 1;
+  background-color: #f8f9fa;
+  border: 1px solid #eaeaea;
+  border-radius: 6px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s ease;
+}
+
+.statBox:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Apply the same style as statBox to maintain consistency */
+.statItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 15px 10px;
+  text-align: center;
+  background-color: #f8f9fa;
+  border: 1px solid #eaeaea;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s ease;
 }
 
 .statItem:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+  transform: translateY(-3px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .statValue {
-  font-size: 1.2rem; /* Smaller font */
-  font-weight: 600;
+  font-size: 1.5rem; /* Smaller font size */
+  font-weight: 500;
   color: #0077b6;
-  margin-bottom: 2px;
+  margin-bottom: 3px;
 }
 
 .statLabel {
-  font-size: 0.75rem; /* Smaller font */
+  font-size: 0.8rem;
   color: #64748b;
-  font-weight: 500;
 }
 
-.totalArea {
+/* Total Exploration Area box styling */
+.explorationAreaBox {
+  background-color: #f8f9fa;
+  border: 1px solid #eaeaea;
+  border-radius: 6px;
+  padding: 10px 12px;
+  margin-bottom: 8px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background-color: #f1f9ff;
-  padding: 8px 10px;
-  border-radius: 6px;
-  margin-bottom: 12px;
-  font-size: 0.85rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
 .areaLabel {
-  color: #334155;
+  font-size: 0.8rem;
+  color: #64748b;
   font-weight: 500;
 }
 
 .areaValue {
-  font-weight: 600;
+  font-size: 0.9rem;
   color: #0077b6;
+  font-weight: 600;
 }
 
-/* Collapsible breakdown sections */
-.breakdownButton {
+/* Category box styling for Contract Types and Sponsoring States */
+.categoryBox {
+  background-color: #f8f9fa;
+  border: 1px solid #eaeaea;
+  border-radius: 6px;
+  margin-bottom: 8px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.categoryHeader {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 8px 10px;
-  background-color: #f8fafc;
-  border-radius: 6px;
-  margin-top: 10px;
+  padding: 10px 12px;
+  cursor: pointer;
   font-size: 0.85rem;
   font-weight: 500;
-  color: #334155;
-  cursor: pointer;
+  color: #333;
+  background-color: #f8f9fa;
+  border-bottom: 1px solid transparent;
+  transition: background-color 0.2s ease;
 }
 
-.breakdownButton:hover {
-  background-color: #f1f5f9;
+.categoryHeader:hover {
+  background-color: #f1f3f5;
 }
 
-.expandIcon {
-  font-size: 1rem;
+.plusIcon {
+  font-size: 1.2rem;
+  color: #0077b6;
   font-weight: bold;
 }
 
-.breakdownSection {
-  max-height: 0;
-  overflow: hidden;
-  transition: max-height 0.3s ease;
-}
-
-.expanded {
+.expandedContent {
+  background-color: white;
   max-height: 200px;
-  margin-top: 8px;
+  overflow-y: auto;
 }
 
-.breakdownItem {
+.expandedItem {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  padding: 5px 8px;
-  background-color: #f8fafc;
-  border-radius: 4px;
+  padding: 8px 12px;
   font-size: 0.8rem;
-  margin-bottom: 4px;
+  border-bottom: 1px solid #f1f3f5;
 }
 
-.breakdownLabel {
-  color: #475569;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 70%;
+.expandedItem:last-child {
+  border-bottom: none;
 }
 
-.breakdownValue {
-  font-weight: 600;
-  color: #0284c7;
-}
-
-.moreItem {
+/* No contractor message */
+.noContractorMessage {
   text-align: center;
-  padding: 4px;
+  padding: 30px 15px;
+}
+
+.noContractorMessage p {
+  margin: 0 0 10px 0;
+}
+
+.noContractorMessage p:first-child {
+  font-weight: 600;
+  font-size: 1.1rem;
+  color: #333;
+}
+
+.noContractorSubtext {
+  font-size: 0.9rem;
   color: #64748b;
-  font-size: 0.75rem;
-  font-style: italic;
+}
+
+/* Selected Contractor View */
+.selectedContractorSection {
+  padding: 5px;
 }
 
 .selectedContractorSection h4 {
-  font-size: 1rem;
-  font-weight: 600;
-  color: #0f172a;
-  margin: 0 0 10px 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  font-size: 1.1rem;
+  margin: 0 0 15px 0;
+  color: #333;
 }
 
 .viewDetailsButton {
+  margin-top: 15px;
   width: 100%;
   background-color: #0077b6;
   color: white;
   border: none;
   border-radius: 6px;
-  padding: 8px;
-  font-size: 0.85rem;
+  padding: 8px 16px;
+  font-size: 0.9rem;
   font-weight: 500;
   cursor: pointer;
-  transition: background-color 0.2s ease;
+  transition: all 0.2s ease;
 }
 
 .viewDetailsButton:hover {
-  background-color: #0369a1;
-}
-
-/* No contractor selected message */
-.noContractorMessage {
-  text-align: center;
-  padding: 12px 8px;
-}
-
-.noContractorMessage p {
-  margin: 0 0 8px 0;
-}
-
-.noContractorMessage p:first-child {
-  font-weight: 600;
-  font-size: 1rem;
-  color: #334155;
-}
-
-.noContractorSubtext {
-  font-size: 0.85rem;
-  color: #64748b;
-}
-
-.selectionHint {
-  margin-top: 12px;
-  padding: 10px;
-  background-color: #f0f9ff;
-  border-radius: 6px;
-  border: 1px solid #e0f2fe;
-  display: flex;
-  align-items: flex-start;
-  gap: 8px;
-}
-
-.hintIcon {
-  font-size: 1rem;
-  color: #0284c7;
-}
-
-.hintText {
-  font-size: 0.8rem;
-  color: #334155;
-  line-height: 1.4;
-  margin: 0;
-  text-align: left;
-}
-
-/* Animation */
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(-10px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-.globalSummarySection,
-.selectedContractorSection {
-  animation: fadeIn 0.3s ease-out;
-}
-
-/* Global stats section */
-.globalStats {
-  margin-bottom: 12px;
+  background-color: #00598c;
 }
