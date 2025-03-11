@@ -44,9 +44,11 @@ export const CustomDropdown: React.FC<CustomDropdownProps> = ({
   };
   
   const handleSelect = (selectedValue: string, optionDisabled?: boolean) => {
-    // Don't allow selecting disabled options
-    if (optionDisabled) return;
+    // Show a clearer visual indication that the option is unavailable
+    // but still allow selection - just provide feedback in the UI
     
+    // Although we visually indicate disabled options, we allow them to be selected
+    // This maintains filter independence
     onChange({ target: { value: selectedValue } });
     setIsOpen(false);
   };
@@ -73,17 +75,23 @@ export const CustomDropdown: React.FC<CustomDropdownProps> = ({
           {options.map(option => (
             <div
               key={option.value}
-              className={`${styles.optionItem} ${option.value === value ? styles.selected : ''} ${option.disabled ? styles.disabled : ''}`}
+              className={`${styles.optionItem} ${option.value === value ? styles.selected : ''} ${option.disabled ? styles.disabledOption : ''}`}
               onClick={() => handleSelect(option.value, option.disabled)}
-              style={{
-                opacity: option.disabled ? 0.5 : 1,
-                cursor: option.disabled ? 'not-allowed' : 'pointer'
-              }}
-              aria-disabled={option.disabled}
+              // New - add a tooltip to show why option is disabled
+              title={option.disabled ? 'No results available with current filters' : ''}
               role="option"
               aria-selected={option.value === value}
             >
               {option.label}
+              {option.value === value && (
+                <span className={styles.selectedCheck}>✓</span>
+              )}
+              {option.disabled && (
+                <span className={styles.disabledIndicator}>
+                  {/* Small muted indicator for disabled items but still clickable */}
+                  <span className={styles.disabledText}>(0)</span>
+                </span>
+              )}
             </div>
           ))}
         </div>
