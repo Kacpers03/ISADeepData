@@ -17,12 +17,10 @@ const SummaryPanel = ({
     sponsoringStates: false
   });
   
-  // Format large numbers with commas
   const formatNumber = (num) => {
-    if (num === undefined || num === null) return "0";
+    if (num === undefined || num === null || isNaN(num) || num === 0) return "No data available";
     return num.toLocaleString();
   };
-
   // Toggle section expansion
   const toggleSection = (section) => {
     setExpandedSections(prev => ({
@@ -133,9 +131,13 @@ const SummaryPanel = ({
                   
                   {/* Total Exploration Area - styled as a box */}
                   <div className={styles.explorationAreaBox}>
-                    <div className={styles.areaLabel}>Total Exploration Area:</div>
-                    <div className={styles.areaValue}>{data?.totalAreaSizeKm2 ? formatNumber(data.totalAreaSizeKm2) : '0'} km²</div>
-                  </div>
+  <div className={styles.areaLabel}>Total Exploration Area:</div>
+  <div className={styles.areaValue}>
+    {data?.totalAreaSizeKm2 && data.totalAreaSizeKm2 > 0 
+      ? `${formatNumber(data.totalAreaSizeKm2)} km²` 
+      : "No data available"}
+  </div>
+</div>
                   
                   {/* Contract Types section - with box styling */}
                   <div className={styles.categoryBox}>

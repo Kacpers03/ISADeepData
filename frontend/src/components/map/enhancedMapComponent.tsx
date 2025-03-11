@@ -266,46 +266,53 @@ const EnhancedMapComponent = () => {
 // from the EnhancedMapComponent.tsx file
 
 // Add this useEffect along with your other useEffect hooks
+// Add this useEffect to the EnhancedMapComponent.tsx file
+// This correctly calculates the summary data, including the total area
 useEffect(() => {
   if (mapData) {
+    // Helper function to safely calculate total area for a contractor
+    const calculateContractorArea = (contractor) => {
+      if (!contractor.areas || !Array.isArray(contractor.areas)) {
+        return 0;
+      }
+      
+      return contractor.areas.reduce((total, area) => {
+        const areaSize = area.totalAreaSizeKm2;
+        // Check if the area size is a valid number
+        return total + (typeof areaSize === 'number' && !isNaN(areaSize) ? areaSize : 0);
+      }, 0);
+    };
+    
     // Calculate summary statistics from the mapData
     const summary = {
       contractorCount: mapData.contractors.length,
-      // Calculate area count from mapData directly to avoid referencing visibleAreaLayers
-      areaCount: mapData.contractors.reduce((total, c) => {
-        // If a specific contractor is selected, only count its areas
-        if (selectedContractorId) {
-          return c.contractorId === selectedContractorId ? (c.areas?.length || 0) : total;
-        }
-        return total + (c.areas?.length || 0);
-      }, 0),
-      blockCount: mapData.contractors.reduce((total, c) => {
-        // If a specific contractor is selected, only count its blocks
-        if (selectedContractorId) {
-          return c.contractorId === selectedContractorId ? 
-            (c.areas?.reduce((aTotal, a) => aTotal + (a.blocks?.length || 0), 0) || 0) : total;
-        }
-        return total + (c.areas?.reduce((aTotal, a) => aTotal + (a.blocks?.length || 0), 0) || 0);
-      }, 0),
+      areaCount: 0,
+      blockCount: 0,
       stationCount: mapData.cruises.reduce((total, c) => total + (c.stations?.length || 0), 0),
-      totalAreaSizeKm2: mapData.contractors.reduce((total, c) => {
-        // If a specific contractor is selected, only count its area size
-        if (selectedContractorId) {
-          return c.contractorId === selectedContractorId ? 
-            (c.areas?.reduce((aTotal, a) => aTotal + (a.totalAreaSizeKm2 || 0), 0) || 0) : total;
-        }
-        return total + (c.areas?.reduce((aTotal, a) => aTotal + (a.totalAreaSizeKm2 || 0), 0) || 0);
-      }, 0),
+      totalAreaSizeKm2: 0,
       contractTypes: {},
       sponsoringStates: {}
     };
     
-    // Update additional summary statistics
+    // Process contractors based on selection
     mapData.contractors.forEach(contractor => {
-      // If a specific contractor is selected, only count that one
+      // If a specific contractor is selected, only process that one
       if (selectedContractorId && contractor.contractorId !== selectedContractorId) {
         return;
       }
+      
+      // Count areas
+      const areasCount = contractor.areas?.length || 0;
+      summary.areaCount += areasCount;
+      
+      // Count blocks
+      const blocksCount = contractor.areas?.reduce((total, area) => {
+        return total + (area.blocks?.length || 0);
+      }, 0) || 0;
+      summary.blockCount += blocksCount;
+      
+      // Calculate total area
+      summary.totalAreaSizeKm2 += calculateContractorArea(contractor);
       
       // Count by contract type
       if (contractor.contractType) {
@@ -323,7 +330,7 @@ useEffect(() => {
     console.log("Updated summary data:", summary);
     setSummaryData(summary);
   }
-}, [mapData, selectedContractorId]); // Only depend on mapData and selectedContractorId, not visibleAreaLayers
+}, [mapData, selectedContractorId]); // Only depend on mapData and selectedContractorId// Only depend on mapData and selectedContractorId, not visibleAreaLayers
   // Update clusters when the map moves or zoom changes
   useEffect(() => {
     if (!clusterIndex || !mapRef.current) return;
