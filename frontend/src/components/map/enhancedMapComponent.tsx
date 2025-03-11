@@ -79,7 +79,7 @@ const EnhancedMapComponent = () => {
   const [mapStyle, setMapStyle] = useState("mapbox://styles/mapbox/outdoors-v11");
   
   // Summary panel state
-  const [showSummaryPanel, setShowSummaryPanel] = useState(false);
+  const [showSummaryPanel, setShowSummaryPanel] = useState(true);
   const [summaryData, setSummaryData] = useState(null);
   
   // Additional state for analytics
@@ -260,7 +260,40 @@ const EnhancedMapComponent = () => {
     supercluster.load(points);
     setClusterIndex(supercluster);
   }, [mapData]);
-
+// Add this useEffect along with your other useEffect hooks
+useEffect(() => {
+  if (mapData) {
+    // Calculate summary statistics from the mapData
+    const summary = {
+      contractorCount: mapData.contractors.length,
+      areaCount: mapData.contractors.reduce((total, c) => total + (c.areas?.length || 0), 0),
+      blockCount: mapData.contractors.reduce((total, c) => 
+        total + (c.areas?.reduce((aTotal, a) => aTotal + (a.blocks?.length || 0), 0) || 0), 0),
+      stationCount: mapData.cruises.reduce((total, c) => total + (c.stations?.length || 0), 0),
+      totalAreaSizeKm2: mapData.contractors.reduce((total, c) => 
+        total + (c.areas?.reduce((aTotal, a) => aTotal + (a.totalAreaSizeKm2 || 0), 0) || 0), 0),
+      contractTypes: {},
+      sponsoringStates: {}
+    };
+    
+    // Update additional summary statistics
+    mapData.contractors.forEach(contractor => {
+      // Count by contract type
+      if (contractor.contractType) {
+        summary.contractTypes[contractor.contractType] = 
+          (summary.contractTypes[contractor.contractType] || 0) + 1;
+      }
+      
+      // Count by sponsoring state
+      if (contractor.sponsoringState) {
+        summary.sponsoringStates[contractor.sponsoringState] = 
+          (summary.sponsoringStates[contractor.sponsoringState] || 0) + 1;
+      }
+    });
+    
+    setSummaryData(summary);
+  }
+}, [mapData]);
   // Update clusters when the map moves or zoom changes
   useEffect(() => {
     if (!clusterIndex || !mapRef.current) return;
@@ -558,14 +591,14 @@ const EnhancedMapComponent = () => {
     <div className={styles.mapContainer}>
       {/* Summary Panel */}
       {showSummaryPanel && (
-        <SummaryPanel 
-          data={summaryData} 
-          onClose={() => setShowSummaryPanel(false)}
-          selectedContractorInfo={selectedContractorId ? selectedContractorInfo : null}
-          contractorSummary={selectedContractorId ? contractorSummary : null}
-          onViewContractorSummary={handleViewContractorSummary}
-        />
-      )}
+  <SummaryPanel 
+    data={summaryData} 
+    onClose={() => setShowSummaryPanel(false)}
+    selectedContractorInfo={selectedContractorId ? selectedContractorInfo : null}
+    contractorSummary={selectedContractorId ? contractorSummary : null}
+    onViewContractorSummary={handleViewContractorSummary}
+  />
+)}
       
       {/* Compact Layer Controls */}
       <CompactLayerControls 

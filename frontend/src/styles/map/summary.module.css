@@ -4,31 +4,30 @@
   position: absolute;
   top: 20px;
   left: 20px;
-  max-width: 280px; /* Reduced width to make it less intrusive */
+  width: 280px; /* Fixed width */
   background-color: white;
   border-radius: 8px;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
   z-index: 10;
   overflow: hidden;
-  transition: all 0.3s ease;
 }
 
 .collapsed {
-  width: 120px; /* Even smaller when collapsed */
+  width: 120px; /* Smaller when collapsed */
 }
 
 .summaryHeader {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 10px 12px; /* Smaller padding */
+  padding: 10px 12px;
   background-color: #0077b6;
   color: white;
 }
 
 .summaryHeader h3 {
   margin: 0;
-  font-size: 0.95rem; /* Smaller font */
+  font-size: 1rem;
   font-weight: 600;
 }
 
@@ -50,7 +49,6 @@
   justify-content: center;
   cursor: pointer;
   border-radius: 4px;
-  transition: background-color 0.2s ease;
 }
 
 .collapseButton:hover,
@@ -59,224 +57,129 @@
 }
 
 .summaryContent {
-  padding: 12px;
-  max-height: 300px; /* Control max height */
-  overflow-y: auto;
+  height: 300px; /* Fixed height */
+  overflow-y: scroll; /* Always show scrollbar */
+  overflow-x: hidden;
+  padding: 0; /* Remove padding */
 }
 
-/* More compact stats grid */
+/* Stats grid - 2x2 grid with borders as shown in screenshot */
 .statsGrid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 8px;
-  margin-bottom: 12px;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  width: 100%;
 }
 
-.statsRow {
+/* Individual stat cell styling */
+.statCell {
   display: flex;
-  gap: 8px;
-  margin-bottom: 8px;
-}
-
-.statItem {
-  background-color: #f8f9fa;
-  border-radius: 6px;
-  padding: 8px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 15px 10px;
   text-align: center;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-  flex: 1;
+  border-right: 1px solid #eaeaea;
+  border-bottom: 1px solid #eaeaea;
 }
 
-.statItem:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+.statCell:nth-child(2n) {
+  border-right: none;
+}
+
+.statCell:nth-child(3), 
+.statCell:nth-child(4) {
+  border-bottom: none;
 }
 
 .statValue {
-  font-size: 1.2rem; /* Smaller font */
-  font-weight: 600;
+  font-size: 1.8rem; /* Larger font size to match screenshot */
+  font-weight: 500;
   color: #0077b6;
-  margin-bottom: 2px;
+  margin-bottom: 5px;
 }
 
 .statLabel {
-  font-size: 0.75rem; /* Smaller font */
+  font-size: 0.9rem;
   color: #64748b;
-  font-weight: 500;
 }
 
-.totalArea {
+/* Total Exploration Area - exactly as shown in screenshot */
+.totalExplorationArea {
+  padding: 15px;
+  font-size: 0.9rem;
+  color: #333;
+  border-bottom: 1px solid #eaeaea;
+}
+
+/* Section rows - flat design matching screenshot */
+.sectionRow {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background-color: #f1f9ff;
-  padding: 8px 10px;
-  border-radius: 6px;
-  margin-bottom: 12px;
-  font-size: 0.85rem;
-}
-
-.areaLabel {
-  color: #334155;
-  font-weight: 500;
-}
-
-.areaValue {
-  font-weight: 600;
-  color: #0077b6;
-}
-
-/* Collapsible breakdown sections */
-.breakdownButton {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 8px 10px;
-  background-color: #f8fafc;
-  border-radius: 6px;
-  margin-top: 10px;
-  font-size: 0.85rem;
-  font-weight: 500;
-  color: #334155;
+  padding: 15px;
+  background-color: white; /* White background */
+  border-bottom: 1px solid #eaeaea;
   cursor: pointer;
+  font-size: 0.9rem;
+  color: #333;
 }
 
-.breakdownButton:hover {
-  background-color: #f1f5f9;
+.sectionRow:hover {
+  background-color: #f8f9fa; /* Very light hover effect */
 }
 
-.expandIcon {
-  font-size: 1rem;
-  font-weight: bold;
+.plusIcon {
+  font-size: 1.2rem;
+  color: #666;
 }
 
-.breakdownSection {
-  max-height: 0;
-  overflow: hidden;
-  transition: max-height 0.3s ease;
+/* Expanded sections */
+.expandedSection {
+  background-color: white;
+  border-bottom: 1px solid #eaeaea;
 }
 
-.expanded {
-  max-height: 200px;
-  margin-top: 8px;
-}
-
-.breakdownItem {
+.expandedItem {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  padding: 5px 8px;
-  background-color: #f8fafc;
-  border-radius: 4px;
-  font-size: 0.8rem;
-  margin-bottom: 4px;
+  padding: 10px 15px;
+  font-size: 0.9rem;
+  border-bottom: 1px solid #f5f7fa;
 }
 
-.breakdownLabel {
-  color: #475569;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 70%;
+.expandedItem:last-child {
+  border-bottom: none;
 }
 
-.breakdownValue {
-  font-weight: 600;
-  color: #0284c7;
-}
-
-.moreItem {
-  text-align: center;
-  padding: 4px;
-  color: #64748b;
-  font-size: 0.75rem;
-  font-style: italic;
-}
-
-.selectedContractorSection h4 {
-  font-size: 1rem;
-  font-weight: 600;
-  color: #0f172a;
-  margin: 0 0 10px 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.viewDetailsButton {
-  width: 100%;
-  background-color: #0077b6;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  padding: 8px;
-  font-size: 0.85rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-}
-
-.viewDetailsButton:hover {
-  background-color: #0369a1;
-}
-
-/* No contractor selected message */
+/* No contractor message */
 .noContractorMessage {
   text-align: center;
-  padding: 12px 8px;
+  padding: 30px 15px;
 }
 
 .noContractorMessage p {
-  margin: 0 0 8px 0;
+  margin: 0 0 10px 0;
 }
 
 .noContractorMessage p:first-child {
   font-weight: 600;
-  font-size: 1rem;
-  color: #334155;
+  font-size: 1.1rem;
+  color: #333;
 }
 
 .noContractorSubtext {
-  font-size: 0.85rem;
+  font-size: 0.9rem;
   color: #64748b;
 }
 
-.selectionHint {
-  margin-top: 12px;
-  padding: 10px;
-  background-color: #f0f9ff;
-  border-radius: 6px;
-  border: 1px solid #e0f2fe;
-  display: flex;
-  align-items: flex-start;
-  gap: 8px;
-}
-
-.hintIcon {
-  font-size: 1rem;
-  color: #0284c7;
-}
-
-.hintText {
-  font-size: 0.8rem;
-  color: #334155;
-  line-height: 1.4;
-  margin: 0;
-  text-align: left;
-}
-
-/* Animation */
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(-10px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-.globalSummarySection,
+/* Selected Contractor View */
 .selectedContractorSection {
-  animation: fadeIn 0.3s ease-out;
+  padding: 15px;
 }
 
-/* Global stats section */
-.globalStats {
-  margin-bottom: 12px;
+.selectedContractorSection h4 {
+  font-size: 1.1rem;
+  margin: 0 0 15px 0;
+  color: #333;
 }
