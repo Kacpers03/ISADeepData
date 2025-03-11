@@ -71,21 +71,21 @@ const SummaryPanel = ({
             <div className={styles.selectedContractorSection}>
               <h4>{selectedContractorInfo.name || "Selected Contractor"}</h4>
               <div className={styles.statsGrid}>
-                <div className={styles.statItem}>
+                <div className={styles.statBox}>
                   <div className={styles.statValue}>{selectedContractorInfo.totalAreas || 0}</div>
                   <div className={styles.statLabel}>Areas</div>
                 </div>
-                <div className={styles.statItem}>
+                <div className={styles.statBox}>
                   <div className={styles.statValue}>{selectedContractorInfo.totalBlocks || 0}</div>
                   <div className={styles.statLabel}>Blocks</div>
                 </div>
                 {contractorSummary && (
                   <>
-                    <div className={styles.statItem}>
+                    <div className={styles.statBox}>
                       <div className={styles.statValue}>{formatNumber(contractorSummary.summary.totalAreaKm2)} km²</div>
                       <div className={styles.statLabel}>Total Area</div>
                     </div>
-                    <div className={styles.statItem}>
+                    <div className={styles.statBox}>
                       <div className={styles.statValue}>{formatNumber(contractorSummary.summary.totalStations)}</div>
                       <div className={styles.statLabel}>Stations</div>
                     </div>
@@ -111,73 +111,78 @@ const SummaryPanel = ({
                 </div>
               ) : (
                 <>
-                  {/* Stats grid - 2x2 layout */}
+                  {/* Stats grid - 2x2 layout with bordered boxes */}
                   <div className={styles.statsGrid}>
-                    <div className={styles.statCell}>
+                    <div className={styles.statBox}>
                       <div className={styles.statValue}>{data?.contractorCount || 0}</div>
                       <div className={styles.statLabel}>Contractors</div>
                     </div>
-                    <div className={styles.statCell}>
+                    <div className={styles.statBox}>
                       <div className={styles.statValue}>{data?.areaCount || 0}</div>
                       <div className={styles.statLabel}>Areas</div>
                     </div>
-                    <div className={styles.statCell}>
+                    <div className={styles.statBox}>
                       <div className={styles.statValue}>{data?.blockCount || 0}</div>
                       <div className={styles.statLabel}>Blocks</div>
                     </div>
-                    <div className={styles.statCell}>
+                    <div className={styles.statBox}>
                       <div className={styles.statValue}>{data?.stationCount || 0}</div>
                       <div className={styles.statLabel}>Stations</div>
                     </div>
                   </div>
                   
-                  {/* Total Exploration Area - exact format from screenshot */}
-                  <div className={styles.totalExplorationArea}>
-                    Total Exploration Area:{data?.totalAreaSizeKm2 ? formatNumber(data.totalAreaSizeKm2) : '0'} km²
+                  {/* Total Exploration Area - styled as a box */}
+                  <div className={styles.explorationAreaBox}>
+                    <div className={styles.areaLabel}>Total Exploration Area:</div>
+                    <div className={styles.areaValue}>{data?.totalAreaSizeKm2 ? formatNumber(data.totalAreaSizeKm2) : '0'} km²</div>
                   </div>
                   
-                  {/* Contract Types section - simplified flat design */}
-                  <div 
-                    className={styles.sectionRow}
-                    onClick={() => toggleSection('contractTypes')}
-                  >
-                    <span>Contract Types</span>
-                    <span className={styles.plusIcon}>+</span>
-                  </div>
-                  
-                  {expandedSections.contractTypes && (
-                    <div className={styles.expandedSection}>
-                      {data && Object.entries(data.contractTypes || {})
-                        .map(([type, count]) => (
-                          <div key={type} className={styles.expandedItem}>
-                            <span>{type}</span>
-                            <span>{count}</span>
-                          </div>
-                        ))}
+                  {/* Contract Types section - with box styling */}
+                  <div className={styles.categoryBox}>
+                    <div 
+                      className={styles.categoryHeader}
+                      onClick={() => toggleSection('contractTypes')}
+                    >
+                      <span>Mineral Types</span>
+                      <span className={styles.plusIcon}>{expandedSections.contractTypes ? '−' : '+'}</span>
                     </div>
-                  )}
-                  
-                  {/* Sponsoring States section - simplified flat design */}
-                  <div 
-                    className={styles.sectionRow}
-                    onClick={() => toggleSection('sponsoringStates')}
-                  >
-                    <span>Sponsoring States</span>
-                    <span className={styles.plusIcon}>+</span>
+                    
+                    {expandedSections.contractTypes && (
+                      <div className={styles.expandedContent}>
+                        {data && Object.entries(data.contractTypes || {})
+                          .map(([type, count]) => (
+                            <div key={type} className={styles.expandedItem}>
+                              <span>{type}</span>
+                              <span>{count}</span>
+                            </div>
+                          ))}
+                      </div>
+                    )}
                   </div>
                   
-                  {expandedSections.sponsoringStates && (
-                    <div className={styles.expandedSection}>
-                      {data && Object.entries(data.sponsoringStates || {})
-                        .sort((a, b) => b[1] - a[1])
-                        .map(([state, count]) => (
-                          <div key={state} className={styles.expandedItem}>
-                            <span>{state}</span>
-                            <span>{count}</span>
-                          </div>
-                        ))}
+                  {/* Sponsoring States section - with box styling */}
+                  <div className={styles.categoryBox}>
+                    <div 
+                      className={styles.categoryHeader}
+                      onClick={() => toggleSection('sponsoringStates')}
+                    >
+                      <span>Sponsoring States</span>
+                      <span className={styles.plusIcon}>{expandedSections.sponsoringStates ? '−' : '+'}</span>
                     </div>
-                  )}
+                    
+                    {expandedSections.sponsoringStates && (
+                      <div className={styles.expandedContent}>
+                        {data && Object.entries(data.sponsoringStates || {})
+                          .sort((a, b) => b[1] - a[1])
+                          .map(([state, count]) => (
+                            <div key={state} className={styles.expandedItem}>
+                              <span>{state}</span>
+                              <span>{count}</span>
+                            </div>
+                          ))}
+                      </div>
+                    )}
+                  </div>
                 </>
               )}
             </div>

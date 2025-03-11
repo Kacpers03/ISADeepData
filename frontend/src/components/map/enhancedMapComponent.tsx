@@ -79,7 +79,7 @@ const EnhancedMapComponent = () => {
   const [mapStyle, setMapStyle] = useState("mapbox://styles/mapbox/outdoors-v11");
   
   // Summary panel state
-  const [showSummaryPanel, setShowSummaryPanel] = useState(true);
+  const [showSummaryPanel, setShowSummaryPanel] = useState(false);
   const [summaryData, setSummaryData] = useState(null);
   
   // Additional state for analytics
@@ -260,24 +260,53 @@ const EnhancedMapComponent = () => {
     supercluster.load(points);
     setClusterIndex(supercluster);
   }, [mapData]);
+  
+// Add this useEffect along with your other useEffect hooks
+// This code shows the corrected summary data calculation section
+// from the EnhancedMapComponent.tsx file
+
 // Add this useEffect along with your other useEffect hooks
 useEffect(() => {
   if (mapData) {
     // Calculate summary statistics from the mapData
     const summary = {
       contractorCount: mapData.contractors.length,
-      areaCount: mapData.contractors.reduce((total, c) => total + (c.areas?.length || 0), 0),
-      blockCount: mapData.contractors.reduce((total, c) => 
-        total + (c.areas?.reduce((aTotal, a) => aTotal + (a.blocks?.length || 0), 0) || 0), 0),
+      // Calculate area count from mapData directly to avoid referencing visibleAreaLayers
+      areaCount: mapData.contractors.reduce((total, c) => {
+        // If a specific contractor is selected, only count its areas
+        if (selectedContractorId) {
+          return c.contractorId === selectedContractorId ? (c.areas?.length || 0) : total;
+        }
+        return total + (c.areas?.length || 0);
+      }, 0),
+      blockCount: mapData.contractors.reduce((total, c) => {
+        // If a specific contractor is selected, only count its blocks
+        if (selectedContractorId) {
+          return c.contractorId === selectedContractorId ? 
+            (c.areas?.reduce((aTotal, a) => aTotal + (a.blocks?.length || 0), 0) || 0) : total;
+        }
+        return total + (c.areas?.reduce((aTotal, a) => aTotal + (a.blocks?.length || 0), 0) || 0);
+      }, 0),
       stationCount: mapData.cruises.reduce((total, c) => total + (c.stations?.length || 0), 0),
-      totalAreaSizeKm2: mapData.contractors.reduce((total, c) => 
-        total + (c.areas?.reduce((aTotal, a) => aTotal + (a.totalAreaSizeKm2 || 0), 0) || 0), 0),
+      totalAreaSizeKm2: mapData.contractors.reduce((total, c) => {
+        // If a specific contractor is selected, only count its area size
+        if (selectedContractorId) {
+          return c.contractorId === selectedContractorId ? 
+            (c.areas?.reduce((aTotal, a) => aTotal + (a.totalAreaSizeKm2 || 0), 0) || 0) : total;
+        }
+        return total + (c.areas?.reduce((aTotal, a) => aTotal + (a.totalAreaSizeKm2 || 0), 0) || 0);
+      }, 0),
       contractTypes: {},
       sponsoringStates: {}
     };
     
     // Update additional summary statistics
     mapData.contractors.forEach(contractor => {
+      // If a specific contractor is selected, only count that one
+      if (selectedContractorId && contractor.contractorId !== selectedContractorId) {
+        return;
+      }
+      
       // Count by contract type
       if (contractor.contractType) {
         summary.contractTypes[contractor.contractType] = 
@@ -291,9 +320,10 @@ useEffect(() => {
       }
     });
     
+    console.log("Updated summary data:", summary);
     setSummaryData(summary);
   }
-}, [mapData]);
+}, [mapData, selectedContractorId]); // Only depend on mapData and selectedContractorId, not visibleAreaLayers
   // Update clusters when the map moves or zoom changes
   useEffect(() => {
     if (!clusterIndex || !mapRef.current) return;
