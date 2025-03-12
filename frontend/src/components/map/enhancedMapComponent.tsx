@@ -47,12 +47,11 @@ const EnhancedMapComponent = () => {
   // Local state for map functionality
   const [viewState, setViewState] = useState({
     longitude: 0,
-    latitude: 0,
-    zoom: 1.0,
+    latitude: 20, // Adjusted position
+    zoom: 1.8,    // Better zoom level to match your Image 2
     bearing: 0,
     pitch: 0
   });
-
   // Reference to maintain current view state across rerenders
   const mapRef = useRef(null);
   const initialLoadRef = useRef(true);
