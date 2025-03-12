@@ -47,9 +47,9 @@ const FileTable = ({ filters }) => {
     () => [
       {
         accessorKey: "fileName",
-        header: "URL",
+        header: "File-name",
         cell: (info) => {
-          const fileUrl = info.getValue();
+          const fileUrl = `https://isalibraryfiles.blob.core.windows.net/files/${info.getValue()}`;
           return (
             <a
               href={fileUrl}
