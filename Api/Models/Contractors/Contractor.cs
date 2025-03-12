@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Models.Cruises;
-using  Models.Libarys;
+using  Models.Librarys;
 
 namespace Models.Contractors
 {

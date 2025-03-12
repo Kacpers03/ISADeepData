@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Models.Contractors;
 
-namespace Models.Libarys
+namespace Models.Librarys
 {
     public class Library
     {

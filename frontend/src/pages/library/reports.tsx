@@ -10,7 +10,7 @@ export default function FilesPage() {
     country: "All",
     contractor: "All",
     year: "All",
-    category: "All",
+    theme: "All",
   });
 
   const applyFilters = (newFilters) => {
