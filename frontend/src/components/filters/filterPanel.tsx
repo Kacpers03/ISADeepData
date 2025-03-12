@@ -67,116 +67,144 @@ export const ImprovedFilterPanel = () => {
   
   // This function updates all the dropdown options based on the original data 
   // while highlighting which options are currently available based on other filters
-  const updateFilteredOptions = useCallback(() => {
-    if (!originalMapData || !filterOptions) return;
-    
-    // Get the full set of data from originalMapData 
-    // and the filtered set from mapData
-    const allContractors = originalMapData.contractors;
-    const filteredContractors = mapData?.contractors || [];
-    
-    // Create sets to track what values are available in the filtered data
-    const filteredMineralTypes = new Set();
-    const filteredContractStatuses = new Set();
-    const filteredSponsoringStates = new Set();
-    const filteredYears = new Set();
-    const filteredContractorIds = new Set();
-    
-    // Collect all values that exist in the filtered data
-    filteredContractors.forEach(contractor => {
-      if (contractor.contractType) filteredMineralTypes.add(contractor.contractType);
-      if (contractor.contractStatus) filteredContractStatuses.add(contractor.contractStatus);
-      if (contractor.sponsoringState) filteredSponsoringStates.add(contractor.sponsoringState);
-      if (contractor.contractualYear) filteredYears.add(contractor.contractualYear);
-      filteredContractorIds.add(contractor.contractorId);
-    });
-    
-    // Get all possible values from the original data
-    const allMineralTypes = new Set();
-    const allContractStatuses = new Set();
-    const allSponsoringStates = new Set();
-    const allYears = new Set();
-    
-    allContractors.forEach(contractor => {
-      if (contractor.contractType) allMineralTypes.add(contractor.contractType);
-      if (contractor.contractStatus) allContractStatuses.add(contractor.contractStatus);
-      if (contractor.sponsoringState) allSponsoringStates.add(contractor.sponsoringState);
-      if (contractor.contractualYear) allYears.add(contractor.contractualYear);
-    });
-    
-    // Update mineral types - include all options but mark those not in filtered data as disabled
-    if (filterOptions.contractTypes) {
-      const updatedMineralTypes = filterOptions.contractTypes.map(type => {
-        // Check if this mineral type exists in the filtered data
-        const isAvailable = filteredMineralTypes.has(type.contractTypeName);
-        
-        return {
-          value: type.contractTypeId.toString(),
-          label: type.contractTypeName,
-          disabled: !isAvailable
-        };
-      });
-      setFilteredMineralTypes(updatedMineralTypes);
-    }
-    
-    // Update contract statuses - similar approach
-    if (filterOptions.contractStatuses) {
-      const updatedContractStatuses = filterOptions.contractStatuses.map(status => {
-        const isAvailable = filteredContractStatuses.has(status.contractStatusName);
-        
-        return {
-          value: status.contractStatusId.toString(),
-          label: status.contractStatusName,
-          disabled: !isAvailable
-        };
-      });
-      setFilteredContractStatuses(updatedContractStatuses);
-    }
-    
-    // Update sponsoring states
-    if (filterOptions.sponsoringStates) {
-      // Ensure we keep all options but mark unavailable ones as disabled
-      const updatedSponsoringStates = filterOptions.sponsoringStates.map(state => {
-        const isAvailable = filteredSponsoringStates.has(state);
-        
-        return {
-          value: state,
-          label: state,
-          disabled: !isAvailable
-        };
-      });
-      setFilteredSponsoringStates(updatedSponsoringStates);
-    }
-    
-    // Update years options
-    if (filterOptions.contractualYears) {
-      const updatedYears = filterOptions.contractualYears.map(year => {
-        const isAvailable = filteredYears.has(year);
-        
-        return {
-          value: year.toString(),
-          label: year.toString(),
-          disabled: !isAvailable
-        };
-      });
-      setFilteredYears(updatedYears);
-    }
-    
-    // Update contractor options from both datasets
-    // First get all contractors from original data
-    const contractorOptions = allContractors.map(contractor => {
-      // Check if this contractor is in the filtered dataset
-      const isAvailable = filteredContractorIds.has(contractor.contractorId);
+  // This function updates all the dropdown options based on the original data 
+// while highlighting which options are currently available based on other filters
+const updateFilteredOptions = useCallback(() => {
+  if (!originalMapData || !filterOptions) return;
+  
+  // Get the full set of data from originalMapData 
+  // and the filtered set from mapData
+  const allContractors = originalMapData.contractors;
+  const filteredContractors = mapData?.contractors || [];
+  
+  // Create sets to track what values are available in the filtered data
+  const filteredMineralTypes = new Set();
+  const filteredContractStatuses = new Set();
+  const filteredSponsoringStates = new Set();
+  const filteredYears = new Set();
+  const filteredContractorIds = new Set();
+  
+  // Collect all values that exist in the filtered data
+  filteredContractors.forEach(contractor => {
+    if (contractor.contractType) filteredMineralTypes.add(contractor.contractType);
+    if (contractor.contractStatus) filteredContractStatuses.add(contractor.contractStatus);
+    if (contractor.sponsoringState) filteredSponsoringStates.add(contractor.sponsoringState);
+    if (contractor.contractualYear) filteredYears.add(contractor.contractualYear);
+    filteredContractorIds.add(contractor.contractorId);
+  });
+  
+  // Get all possible values from the original data
+  const allMineralTypes = new Set();
+  const allContractStatuses = new Set();
+  const allSponsoringStates = new Set();
+  const allYears = new Set();
+  
+  allContractors.forEach(contractor => {
+    if (contractor.contractType) allMineralTypes.add(contractor.contractType);
+    if (contractor.contractStatus) allContractStatuses.add(contractor.contractStatus);
+    if (contractor.sponsoringState) allSponsoringStates.add(contractor.sponsoringState);
+    if (contractor.contractualYear) allYears.add(contractor.contractualYear);
+  });
+  
+  // Count active filters to determine when we have a single filter
+  const activeFilterCount = Object.keys(filters).filter(key => 
+    filters[key] !== undefined && filters[key] !== null
+  ).length;
+  
+  // Check which filter types are currently active
+  const isMineralTypeActive = filters.mineralTypeId !== undefined;
+  const isContractStatusActive = filters.contractStatusId !== undefined;
+  const isSponsoringStateActive = filters.sponsoringState !== undefined;
+  const isYearActive = filters.year !== undefined;
+  const isContractorActive = filters.contractorId !== undefined;
+  
+  // Update mineral types - if mineralTypeId is the only active filter, show all options
+  if (filterOptions.contractTypes) {
+    const updatedMineralTypes = filterOptions.contractTypes.map(type => {
+      // If mineralTypeId is the only active filter, don't disable any options
+      const shouldCheckAvailability = activeFilterCount > 1 || !isMineralTypeActive;
+      
+      // Check if this mineral type exists in the filtered data (only if needed)
+      const isAvailable = !shouldCheckAvailability || filteredMineralTypes.has(type.contractTypeName);
       
       return {
-        value: contractor.contractorId.toString(),
-        label: contractor.contractorName,
+        value: type.contractTypeId.toString(),
+        label: type.contractTypeName,
         disabled: !isAvailable
       };
     });
+    setFilteredMineralTypes(updatedMineralTypes);
+  }
+  
+  // Update contract statuses - similar approach
+  if (filterOptions.contractStatuses) {
+    const updatedContractStatuses = filterOptions.contractStatuses.map(status => {
+      // If contractStatusId is the only active filter, don't disable any options
+      const shouldCheckAvailability = activeFilterCount > 1 || !isContractStatusActive;
+      
+      const isAvailable = !shouldCheckAvailability || filteredContractStatuses.has(status.contractStatusName);
+      
+      return {
+        value: status.contractStatusId.toString(),
+        label: status.contractStatusName,
+        disabled: !isAvailable
+      };
+    });
+    setFilteredContractStatuses(updatedContractStatuses);
+  }
+  
+  // Update sponsoring states
+  if (filterOptions.sponsoringStates) {
+    // If sponsoringState is the only active filter, don't disable any options
+    const updatedSponsoringStates = filterOptions.sponsoringStates.map(state => {
+      const shouldCheckAvailability = activeFilterCount > 1 || !isSponsoringStateActive;
+      
+      const isAvailable = !shouldCheckAvailability || filteredSponsoringStates.has(state);
+      
+      return {
+        value: state,
+        label: state,
+        disabled: !isAvailable
+      };
+    });
+    setFilteredSponsoringStates(updatedSponsoringStates);
+  }
+  
+  // Update years options
+  if (filterOptions.contractualYears) {
+    const updatedYears = filterOptions.contractualYears.map(year => {
+      // If year is the only active filter, don't disable any options
+      const shouldCheckAvailability = activeFilterCount > 1 || !isYearActive;
+      
+      const isAvailable = !shouldCheckAvailability || filteredYears.has(year);
+      
+      return {
+        value: year.toString(),
+        label: year.toString(),
+        disabled: !isAvailable
+      };
+    });
+    setFilteredYears(updatedYears);
+  }
+  
+  // Update contractor options from both datasets
+  // First get all contractors from original data
+  const contractorOptions = allContractors.map(contractor => {
+    // If contractorId is the only active filter, don't disable any options
+    const shouldCheckAvailability = activeFilterCount > 1 || !isContractorActive;
     
-    setFilteredContractors(contractorOptions);
-  }, [originalMapData, mapData, filterOptions]);
+    // Check if this contractor is in the filtered dataset
+    const isAvailable = !shouldCheckAvailability || filteredContractorIds.has(contractor.contractorId);
+    
+    return {
+      value: contractor.contractorId.toString(),
+      label: contractor.contractorName,
+      disabled: !isAvailable
+    };
+  });
+  
+  setFilteredContractors(contractorOptions);
+}, [originalMapData, mapData, filterOptions, filters]);
   
   // Handle select change with proper type conversion
   const handleSelectChange = useCallback((key, value) => {

@@ -328,6 +328,8 @@ export const FilterProvider: React.FC<{ children: ReactNode }> = ({ children }) 
   }, [originalMapData, refreshData, updateMapData]);
   
   // Improved set filter function - optimized to handle "All" selections efficiently
+ // Improved set filter function - optimized to handle "All" selections efficiently
+  // and allowing switching between options in the same filter when it's the only active filter
   const setFilter = useCallback((key: keyof MapFilterParams, value: any) => {
     try {
       console.log(`Setting filter: ${key} = ${value}`);
@@ -343,8 +345,17 @@ export const FilterProvider: React.FC<{ children: ReactNode }> = ({ children }) 
           // No need to trigger full refresh when removing a filter
           // We'll let the effect handle this more efficiently
         } else {
-          // Set the new filter value
-          newFilters[key] = value;
+          // If we're already filtering on this key and it's the only active filter,
+          // we should allow changing it directly without requiring a reset
+          if (prev[key] !== undefined && Object.keys(prev).length === 1) {
+            console.log(`Switching value for single filter ${key} from ${prev[key]} to ${value}`);
+            
+            // For single filter case, we'll update directly - this allows switching between options
+            newFilters[key] = value;
+          } else {
+            // Multi-filter case or adding a new filter - set the new filter value normally
+            newFilters[key] = value;
+          }
         }
         
         console.log(`Updated filters:`, newFilters);
