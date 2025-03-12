@@ -17,8 +17,7 @@ import { BlockAnalyticsPanel } from "./blockAnalyticsPanel";
 import { ContractorSummaryPanel } from "./contractorSummaryPanel";
 import CompactLayerControls from "./layerControls";
 import SummaryPanel from "./summaryPanel";
-import CruiseVisualizationComponent from './cruiseVisualization';
-
+import CruiseMarker from './cruiseMarker';
 import StationMarker from "./stationMarker";
 
 const EnhancedMapComponent = () => {
@@ -606,7 +605,13 @@ useEffect(() => {
       });
     }
   };
-
+  const handleCruiseClick = (cruise) => {
+    console.log("Cruise clicked:", cruise.cruiseName);
+    setSelectedCruiseId(cruise.cruiseId);
+    setDetailPanelType('cruise');
+    setShowDetailPanel(true);
+    setPopupInfo(null); // Lukk eventuelle åpne popups
+  };
   // Handle marker click
   const handleMarkerClick = (station) => {
     setSelectedStation(station);
@@ -868,12 +873,20 @@ useEffect(() => {
             </Source>
           )) : []
         )}
-        <CruiseVisualizationComponent
-  mapData={mapData}
-  showCruises={showCruises}
-  selectedCruiseId={selectedCruiseId}
-  setSelectedCruiseId={setSelectedCruiseId}
-/>
+  // This is a partial snippet that shows the changes needed in EnhancedMapComponent.tsx
+// Replace the CruiseVisualizationComponent section with this:
+
+
+
+// Then replace the CruiseVisualizationComponent with:
+{/* Bruk CruiseMarker-komponentene direkte */}
+{showCruises && mapData && mapData.cruises && mapData.cruises.map(cruise => (
+  <CruiseMarker
+    key={`cruise-marker-${cruise.cruiseId}`}
+    cruise={cruise}
+    onClick={handleCruiseClick}
+  />
+))}
         {/* Stations */}
         {showStations && clusters.map(cluster => {
           // Is this a cluster?
