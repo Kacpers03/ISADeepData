@@ -118,7 +118,7 @@ public class AnalyticsControllerTests
     [Fact]
     public async Task GetContractorSummary_ExistingContractor_ReturnsSummary()
     {
-        var result = await _controller.GetContractorSummary(1);
+        var result = await _controller.GetContractorSummary(2);
         var actionResult = Assert.IsType<ActionResult<object>>(result);
         var summary = Assert.IsType<OkObjectResult>(actionResult.Result);
         Assert.NotNull(summary.Value);

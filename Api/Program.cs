@@ -19,10 +19,14 @@ builder.Services.AddMemoryCache();
 
 // Register repositories
 builder.Services.AddScoped<IMapFilterRepository, MapFilterRepository>();
+builder.Services.AddScoped<ILibraryRepository, LibraryRepository>();
 
 // Register services
 builder.Services.AddScoped<IMapFilterService, MapFilterService>();
 builder.Services.AddScoped<ISpatialService, SpatialService>();
+builder.Services.AddScoped<ILibraryService, LibraryService>();
+
+
 
 // Add controllers and configure API
 builder.Services.AddControllers();
