@@ -77,7 +77,8 @@ const EnhancedMapComponent = () => {
   const [toastMessage, setToastMessage] = useState('');
   const [cursorPosition, setCursorPosition] = useState({ latitude: 0, longitude: 0 });
   const [mapStyle, setMapStyle] = useState("mapbox://styles/mapbox/outdoors-v11");
-  
+  const [initialLoadComplete, setInitialLoadComplete] = useState(false);
+
   // Summary panel state
   const [showSummaryPanel, setShowSummaryPanel] = useState(false);
   const [summaryData, setSummaryData] = useState(null);
@@ -386,6 +387,12 @@ useEffect(() => {
   const loadAllVisibleContractors = useCallback(async () => {
     if (!mapData?.contractors.length) return;
     
+    // Prevent loading if we're already loading
+    if (loading || localLoading) {
+      console.log("Already loading data, skipping redundant load");
+      return;
+    }
+    
     try {
       setLocalLoading(true);
       
@@ -403,7 +410,18 @@ useEffect(() => {
         .filter(result => result.status === 'fulfilled' && result.value)
         .flatMap(result => result.value);
       
-      setAllAreaLayers(allAreas);
+      // Only update if we got new data to prevent unnecessary re-renders
+      if (allAreas.length > 0) {
+        setAllAreaLayers(prevLayers => {
+          // If layers are identical, don't update
+          if (prevLayers.length === allAreas.length && 
+              JSON.stringify(prevLayers.map(a => a.areaId).sort()) === 
+              JSON.stringify(allAreas.map(a => a.areaId).sort())) {
+            return prevLayers;
+          }
+          return allAreas;
+        });
+      }
       
       // Check if we have a pending zoom that needs to be applied after loading
       if (pendingZoomContractorId && mapRef.current) {
@@ -416,17 +434,26 @@ useEffect(() => {
     } finally {
       setLocalLoading(false);
     }
-  }, [mapData?.contractors, fetchContractorGeoJson, pendingZoomContractorId, smartZoom]);
+  }, [mapData?.contractors, fetchContractorGeoJson, pendingZoomContractorId, smartZoom, loading, localLoading]);
   
   // Load GeoJSON when filters change
-  useEffect(() => {
-    if (mapData?.contractors && (!allAreaLayers.length || Object.keys(filters).length === 0)) {
-      // Load all visible contractors if:
-      // - We have no area layers loaded yet
-      // - OR filters have been reset to empty
+ // Update the effect for loading GeoJSON when filters change
+useEffect(() => {
+  // Only load if we have data and haven't loaded these contractors yet
+  if (mapData?.contractors && initialLoadComplete) {
+    const shouldReloadLayers = 
+      // If we have no layers yet but have contractors
+      (allAreaLayers.length === 0 && mapData.contractors.length > 0) || 
+      // OR we have different contractor IDs than before
+      (mapData.contractors.some(c => 
+        !allAreaLayers.some(area => area.contractorId === c.contractorId)
+      ));
+      
+    if (shouldReloadLayers) {
       loadAllVisibleContractors();
     }
-  }, [filters, mapData?.contractors, allAreaLayers.length, loadAllVisibleContractors]);
+  }
+}, [filters, mapData?.contractors, allAreaLayers, loadAllVisibleContractors, initialLoadComplete]);
   
   // Effect for smart zooming when selection changes
   useEffect(() => {
@@ -706,9 +733,9 @@ useEffect(() => {
           console.log("Map successfully loaded!");
           window.mapInstance = mapRef.current?.getMap();
           
-          // Initial view on first load
-          if (mapRef.current && initialLoadRef.current) {
-            initialLoadRef.current = false;
+          // Initial view on first load - only once
+          if (!initialLoadComplete && mapRef.current) {
+            setInitialLoadComplete(true);
             smartZoom();
           }
         }}
