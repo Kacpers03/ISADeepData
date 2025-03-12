@@ -58,94 +58,143 @@
 
 .summaryContent {
   height: 300px; /* Fixed height */
-  overflow-y: scroll; /* Always show scrollbar */
+  overflow-y: auto; /* Always show scrollbar */
   overflow-x: hidden;
-  padding: 0; /* Remove padding */
+  padding: 8px; /* Reduced padding */
 }
 
-/* Stats grid - 2x2 grid with borders as shown in screenshot */
+/* Stats grid - 2x2 grid with distinct boxes */
 .statsGrid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  grid-template-rows: 1fr 1fr;
+  grid-gap: 8px;
   width: 100%;
+  margin-bottom: 8px;
 }
 
-/* Individual stat cell styling */
-.statCell {
+/* Individual stat box styling - clearly defined boxes with shadows */
+.statBox {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 8px;
+  text-align: center;
+  background-color: #f8f9fa;
+  border: 1px solid #eaeaea;
+  border-radius: 6px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s ease;
+}
+
+.statBox:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Apply the same style as statBox to maintain consistency */
+.statItem {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   padding: 15px 10px;
   text-align: center;
-  border-right: 1px solid #eaeaea;
-  border-bottom: 1px solid #eaeaea;
+  background-color: #f8f9fa;
+  border: 1px solid #eaeaea;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s ease;
 }
 
-.statCell:nth-child(2n) {
-  border-right: none;
-}
-
-.statCell:nth-child(3), 
-.statCell:nth-child(4) {
-  border-bottom: none;
+.statItem:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .statValue {
-  font-size: 1.8rem; /* Larger font size to match screenshot */
+  font-size: 1.5rem; /* Smaller font size */
   font-weight: 500;
   color: #0077b6;
-  margin-bottom: 5px;
+  margin-bottom: 3px;
 }
 
 .statLabel {
-  font-size: 0.9rem;
+  font-size: 0.8rem;
   color: #64748b;
 }
 
-/* Total Exploration Area - exactly as shown in screenshot */
-.totalExplorationArea {
-  padding: 15px;
-  font-size: 0.9rem;
-  color: #333;
-  border-bottom: 1px solid #eaeaea;
-}
-
-/* Section rows - flat design matching screenshot */
-.sectionRow {
+/* Total Exploration Area box styling */
+.explorationAreaBox {
+  background-color: #f8f9fa;
+  border: 1px solid #eaeaea;
+  border-radius: 6px;
+  padding: 10px 12px;
+  margin-bottom: 8px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 15px;
-  background-color: white; /* White background */
-  border-bottom: 1px solid #eaeaea;
-  cursor: pointer;
-  font-size: 0.9rem;
-  color: #333;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
-.sectionRow:hover {
-  background-color: #f8f9fa; /* Very light hover effect */
+.areaLabel {
+  font-size: 0.8rem;
+  color: #64748b;
+  font-weight: 500;
+}
+
+.areaValue {
+  font-size: 0.9rem;
+  color: #0077b6;
+  font-weight: 600;
+}
+
+/* Category box styling for Contract Types and Sponsoring States */
+.categoryBox {
+  background-color: #f8f9fa;
+  border: 1px solid #eaeaea;
+  border-radius: 6px;
+  margin-bottom: 8px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.categoryHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 12px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #333;
+  background-color: #f8f9fa;
+  border-bottom: 1px solid transparent;
+  transition: background-color 0.2s ease;
+}
+
+.categoryHeader:hover {
+  background-color: #f1f3f5;
 }
 
 .plusIcon {
   font-size: 1.2rem;
-  color: #666;
+  color: #0077b6;
+  font-weight: bold;
 }
 
-/* Expanded sections */
-.expandedSection {
+.expandedContent {
   background-color: white;
-  border-bottom: 1px solid #eaeaea;
+  max-height: 200px;
+  overflow-y: auto;
 }
 
 .expandedItem {
   display: flex;
   justify-content: space-between;
-  padding: 10px 15px;
-  font-size: 0.9rem;
-  border-bottom: 1px solid #f5f7fa;
+  padding: 8px 12px;
+  font-size: 0.8rem;
+  border-bottom: 1px solid #f1f3f5;
 }
 
 .expandedItem:last-child {
@@ -175,11 +224,55 @@
 
 /* Selected Contractor View */
 .selectedContractorSection {
-  padding: 15px;
+  padding: 5px;
 }
 
 .selectedContractorSection h4 {
   font-size: 1.1rem;
   margin: 0 0 15px 0;
   color: #333;
+}
+
+.viewDetailsButton {
+  margin-top: 15px;
+  width: 100%;
+  background-color: #0077b6;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 16px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.viewDetailsButton:hover {
+  background-color: #00598c;
+}
+
+.cruiseSection {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid #e2e8f0;
+}
+
+.sectionTitle {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #334155;
+  margin-bottom: 12px;
+}
+
+.cruiseList {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.viewMoreLink {
+  text-align: center;
+  font-size: 0.75rem;
+  color: #64748b;
+  margin-top: 8px;
 }
