@@ -17,6 +17,7 @@ import { BlockAnalyticsPanel } from "./blockAnalyticsPanel";
 import { ContractorSummaryPanel } from "./contractorSummaryPanel";
 import CompactLayerControls from "./layerControls";
 import SummaryPanel from "./summaryPanel";
+import CruiseVisualizationComponent from './cruiseVisualization';
 
 import StationMarker from "./stationMarker";
 
@@ -56,7 +57,8 @@ const EnhancedMapComponent = () => {
   const mapRef = useRef(null);
   const initialLoadRef = useRef(true);
   const [localLoading, setLocalLoading] = useState(false);
-  
+  const [showCruises, setShowCruises] = useState(false);
+
   // User has manually set the view (to prevent auto-zooming when unwanted)
   const [userHasSetView, setUserHasSetView] = useState(false);
   
@@ -699,17 +701,19 @@ useEffect(() => {
       
       {/* Compact Layer Controls */}
       <CompactLayerControls 
-        showAreas={showAreas}
-        setShowAreas={setShowAreas}
-        showBlocks={showBlocks}
-        setShowBlocks={setShowBlocks}
-        showStations={showStations}
-        setShowStations={setShowStations}
-        mapStyle={mapStyle}
-        setMapStyle={setMapStyle}
-        showSummary={showSummaryPanel}
-        setShowSummary={setShowSummaryPanel}
-      />
+  showAreas={showAreas}
+  setShowAreas={setShowAreas}
+  showBlocks={showBlocks}
+  setShowBlocks={setShowBlocks}
+  showStations={showStations}
+  setShowStations={setShowStations}
+  showCruises={showCruises}
+  setShowCruises={setShowCruises}
+  mapStyle={mapStyle}
+  setMapStyle={setMapStyle}
+  showSummary={showSummaryPanel}
+  setShowSummary={setShowSummaryPanel}
+/>
 
       {/* THE MAP */}
       <Map
@@ -864,7 +868,12 @@ useEffect(() => {
             </Source>
           )) : []
         )}
-        
+        <CruiseVisualizationComponent
+  mapData={mapData}
+  showCruises={showCruises}
+  selectedCruiseId={selectedCruiseId}
+  setSelectedCruiseId={setSelectedCruiseId}
+/>
         {/* Stations */}
         {showStations && clusters.map(cluster => {
           // Is this a cluster?

@@ -250,3 +250,29 @@
 .viewDetailsButton:hover {
   background-color: #00598c;
 }
+
+.cruiseSection {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid #e2e8f0;
+}
+
+.sectionTitle {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #334155;
+  margin-bottom: 12px;
+}
+
+.cruiseList {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.viewMoreLink {
+  text-align: center;
+  font-size: 0.75rem;
+  color: #64748b;
+  margin-top: 8px;
+}
