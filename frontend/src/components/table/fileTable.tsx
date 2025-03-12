@@ -7,6 +7,7 @@ import {
   flexRender,
 } from "@tanstack/react-table";
 import styles from "../../styles/reports.module.css"; // CSS Module
+import { Row } from "react-bootstrap";
 
 const FileTable = ({ filters }) => {
   const [tableData, setTableData] = useState([]);
@@ -45,10 +46,10 @@ const FileTable = ({ filters }) => {
   const columns = useMemo(
     () => [
       {
-        accessorKey: "title",
-        header: "Title",
+        accessorKey: "fileName",
+        header: "URL",
         cell: (info) => {
-          const fileUrl = `https://isalibraryfiles.blob.core.windows.net/files/${info.getValue()}`;
+          const fileUrl = info.getValue();
           return (
             <a
               href={fileUrl}
@@ -63,8 +64,6 @@ const FileTable = ({ filters }) => {
         },
       },
       { accessorKey: "contractor", header: "Contractor" },
-      { accessorKey: "size", header: "Size" },
-      { accessorKey: "year", header: "Date" },
       { accessorKey: "theme", header: "Theme" },
       {
         id: "info",
@@ -72,7 +71,13 @@ const FileTable = ({ filters }) => {
         cell: ({ row }) => (
           <div className={styles.infoIcon}>
             ⓘ
-            <span className={styles.tooltip}>{row.original.description}</span>
+            <span className={styles.tooltip}>{row.original.description} <br /> <br />
+            Created in year: {row.original.year}<br />
+            Published by: {row.original.contractor}<br />
+            Contact-info: {row.original.email}<br />
+            File size: {row.original.size}<br />
+            Format: {row.original.format} <br />
+            </span>
           </div>
         ),
       },
