@@ -165,15 +165,13 @@ const EnhancedMapComponent = () => {
   }), []);
   
   // Smart zoom function - will be called when a new contractor is selected or filters are reset
+  const [pendingZoomContractorId, setPendingZoomContractorId] = useState(null);
+
+  // 2. Update the smartZoom function to be more robust
   const smartZoom = useCallback(() => {
     if (!mapRef.current) return;
     
-    // If user has manually panned or zoomed, don't auto-zoom unless filters are reset
-    if (userHasSetView && Object.keys(filters).length > 0) {
-      return;
-    }
-    
-    // If a specific contractor is selected, zoom to their areas
+    // If a specific contractor is selected, always zoom to their areas regardless of userHasSetView
     if (selectedContractorId && allAreaLayers.length > 0) {
       const contractorAreas = allAreaLayers.filter(area => 
         area.contractorId === selectedContractorId
@@ -208,29 +206,58 @@ const EnhancedMapComponent = () => {
         // Only zoom if we have valid bounds
         if (boundsSet && minLon < maxLon && minLat < maxLat) {
           // Add padding for better view
-          const pad = 1;
+          const pad = 2; // Increased padding for a better view
           
           mapRef.current.fitBounds(
             [[minLon - pad, minLat - pad], [maxLon + pad, maxLat + pad]],
-            { padding: 50, duration: 1000, maxZoom: 10 }
+            { padding: 80, duration: 1000, maxZoom: 8 } // Added more padding and reduced maxZoom
           );
           
           console.log("Smart zoomed to contractor areas");
+          
+          // Clear pending zoom since we've successfully zoomed
+          if (pendingZoomContractorId === selectedContractorId) {
+            setPendingZoomContractorId(null);
+          }
+          
           return;
         }
+      } else if (pendingZoomContractorId !== selectedContractorId) {
+        // If we couldn't find any areas for this contractor, set it as pending
+        // This will trigger another zoom attempt when the areas are loaded
+        console.log(`Setting pending zoom for contractor ${selectedContractorId}`);
+        setPendingZoomContractorId(selectedContractorId);
       }
     }
     
-    // Reset to world view if no specific filters
-    if (Object.keys(filters).length === 0 || !selectedContractorId) {
+    // Only reset to world view if no specific contractor filters and user hasn't manually set view
+    // OR if filters have been completely reset
+    if ((Object.keys(filters).length === 0 && !selectedContractorId) || !userHasSetView) {
       mapRef.current.fitBounds(
         [[-180, -60], [180, 85]],
         { padding: 20, duration: 1000 }
       );
       console.log("Reset to world view");
     }
-  }, [selectedContractorId, allAreaLayers, filters]);
-
+  }, [selectedContractorId, allAreaLayers, filters, userHasSetView, pendingZoomContractorId]);
+  useEffect(() => {
+    if (pendingZoomContractorId && allAreaLayers.length > 0) {
+      console.log(`Attempting pending zoom for contractor ${pendingZoomContractorId}`);
+      smartZoom();
+    }
+  }, [allAreaLayers, pendingZoomContractorId, smartZoom]);
+  const handleContractorSelect = useCallback((contractorId) => {
+    setSelectedContractorId(contractorId);
+    setUserHasSetView(false); // Allow zooming to the selected contractor
+    
+    // If contractor data isn't loaded yet, set pending zoom
+    if (contractorId && allAreaLayers.length > 0) {
+      const hasAreas = allAreaLayers.some(area => area.contractorId === contractorId);
+      if (!hasAreas) {
+        setPendingZoomContractorId(contractorId);
+      }
+    }
+  }, [setSelectedContractorId, allAreaLayers]);
   // Cluster functionality for stations
   useEffect(() => {
     if (!mapData || !mapData.cruises) return;
@@ -377,12 +404,19 @@ useEffect(() => {
         .flatMap(result => result.value);
       
       setAllAreaLayers(allAreas);
+      
+      // Check if we have a pending zoom that needs to be applied after loading
+      if (pendingZoomContractorId && mapRef.current) {
+        console.log(`Areas loaded, executing pending zoom for contractor ${pendingZoomContractorId}`);
+        // Small delay to ensure the map has updated with the new data
+        setTimeout(() => smartZoom(), 100);
+      }
     } catch (error) {
       console.error('Error loading all contractor GeoJSON:', error);
     } finally {
       setLocalLoading(false);
     }
-  }, [mapData?.contractors, fetchContractorGeoJson]);
+  }, [mapData?.contractors, fetchContractorGeoJson, pendingZoomContractorId, smartZoom]);
   
   // Load GeoJSON when filters change
   useEffect(() => {

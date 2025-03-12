@@ -24,12 +24,13 @@ export const ImprovedFilterPanel = () => {
     filterOptions, 
     loading,
     mapData,
-    originalMapData, // Use originalMapData to generate all possible options
+    originalMapData,
     viewBounds,
     setViewBounds,
     refreshData,
     selectedContractorId,
-    setSelectedContractorId
+    setSelectedContractorId,
+    handleContractorSelect // This is the new function we added
   } = useFilter();
   
   // State for filtered dropdown options
@@ -214,7 +215,12 @@ const updateFilteredOptions = useCallback(() => {
       
       // If we're resetting the contractorId, also clear the selection
       if (key === 'contractorId') {
-        setSelectedContractorId(null);
+        // Use the context function if available, otherwise use the standard approach
+        if (handleContractorSelect) {
+          handleContractorSelect(null);
+        } else {
+          setSelectedContractorId(null);
+        }
       }
     } 
     else {
@@ -226,14 +232,20 @@ const updateFilteredOptions = useCallback(() => {
       else if (key === 'contractorId') {
         const contractorId = parseInt(value, 10);
         setFilter(key, contractorId);
-        setSelectedContractorId(contractorId);
+        
+        // Use the context function if available, otherwise use the standard approach
+        if (handleContractorSelect) {
+          handleContractorSelect(contractorId);
+        } else {
+          setSelectedContractorId(contractorId);
+        }
       }
       // For string values
       else {
         setFilter(key, value);
       }
     }
-  }, [setFilter, setSelectedContractorId]);
+  }, [setFilter, setSelectedContractorId, handleContractorSelect]);
   
   // Debounced select change handler to prevent rapid state updates
   const debouncedSelectChange = useMemo(() => 

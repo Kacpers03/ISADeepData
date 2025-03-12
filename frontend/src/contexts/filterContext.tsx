@@ -7,7 +7,7 @@ interface FilterContextValue {
   filters: MapFilterParams;
   setFilter: (key: keyof MapFilterParams, value: any) => void;
   resetFilters: () => void;
-  
+  handleContractorSelect?: (contractorId: number | null) => void;
   // Options for filter dropdowns
   filterOptions: FilterOptions | null;
   
@@ -52,7 +52,7 @@ const FilterContext = createContext<FilterContextValue | undefined>(undefined);
 export const FilterProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   // Filter state
   const [filters, setFilters] = useState<MapFilterParams>({});
-  
+  const [userHasSetView, setUserHasSetView] = useState<boolean>(false);
   // Options for filter dropdowns
   const [filterOptions, setFilterOptions] = useState<FilterOptions | null>(null);
   
@@ -134,7 +134,31 @@ export const FilterProvider: React.FC<{ children: ReactNode }> = ({ children }) 
       updateMapData(originalMapData);
     }
   }, [filters, initialDataLoaded, originalMapData, updateMapData]);
-
+  const handleContractorSelect = useCallback((contractorId: number | null) => {
+    // Update the filter
+    if (contractorId === null) {
+      // Remove filter when null
+      setFilters(prev => {
+        const newFilters = { ...prev };
+        delete newFilters.contractorId;
+        return newFilters;
+      });
+    } else {
+      // Set filter when valid ID
+      setFilters(prev => ({
+        ...prev,
+        contractorId: contractorId
+      }));
+    }
+    
+    // Update the selected contractor ID
+    setSelectedContractorId(contractorId);
+    
+    // Always reset userHasSetView to allow the smart zoom to work
+    setUserHasSetView(false);
+    
+    console.log(`Contractor selection changed to: ${contractorId}, enabling smart zoom`);
+  }, [setSelectedContractorId])
   // Fetch complete fresh data
   const refreshData = useCallback(async () => {
     try {
@@ -371,7 +395,9 @@ export const FilterProvider: React.FC<{ children: ReactNode }> = ({ children }) 
     filters,
     setFilter,
     resetFilters,
-    
+    userHasSetView,
+    setUserHasSetView,
+    handleContractorSelect,
     // Options for filter dropdowns
     filterOptions,
     
@@ -422,7 +448,9 @@ export const FilterProvider: React.FC<{ children: ReactNode }> = ({ children }) 
     detailPanelType, setDetailPanelType,
     contractorSummary, setContractorSummary,
     blockAnalytics, setBlockAnalytics,
-    refreshData
+    refreshData,  userHasSetView,
+    setUserHasSetView,
+    handleContractorSelect
   ]);
   
   return (
