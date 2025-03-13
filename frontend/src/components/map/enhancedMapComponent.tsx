@@ -296,6 +296,9 @@ const EnhancedMapComponent = () => {
 // Add this useEffect along with your other useEffect hooks
 // Add this useEffect to the EnhancedMapComponent.tsx file
 // This correctly calculates the summary data, including the total area
+// This represents the modified useEffect in EnhancedMapComponent.tsx 
+// that ensures cruiseCount and stationCount are properly calculated
+
 useEffect(() => {
   if (mapData) {
     // Helper function to safely calculate total area for a contractor
@@ -363,7 +366,7 @@ useEffect(() => {
     console.log("Updated summary data:", summary);
     setSummaryData(summary);
   }
-}, [mapData, selectedContractorId]);  // Only depend on mapData and selectedContractorId// Only depend on mapData and selectedContractorId, not visibleAreaLayers
+}, [mapData, selectedContractorId]);  // Only depend on mapData and selectedContractorId // Only depend on mapData and selectedContractorId// Only depend on mapData and selectedContractorId, not visibleAreaLayers
   // Update clusters when the map moves or zoom changes
   useEffect(() => {
     if (!clusterIndex || !mapRef.current) return;

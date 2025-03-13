@@ -1,3 +1,6 @@
+// Modified portion of SummaryPanel.tsx component
+// This fixes the issue with cruise and station counts not updating correctly
+
 import React, { useState, useRef, useEffect } from 'react';
 import styles from '../../styles/map/summary.module.css';
 
@@ -135,7 +138,8 @@ const SummaryPanel = ({
                       <div className={styles.statLabel}>Stations</div>
                     </div>
                     <div className={styles.statBox}>
-                      <div className={styles.statValue}>{mapData?.cruises?.length || 0}</div>
+                      {/* FIX: Use data.cruiseCount instead of mapData.cruises.length */}
+                      <div className={styles.statValue}>{data?.cruiseCount || 0}</div>
                       <div className={styles.statLabel}>Cruises</div>
                     </div>
                   </div>
