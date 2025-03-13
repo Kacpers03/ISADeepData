@@ -245,15 +245,6 @@ export const DetailPanel: React.FC<DetailPanelProps> = ({
       {/* Action buttons */}
       <div className={styles.detailActions}>
         <button className={styles.actionButton} onClick={onClose}>Close</button>
-        {type === 'station' && station && (
-          <button className={styles.actionButton}>View on Chart</button>
-        )}
-        {type === 'contractor' && contractor && (
-          <button className={styles.actionButton}>Show All Areas</button>
-        )}
-        {type === 'cruise' && cruise && (
-          <button className={styles.actionButton}>Show All Stations</button>
-        )}
       </div>
     </div>
   );

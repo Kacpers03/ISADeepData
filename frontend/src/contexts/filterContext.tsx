@@ -7,7 +7,7 @@ interface FilterContextValue {
   filters: MapFilterParams;
   setFilter: (key: keyof MapFilterParams, value: any) => void;
   resetFilters: () => void;
-  
+  handleContractorSelect?: (contractorId: number | null) => void;
   // Options for filter dropdowns
   filterOptions: FilterOptions | null;
   
@@ -52,7 +52,7 @@ const FilterContext = createContext<FilterContextValue | undefined>(undefined);
 export const FilterProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   // Filter state
   const [filters, setFilters] = useState<MapFilterParams>({});
-  
+  const [userHasSetView, setUserHasSetView] = useState<boolean>(false);
   // Options for filter dropdowns
   const [filterOptions, setFilterOptions] = useState<FilterOptions | null>(null);
   
@@ -116,25 +116,6 @@ export const FilterProvider: React.FC<{ children: ReactNode }> = ({ children }) 
     }
   }, [mapData]);
   
-  // Main data loading logic - optimized to prevent unnecessary refreshes
-  useEffect(() => {
-    // On initial load, fetch data
-    if (!initialDataLoaded) {
-      console.log("Initial load - fetching data");
-      refreshData();
-    } 
-    // When initial data is loaded and filters change, filter existing data
-    else if (Object.keys(filters).length > 0 && originalMapData) {
-      console.log("Filters changed, applying filters to data");
-      filterExistingData();
-    }
-    // When filters are cleared, restore original data
-    else if (Object.keys(filters).length === 0 && originalMapData) {
-      console.log("No filters active, restoring original data");
-      updateMapData(originalMapData);
-    }
-  }, [filters, initialDataLoaded, originalMapData, updateMapData]);
-
   // Fetch complete fresh data
   const refreshData = useCallback(async () => {
     try {
@@ -343,8 +324,17 @@ export const FilterProvider: React.FC<{ children: ReactNode }> = ({ children }) 
           // No need to trigger full refresh when removing a filter
           // We'll let the effect handle this more efficiently
         } else {
-          // Set the new filter value
-          newFilters[key] = value;
+          // If we're already filtering on this key and it's the only active filter,
+          // we should allow changing it directly without requiring a reset
+          if (prev[key] !== undefined && Object.keys(prev).length === 1) {
+            console.log(`Switching value for single filter ${key} from ${prev[key]} to ${value}`);
+            
+            // For single filter case, we'll update directly - this allows switching between options
+            newFilters[key] = value;
+          } else {
+            // Multi-filter case or adding a new filter - set the new filter value normally
+            newFilters[key] = value;
+          }
         }
         
         console.log(`Updated filters:`, newFilters);
@@ -355,12 +345,72 @@ export const FilterProvider: React.FC<{ children: ReactNode }> = ({ children }) 
     }
   }, []);
   
+  const handleContractorSelect = useCallback((contractorId: number | null) => {
+    // Update the filter
+    if (contractorId === null) {
+      // Remove filter when null
+      setFilters(prev => {
+        const newFilters = { ...prev };
+        delete newFilters.contractorId;
+        return newFilters;
+      });
+    } else {
+      // Set filter when valid ID
+      setFilters(prev => ({
+        ...prev,
+        contractorId: contractorId
+      }));
+    }
+    
+    // Update the selected contractor ID
+    setSelectedContractorId(contractorId);
+    
+    // Always reset userHasSetView to allow the smart zoom to work
+    setUserHasSetView(false);
+    
+    console.log(`Contractor selection changed to: ${contractorId}, enabling smart zoom`);
+  }, [setSelectedContractorId]);
+
+  // Main data loading logic - FIX: Optimize the dependencies and conditional logic
+  useEffect(() => {
+    const loadInitialData = async () => {
+      if (!initialDataLoaded) {
+        console.log("Initial load - fetching data");
+        await refreshData();
+      }
+    };
+    
+    loadInitialData();
+  }, [initialDataLoaded]); // Only depends on initialDataLoaded flag
+
+  // Separate effect for handling filter changes
+  useEffect(() => {
+    // Skip on initial load before we have data
+    if (!initialDataLoaded || !originalMapData) {
+      return;
+    }
+    
+    if (Object.keys(filters).length > 0) {
+      console.log("Filters changed, applying filters to data");
+      filterExistingData();
+    } else {
+      console.log("No filters active, restoring original data");
+      // IMPORTANT: Only update if mapData is not already originalMapData
+      // This prevents the infinite loop of updates
+      if (mapData !== originalMapData) {
+        updateMapData(originalMapData);
+      }
+    }
+  }, [filters, initialDataLoaded, originalMapData, filterExistingData]); // Removed updateMapData
+  
   const contextValue = useMemo(() => ({
     // Filter state
     filters,
     setFilter,
     resetFilters,
-    
+    userHasSetView,
+    setUserHasSetView,
+    handleContractorSelect,
     // Options for filter dropdowns
     filterOptions,
     
@@ -411,7 +461,9 @@ export const FilterProvider: React.FC<{ children: ReactNode }> = ({ children }) 
     detailPanelType, setDetailPanelType,
     contractorSummary, setContractorSummary,
     blockAnalytics, setBlockAnalytics,
-    refreshData
+    refreshData,  userHasSetView,
+    setUserHasSetView,
+    handleContractorSelect
   ]);
   
   return (

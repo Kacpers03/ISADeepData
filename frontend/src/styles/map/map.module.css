@@ -1,4 +1,4 @@
-/* Map Container */
+/* ========== LAYOUT & CONTAINER STYLES ========== */
 .mapContainer {
   position: relative;
   width: 100%;
@@ -9,17 +9,82 @@
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
 }
 
-/* Layer Controls Container */
-.layerControlsContainer {
+/* ========== LOADING STATES ========== */
+.mapLoading,
+.mapError,
+.mapNoData {
   position: absolute;
-  bottom: 50px;
-  right: 10px;
-  z-index: 10;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
   display: flex;
+  align-items: center;
+  justify-content: center;
   flex-direction: column;
+  background-color: rgba(255, 255, 255, 0.9);
+  z-index: 20;
 }
 
-/* Compact Map Controls */
+.mapLoading {
+  color: #0277bd;
+  font-size: 1.2rem;
+}
+
+.mapError {
+  color: #f44336;
+  font-size: 1.2rem;
+}
+
+.mapNoData {
+  color: #546e7a;
+  font-size: 1.2rem;
+}
+
+.mapLoadingOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(255, 255, 255, 0.8);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  backdrop-filter: blur(3px);
+}
+
+.spinnerContainer {
+  position: relative;
+  width: 50px;
+  height: 50px;
+  margin-bottom: 16px;
+}
+
+.spinner {
+  width: 100%;
+  height: 100%;
+  border: 4px solid rgba(0, 119, 182, 0.2);
+  border-top-color: #0077b6;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.loadingText {
+  font-size: 14px;
+  font-weight: 500;
+  color: #334155;
+}
+
+/* ========== MAP CONTROLS ========== */
 .compactControls {
   position: absolute;
   bottom: 20px;
@@ -70,947 +135,18 @@
 }
 
 .controlsPanel {
-  background-color: white;
-  border-radius: 8px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-  margin-top: 8px;
-  width: 240px;
-  overflow: hidden;
-}
-
-.controlsTabs {
-  display: flex;
-  border-bottom: 1px solid #e2e8f0;
-}
-
-.controlsTab {
-  flex: 1;
-  background-color: transparent;
-  border: none;
-  padding: 12px;
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: #64748b;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.controlsTab:hover {
-  background-color: #f8fafc;
-}
-
-.controlsTabActive {
-  color: #3b82f6;
-  box-shadow: inset 0 -2px 0 #3b82f6;
-}
-
-.controlsContent {
-  padding: 16px;
-}
-
-/* Layer Toggle Panel */
-.layerToggles {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  margin-bottom: 16px;
-}
-
-.layerToggle {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  cursor: pointer;
-  font-size: 0.875rem;
-  color: #334155;
-}
-
-.layerToggle input {
-  width: 16px;
-  height: 16px;
-  accent-color: #3b82f6;
-  cursor: pointer;
-}
-
-/* Style Panel */
-.stylePanel {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.styleSelectLabel {
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: #334155;
-}
-
-.styleSelect {
-  padding: 10px 12px;
-  border: 1px solid #e2e8f0;
-  border-radius: 6px;
-  font-size: 0.875rem;
-  color: #334155;
-  background-color: #f8fafc;
-  appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 12px center;
-  background-size: 16px;
-  padding-right: 36px;
-  cursor: pointer;
-  outline: none;
-  transition: all 0.2s ease;
-}
-
-.styleSelect:focus {
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-}
-
-/* Associate Button */
-.associateButton {
-  width: 100%;
-  background-color: #3b82f6;
-  border: none;
-  border-radius: 6px;
-  padding: 10px;
-  color: white;
-  font-size: 0.875rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-}
-
-.associateButton:hover {
-  background-color: #2563eb;
-}
-
-.associateButton:disabled {
-  background-color: #cbd5e1;
-  cursor: not-allowed;
-}
-
-/* LOADING AND ERROR STATES */
-.mapLoading,
-.mapError,
-.mapNoData {
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
-  background-color: rgba(255, 255, 255, 0.9);
-  z-index: 20;
-}
-
-.mapLoading {
-  color: #0277bd;
-  font-size: 1.2rem;
-}
-
-.mapError {
-  color: #f44336;
-  font-size: 1.2rem;
-}
-
-.mapNoData {
-  color: #546e7a;
-  font-size: 1.2rem;
-}
-
-/* MAP MARKER STYLES */
-.mapMarker {
-  width: 14px;
-  height: 14px;
-  border-radius: 50%;
-  cursor: pointer;
-  background-color: #dc2626 !important; /* Bright red */
-  border: 2px solid white;
-  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.2), 0 2px 4px rgba(0, 0, 0, 0.3);
-  transform: translateX(-50%) translateY(-50%);
-  position: relative;
-}
-
-/* Remove the pulsing effect entirely */
-.markerPulse {
-  display: none;
-}
-
-@keyframes pulse {
-  0% {
-    transform: scale(1);
-    opacity: 1;
-  }
-  70% {
-    transform: scale(1.5);
-    opacity: 0;
-  }
-  100% {
-    transform: scale(1.5);
-    opacity: 0;
-  }
-}
-
-/* ASSOCIATED MARKER STYLES */
-.associatedMarker {
-  background-color: #15803d !important; /* Dark green */
-  border: 2px solid white;
-  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.2);
-}
-
-/* MAP LEGEND STYLES */
-.mapLegend {
-  position: absolute;
-  bottom: 20px;
-  right: 20px;
-  background-color: rgba(255, 255, 255, 0.95);
-  border-radius: 8px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-  padding: 15px;
-  z-index: 5;
-  max-width: 200px;
-}
-
-.mapLegend h3 {
-  margin: 0 0 10px 0;
-  font-size: 0.95rem;
-  font-weight: 600;
-  color: #263238;
-}
-
-.legendItems {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.legendItem {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 0.85rem;
-  color: #455a64;
-}
-
-.legendMarker {
-  display: block;
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-}
-
-.legendNote {
-  margin: 10px 0 0 0;
-  font-size: 0.8rem;
-  color: #78909c;
-  font-style: italic;
-}
-
-.legendDivider {
-  margin: 10px 0;
-  border: none;
-  border-top: 1px solid #eaeaea;
-}
-
-.stationMarker {
-  display: block;
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  background-color: #2196F3;
-}
-
-.associatedStationMarker {
-  display: block;
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  background-color: #4CAF50;
-  border: 2px solid white;
-  box-sizing: content-box;
-}
-
-/* COORDINATE DISPLAY */
-.coordinateDisplay {
-  position: absolute;
-  bottom: 10px;
-  right: 10px;
-  background-color: rgba(255, 255, 255, 0.8);
-  padding: 5px 10px;
-  border-radius: 4px;
-  font-size: 12px;
-  color: #333;
-  z-index: 5;
-  font-family: monospace;
-}
-
-/* TOAST NOTIFICATION */
-.toast {
-  position: fixed;
-  bottom: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  background-color: rgba(0, 0, 0, 0.8);
-  color: white;
-  padding: 12px 20px;
-  border-radius: 4px;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  z-index: 1000;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-  animation: fadeIn 0.3s ease, fadeOut 0.3s ease 4.7s;
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; transform: translate(-50%, 20px); }
-  to { opacity: 1; transform: translate(-50%, 0); }
-}
-
-@keyframes fadeOut {
-  from { opacity: 1; transform: translate(-50%, 0); }
-  to { opacity: 0; transform: translate(-50%, 20px); }
-}
-
-.toastCloseButton {
-  background: none;
-  border: none;
-  color: white;
-  font-size: 1.2rem;
-  line-height: 1;
-  cursor: pointer;
-  padding: 0 0 0 10px;
-}
-
-/* POPUP STYLES */
-.mapPopup {
-  max-width: 350px !important;
-}
-
-.popupContent {
-  padding: 16px;
-}
-
-.popupContent h3 {
-  margin: 0 0 12px 0;
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: #263238;
-  border-bottom: 1px solid #eaeaea;
-  padding-bottom: 8px;
-}
-
-.popupGrid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-  margin-bottom: 16px;
-}
-
-.popupItem {
-  display: flex;
-  flex-direction: column;
-}
-
-.popupLabel {
-  font-size: 0.75rem;
-  color: #78909c;
-  margin-bottom: 2px;
-}
-
-.popupItem span:not(.popupLabel) {
-  font-size: 0.9rem;
-  color: #37474f;
-}
-
-.viewDetailsButton {
-  background-color: #0277bd;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  padding: 8px 16px;
-  font-size: 0.9rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  width: 100%;
-}
-
-.viewDetailsButton:hover {
-  background-color: #01579b;
-}
-
-/* CONTRACTOR INFO BOX */
-.contractorInfoBox {
-  position: absolute;
-  top: 20px;
-  right: 10px;
-  background-color: rgba(255, 255, 255, 0.9);
-  border-radius: 6px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  padding: 16px;
-  max-width: 300px;
-  z-index: 5;
-  border-left: 4px solid #0277bd;
-}
-
-.contractorInfoBox h3 {
-  margin: 0 0 8px 0;
-  font-size: 1rem;
-  font-weight: 600;
-  color: #0277bd;
-}
-
-.contractorStats {
-  display: flex;
-  gap: 15px;
-  font-size: 0.9rem;
-  color: #546e7a;
-  margin-bottom: 12px;
-}
-
-.contractorStats span {
-  display: flex;
-  align-items: center;
-}
-
-.contractorStats span:first-child::before {
-  content: "📍";
-  margin-right: 5px;
-}
-
-.contractorStats span:last-child::before {
-  content: "🔷";
-  margin-right: 5px;
-}
-
-.summaryButton {
-  margin-top: 5px;
-  background-color: #0277bd;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  padding: 6px 12px;
-  font-size: 0.85rem;
-  cursor: pointer;
-  width: 100%;
-  transition: background-color 0.2s ease;
-}
-
-.summaryButton:hover {
-  background-color: #01579b;
-}
-
-/* DETAIL PANEL STYLES */
-.detailPanel {
-  position: absolute;
-  top: 20px;
-  right: 20px;
-  width: 400px;
-  max-height: calc(100% - 40px);
-  background-color: white;
-  border-radius: 10px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-  z-index: 10;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  transition: all 0.3s ease;
-}
-
-.detailHeader {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 16px 20px;
-  background-color: #f8f9fa;
-  border-bottom: 1px solid #eaeaea;
-}
-
-.detailHeader h3 {
-  margin: 0;
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: #263238;
-}
-
-.closeButton {
-  background: none;
-  border: none;
-  font-size: 1.5rem;
-  line-height: 0.8;
-  color: #78909c;
-  cursor: pointer;
-  padding: 4px;
-}
-
-.closeButton:hover {
-  color: #455a64;
-}
-
-.detailContent {
-  flex: 1;
-  overflow-y: auto;
-  padding: 20px;
-}
-
-.detailField {
-  margin-bottom: 12px;
-}
-
-.fieldLabel {
-  display: block;
-  font-size: 0.8rem;
-  color: #78909c;
-  margin-bottom: 2px;
-}
-
-.detailSection {
-  margin-top: 24px;
-  border-top: 1px solid #eaeaea;
-  padding-top: 16px;
-}
-
-.detailSection h4 {
-  margin: 0 0 16px 0;
-  font-size: 1rem;
-  font-weight: 600;
-  color: #263238;
-}
-
-.detailSection h5 {
-  margin: 16px 0 10px 0;
-  font-size: 0.95rem;
-  font-weight: 600;
-  color: #455a64;
-}
-
-.detailSection h6 {
-  margin: 12px 0 8px 0;
-  font-size: 0.9rem;
-  font-weight: 600;
-  color: #546e7a;
-}
-
-.detailActions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 10px;
-  padding: 16px 20px;
-  background-color: #f8f9fa;
-  border-top: 1px solid #eaeaea;
-}
-
-.actionButton {
-  background-color: #0277bd;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  padding: 8px 16px;
-  font-size: 0.9rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.actionButton:hover {
-  background-color: #01579b;
-}
-
-/* BLOCK ANALYTICS PANEL STYLES */
-.analyticsSection {
-  margin-top: 24px;
-  padding-top: 16px;
-  border-top: 1px solid #eaeaea;
-}
-
-.analyticsSection h4 {
-  margin: 0 0 16px 0;
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: #263238;
-}
-
-.analyticsSection h5 {
-  margin: 16px 0 8px 0;
-  font-size: 1rem;
-  font-weight: 600;
-  color: #455a64;
-}
-
-.blockAnalyticsHeader {
-  margin-bottom: 20px;
-}
-
-.blockBasicInfo {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-}
-
-.analyticsCounts {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
-  gap: 12px;
-  margin-bottom: 16px;
-}
-
-.analyticsCount {
-  background-color: #f8f9fa;
-  border-radius: 6px;
-  padding: 12px;
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-}
-
-.countValue {
-  font-size: 1.5rem;
-  font-weight: 600;
-  color: #0277bd;
-  margin-bottom: 4px;
-}
-
-.countLabel {
-  font-size: 0.8rem;
-  color: #546e7a;
-}
-
-.dataCategory {
-  margin-bottom: 20px;
-}
-
-/* Status badge styling */
-.statusBadge {
-  display: inline-block;
-  padding: 4px 8px;
-  border-radius: 4px;
-  color: white;
-  font-size: 0.85rem;
-  font-weight: 500;
-}
-
-/* CONTRACTOR SUMMARY PANEL STYLES */
-.contractorSummaryHeader {
-  margin-bottom: 20px;
-}
-
-.contractorBasicInfo {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-}
-
-.summaryStats {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-  gap: 16px;
-  margin-bottom: 24px;
-}
-
-.statBox {
-  background-color: #f8f9fa;
-  border-radius: 8px;
-  padding: 16px;
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
-  transition: transform 0.2s ease;
-}
-
-.statBox:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-.statValue {
-  font-size: 1.8rem;
-  font-weight: 600;
-  color: #0277bd;
-  margin-bottom: 6px;
-}
-
-.statLabel {
-  font-size: 0.85rem;
-  color: #546e7a;
-  font-weight: 500;
-}
-
-.expeditionInfo {
-  background-color: #e1f5fe;
-  border-radius: 8px;
-  padding: 16px;
-  margin-top: 16px;
-}
-
-/* ACCORDION STYLES */
-.accordionItem {
-  border-radius: 8px;
-  overflow: hidden;
-  margin-bottom: 16px;
-  border: 1px solid #e0e0e0;
-}
-
-.accordionHeader {
-  padding: 12px 16px;
-  background-color: #f8f9fa;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  cursor: pointer;
-  font-weight: 500;
-  color: #455a64;
-  transition: background-color 0.2s ease;
-}
-
-.accordionHeader:hover {
-  background-color: #f1f3f4;
-}
-
-.accordionContent {
-  padding: 16px;
-  background-color: white;
-  border-top: 1px solid #eaeaea;
-}
-
-/* DATA TABLE STYLES */
-.dataTable {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 0.85rem;
-}
-
-.dataTable th {
-  background-color: #f5f5f5;
-  text-align: left;
-  padding: 8px 12px;
-  font-weight: 600;
-  color: #546e7a;
-}
-
-.dataTable td {
-  padding: 8px 12px;
-  border-bottom: 1px solid #eaeaea;
-  color: #37474f;
-}
-
-.areaList {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
-.areaItem {
-  background-color: #f8f9fa;
-  border-radius: 8px;
-  padding: 16px;
-}
-
-.areaItem h5 {
-  margin: 0 0 8px 0;
-  font-size: 1rem;
-  color: #263238;
-}
-
-.areaItem p {
-  margin: 0 0 12px 0;
-  font-size: 0.9rem;
-  color: #546e7a;
-}
-
-.blockList {
-  margin-top: 12px;
-}
-
-/* MEDIA RELATED STYLES */
-.mediaList {
-  margin-top: 16px;
-}
-
-.mediaGrid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-}
-
-.mediaCard {
-  border: 1px solid #eaeaea;
-  border-radius: 6px;
-  overflow: hidden;
-}
-
-.mediaInfo {
-  padding: 10px;
-  display: flex;
-  flex-direction: column;
-}
-
-.mediaInfo strong {
-  font-size: 0.85rem;
-  margin-bottom: 2px;
-}
-
-.mediaInfo span {
-  font-size: 0.75rem;
-  color: #78909c;
-}
-
-/* LOADING SPINNER */
-.loadingSpinner {
-  width: 14px;
-  height: 14px;
-  border: 2px solid rgba(255, 255, 255, 0.3);
-  border-radius: 50%;
-  border-top-color: white;
-  animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-/* Side Panel Styles */
-.sidePanel {
-  position: absolute;
-  top: 0;
-  right: 0;
-  width: 350px;
-  height: 100%;
-  background-color: white;
-  border-radius: 10px 0 0 10px;
-  box-shadow: -4px 0 20px rgba(0, 0, 0, 0.15);
-  z-index: 10;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  animation: slideIn 0.3s ease-out;
-}
-
-@keyframes slideIn {
-  from { transform: translateX(100%); }
-  to { transform: translateX(0); }
-}
-
-.panelHeader {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 16px 20px;
-  background-color: #f8f9fa;
-  border-bottom: 1px solid #eaeaea;
-}
-
-.panelHeader h3 {
-  margin: 0;
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: #263238;
-}
-
-.panelContent {
-  flex: 1;
-  overflow-y: auto;
-  padding: 20px;
-}
-
-.panelActions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 10px;
-  padding: 16px 20px;
-  background-color: #f8f9fa;
-  border-top: 1px solid #eaeaea;
-}
-/* Display Panel Styles */
-.displayPanel {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.infoText {
-  font-size: 0.75rem;
-  color: #64748b;
-  line-height: 1.4;
-  margin-top: -6px;
-  padding-left: 24px;
-}
-
-.displayTip {
-  display: flex;
-  gap: 8px;
-  background-color: #f0f9ff;
-  padding: 10px;
-  border-radius: 6px;
-  margin-top: 4px;
-  border: 1px solid #e0f2fe;
-}
-
-.tipIcon {
-  font-size: 1rem;
-  flex-shrink: 0;
-}
-
-.tipText {
-  font-size: 0.8rem;
-  color: #334155;
-  line-height: 1.4;
-}
-
-/* Improve mobile responsiveness */
-@media (max-width: 768px) {
-  .compactControls {
-    bottom: 60px;
-  }
-  
-  .controlsPanel {
-    width: 260px;
-  }
-  
-  .mapLoadingOverlay {
-    font-size: 0.9rem;
-  }
-}
-
-/* Add these styles to your map.module.css file */
-
-/* Fix the controls panel positioning */
-.compactControls {
-  position: absolute;
-  bottom: 20px;
-  right: 20px;
-  z-index: 10;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-}
-
-/* Ensure panel stays in position without moving */
-.controlsPanel {
-  position: absolute;
-  bottom: 50px; /* Position above the toggle button */
+  bottom: 50px;
   right: 0;
   background-color: white;
   border-radius: 8px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
   width: 240px;
+  max-width: 80vw;
   overflow: hidden;
-  z-index: 11; /* Ensure it's above other controls */
+  z-index: 11;
 }
 
-/* Add a close button to the controls panel */
 .controlsCloseButton {
   position: absolute;
   top: 10px;
@@ -1033,343 +169,46 @@
   background-color: rgba(0, 0, 0, 0.05);
   color: #334155;
 }
-/* Enhanced Map Styles - Add to your map.module.css */
 
-/* AREA STYLES - More distinct regions */
-.areaLayer {
-  fill: rgba(0, 119, 182, 0.08);
-  fill-opacity: 0.3;
-  stroke: #0077b6;
-  stroke-width: 2.5;
-  stroke-dasharray: 5, 3;
-  stroke-linecap: round;
+.controlsTabs {
+  display: flex;
+  border-bottom: 1px solid #e2e8f0;
 }
 
-.areaHover {
-  fill: rgba(0, 119, 182, 0.15);
-  stroke: #0077b6;
-  stroke-width: 3;
-}
-
-.areaLabel {
-  font-size: 13px;
+.controlsTab {
+  flex: 1;
+  background-color: transparent;
+  border: none;
+  padding: 10px 4px;
+  font-size: 0.75rem;
   font-weight: 500;
-  color: #0077b6;
-  text-shadow: 
-    -1px -1px 0 rgba(255, 255, 255, 0.9),
-    1px -1px 0 rgba(255, 255, 255, 0.9),
-    -1px 1px 0 rgba(255, 255, 255, 0.9),
-    1px 1px 0 rgba(255, 255, 255, 0.9);
-}
-
-/* BLOCK STYLES - More defined than areas */
-.blockLayer {
-  stroke-width: 1.5;
-  stroke-linecap: butt;
-}
-
-.blockFill {
-  fill-opacity: 0.4;
-  transition: fill-opacity 0.3s ease;
-}
-
-.blockHover {
-  fill-opacity: 0.6;
-  cursor: pointer;
-}
-
-.blockLabel {
-  font-size: 12px;
-  font-weight: 500;
-  text-shadow: 
-    -1px -1px 0 rgba(255, 255, 255, 0.9),
-    1px -1px 0 rgba(255, 255, 255, 0.9),
-    -1px 1px 0 rgba(255, 255, 255, 0.9),
-    1px 1px 0 rgba(255, 255, 255, 0.9);
-}
-
-/* STATION MARKER STYLES - More pronounced and interactive */
-.mapMarker {
-  width: 20px;
-  height: 20px;
-  background-color: transparent !important;
-  border: none !important;
-  box-shadow: none !important;
-  position: relative;
-  transform: translate(-50%, -50%);
-  cursor: pointer;
-  z-index: 5;
-}
-
-.markerIcon {
-  width: 20px;
-  height: 20px;
-  background-color: #dc2626; /* Bright red */
-  border: 2px solid white;
-  border-radius: 50%;
-  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.2), 0 3px 6px rgba(0, 0, 0, 0.3);
-  position: absolute;
-  top: 0;
-  left: 0;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.markerIcon::after {
-  content: '';
-  position: absolute;
-  bottom: -8px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 2px;
-  height: 8px;
-  background-color: #dc2626;
-}
-
-.markerHover .markerIcon {
-  transform: scale(1.1);
-  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.2), 0 4px 8px rgba(0, 0, 0, 0.3);
-}
-
-.stationTooltip {
-  position: absolute;
-  bottom: 100%;
-  left: 50%;
-  transform: translateX(-50%);
-  background-color: rgba(0, 0, 0, 0.8);
-  color: white;
-  padding: 5px 10px;
-  border-radius: 4px;
-  font-size: 12px;
-  white-space: nowrap;
-  pointer-events: none;
-  opacity: 0;
-  visibility: hidden;
-  transition: opacity 0.2s ease, visibility 0.2s ease;
-  z-index: 10;
-}
-
-.stationTooltip::after {
-  content: '';
-  position: absolute;
-  top: 100%;
-  left: 50%;
-  transform: translateX(-50%);
-  border-width: 5px;
-  border-style: solid;
-  border-color: rgba(0, 0, 0, 0.8) transparent transparent transparent;
-}
-
-.markerHover .stationTooltip {
-  opacity: 1;
-  visibility: visible;
-}
-
-/* ASSOCIATED STATION MARKER STYLES */
-.associatedMarker .markerIcon {
-  background-color: #15803d !important; /* Dark green */
-  border: 2px solid white;
-}
-
-.associatedMarker .markerIcon::after {
-  background-color: #15803d;
-}
-
-/* POPUP STYLES */
-.mapPopup {
-  max-width: 350px !important;
-  border-radius: 8px;
-  overflow: hidden;
-  padding: 0 !important;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
-}
-
-.mapPopup .mapboxgl-popup-content {
-  padding: 0;
-  border-radius: 8px;
-  overflow: hidden;
-}
-
-.mapPopup .mapboxgl-popup-close-button {
-  font-size: 20px;
   color: #64748b;
-  padding: 8px;
-  right: 5px;
-  top: 5px;
-  background-color: rgba(255, 255, 255, 0.8);
-  border-radius: 50%;
-  width: 28px;
-  height: 28px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: background-color 0.2s ease;
-  z-index: 2;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
 }
 
-.mapPopup .mapboxgl-popup-close-button:hover {
-  background-color: rgba(255, 255, 255, 1);
+.controlsTab:hover {
+  background-color: #f8fafc;
 }
 
-/* INTERACTIVE LEGENDS */
-.mapLegend {
-  position: absolute;
-  bottom: 100px;
-  left: 20px;
-  background-color: rgba(255, 255, 255, 0.95);
-  border-radius: 8px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-  padding: 15px;
-  z-index: 5;
-  max-width: 220px;
-  font-size: 13px;
-  opacity: 0.9;
-  transition: opacity 0.2s ease, transform 0.2s ease;
+.controlsTabActive {
+  color: #3b82f6;
+  box-shadow: inset 0 -2px 0 #3b82f6;
 }
 
-.mapLegend:hover {
-  opacity: 1;
-  transform: translateY(-2px);
+.controlsContent {
+  padding: 16px;
 }
 
-.mapLegend h3 {
-  margin: 0 0 12px 0;
-  font-size: 14px;
-  font-weight: 600;
-  color: #263238;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.legendItems {
+/* ========== LAYER CONTROLS ========== */
+.layerToggles {
   display: flex;
   flex-direction: column;
-  gap: 10px;
-}
-
-.legendItem {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 13px;
-  color: #455a64;
-}
-
-.legendMarker {
-  display: block;
-  width: 14px;
-  height: 14px;
-  border-radius: 3px;
-}
-
-.legendIcon {
-  width: 18px;
-  height: 18px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-/* STATUS COLOR INDICATORS */
-.statusActive {
-  background-color: #059669;
-}
-
-.statusPending {
-  background-color: #d97706;
-}
-
-.statusInactive {
-  background-color: #6b7280;
-}
-
-.statusReserved {
-  background-color: #3b82f6;
-}
-
-/* COORDINATE DISPLAY - More modern look */
-.coordinateDisplay {
-  position: absolute;
-  bottom: 10px;
-  left: 10px;
-  background-color: rgba(255, 255, 255, 0.9);
-  padding: 6px 12px;
-  border-radius: 6px;
-  font-size: 12px;
-  color: #455a64;
-  z-index: 5;
-  font-family: 'Roboto Mono', monospace;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.coordinateDisplay::before {
-  content: '📍';
-  font-size: 14px;
-}
-
-/* TOOLTIP FOR BLOCK INTERACTION */
-
-
-/* IMPROVED MAP LOADING OVERLAY */
-.mapLoadingOverlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(255, 255, 255, 0.8);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  z-index: 100;
-  backdrop-filter: blur(3px);
-}
-
-.spinnerContainer {
-  position: relative;
-  width: 50px;
-  height: 50px;
+  gap: 12px;
   margin-bottom: 16px;
 }
 
-.spinner {
-  width: 100%;
-  height: 100%;
-  border: 4px solid rgba(0, 119, 182, 0.2);
-  border-top-color: #0077b6;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-.loadingText {
-  font-size: 14px;
-  font-weight: 500;
-  color: #334155;
-}
-
-/* ZOOM CONTROLS ENHANCEMENT */
-.mapboxgl-ctrl-zoom-in,
-.mapboxgl-ctrl-zoom-out {
-  background-color: white !important;
-  color: #334155 !important;
-}
-
-.mapboxgl-ctrl-zoom-in:hover,
-.mapboxgl-ctrl-zoom-out:hover {
-  background-color: #f8fafc !important;
-}
-
-/* LAYER TOGGLE STYLING - More modern toggles */
 .layerToggle {
   display: flex;
   align-items: center;
@@ -1422,23 +261,193 @@
   font-weight: 500;
 }
 
-/* RESPONSIVE ADJUSTMENTS */
-@media (max-width: 768px) {
-  .mapLegend {
-    bottom: 70px;
-    left: 10px;
-    padding: 10px;
-    max-width: 180px;
-  }
-  
-  .legendItem {
-    font-size: 12px;
-  }
+/* ========== STYLE PANEL ========== */
+.stylePanel {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
-/* Add these styles to your map.module.css file */
+.styleSelectLabel {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #334155;
+}
 
-/* STATION MARKER STYLES - More pronounced and interactive */
+.styleSelect {
+  padding: 10px 12px;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  color: #334155;
+  background-color: #f8fafc;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 16px;
+  padding-right: 36px;
+  cursor: pointer;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.styleSelect:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* ========== DISPLAY PANEL ========== */
+.displayPanel {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.infoText {
+  font-size: 0.75rem;
+  color: #64748b;
+  line-height: 1.4;
+  margin-top: -6px;
+  padding-left: 24px;
+}
+
+.displayTip {
+  display: flex;
+  gap: 8px;
+  background-color: #f0f9ff;
+  padding: 10px;
+  border-radius: 6px;
+  margin-top: 4px;
+  border: 1px solid #e0f2fe;
+}
+
+.tipIcon {
+  font-size: 1rem;
+  flex-shrink: 0;
+}
+
+.tipText {
+  font-size: 0.8rem;
+  color: #334155;
+  line-height: 1.4;
+}
+
+/* ========== INFO PANEL ========== */
+.infoPanel {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 5px 0;
+}
+
+.mapLegendCompact {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.legendItem {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.legendItem:last-child {
+  border-bottom: none;
+}
+
+.legendItem strong {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #334155;
+  display: block;
+  margin-bottom: 2px;
+}
+
+.legendDescription {
+  font-size: 0.75rem;
+  color: #64748b;
+  line-height: 1.2;
+}
+
+/* ========== LEGEND ICONS ========== */
+.stationMarkerIcon {
+  width: 12px;
+  height: 12px;
+  background-color: #dc2626;
+  border: 1px solid white;
+  border-radius: 50%;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.2);
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+
+.blockIcon {
+  width: 16px;
+  height: 12px;
+  background-color: rgba(0, 128, 128, 0.6);
+  border: 1px solid #4b5563;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+.areaIcon {
+  width: 16px;
+  height: 12px;
+  background-color: rgba(0, 119, 182, 0.05);
+  border: 1px dashed #0077b6;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+.infoTip {
+  display: flex;
+  gap: 6px;
+  background-color: #f0f9ff;
+  padding: 6px 8px;
+  border-radius: 4px;
+  margin-top: 2px;
+  border: 1px solid #e0f2fe;
+}
+
+/* ========== BUTTONS ========== */
+.toggleSummaryButton, 
+.actionButton,
+.viewDetailsButton,
+.associateButton {
+  background-color: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 10px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+}
+
+.toggleSummaryButton:hover,
+.actionButton:hover,
+.viewDetailsButton:hover,
+.associateButton:hover {
+  background-color: #2563eb;
+}
+
+.actionButton:disabled,
+.associateButton:disabled {
+  background-color: #cbd5e1;
+  cursor: not-allowed;
+}
+
+/* ========== STATION MARKER STYLES ========== */
 .mapMarker {
   width: 20px;
   height: 20px;
@@ -1526,7 +535,7 @@
   visibility: visible;
 }
 
-/* ASSOCIATED STATION MARKER STYLES */
+/* ========== ASSOCIATED MARKER STYLES ========== */
 .associatedMarker .markerIcon {
   background-color: #15803d !important; /* Dark green */
   border: 2px solid white;
@@ -1536,7 +545,7 @@
   background-color: #15803d;
 }
 
-/* CLUSTER MARKER STYLES */
+/* ========== CLUSTER MARKER STYLES ========== */
 .clusterMarker {
   background: #ff4d4f;
   border-radius: 50%;
@@ -1571,186 +580,468 @@
   font-size: 20px;
 }
 
-/* TOOLTIP FOR CLUSTER */
-.clusterMarker:hover::after {
-  content: 'Click to zoom in';
+/* ========== COORDINATE DISPLAY ========== */
+.coordinateDisplay {
   position: absolute;
-  bottom: 100%;
+  bottom: 10px;
+  left: 10px;
+  background-color: rgba(255, 255, 255, 0.9);
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  color: #455a64;
+  z-index: 5;
+  font-family: 'Roboto Mono', monospace;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.coordinateDisplay::before {
+  content: '📍';
+  font-size: 14px;
+}
+
+/* ========== DETAIL PANEL STYLES ========== */
+.detailPanel {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  width: 400px;
+  max-height: calc(100% - 40px);
+  background-color: white;
+  border-radius: 10px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.compactDetailPanel {
+  width: 350px;
+}
+
+.detailHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  background-color: #f8f9fa;
+  border-bottom: 1px solid #eaeaea;
+}
+
+.headerControls {
+  display: flex;
+  gap: 6px;
+}
+
+.detailHeader h3 {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #263238;
+}
+
+.closeButton {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  line-height: 0.8;
+  color: #78909c;
+  cursor: pointer;
+  padding: 4px;
+}
+
+.closeButton:hover {
+  color: #455a64;
+}
+
+.detailContent {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px;
+}
+
+.detailField {
+  margin-bottom: 12px;
+}
+
+.fieldLabel {
+  display: block;
+  font-size: 0.8rem;
+  color: #78909c;
+  margin-bottom: 2px;
+}
+
+.detailSection {
+  margin-top: 24px;
+  border-top: 1px solid #eaeaea;
+  padding-top: 16px;
+}
+
+.detailSection h4, 
+.analyticsSection h4 {
+  margin: 0 0 16px 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #263238;
+}
+
+.detailSection h5,
+.analyticsSection h5 {
+  margin: 16px 0 8px 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #455a64;
+}
+
+.detailSection h6 {
+  margin: 12px 0 8px 0;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #546e7a;
+}
+
+.detailActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 16px 20px;
+  background-color: #f8f9fa;
+  border-top: 1px solid #eaeaea;
+}
+
+/* ========== ANALYTICS STYLES ========== */
+.analyticsSection {
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid #eaeaea;
+}
+
+.blockAnalyticsHeader,
+.contractorSummaryHeader {
+  margin-bottom: 20px;
+}
+
+.blockBasicInfo,
+.contractorBasicInfo {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.analyticsCounts,
+.compactSummaryStats {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.analyticsCount,
+.statBox {
+  background-color: #f8f9fa;
+  border-radius: 6px;
+  padding: 12px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s ease;
+}
+
+.statBox:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.countValue,
+.statValue {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #0277bd;
+  margin-bottom: 4px;
+}
+
+.countLabel,
+.statLabel {
+  font-size: 0.85rem;
+  color: #546e7a;
+}
+
+.expeditionInfo {
+  background-color: #e1f5fe;
+  border-radius: 8px;
+  padding: 16px;
+  margin-top: 16px;
+}
+
+/* ========== POPUP STYLES ========== */
+.mapPopup {
+  max-width: 350px !important;
+  border-radius: 8px;
+  overflow: hidden;
+  padding: 0 !important;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+}
+
+.popupContent {
+  padding: 16px;
+}
+
+.popupContent h3 {
+  margin: 0 0 12px 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #263238;
+  border-bottom: 1px solid #eaeaea;
+  padding-bottom: 8px;
+}
+
+.popupGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.popupItem {
+  display: flex;
+  flex-direction: column;
+}
+
+.popupLabel {
+  font-size: 0.75rem;
+  color: #78909c;
+  margin-bottom: 2px;
+}
+
+.popupItem span:not(.popupLabel) {
+  font-size: 0.9rem;
+  color: #37474f;
+}
+
+/* ========== STATUS BADGES ========== */
+.statusBadge {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 4px;
+  color: white;
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.statusActive {
+  background-color: #059669;
+}
+
+.statusPending {
+  background-color: #d97706;
+}
+
+.statusInactive {
+  background-color: #6b7280;
+}
+
+.statusReserved {
+  background-color: #3b82f6;
+}
+
+/* ========== TABLE STYLES ========== */
+.dataTable {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+}
+
+.dataTable th {
+  background-color: #f5f5f5;
+  text-align: left;
+  padding: 8px 12px;
+  font-weight: 600;
+  color: #546e7a;
+}
+
+.dataTable td {
+  padding: 8px 12px;
+  border-bottom: 1px solid #eaeaea;
+  color: #37474f;
+}
+
+/* ========== ACCORDION STYLES ========== */
+.accordionItem {
+  border-radius: 8px;
+  overflow: hidden;
+  margin-bottom: 16px;
+  border: 1px solid #e0e0e0;
+}
+
+.accordionHeader {
+  padding: 12px 16px;
+  background-color: #f8f9fa;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  font-weight: 500;
+  color: #455a64;
+  transition: background-color 0.2s ease;
+}
+
+.accordionHeader:hover {
+  background-color: #f1f3f4;
+}
+
+.accordionContent {
+  padding: 16px;
+  background-color: white;
+  border-top: 1px solid #eaeaea;
+}
+
+/* ========== TOAST NOTIFICATION ========== */
+.toast {
+  position: fixed;
+  bottom: 20px;
   left: 50%;
   transform: translateX(-50%);
+  background-color: rgba(0, 0, 0, 0.8);
+  color: white;
+  padding: 12px 20px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  z-index: 1000;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  animation: fadeIn 0.3s ease, fadeOut 0.3s ease 4.7s;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translate(-50%, 20px); }
+  to { opacity: 1; transform: translate(-50%, 0); }
+}
+
+@keyframes fadeOut {
+  from { opacity: 1; transform: translate(-50%, 0); }
+  to { opacity: 0; transform: translate(-50%, 20px); }
+}
+
+.toastCloseButton {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 1.2rem;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0 0 0 10px;
+}
+
+/* ========== MEDIA STYLES ========== */
+.mediaList {
+  margin-top: 16px;
+}
+
+.mediaGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.mediaCard {
+  border: 1px solid #eaeaea;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.mediaInfo {
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+}
+
+.mediaInfo strong {
+  font-size: 0.85rem;
+  margin-bottom: 2px;
+}
+
+.mediaInfo span {
+  font-size: 0.75rem;
+  color: #78909c;
+}
+
+/* ========== BLOCK TOOLTIP ========== */
+.blockTooltip {
+  position: absolute;
   background-color: rgba(0, 0, 0, 0.8);
   color: white;
   padding: 5px 10px;
   border-radius: 4px;
   font-size: 12px;
+  pointer-events: none;
+  z-index: 100;
   white-space: nowrap;
-  margin-bottom: 10px;
 }
 
-.clusterMarker:hover::before {
-  content: '';
+/* ========== RESPONSIVE ADJUSTMENTS ========== */
+@media (max-width: 768px) {
+  .compactControls {
+    bottom: 60px;
+  }
+  
+  .controlsPanel {
+    width: 260px;
+  }
+  
+  .mapLoadingOverlay {
+    font-size: 0.9rem;
+  }
+  
+  .detailPanel {
+    width: 90%;
+    right: 5%;
+    left: 5%;
+  }
+  
+  .mapLegend {
+    bottom: 70px;
+    left: 10px;
+    padding: 10px;
+    max-width: 180px;
+  }
+  
+  .legendItem {
+    font-size: 12px;
+  }
+}
+.cruiseIcon {
+  width: 16px;
+  height: 2px;
+  background-color: #64748b;
+  border: none;
+  position: relative;
+  margin-top: 10px;
+  flex-shrink: 0;
+}
+
+.cruiseIcon::before,
+.cruiseIcon::after {
+  content: "";
   position: absolute;
-  top: -5px;
-  left: 50%;
-  transform: translateX(-50%);
-  border-width: 5px;
-  border-style: solid;
-  border-color: transparent transparent rgba(0, 0, 0, 0.8) transparent;
-  margin-top: -5px;
-}
-
-/* Add these styles to your map.module.css file */
-
-/* Info Panel Styles */
-.infoPanel {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  padding: 5px 0;
-}
-
-/* More compact legend style for the info panel */
-.mapLegendCompact {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.legendItem {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding-bottom: 6px;
-  border-bottom: 1px solid #f1f5f9;
-}
-
-.legendItem:last-child {
-  border-bottom: none;
-}
-
-.legendItem strong {
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: #334155;
-  display: block;
-  margin-bottom: 2px;
-}
-
-.legendDescription {
-  font-size: 0.75rem;
-  color: #64748b;
-  line-height: 1.2;
-}
-
-.stationMarkerIcon {
-  width: 12px;
-  height: 12px;
-  background-color: #dc2626;
-  border: 1px solid white;
+  width: 4px;
+  height: 4px;
   border-radius: 50%;
-  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.2);
-  margin-top: 2px;
-  flex-shrink: 0;
+  background-color: #64748b;
 }
 
-.blockIcon {
-  width: 16px;
-  height: 12px;
-  background-color: rgba(0, 128, 128, 0.6); /* Teal/green color to match the map */
-  border: 1px solid #4b5563;
-  border-radius: 2px;
-  flex-shrink: 0;
+.cruiseIcon::before {
+  left: 0;
+  top: -1px;
 }
 
-.areaIcon {
-  width: 16px;
-  height: 12px;
-  background-color: rgba(0, 119, 182, 0.05);
-  border: 1px dashed #0077b6;
-  border-radius: 2px;
-  flex-shrink: 0;
-}
-
-.infoTip {
-  display: flex;
-  gap: 6px;
-  background-color: #f0f9ff;
-  padding: 6px 8px;
-  border-radius: 4px;
-  margin-top: 2px;
-  border: 1px solid #e0f2fe;
-}
-
-.tipIcon {
-  font-size: 0.9rem;
-  flex-shrink: 0;
-}
-
-.tipText {
-  font-size: 0.75rem;
-  color: #334155;
-  line-height: 1.3;
-}
-
-/* Make toggle summary button more consistent with design */
-.toggleSummaryButton {
-  width: 100%;
-  background-color: #3b82f6;
-  border: none;
-  border-radius: 6px;
-  padding: 10px;
-  color: white;
-  font-size: 0.875rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-}
-
-.toggleSummaryButton:hover {
-  background-color: #2563eb;
-}
-
-/* Enhanced control panel tabs */
-.controlsTabs {
-  display: flex;
-  border-bottom: 1px solid #e2e8f0;
-}
-
-.controlsTab {
-  flex: 1;
-  background-color: transparent;
-  border: none;
-  padding: 10px 4px;
-  font-size: 0.75rem;
-  font-weight: 500;
-  color: #64748b;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  white-space: nowrap;
-}
-
-.controlsTab:hover {
-  background-color: #f8fafc;
-}
-
-.controlsTabActive {
-  color: #3b82f6;
-  box-shadow: inset 0 -2px 0 #3b82f6;
-}
-
-/* Ensure control panel has correct width */
-.controlsPanel {
-  width: 240px;
-  max-width: 80vw;
-  background-color: white;
-  border-radius: 8px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-  position: absolute;
+.cruiseIcon::after {
   right: 0;
-  bottom: 50px;
-  overflow: hidden;
+  top: -1px;
 }

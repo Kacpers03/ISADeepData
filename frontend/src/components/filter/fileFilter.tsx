@@ -6,14 +6,14 @@ const FilterSearch = ({ filters, setFilters }) => {
     country: ["Denmark", "USA", "Germany", "Sweden", "Canada", "Norway", "France"],
     contractor: ["Company X", "Company Y", "Company Z", "Company A", "Company B"],
     year: ["2024", "2023", "2022", "2021"],
-    category: ["Reports", "Contracts", "Environmental Data"],
+    theme: ["Reports", "Contracts", "Biodiversity"],
   };
 
   const [dropdownOpen, setDropdownOpen] = useState({
     country: false,
     contractor: false,
     year: false,
-    category: false,
+    theme: false,
   });
 
   const dropdownRefs = useRef({});
@@ -21,14 +21,14 @@ const FilterSearch = ({ filters, setFilters }) => {
 
   useEffect(() => {
     const handleClickOutside = (event) => {
-      Object.keys(dropdownRefs.current).forEach((category) => {
+      Object.keys(dropdownRefs.current).forEach((theme) => {
         if (
-          dropdownRefs.current[category] &&
-          !dropdownRefs.current[category].contains(event.target) &&
-          menuRefs.current[category] &&
-          !menuRefs.current[category].contains(event.target)
+          dropdownRefs.current[theme] &&
+          !dropdownRefs.current[theme].contains(event.target) &&
+          menuRefs.current[theme] &&
+          !menuRefs.current[theme].contains(event.target)
         ) {
-          setDropdownOpen((prev) => ({ ...prev, [category]: false }));
+          setDropdownOpen((prev) => ({ ...prev, [theme]: false }));
         }
       });
     };
@@ -37,26 +37,26 @@ const FilterSearch = ({ filters, setFilters }) => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const toggleDropdown = (category) => {
-    setDropdownOpen((prev) => ({ ...prev, [category]: !prev[category] }));
+  const toggleDropdown = (theme) => {
+    setDropdownOpen((prev) => ({ ...prev, [theme]: !prev[theme] }));
   };
 
-  const handleCheckboxChange = (category, value) => {
+  const handleCheckboxChange = (theme, value) => {
     setFilters((prevFilters) => {
       const updatedFilters = { ...prevFilters };
 
       if (value === "All") {
-        updatedFilters[category] = "All";
+        updatedFilters[theme] = "All";
       } else {
-        if (updatedFilters[category] === "All") {
-          updatedFilters[category] = [value];
+        if (updatedFilters[theme] === "All") {
+          updatedFilters[theme] = [value];
         } else {
-          updatedFilters[category] = updatedFilters[category].includes(value)
-            ? updatedFilters[category].filter((item) => item !== value)
-            : [...updatedFilters[category], value];
+          updatedFilters[theme] = updatedFilters[theme].includes(value)
+            ? updatedFilters[theme].filter((item) => item !== value)
+            : [...updatedFilters[theme], value];
 
-          if (updatedFilters[category].length === 0) {
-            updatedFilters[category] = "All";
+          if (updatedFilters[theme].length === 0) {
+            updatedFilters[theme] = "All";
           }
         }
       }
@@ -69,23 +69,23 @@ const FilterSearch = ({ filters, setFilters }) => {
       <h2 className={styles.filterTitle}>Search Filters</h2>
       <hr className={styles.filterDivider} />
 
-      {Object.entries(filterOptions).map(([category, options]) => (
-        <div key={category} className={styles.filterGroup} ref={(el) => (dropdownRefs.current[category] = el)}>
+      {Object.entries(filterOptions).map(([theme, options]) => (
+        <div key={theme} className={styles.filterGroup} ref={(el) => (dropdownRefs.current[theme] = el)}>
           <button
             className={styles.dropdownButton}
-            onClick={() => toggleDropdown(category)}
+            onClick={() => toggleDropdown(theme)}
           >
-            {category.charAt(0).toUpperCase() + category.slice(1)}
-            <span className={dropdownOpen[category] ? styles.arrowUp : styles.arrowDown}>▼</span>
+            {theme.charAt(0).toUpperCase() + theme.slice(1)}
+            <span className={dropdownOpen[theme] ? styles.arrowUp : styles.arrowDown}>▼</span>
           </button>
 
-          {dropdownOpen[category] && (
-            <div className={styles.dropdownContent} ref={(el) => (menuRefs.current[category] = el)}>
+          {dropdownOpen[theme] && (
+            <div className={styles.dropdownContent} ref={(el) => (menuRefs.current[theme] = el)}>
               <label className={styles.filterCheckbox}>
                 <input
                   type="checkbox"
-                  checked={filters[category] === "All"}
-                  onChange={() => handleCheckboxChange(category, "All")}
+                  checked={filters[theme] === "All"}
+                  onChange={() => handleCheckboxChange(theme, "All")}
                 />
                 All
               </label>
@@ -95,10 +95,10 @@ const FilterSearch = ({ filters, setFilters }) => {
                   <input
                     type="checkbox"
                     checked={
-                      filters[category] !== "All" &&
-                      filters[category]?.includes(option)
+                      filters[theme] !== "All" &&
+                      filters[theme]?.includes(option)
                     }
-                    onChange={() => handleCheckboxChange(category, option)}
+                    onChange={() => handleCheckboxChange(theme, option)}
                   />
                   {option}
                 </label>
@@ -110,7 +110,7 @@ const FilterSearch = ({ filters, setFilters }) => {
 
       <button
         onClick={() =>
-          setFilters({ country: "All", contractor: "All", year: "All", category: "All" })
+          setFilters({ country: "All", contractor: "All", year: "All", theme: "All" })
         }
         className={styles.clearFilterButton}
       >

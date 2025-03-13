@@ -6,7 +6,11 @@ const SummaryPanel = ({
   selectedContractorInfo,
   contractorSummary,
   onClose,
-  onViewContractorSummary
+  onViewContractorSummary,
+  mapData,
+  setSelectedCruiseId,
+  setDetailPanelType,
+  setShowDetailPanel
 }) => {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const contentRef = useRef(null);
@@ -132,17 +136,50 @@ const SummaryPanel = ({
                     </div>
                   </div>
                   
+                  {/* Conditional rendering of Cruises section */}
+                  {data && mapData && mapData.cruises && mapData.cruises.length > 0 && (
+                    <div className={styles.cruiseSection}>
+                      <h4 className={styles.sectionTitle}>Cruises ({mapData.cruises.length})</h4>
+                      
+                      <div className={styles.cruiseList}>
+                        {mapData.cruises.slice(0, 5).map(cruise => (
+                          <div 
+                            key={cruise.cruiseId} 
+                            className={styles.cruiseSummaryItem}
+                            onClick={() => {
+                              setSelectedCruiseId(cruise.cruiseId);
+                              setDetailPanelType('cruise');
+                              setShowDetailPanel(true);
+                            }}
+                          >
+                            <span className={styles.cruiseSummaryName}>
+                              {cruise.cruiseName}
+                            </span>
+                            <span className={styles.cruiseSummaryCount}>
+                              {cruise.stations?.length || 0} stasjoner
+                            </span>
+                          </div>
+                        ))}
+                        
+                        {mapData.cruises.length > 5 && (
+                          <div className={styles.viewMoreLink}>
+                            og {mapData.cruises.length - 5} flere...
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
                   {/* Total Exploration Area - styled as a box */}
                   <div className={styles.explorationAreaBox}>
-  <div className={styles.areaLabel}>Total Exploration Area:</div>
-  <div className={styles.areaValue}>
-    {data?.totalAreaSizeKm2 != null && !isNaN(data.totalAreaSizeKm2)
-      ? `${formatNumber(data.totalAreaSizeKm2)} km²`
-      : "No data available"}
-  </div>
-</div>
+                    <div className={styles.areaLabel}>Total Exploration Area:</div>
+                    <div className={styles.areaValue}>
+                      {data?.totalAreaSizeKm2 != null && !isNaN(data.totalAreaSizeKm2)
+                        ? `${formatNumber(data.totalAreaSizeKm2)} km²`
+                        : "No data available"}
+                    </div>
+                  </div>
 
-                  
                   {/* Contract Types section - with box styling */}
                   <div className={styles.categoryBox}>
                     <div 

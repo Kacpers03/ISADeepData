@@ -17,7 +17,7 @@ import { BlockAnalyticsPanel } from "./blockAnalyticsPanel";
 import { ContractorSummaryPanel } from "./contractorSummaryPanel";
 import CompactLayerControls from "./layerControls";
 import SummaryPanel from "./summaryPanel";
-
+import CruiseMarker from './cruiseMarker';
 import StationMarker from "./stationMarker";
 
 const EnhancedMapComponent = () => {
@@ -47,17 +47,17 @@ const EnhancedMapComponent = () => {
   // Local state for map functionality
   const [viewState, setViewState] = useState({
     longitude: 0,
-    latitude: 0,
-    zoom: 1.0,
+    latitude: 20, // Adjusted position
+    zoom: 1.8,    // Better zoom level to match your Image 2
     bearing: 0,
     pitch: 0
   });
-
   // Reference to maintain current view state across rerenders
   const mapRef = useRef(null);
   const initialLoadRef = useRef(true);
   const [localLoading, setLocalLoading] = useState(false);
-  
+  const [showCruises, setShowCruises] = useState(false);
+
   // User has manually set the view (to prevent auto-zooming when unwanted)
   const [userHasSetView, setUserHasSetView] = useState(false);
   
@@ -77,7 +77,8 @@ const EnhancedMapComponent = () => {
   const [toastMessage, setToastMessage] = useState('');
   const [cursorPosition, setCursorPosition] = useState({ latitude: 0, longitude: 0 });
   const [mapStyle, setMapStyle] = useState("mapbox://styles/mapbox/outdoors-v11");
-  
+  const [initialLoadComplete, setInitialLoadComplete] = useState(false);
+
   // Summary panel state
   const [showSummaryPanel, setShowSummaryPanel] = useState(false);
   const [summaryData, setSummaryData] = useState(null);
@@ -165,15 +166,13 @@ const EnhancedMapComponent = () => {
   }), []);
   
   // Smart zoom function - will be called when a new contractor is selected or filters are reset
+  const [pendingZoomContractorId, setPendingZoomContractorId] = useState(null);
+
+  // 2. Update the smartZoom function to be more robust
   const smartZoom = useCallback(() => {
     if (!mapRef.current) return;
     
-    // If user has manually panned or zoomed, don't auto-zoom unless filters are reset
-    if (userHasSetView && Object.keys(filters).length > 0) {
-      return;
-    }
-    
-    // If a specific contractor is selected, zoom to their areas
+    // If a specific contractor is selected, always zoom to their areas regardless of userHasSetView
     if (selectedContractorId && allAreaLayers.length > 0) {
       const contractorAreas = allAreaLayers.filter(area => 
         area.contractorId === selectedContractorId
@@ -208,29 +207,58 @@ const EnhancedMapComponent = () => {
         // Only zoom if we have valid bounds
         if (boundsSet && minLon < maxLon && minLat < maxLat) {
           // Add padding for better view
-          const pad = 1;
+          const pad = 2; // Increased padding for a better view
           
           mapRef.current.fitBounds(
             [[minLon - pad, minLat - pad], [maxLon + pad, maxLat + pad]],
-            { padding: 50, duration: 1000, maxZoom: 10 }
+            { padding: 80, duration: 1000, maxZoom: 8 } // Added more padding and reduced maxZoom
           );
           
           console.log("Smart zoomed to contractor areas");
+          
+          // Clear pending zoom since we've successfully zoomed
+          if (pendingZoomContractorId === selectedContractorId) {
+            setPendingZoomContractorId(null);
+          }
+          
           return;
         }
+      } else if (pendingZoomContractorId !== selectedContractorId) {
+        // If we couldn't find any areas for this contractor, set it as pending
+        // This will trigger another zoom attempt when the areas are loaded
+        console.log(`Setting pending zoom for contractor ${selectedContractorId}`);
+        setPendingZoomContractorId(selectedContractorId);
       }
     }
     
-    // Reset to world view if no specific filters
-    if (Object.keys(filters).length === 0 || !selectedContractorId) {
+    // Only reset to world view if no specific contractor filters and user hasn't manually set view
+    // OR if filters have been completely reset
+    if ((Object.keys(filters).length === 0 && !selectedContractorId) || !userHasSetView) {
       mapRef.current.fitBounds(
         [[-180, -60], [180, 85]],
         { padding: 20, duration: 1000 }
       );
       console.log("Reset to world view");
     }
-  }, [selectedContractorId, allAreaLayers, filters]);
-
+  }, [selectedContractorId, allAreaLayers, filters, userHasSetView, pendingZoomContractorId]);
+  useEffect(() => {
+    if (pendingZoomContractorId && allAreaLayers.length > 0) {
+      console.log(`Attempting pending zoom for contractor ${pendingZoomContractorId}`);
+      smartZoom();
+    }
+  }, [allAreaLayers, pendingZoomContractorId, smartZoom]);
+  const handleContractorSelect = useCallback((contractorId) => {
+    setSelectedContractorId(contractorId);
+    setUserHasSetView(false); // Allow zooming to the selected contractor
+    
+    // If contractor data isn't loaded yet, set pending zoom
+    if (contractorId && allAreaLayers.length > 0) {
+      const hasAreas = allAreaLayers.some(area => area.contractorId === contractorId);
+      if (!hasAreas) {
+        setPendingZoomContractorId(contractorId);
+      }
+    }
+  }, [setSelectedContractorId, allAreaLayers]);
   // Cluster functionality for stations
   useEffect(() => {
     if (!mapData || !mapData.cruises) return;
@@ -359,6 +387,12 @@ useEffect(() => {
   const loadAllVisibleContractors = useCallback(async () => {
     if (!mapData?.contractors.length) return;
     
+    // Prevent loading if we're already loading
+    if (loading || localLoading) {
+      console.log("Already loading data, skipping redundant load");
+      return;
+    }
+    
     try {
       setLocalLoading(true);
       
@@ -376,23 +410,50 @@ useEffect(() => {
         .filter(result => result.status === 'fulfilled' && result.value)
         .flatMap(result => result.value);
       
-      setAllAreaLayers(allAreas);
+      // Only update if we got new data to prevent unnecessary re-renders
+      if (allAreas.length > 0) {
+        setAllAreaLayers(prevLayers => {
+          // If layers are identical, don't update
+          if (prevLayers.length === allAreas.length && 
+              JSON.stringify(prevLayers.map(a => a.areaId).sort()) === 
+              JSON.stringify(allAreas.map(a => a.areaId).sort())) {
+            return prevLayers;
+          }
+          return allAreas;
+        });
+      }
+      
+      // Check if we have a pending zoom that needs to be applied after loading
+      if (pendingZoomContractorId && mapRef.current) {
+        console.log(`Areas loaded, executing pending zoom for contractor ${pendingZoomContractorId}`);
+        // Small delay to ensure the map has updated with the new data
+        setTimeout(() => smartZoom(), 100);
+      }
     } catch (error) {
       console.error('Error loading all contractor GeoJSON:', error);
     } finally {
       setLocalLoading(false);
     }
-  }, [mapData?.contractors, fetchContractorGeoJson]);
+  }, [mapData?.contractors, fetchContractorGeoJson, pendingZoomContractorId, smartZoom, loading, localLoading]);
   
   // Load GeoJSON when filters change
-  useEffect(() => {
-    if (mapData?.contractors && (!allAreaLayers.length || Object.keys(filters).length === 0)) {
-      // Load all visible contractors if:
-      // - We have no area layers loaded yet
-      // - OR filters have been reset to empty
+ // Update the effect for loading GeoJSON when filters change
+useEffect(() => {
+  // Only load if we have data and haven't loaded these contractors yet
+  if (mapData?.contractors && initialLoadComplete) {
+    const shouldReloadLayers = 
+      // If we have no layers yet but have contractors
+      (allAreaLayers.length === 0 && mapData.contractors.length > 0) || 
+      // OR we have different contractor IDs than before
+      (mapData.contractors.some(c => 
+        !allAreaLayers.some(area => area.contractorId === c.contractorId)
+      ));
+      
+    if (shouldReloadLayers) {
       loadAllVisibleContractors();
     }
-  }, [filters, mapData?.contractors, allAreaLayers.length, loadAllVisibleContractors]);
+  }
+}, [filters, mapData?.contractors, allAreaLayers, loadAllVisibleContractors, initialLoadComplete]);
   
   // Effect for smart zooming when selection changes
   useEffect(() => {
@@ -544,7 +605,13 @@ useEffect(() => {
       });
     }
   };
-
+  const handleCruiseClick = (cruise) => {
+    console.log("Cruise clicked:", cruise.cruiseName);
+    setSelectedCruiseId(cruise.cruiseId);
+    setDetailPanelType('cruise');
+    setShowDetailPanel(true);
+    setPopupInfo(null); // Lukk eventuelle åpne popups
+  };
   // Handle marker click
   const handleMarkerClick = (station) => {
     setSelectedStation(station);
@@ -639,17 +706,19 @@ useEffect(() => {
       
       {/* Compact Layer Controls */}
       <CompactLayerControls 
-        showAreas={showAreas}
-        setShowAreas={setShowAreas}
-        showBlocks={showBlocks}
-        setShowBlocks={setShowBlocks}
-        showStations={showStations}
-        setShowStations={setShowStations}
-        mapStyle={mapStyle}
-        setMapStyle={setMapStyle}
-        showSummary={showSummaryPanel}
-        setShowSummary={setShowSummaryPanel}
-      />
+  showAreas={showAreas}
+  setShowAreas={setShowAreas}
+  showBlocks={showBlocks}
+  setShowBlocks={setShowBlocks}
+  showStations={showStations}
+  setShowStations={setShowStations}
+  showCruises={showCruises}
+  setShowCruises={setShowCruises}
+  mapStyle={mapStyle}
+  setMapStyle={setMapStyle}
+  showSummary={showSummaryPanel}
+  setShowSummary={setShowSummaryPanel}
+/>
 
       {/* THE MAP */}
       <Map
@@ -672,9 +741,9 @@ useEffect(() => {
           console.log("Map successfully loaded!");
           window.mapInstance = mapRef.current?.getMap();
           
-          // Initial view on first load
-          if (mapRef.current && initialLoadRef.current) {
-            initialLoadRef.current = false;
+          // Initial view on first load - only once
+          if (!initialLoadComplete && mapRef.current) {
+            setInitialLoadComplete(true);
             smartZoom();
           }
         }}
@@ -804,7 +873,20 @@ useEffect(() => {
             </Source>
           )) : []
         )}
-        
+  // This is a partial snippet that shows the changes needed in EnhancedMapComponent.tsx
+// Replace the CruiseVisualizationComponent section with this:
+
+
+
+// Then replace the CruiseVisualizationComponent with:
+{/* Bruk CruiseMarker-komponentene direkte */}
+{showCruises && mapData && mapData.cruises && mapData.cruises.map(cruise => (
+  <CruiseMarker
+    key={`cruise-marker-${cruise.cruiseId}`}
+    cruise={cruise}
+    onClick={handleCruiseClick}
+  />
+))}
         {/* Stations */}
         {showStations && clusters.map(cluster => {
           // Is this a cluster?

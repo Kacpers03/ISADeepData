@@ -8,6 +8,8 @@ const CompactLayerControls = ({
   setShowBlocks, 
   showStations, 
   setShowStations,
+  showCruises,  // Ny prop
+  setShowCruises, // Ny prop
   mapStyle,
   setMapStyle,
   showSummary,
@@ -96,38 +98,48 @@ const CompactLayerControls = ({
           </div>
           
           <div className={styles.controlsContent}>
-            {activePanel === 'layers' && (
-              <div className={styles.layersPanel}>
-                <div className={styles.layerToggles}>
-                  <label className={styles.layerToggle}>
-                    <input
-                      type="checkbox"
-                      checked={showAreas}
-                      onChange={() => setShowAreas(!showAreas)}
-                    />
-                    <span className={styles.layerToggleLabel}>Areas</span>
-                  </label>
-                  
-                  <label className={styles.layerToggle}>
-                    <input
-                      type="checkbox"
-                      checked={showBlocks}
-                      onChange={() => setShowBlocks(!showBlocks)}
-                    />
-                    <span className={styles.layerToggleLabel}>Blocks</span>
-                  </label>
-                  
-                  <label className={styles.layerToggle}>
-                    <input
-                      type="checkbox"
-                      checked={showStations}
-                      onChange={() => setShowStations(!showStations)}
-                    />
-                    <span className={styles.layerToggleLabel}>Stations</span>
-                  </label>
-                </div>
-              </div>
-            )}
+          {activePanel === 'layers' && (
+    <div className={styles.layersPanel}>
+      <div className={styles.layerToggles}>
+        <label className={styles.layerToggle}>
+          <input
+            type="checkbox"
+            checked={showAreas}
+            onChange={() => setShowAreas(!showAreas)}
+          />
+          <span className={styles.layerToggleLabel}>Areas</span>
+        </label>
+        
+        <label className={styles.layerToggle}>
+          <input
+            type="checkbox"
+            checked={showBlocks}
+            onChange={() => setShowBlocks(!showBlocks)}
+          />
+          <span className={styles.layerToggleLabel}>Blocks</span>
+        </label>
+        
+        <label className={styles.layerToggle}>
+          <input
+            type="checkbox"
+            checked={showStations}
+            onChange={() => setShowStations(!showStations)}
+          />
+          <span className={styles.layerToggleLabel}>Stations</span>
+        </label>
+        
+        {/* Ny toggle for Cruises */}
+        <label className={styles.layerToggle}>
+          <input
+            type="checkbox"
+            checked={showCruises}
+            onChange={() => setShowCruises(!showCruises)}
+          />
+          <span className={styles.layerToggleLabel}>Cruises</span>
+        </label>
+      </div>
+    </div>
+  )}
             
             {activePanel === 'style' && (
               <div className={styles.stylePanel}>
@@ -194,7 +206,13 @@ const CompactLayerControls = ({
                     </div>
                   </div>
                 </div>
-                
+                <div className={styles.legendItem}>
+          <div className={styles.cruiseIcon}></div>
+          <div>
+            <strong>Cruises</strong>
+            <div className={styles.legendDescription}>Research voyages with connected stations</div>
+          </div>
+        </div>
                 <div className={styles.infoTip}>
                   <div className={styles.tipIcon}>ℹ️</div>
                   <div className={styles.tipText}>
