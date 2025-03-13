@@ -42,8 +42,8 @@ public class AnalyticsControllerTests
 
     private void SeedDatabase()
 {
-    _dbContext.Database.EnsureDeleted(); // ✅ Clears existing records and identity values
-    _dbContext.Database.EnsureCreated(); // ✅ Recreates tables with fresh identity values
+    _dbContext.Database.EnsureDeleted(); //  Clears existing records and identity values
+    _dbContext.Database.EnsureCreated(); // Recreates tables with fresh identity values
 
     var contractor = new Contractor
     {
@@ -97,7 +97,7 @@ public class AnalyticsControllerTests
     };
     _dbContext.Samples.Add(sample);
 
-    _dbContext.SaveChanges(); // ✅ Save in smaller steps to prevent primary key reuse
+    _dbContext.SaveChanges(); //  Save in smaller steps to prevent primary key reuse
 
     var photoVideo = new PhotoVideo
     {
@@ -111,7 +111,7 @@ public class AnalyticsControllerTests
     };
     _dbContext.PhotoVideos.Add(photoVideo);
 
-    _dbContext.SaveChanges(); // ✅ Final commit
+    _dbContext.SaveChanges(); //  Final commit
 }
 
 
