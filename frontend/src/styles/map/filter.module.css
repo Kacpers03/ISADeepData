@@ -416,3 +416,89 @@
   position: relative;
   z-index: 10;
 }
+
+/* Search Results Panel Header */
+.searchResultsHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 15px;
+  background-color: #0077b6;
+  color: white;
+  font-weight: bold;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+/* Results container */
+.searchResultsContent {
+  max-height: none; /* Remove fixed height */
+  overflow-y: visible; /* Remove scrollbar */
+  background-color: white;
+}
+.improvedFilterPanel {
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  padding: 24px;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto; /* This will be the only scrollbar */
+}
+
+/* Change from absolute positioning to relative */
+.searchResultsList {
+  position: relative; /* Change from absolute to relative */
+  /* Remove top/left positioning */
+  width: 100%;
+  /* Adjust max-height to be reasonable but not fixed */
+  max-height: none; /* Remove the fixed height constraint */
+  overflow-y: visible; /* Remove the internal scrollbar */
+  background-color: white;
+  border: 1px solid #0077b6;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  margin: 5px 0 15px 0; /* Add margin for spacing */
+  z-index: 100;
+}/* Main container structure */
+.searchContainer {
+  position: relative;
+  z-index: 10;
+  margin-bottom: 10px;
+}
+
+/* Search results - keep in document flow */
+.searchResultsList {
+  position: static; /* Not absolute - stays in document flow */
+  width: 100%;
+  background-color: white;
+  border: 1px solid #0077b6;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  margin-bottom: 15px;
+  /* No max-height or overflow settings here */
+}
+
+/* Results content with constrained height but no scrollbar */
+.searchResultsContent {
+  max-height: 400px; /* Limit height but use main container's scrollbar */
+  overflow: visible; /* No internal scrollbar */
+}
+
+/* Make filter panel a flex container with column direction */
+.improvedFilterPanel {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  /* Main container handles scrolling */
+  overflow-y: auto;
+}
+
+/* Let filter group expand to take available space */
+.filtersGroup {
+  flex: 1;
+  min-height: 0; /* Important for flex items that should shrink */
+}

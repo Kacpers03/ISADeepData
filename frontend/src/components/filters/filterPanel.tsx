@@ -618,66 +618,60 @@ export const ImprovedFilterPanel = () => {
   
   {/* Search Results Panel - With fixed dimensions and overflow */}
   {showResults && (
-    <div 
-      id="search-results-panel" 
-      className={styles.searchResultsList} 
-      style={{
-        position: 'absolute',
-        top: 'calc(100% + 5px)', // Position just below the search input
-        left: 0,
-        width: '100%',
-        maxHeight: '400px', // Fixed height to prevent overlap with filters
-        overflowY: 'auto',
-        backgroundColor: 'white',
-        border: '1px solid #0077b6',
-        borderRadius: '8px',
-        boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
-        zIndex: 10000, // Even higher than container
-        margin: 0,
-        padding: 0
-      }}
-    >
-      {/* Header with sticky positioning */}
-      <div style={{
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        padding: '10px 15px',
-        backgroundColor: '#0077b6',
-        color: 'white',
-        fontWeight: 'bold',
-        position: 'sticky',
-        top: 0,
-        zIndex: 1
-      }} className="searchResultsHeader">
-        <span>Search Results ({searchResults.length})</span>
-        <button 
-          onClick={() => {
-            setShowResults(false);
-          }}
-          style={{
-            background: 'none',
-            border: 'none',
-            color: 'white',
-            cursor: 'pointer',
-            fontSize: '18px',
-            width: '24px',
-            height: '24px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            padding: 0
-          }}
-        >
-          ×
-        </button>
-      </div>
+  <div 
+    id="search-results-panel" 
+    className={styles.searchResultsList}
+    // Remove position: absolute styling
+    style={{
+      width: '100%',
+      backgroundColor: 'white',
+      border: '1px solid #0077b6',
+      borderRadius: '8px',
+      boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
+      zIndex: 100,
+      margin: '5px 0 15px 0'
+    }}
+  >
+    {/* Header with sticky positioning */}
+    <div style={{
+      display: 'flex',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      padding: '10px 15px',
+      backgroundColor: '#0077b6',
+      color: 'white',
+      fontWeight: 'bold',
+      position: 'sticky',
+      top: 0,
+      zIndex: 1
+    }} className="searchResultsHeader">
+      <span>Search Results ({searchResults.length})</span>
+      <button 
+        onClick={() => {
+          setShowResults(false);
+        }}
+        style={{
+          background: 'none',
+          border: 'none',
+          color: 'white',
+          cursor: 'pointer',
+          fontSize: '18px',
+          width: '24px',
+          height: '24px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          padding: 0
+        }}
+      >
+        ×
+      </button>
+    </div>
       
       {/* Results list with scrollable content */}
       <div style={{
         backgroundColor: 'white',
-        maxHeight: 'calc(400px - 40px)', // Account for header height
-        overflowY: 'auto'
+       
       }}>
         {searchResults.length > 0 ? (
           <div>
