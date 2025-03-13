@@ -134,8 +134,11 @@ const SummaryPanel = ({
                       <div className={styles.statValue}>{data?.stationCount || 0}</div>
                       <div className={styles.statLabel}>Stations</div>
                     </div>
+                    <div className={styles.statBox}>
+                      <div className={styles.statValue}>{mapData?.cruises?.length || 0}</div>
+                      <div className={styles.statLabel}>Cruises</div>
+                    </div>
                   </div>
-                  
                   {/* Conditional rendering of Cruises section */}
                   {data && mapData && mapData.cruises && mapData.cruises.length > 0 && (
                     <div className={styles.cruiseSection}>
