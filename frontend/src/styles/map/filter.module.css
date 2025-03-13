@@ -379,3 +379,40 @@
   background-color: #e1f5fe !important;
   box-shadow: 0 0 0 1px rgba(2, 119, 189, 0.2) !important;
 }
+
+/* Add or update these styles in your filter.module.css file */
+
+.searchContainer {
+  position: relative;
+  z-index: 9999; /* Very high z-index to ensure it's above everything */
+  margin: 20px 0;
+}
+
+.searchResultsList {
+  position: absolute;
+  top: calc(100% + 5px);
+  left: 0;
+  width: 100%;
+  max-height: 400px; /* Fixed height to prevent overlap with filters */
+  overflow-y: auto;
+  background-color: white;
+  border: 1px solid #0077b6;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  z-index: 10000;
+  margin: 0;
+  padding: 0;
+}
+
+/* Make sure filter groups stay below search results */
+.filtersGroup {
+  position: relative;
+  z-index: 1;
+  margin-top: 15px;
+}
+
+/* Ensure the filter panel has a lower z-index than search */
+.improvedFilterPanel {
+  position: relative;
+  z-index: 10;
+}

@@ -260,7 +260,7 @@ export const ImprovedFilterPanel = () => {
     }
   }, []);
   
-  // Handle search submit with improved searching logic and forced visibility
+  // Updated handleSearch function that doesn't use DOM manipulation
   const handleSearch = useCallback(() => {
     if (!searchQuery.trim()) {
       setSearchResults([]);
@@ -268,27 +268,22 @@ export const ImprovedFilterPanel = () => {
       return;
     }
     
-    // Debug the search query
     console.log("Searching for:", searchQuery);
     
     const query = searchQuery.toLowerCase();
     const results = [];
     
-    // Search contractors with explicit null checks and debugging
+    // Search contractors with explicit null checks
     if (mapData && mapData.contractors && Array.isArray(mapData.contractors)) {
       console.log("Searching through", mapData.contractors.length, "contractors");
       mapData.contractors.forEach(contractor => {
-        // Debug each contractor
         if (contractor && contractor.contractorName) {
-          console.log("Checking contractor:", contractor.contractorName);
-          
           if (contractor.contractorName.toLowerCase().includes(query)) {
             console.log("MATCH found for contractor:", contractor.contractorName);
             results.push({
               type: 'contractor',
               id: contractor.contractorId,
               name: contractor.contractorName,
-              // Added more info for better display and interaction
               sponsoringState: contractor.sponsoringState,
               contractType: contractor.contractType
             });
@@ -351,7 +346,6 @@ export const ImprovedFilterPanel = () => {
     }
     
     // Search for areas and blocks
-    // (Simplified this part from the original but still keeping the functionality)
     if (mapData && mapData.contractors) {
       mapData.contractors.forEach(contractor => {
         if (contractor.areas && Array.isArray(contractor.areas)) {
@@ -395,23 +389,11 @@ export const ImprovedFilterPanel = () => {
       });
     }
     
-    // Debug the results
     console.log("Search results:", results);
     
-    // Set results and show panel with forced visibility
+    // Set results and show panel - no DOM manipulation needed
     setSearchResults(results);
     setShowResults(true);
-    
-    // Force visibility after state updates
-    setTimeout(() => {
-      console.log("Forcing search results visibility after search");
-      const searchResultsElements = document.querySelectorAll('[style*="searchResults"], .searchResultsList');
-      searchResultsElements.forEach(elem => {
-        if (elem) {
-          elem.setAttribute('style', elem.getAttribute('style') + '; display: block !important; visibility: visible !important; z-index: 9999 !important;');
-        }
-      });
-    }, 50);
     
   }, [searchQuery, mapData]);
   
@@ -525,26 +507,15 @@ export const ImprovedFilterPanel = () => {
     }
   }, [handleSearch]);
   
-  // Make search results always visible regardless of screen size
+  // Simplified useEffect for search results visibility
   useEffect(() => {
-    // Debug
-    console.log("showResults state changed:", showResults);
-    
     if (showResults) {
-      // Force display for all search results containers
-      setTimeout(() => {
-        console.log("Attempting to force search results visibility");
-        const containers = document.querySelectorAll('[style*="searchResults"], .searchResultsList');
-        console.log("Found search results containers:", containers.length);
-        
-        containers.forEach(elem => {
-          if (elem) {
-            // Force visibility with !important inline styles
-            elem.setAttribute('style', elem.getAttribute('style') + '; display: block !important; visibility: visible !important; opacity: 1 !important; z-index: 9999 !important;');
-            console.log("Applied forced visibility to element:", elem);
-          }
-        });
-      }, 100); // Small delay to ensure DOM is updated
+      // Make sure the search results are always visible when they should be
+      const searchResultsElem = document.getElementById('search-results-panel');
+      if (searchResultsElem) {
+        // We're now handling this with proper CSS in our JSX, not DOM manipulation
+        console.log("Search results panel is present in the DOM");
+      }
     }
   }, [showResults]);
   
@@ -598,238 +569,246 @@ export const ImprovedFilterPanel = () => {
         )}
       </div>
       
-      {/* Simple Search Bar - Original Clean Design */}
-      <div className={styles.searchContainer} style={{
-        margin: '20px 0',
-        position: 'relative'
-      }}>
-        <input
-          type="text"
-          placeholder="Search contractors, areas, blocks, stations..."
-          value={searchQuery}
-          onChange={handleSearchChange}
-          onKeyPress={handleKeyPress}
-          className={styles.searchInput}
-          style={{
-            width: '100%',
-            padding: '12px 45px 12px 15px',
-            border: '1px solid #ddd',
-            borderRadius: '8px',
-            fontSize: '14px',
-            boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
-          }}
-        />
+      {/* Search Container - Updated for better positioning */}
+  
+<div className={styles.searchContainer} style={{
+  margin: '20px 0',
+  position: 'relative', // Important for absolute positioning of results
+  zIndex: 9999 // Very high z-index to ensure it displays above other elements
+}}>
+  <input
+    type="text"
+    placeholder="Search contractors, areas, blocks, stations..."
+    value={searchQuery}
+    onChange={handleSearchChange}
+    onKeyPress={handleKeyPress}
+    className={styles.searchInput}
+    style={{
+      width: '100%',
+      padding: '12px 45px 12px 15px',
+      border: '1px solid #ddd',
+      borderRadius: '8px',
+      fontSize: '14px',
+      boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
+    }}
+  />
+  <button 
+    onClick={handleSearch}
+    className={styles.searchButton}
+    aria-label="Search"
+    style={{
+      position: 'absolute',
+      right: '10px',
+      top: '50%',
+      transform: 'translateY(-50%)',
+      background: 'none',
+      border: 'none',
+      cursor: 'pointer',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      color: '#666'
+    }}
+  >
+    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="11" cy="11" r="8"></circle>
+      <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+    </svg>
+  </button>
+  
+  {/* Search Results Panel - With fixed dimensions and overflow */}
+  {showResults && (
+    <div 
+      id="search-results-panel" 
+      className={styles.searchResultsList} 
+      style={{
+        position: 'absolute',
+        top: 'calc(100% + 5px)', // Position just below the search input
+        left: 0,
+        width: '100%',
+        maxHeight: '400px', // Fixed height to prevent overlap with filters
+        overflowY: 'auto',
+        backgroundColor: 'white',
+        border: '1px solid #0077b6',
+        borderRadius: '8px',
+        boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
+        zIndex: 10000, // Even higher than container
+        margin: 0,
+        padding: 0
+      }}
+    >
+      {/* Header with sticky positioning */}
+      <div style={{
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        padding: '10px 15px',
+        backgroundColor: '#0077b6',
+        color: 'white',
+        fontWeight: 'bold',
+        position: 'sticky',
+        top: 0,
+        zIndex: 1
+      }} className="searchResultsHeader">
+        <span>Search Results ({searchResults.length})</span>
         <button 
-          onClick={handleSearch}
-          className={styles.searchButton}
-          aria-label="Search"
+          onClick={() => {
+            setShowResults(false);
+          }}
           style={{
-            position: 'absolute',
-            right: '10px',
-            top: '50%',
-            transform: 'translateY(-50%)',
             background: 'none',
             border: 'none',
+            color: 'white',
             cursor: 'pointer',
+            fontSize: '18px',
+            width: '24px',
+            height: '24px',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            color: '#666'
+            padding: 0
           }}
         >
-          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <circle cx="11" cy="11" r="8"></circle>
-            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-          </svg>
+          ×
         </button>
       </div>
       
-      {/* Search Results Panel - DIRECT HARD-CODED VERSION FOR LARGE SCREENS */}
-      {showResults && (
-        <div id="search-results-panel" className="searchResultsList" style={{
-          width: '100%',
-          border: '1px solid #0077b6',
-          borderRadius: '8px',
-          margin: '10px 0 20px 0',
-          overflow: 'hidden',
-          boxShadow: '0 2px 6px rgba(0,0,0,0.15)',
-          display: 'block !important',
-          position: 'relative',
-          zIndex: 1000,
-          maxHeight: '80vh',
-          overflowY: 'auto',
-          visibility: 'visible !important',
-          opacity: '1 !important',
-          backgroundColor: 'white'
-        }}>
-          {/* Blue header bar with title and close button */}
-          <div style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            padding: '10px 15px',
-            backgroundColor: '#0077b6',
-            color: 'white',
-            fontWeight: 'bold'
-          }} className="searchResultsHeader">
-            <span>Search Results ({searchResults.length})</span>
-            <button 
-              onClick={() => {
-                setShowResults(false);
-                console.log("Close button clicked, hiding results");
-              }}
-              style={{
-                background: 'none',
-                border: 'none',
-                color: 'white',
-                cursor: 'pointer',
-                fontSize: '18px',
-                width: '24px',
-                height: '24px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                padding: 0
-              }}
-            >
-              ×
-            </button>
-          </div>
-          
-          {/* Results list */}
-          <div style={{
-            backgroundColor: 'white',
-          }}>
-            {searchResults.length > 0 ? (
-              <div>
-                {searchResults.map((result, index) => (
-                  <div 
-                    key={`${result.type}-${result.id}-${index}`} 
-                    onClick={() => {
-                      handleResultClick(result);
-                      console.log("Result clicked:", result);
-                    }}
-                    style={{
-                      padding: '15px',
-                      borderBottom: index < searchResults.length - 1 ? '1px solid #eee' : 'none',
-                      cursor: 'pointer',
-                      backgroundColor: 'white',
-                      transition: 'background-color 0.2s',
-                      position: 'relative'
-                    }}
-                    onMouseOver={(e) => e.currentTarget.style.backgroundColor = '#f6f9fc'}
-                    onMouseOut={(e) => e.currentTarget.style.backgroundColor = 'white'}
-                  >
-                    {/* Type indicator */}
-                    <div style={{
-                      display: 'flex',
-                      marginBottom: '8px'
-                    }}>
-                      <div style={{
-                        display: 'inline-flex',
-                        alignItems: 'center',
-                        backgroundColor: '#e6f7ff',
-                        padding: '4px 10px',
-                        borderRadius: '4px',
-                        fontSize: '13px',
-                        color: '#0077b6'
-                      }}>
-                        {result.type === 'contractor' && (
-                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{marginRight: '6px'}}>
-                            <path d="M20 7h-3a2 2 0 0 1-2-2V2"></path>
-                            <path d="M16 2H7a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7z"></path>
-                          </svg>
-                        )}
-                        {result.type === 'area' && (
-                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{marginRight: '6px'}}>
-                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
-                          </svg>
-                        )}
-                        {result.type === 'block' && (
-                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{marginRight: '6px'}}>
-                            <rect x="3" y="3" width="7" height="7"></rect>
-                            <rect x="14" y="3" width="7" height="7"></rect>
-                            <rect x="14" y="14" width="7" height="7"></rect>
-                            <rect x="3" y="14" width="7" height="7"></rect>
-                          </svg>
-                        )}
-                        {result.type === 'station' && (
-                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{marginRight: '6px'}}>
-                            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
-                            <circle cx="12" cy="10" r="3"></circle>
-                          </svg>
-                        )}
-                        {result.type === 'cruise' && (
-                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{marginRight: '6px'}}>
-                            <path d="M18 8h1a4 4 0 0 1 0 8h-1"></path>
-                            <path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"></path>
-                            <line x1="6" y1="1" x2="6" y2="4"></line>
-                            <line x1="10" y1="1" x2="10" y2="4"></line>
-                            <line x1="14" y1="1" x2="14" y2="4"></line>
-                          </svg>
-                        )}
-                        {result.type.charAt(0).toUpperCase() + result.type.slice(1)}
-                      </div>
-                    </div>
-                    
-                    {/* Result name - larger font */}
-                    <div style={{
-                      fontSize: '16px',
-                      fontWeight: 'bold',
-                      marginBottom: '8px',
-                      color: '#333'
-                    }}>
-                      {result.name}
-                    </div>
-                    
-                    {/* Location/parent info as tag */}
-                    {(result.sponsoringState || result.parent) && (
-                      <div style={{
-                        display: 'inline-block',
-                        backgroundColor: '#f5f5f5',
-                        padding: '3px 10px',
-                        borderRadius: '4px',
-                        fontSize: '13px',
-                        color: '#666'
-                      }}>
-                        {result.sponsoringState || result.parent}
-                      </div>
-                    )}
-                    
-                    {/* Arrow icon on the right */}
-                    <div style={{
-                      position: 'absolute',
-                      right: '15px',
-                      top: '50%',
-                      transform: 'translateY(-50%)',
-                      width: '32px',
-                      height: '32px',
-                      borderRadius: '50%',
-                      backgroundColor: '#0077b6',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      color: 'white'
-                    }}>
-                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <polyline points="9 18 15 12 9 6"></polyline>
+      {/* Results list with scrollable content */}
+      <div style={{
+        backgroundColor: 'white',
+        maxHeight: 'calc(400px - 40px)', // Account for header height
+        overflowY: 'auto'
+      }}>
+        {searchResults.length > 0 ? (
+          <div>
+            {searchResults.map((result, index) => (
+              <div 
+                key={`${result.type}-${result.id}-${index}`} 
+                onClick={() => {
+                  handleResultClick(result);
+                }}
+                style={{
+                  padding: '15px',
+                  borderBottom: index < searchResults.length - 1 ? '1px solid #eee' : 'none',
+                  cursor: 'pointer',
+                  backgroundColor: 'white',
+                  transition: 'background-color 0.2s',
+                  position: 'relative'
+                }}
+                onMouseOver={(e) => e.currentTarget.style.backgroundColor = '#f6f9fc'}
+                onMouseOut={(e) => e.currentTarget.style.backgroundColor = 'white'}
+              >
+                {/* Type indicator */}
+                <div style={{
+                  display: 'flex',
+                  marginBottom: '8px'
+                }}>
+                  <div style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    backgroundColor: '#e6f7ff',
+                    padding: '4px 10px',
+                    borderRadius: '4px',
+                    fontSize: '13px',
+                    color: '#0077b6'
+                  }}>
+                    {result.type === 'contractor' && (
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{marginRight: '6px'}}>
+                        <path d="M20 7h-3a2 2 0 0 1-2-2V2"></path>
+                        <path d="M16 2H7a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7z"></path>
                       </svg>
-                    </div>
+                    )}
+                    {result.type === 'area' && (
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{marginRight: '6px'}}>
+                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                      </svg>
+                    )}
+                    {result.type === 'block' && (
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{marginRight: '6px'}}>
+                        <rect x="3" y="3" width="7" height="7"></rect>
+                        <rect x="14" y="3" width="7" height="7"></rect>
+                        <rect x="14" y="14" width="7" height="7"></rect>
+                        <rect x="3" y="14" width="7" height="7"></rect>
+                      </svg>
+                    )}
+                    {result.type === 'station' && (
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{marginRight: '6px'}}>
+                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                        <circle cx="12" cy="10" r="3"></circle>
+                      </svg>
+                    )}
+                    {result.type === 'cruise' && (
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{marginRight: '6px'}}>
+                        <path d="M18 8h1a4 4 0 0 1 0 8h-1"></path>
+                        <path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"></path>
+                        <line x1="6" y1="1" x2="6" y2="4"></line>
+                        <line x1="10" y1="1" x2="10" y2="4"></line>
+                        <line x1="14" y1="1" x2="14" y2="4"></line>
+                      </svg>
+                    )}
+                    {result.type.charAt(0).toUpperCase() + result.type.slice(1)}
                   </div>
-                ))}
+                </div>
+                
+                {/* Result name - larger font */}
+                <div style={{
+                  fontSize: '16px',
+                  fontWeight: 'bold',
+                  marginBottom: '8px',
+                  color: '#333'
+                }}>
+                  {result.name}
+                </div>
+                
+                {/* Location/parent info as tag */}
+                {(result.sponsoringState || result.parent) && (
+                  <div style={{
+                    display: 'inline-block',
+                    backgroundColor: '#f5f5f5',
+                    padding: '3px 10px',
+                    borderRadius: '4px',
+                    fontSize: '13px',
+                    color: '#666'
+                  }}>
+                    {result.sponsoringState || result.parent}
+                  </div>
+                )}
+                
+                {/* Arrow icon on the right */}
+                <div style={{
+                  position: 'absolute',
+                  right: '15px',
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                  width: '32px',
+                  height: '32px',
+                  borderRadius: '50%',
+                  backgroundColor: '#0077b6',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  color: 'white'
+                }}>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <polyline points="9 18 15 12 9 6"></polyline>
+                  </svg>
+                </div>
               </div>
-            ) : (
-              <div style={{
-                padding: '20px',
-                textAlign: 'center',
-                color: '#666'
-              }}>
-                No results found for "{searchQuery}"
-              </div>
-            )}
+            ))}
           </div>
-        </div>
-      )}
+        ) : (
+          <div style={{
+            padding: '20px',
+            textAlign: 'center',
+            color: '#666'
+          }}>
+            No results found for "{searchQuery}"
+          </div>
+        )}
+      </div>
+    </div>
+  )}
+</div>
       
       <div className={styles.filtersGroup}>
         <h3>Filter By</h3>
