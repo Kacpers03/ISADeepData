@@ -316,11 +316,16 @@ useEffect(() => {
       contractorCount: mapData.contractors.length,
       areaCount: 0,
       blockCount: 0,
-      stationCount: mapData.cruises.reduce((total, c) => total + (c.stations?.length || 0), 0),
+      stationCount: 0,
+      cruiseCount: mapData.cruises?.length || 0,  // Explicitly count cruises
       totalAreaSizeKm2: 0,
       contractTypes: {},
       sponsoringStates: {}
     };
+    
+    // Calculate station count from cruises
+    summary.stationCount = mapData.cruises.reduce((total, c) => 
+      total + (c.stations?.length || 0), 0);
     
     // Process contractors based on selection
     mapData.contractors.forEach(contractor => {
@@ -358,7 +363,7 @@ useEffect(() => {
     console.log("Updated summary data:", summary);
     setSummaryData(summary);
   }
-}, [mapData, selectedContractorId]); // Only depend on mapData and selectedContractorId// Only depend on mapData and selectedContractorId, not visibleAreaLayers
+}, [mapData, selectedContractorId]);  // Only depend on mapData and selectedContractorId// Only depend on mapData and selectedContractorId, not visibleAreaLayers
   // Update clusters when the map moves or zoom changes
   useEffect(() => {
     if (!clusterIndex || !mapRef.current) return;
@@ -701,6 +706,10 @@ useEffect(() => {
     selectedContractorInfo={selectedContractorId ? selectedContractorInfo : null}
     contractorSummary={selectedContractorId ? contractorSummary : null}
     onViewContractorSummary={handleViewContractorSummary}
+    mapData={mapData}  // Make sure to pass mapData
+    setSelectedCruiseId={setSelectedCruiseId}
+    setDetailPanelType={setDetailPanelType}
+    setShowDetailPanel={setShowDetailPanel}
   />
 )}
       
