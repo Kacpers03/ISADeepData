@@ -51,7 +51,7 @@ const MarineProtection: React.FC = () => {
 
         <div className={styles.imageBlock}>
           <img
-            src="../image/ProtectionMarineEnvironment.jpg34"
+            src="../image/ProtectionMarineEnvironment.jpg"
             alt="Marine Environment"
             className={styles.image}
           />
