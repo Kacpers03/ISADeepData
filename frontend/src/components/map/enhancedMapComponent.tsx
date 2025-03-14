@@ -56,7 +56,8 @@ const EnhancedMapComponent = () => {
   const mapRef = useRef(null);
   const initialLoadRef = useRef(true);
   const [localLoading, setLocalLoading] = useState(false);
-  const [showCruises, setShowCruises] = useState(false);
+  // Default to true to ensure cruises are always visible
+  const [showCruises, setShowCruises] = useState(true);
 
   // User has manually set the view (to prevent auto-zooming when unwanted)
   const [userHasSetView, setUserHasSetView] = useState(false);
@@ -91,6 +92,12 @@ const EnhancedMapComponent = () => {
   const [clusters, setClusters] = useState([]);
   const [clusterZoom, setClusterZoom] = useState(viewState.zoom);
   const [hoveredBlockId, setHoveredBlockId] = useState(null);
+
+  // Smart zoom function - will be called when a new contractor is selected or filters are reset
+  const [pendingZoomContractorId, setPendingZoomContractorId] = useState(null);
+  
+  // Contractor summary cache
+  const [contractorSummaryCache, setContractorSummaryCache] = useState({});
   
   // Helper function to fetch GeoJSON for a contractor
   const fetchContractorGeoJson = useCallback(async (contractorId) => {
@@ -165,10 +172,7 @@ const EnhancedMapComponent = () => {
     'line-dasharray': [3, 2]
   }), []);
   
-  // Smart zoom function - will be called when a new contractor is selected or filters are reset
-  const [pendingZoomContractorId, setPendingZoomContractorId] = useState(null);
-
-  // 2. Update the smartZoom function to be more robust
+  // Smart zoom function to be more robust
   const smartZoom = useCallback(() => {
     if (!mapRef.current) return;
     
@@ -219,6 +223,7 @@ const EnhancedMapComponent = () => {
           // Clear pending zoom since we've successfully zoomed
           if (pendingZoomContractorId === selectedContractorId) {
             setPendingZoomContractorId(null);
+            setLocalLoading(false);
           }
           
           return;
@@ -241,155 +246,131 @@ const EnhancedMapComponent = () => {
       console.log("Reset to world view");
     }
   }, [selectedContractorId, allAreaLayers, filters, userHasSetView, pendingZoomContractorId]);
-  useEffect(() => {
-    if (pendingZoomContractorId && allAreaLayers.length > 0) {
-      console.log(`Attempting pending zoom for contractor ${pendingZoomContractorId}`);
-      smartZoom();
-    }
-  }, [allAreaLayers, pendingZoomContractorId, smartZoom]);
-  const handleContractorSelect = useCallback((contractorId) => {
-    setSelectedContractorId(contractorId);
-    setUserHasSetView(false); // Allow zooming to the selected contractor
-    
-    // If contractor data isn't loaded yet, set pending zoom
-    if (contractorId && allAreaLayers.length > 0) {
-      const hasAreas = allAreaLayers.some(area => area.contractorId === contractorId);
-      if (!hasAreas) {
-        setPendingZoomContractorId(contractorId);
-      }
-    }
-  }, [setSelectedContractorId, allAreaLayers]);
-  // Cluster functionality for stations
-  useEffect(() => {
-    if (!mapData || !mapData.cruises) return;
-    
-    // Get stations from mapData
-    const stationsData = mapData.cruises.flatMap(c => c.stations || []);
-    if (!stationsData.length) return;
-    
-    const supercluster = new Supercluster({
-      radius: 40,
-      maxZoom: 16
-    });
-    
-    // Format points for supercluster
-    const points = stationsData.map(station => ({
-      type: 'Feature',
-      properties: { 
-        stationId: station.stationId,
-        stationData: station 
-      },
-      geometry: {
-        type: 'Point',
-        coordinates: [station.longitude, station.latitude]
-      }
-    }));
-    
-    supercluster.load(points);
-    setClusterIndex(supercluster);
-  }, [mapData]);
   
-// Add this useEffect along with your other useEffect hooks
-// This code shows the corrected summary data calculation section
-// from the EnhancedMapComponent.tsx file
-
-// Add this useEffect along with your other useEffect hooks
-// Add this useEffect to the EnhancedMapComponent.tsx file
-// This correctly calculates the summary data, including the total area
-// This represents the modified useEffect in EnhancedMapComponent.tsx 
-// that ensures cruiseCount and stationCount are properly calculated
-
-useEffect(() => {
-  if (mapData) {
-    // Helper function to safely calculate total area for a contractor
-    const calculateContractorArea = (contractor) => {
-      if (!contractor.areas || !Array.isArray(contractor.areas)) {
-        return 0;
-      }
-      
-      return contractor.areas.reduce((total, area) => {
-        const areaSize = area.totalAreaSizeKm2;
-        // Check if the area size is a valid number
-        return total + (typeof areaSize === 'number' && !isNaN(areaSize) ? areaSize : 0);
-      }, 0);
-    };
+  // Get stations from mapData
+  const getAllStations = useCallback(() => {
+    if (!mapData) return [];
     
-    // Calculate summary statistics from the mapData
-    const summary = {
-      contractorCount: mapData.contractors.length,
-      areaCount: 0,
-      blockCount: 0,
-      stationCount: 0,
-      cruiseCount: mapData.cruises?.length || 0,  // Explicitly count cruises
-      totalAreaSizeKm2: 0,
-      contractTypes: {},
-      sponsoringStates: {}
-    };
+    // Get contractors that match current filters
+    const filteredContractorIds = mapData.contractors.map(c => c.contractorId);
     
-    // Calculate station count from cruises
-    summary.stationCount = mapData.cruises.reduce((total, c) => 
-      total + (c.stations?.length || 0), 0);
+    // Only get stations from cruises that belong to filtered contractors
+    return mapData.cruises
+      .filter(cruise => {
+        // Only include cruises from contractors that match the filter
+        return filteredContractorIds.includes(cruise.contractorId);
+      })
+      .flatMap(c => c.stations || []);
+  }, [mapData, filters]);
+  
+  // New function to handle zooming to a specific area
+  const zoomToArea = useCallback((area) => {
+    if (!mapRef.current || !area) return;
     
-    // Process contractors based on selection
-    mapData.contractors.forEach(contractor => {
-      // If a specific contractor is selected, only process that one
-      if (selectedContractorId && contractor.contractorId !== selectedContractorId) {
-        return;
-      }
+    if (area.geoJson && area.geoJson.geometry && area.geoJson.geometry.coordinates) {
+      // For polygon types, calculate bounds
+      const coordinates = area.geoJson.geometry.coordinates[0];
+      let minLat = 90, maxLat = -90, minLon = 180, maxLon = -180;
       
-      // Count areas
-      const areasCount = contractor.areas?.length || 0;
-      summary.areaCount += areasCount;
+      coordinates.forEach(([lon, lat]) => {
+        minLon = Math.min(minLon, lon);
+        maxLon = Math.max(maxLon, lon);
+        minLat = Math.min(minLat, lat);
+        maxLat = Math.max(maxLat, lat);
+      });
       
-      // Count blocks
-      const blocksCount = contractor.areas?.reduce((total, area) => {
-        return total + (area.blocks?.length || 0);
-      }, 0) || 0;
-      summary.blockCount += blocksCount;
-      
-      // Calculate total area
-      summary.totalAreaSizeKm2 += calculateContractorArea(contractor);
-      
-      // Count by contract type
-      if (contractor.contractType) {
-        summary.contractTypes[contractor.contractType] = 
-          (summary.contractTypes[contractor.contractType] || 0) + 1;
-      }
-      
-      // Count by sponsoring state
-      if (contractor.sponsoringState) {
-        summary.sponsoringStates[contractor.sponsoringState] = 
-          (summary.sponsoringStates[contractor.sponsoringState] || 0) + 1;
-      }
-    });
-    
-    console.log("Updated summary data:", summary);
-    setSummaryData(summary);
-  }
-}, [mapData, selectedContractorId]);  // Only depend on mapData and selectedContractorId // Only depend on mapData and selectedContractorId// Only depend on mapData and selectedContractorId, not visibleAreaLayers
-  // Update clusters when the map moves or zoom changes
-  useEffect(() => {
-    if (!clusterIndex || !mapRef.current) return;
-    
-    const map = mapRef.current.getMap();
-    const zoom = Math.round(map.getZoom());
-    
-    // Only recalculate clusters if zoom has changed significantly
-    if (Math.abs(zoom - clusterZoom) > 0.5) {
-      setClusterZoom(zoom);
-      
-      const bounds = map.getBounds();
-      const bbox = [
-        bounds.getWest(),
-        bounds.getSouth(),
-        bounds.getEast(),
-        bounds.getNorth()
-      ];
-      
-      const clusterData = clusterIndex.getClusters(bbox, Math.floor(zoom));
-      setClusters(clusterData);
+      const pad = 1; // Reasonable padding
+      mapRef.current.fitBounds(
+        [[minLon - pad, minLat - pad], [maxLon + pad, maxLat + pad]],
+        { padding: 60, duration: 1000, maxZoom: 9 }
+      );
+      console.log("Zoomed to area:", area.areaName);
+    } else if (area.centerLatitude && area.centerLongitude) {
+      // Fallback to center coordinates
+      mapRef.current.flyTo({
+        center: [area.centerLongitude, area.centerLatitude],
+        zoom: 7,
+        duration: 1000
+      });
+      console.log("Zoomed to area center:", area.areaName);
     }
-  }, [viewState, clusterIndex, clusterZoom]);
+  }, []);
+
+  // New function to handle zooming to a specific block
+  const zoomToBlock = useCallback((block) => {
+    if (!mapRef.current || !block) return;
+    
+    if (block.geoJson && block.geoJson.geometry && block.geoJson.geometry.coordinates) {
+      // For polygon types, calculate bounds
+      const coordinates = block.geoJson.geometry.coordinates[0];
+      let minLat = 90, maxLat = -90, minLon = 180, maxLon = -180;
+      
+      coordinates.forEach(([lon, lat]) => {
+        minLon = Math.min(minLon, lon);
+        maxLon = Math.max(maxLon, lon);
+        minLat = Math.min(minLat, lat);
+        maxLat = Math.max(maxLat, lat);
+      });
+      
+      const pad = 0.5; // Smaller padding for blocks
+      mapRef.current.fitBounds(
+        [[minLon - pad, minLat - pad], [maxLon + pad, maxLat + pad]],
+        { padding: 60, duration: 1000, maxZoom: 10 }
+      );
+      console.log("Zoomed to block:", block.blockName);
+    } else if (block.centerLatitude && block.centerLongitude) {
+      // Fallback to center coordinates
+      mapRef.current.flyTo({
+        center: [block.centerLongitude, block.centerLatitude],
+        zoom: 9,
+        duration: 1000
+      });
+      console.log("Zoomed to block center:", block.blockName);
+    }
+  }, []);
+
+  // New function to handle zooming to a specific cruise
+  const zoomToCruise = useCallback((cruise) => {
+    if (!mapRef.current || !cruise) return;
+    
+    // When zooming to a cruise, make sure cruises are visible
+    setShowCruises(true);
+    
+    // Use the first station of the cruise for positioning if available
+    if (cruise.stations && cruise.stations.length > 0) {
+      const firstStation = cruise.stations[0];
+      mapRef.current.flyTo({
+        center: [firstStation.longitude, firstStation.latitude],
+        zoom: 8,
+        duration: 1000
+      });
+      console.log("Zoomed to first station of cruise:", cruise.cruiseName);
+    } else if (cruise.centerLatitude && cruise.centerLongitude) {
+      // Fallback to cruise center coordinates if available
+      mapRef.current.flyTo({
+        center: [cruise.centerLongitude, cruise.centerLatitude],
+        zoom: 8,
+        duration: 1000
+      });
+      console.log("Zoomed to cruise center:", cruise.cruiseName);
+    } else {
+      // If all else fails, try to find the contractor and zoom to their area
+      if (cruise.contractorId && mapData) {
+        const contractor = mapData.contractors.find(c => c.contractorId === cruise.contractorId);
+        if (contractor && contractor.areas && contractor.areas.length > 0) {
+          const area = contractor.areas[0];
+          if (area.centerLatitude && area.centerLongitude) {
+            mapRef.current.flyTo({
+              center: [area.centerLongitude, area.centerLatitude],
+              zoom: 7,
+              duration: 1000
+            });
+            console.log("Zoomed to contractor area for cruise:", cruise.cruiseName);
+          }
+        }
+      }
+    }
+  }, [mapData]);
 
   // Load all visible contractors' GeoJSON
   const loadAllVisibleContractors = useCallback(async () => {
@@ -443,92 +424,6 @@ useEffect(() => {
       setLocalLoading(false);
     }
   }, [mapData?.contractors, fetchContractorGeoJson, pendingZoomContractorId, smartZoom, loading, localLoading]);
-  
-  // Load GeoJSON when filters change
- // Update the effect for loading GeoJSON when filters change
-useEffect(() => {
-  // Only load if we have data and haven't loaded these contractors yet
-  if (mapData?.contractors && initialLoadComplete) {
-    const shouldReloadLayers = 
-      // If we have no layers yet but have contractors
-      (allAreaLayers.length === 0 && mapData.contractors.length > 0) || 
-      // OR we have different contractor IDs than before
-      (mapData.contractors.some(c => 
-        !allAreaLayers.some(area => area.contractorId === c.contractorId)
-      ));
-      
-    if (shouldReloadLayers) {
-      loadAllVisibleContractors();
-    }
-  }
-}, [filters, mapData?.contractors, allAreaLayers, loadAllVisibleContractors, initialLoadComplete]);
-  
-  // Effect for smart zooming when selection changes
-  useEffect(() => {
-    // When contractor selection changes, trigger smart zoom
-    if (mapRef.current) {
-      smartZoom();
-    }
-  }, [selectedContractorId, smartZoom]);
-  
-  // Memoize visible area layers
-  const visibleAreaLayers = useMemo(() => {
-    if (!allAreaLayers.length) return [];
-    
-    // If filters are reset but we have no layers loaded, reload them  
-    if (Object.keys(filters).length === 0) {
-      return allAreaLayers;
-    }
-    
-    // Get IDs of contractors that match the current filters
-    const contractorIds = mapData?.contractors.map(c => c.contractorId) || [];
-    
-    // Filter area layers to only those belonging to the filtered contractors
-    return allAreaLayers.filter(area => {
-      // If we have a specific contractorId filter, only show that one
-      if (selectedContractorId) {
-        return area.contractorId === selectedContractorId;
-      }
-      
-      // Otherwise show all areas belonging to the filtered contractors
-      return contractorIds.includes(area.contractorId);
-    });
-  }, [allAreaLayers, mapData, filters, selectedContractorId]);
-  
-  // Make map instance available globally for search function
-  useEffect(() => {
-    if (mapRef.current) {
-      window.mapInstance = mapRef.current.getMap();
-    }
-    
-    return () => {
-      window.mapInstance = null;
-    };
-  }, [mapRef.current]);
-
-  // Block analytics fetch
-  const fetchBlockAnalytics = async (blockId) => {
-    try {
-      const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5062/api';
-      const response = await fetch(`${API_BASE_URL}/Analytics/block/${blockId}`);
-      
-      if (!response.ok) {
-        throw new Error(`Failed to fetch block analytics: ${response.status}`);
-      }
-      
-      const data = await response.json();
-      setBlockAnalytics(data);
-      setDetailPanelType('blockAnalytics');
-      setShowDetailPanel(true);
-    } catch (error) {
-      console.error('Error fetching block analytics:', error);
-      setToastMessage('Error fetching block data');
-      setShowToast(true);
-    }
-  };
-
-  // Contractor summary cache
-  const [contractorSummaryCache, setContractorSummaryCache] = useState({});
 
   // Fetch contractor summary
   const fetchContractorSummary = async (contractorId) => {
@@ -573,28 +468,87 @@ useEffect(() => {
     }
   };
 
-  // Get stations from mapData
-  const getAllStations = useCallback(() => {
-    if (!mapData) return [];
-    
-    // Get contractors that match current filters
-    const filteredContractorIds = mapData.contractors.map(c => c.contractorId);
-    
-    // Only get stations from cruises that belong to filtered contractors
-    return mapData.cruises
-      .filter(cruise => {
-        // Only include cruises from contractors that match the filter
-        return filteredContractorIds.includes(cruise.contractorId);
-      })
-      .flatMap(c => c.stations || []);
-  }, [mapData, filters]);
-  
+  // Block analytics fetch
+  const fetchBlockAnalytics = async (blockId) => {
+    try {
+      const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5062/api';
+      const response = await fetch(`${API_BASE_URL}/Analytics/block/${blockId}`);
+      
+      if (!response.ok) {
+        throw new Error(`Failed to fetch block analytics: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      setBlockAnalytics(data);
+      setDetailPanelType('blockAnalytics');
+      setShowDetailPanel(true);
+      
+      // Find the block and zoom to it
+      const block = visibleAreaLayers.flatMap(area => area.blocks || [])
+        .find(b => b.blockId === blockId);
+        
+      if (block) {
+        zoomToBlock(block);
+      }
+      
+    } catch (error) {
+      console.error('Error fetching block analytics:', error);
+      setToastMessage('Error fetching block data');
+      setShowToast(true);
+    }
+  };
+
   // Get all stations
   const stations = getAllStations();
   
   // Get selected contractor/cruise
   const selectedContractor = mapData?.contractors.find(c => c.contractorId === selectedContractorId) || null;
   const selectedCruise = mapData?.cruises.find(c => c.cruiseId === selectedCruiseId) || null;
+
+  // Memoize visible area layers
+  const visibleAreaLayers = useMemo(() => {
+    if (!allAreaLayers.length) return [];
+    
+    // If filters are reset but we have no layers loaded, reload them  
+    if (Object.keys(filters).length === 0) {
+      return allAreaLayers;
+    }
+    
+    // Get IDs of contractors that match the current filters
+    const contractorIds = mapData?.contractors.map(c => c.contractorId) || [];
+    
+    // Filter area layers to only those belonging to the filtered contractors
+    return allAreaLayers.filter(area => {
+      // If we have a specific contractorId filter, only show that one
+      if (selectedContractorId) {
+        return area.contractorId === selectedContractorId;
+      }
+      
+      // Otherwise show all areas belonging to the filtered contractors
+      return contractorIds.includes(area.contractorId);
+    });
+  }, [allAreaLayers, mapData, filters, selectedContractorId]);
+
+  // Effect for pendingZoom
+  useEffect(() => {
+    if (pendingZoomContractorId && allAreaLayers.length > 0) {
+      console.log(`Attempting pending zoom for contractor ${pendingZoomContractorId}`);
+      smartZoom();
+    }
+  }, [allAreaLayers, pendingZoomContractorId, smartZoom]);
+  
+  const handleContractorSelect = useCallback((contractorId) => {
+    setSelectedContractorId(contractorId);
+    setUserHasSetView(false); // Allow zooming to the selected contractor
+    
+    // If contractor data isn't loaded yet, set pending zoom
+    if (contractorId && allAreaLayers.length > 0) {
+      const hasAreas = allAreaLayers.some(area => area.contractorId === contractorId);
+      if (!hasAreas) {
+        setPendingZoomContractorId(contractorId);
+      }
+    }
+  }, [setSelectedContractorId, allAreaLayers]);
 
   // Handle view state change
   const handleViewStateChange = (evt) => {
@@ -613,13 +567,19 @@ useEffect(() => {
       });
     }
   };
+  
   const handleCruiseClick = (cruise) => {
     console.log("Cruise clicked:", cruise.cruiseName);
     setSelectedCruiseId(cruise.cruiseId);
     setDetailPanelType('cruise');
     setShowDetailPanel(true);
-    setPopupInfo(null); // Lukk eventuelle åpne popups
+    setPopupInfo(null); // Close any open popups
+    
+    // Make sure cruises stay visible and zoom to the cruise
+    setShowCruises(true);
+    zoomToCruise(cruise);
   };
+  
   // Handle marker click
   const handleMarkerClick = (station) => {
     setSelectedStation(station);
@@ -690,7 +650,213 @@ useEffect(() => {
     // The global view zoom will be handled by the smartZoom effect
   };
 
-  // Loading/error states
+  // Make map instance available globally for search function
+  useEffect(() => {
+    if (mapRef.current) {
+      window.mapInstance = mapRef.current.getMap();
+      
+      // Expose zoomToBlock and zoomToArea functions for search results
+      window.showBlockAnalytics = (blockId) => {
+        // Find the block first
+        const block = visibleAreaLayers.flatMap(area => area.blocks || [])
+          .find(b => b.blockId === blockId);
+        
+        if (block) {
+          // Zoom to the block
+          zoomToBlock(block);
+          
+          // Fetch analytics
+          fetchBlockAnalytics(blockId);
+        }
+      };
+      
+      // Expose zoomToCruise function for search results
+      window.showCruiseDetails = (cruiseId) => {
+        // Find the cruise
+        const cruise = mapData?.cruises.find(c => c.cruiseId === cruiseId);
+        if (cruise) {
+          setSelectedCruiseId(cruiseId);
+          setDetailPanelType('cruise');
+          setShowDetailPanel(true);
+          
+          // Make sure cruises are visible and zoom
+          setShowCruises(true);
+          zoomToCruise(cruise);
+        }
+      };
+    }
+    
+    return () => {
+      window.mapInstance = null;
+      window.showBlockAnalytics = null;
+      window.showCruiseDetails = null;
+    };
+  }, [mapRef.current, visibleAreaLayers, mapData, zoomToBlock, zoomToCruise, setSelectedCruiseId, setDetailPanelType, setShowDetailPanel]);
+
+  // Cluster functionality for stations
+  useEffect(() => {
+    if (!mapData || !mapData.cruises) return;
+    
+    // Get stations from mapData
+    const stationsData = mapData.cruises.flatMap(c => c.stations || []);
+    if (!stationsData.length) return;
+    
+    const supercluster = new Supercluster({
+      radius: 40,
+      maxZoom: 16
+    });
+    
+    // Format points for supercluster
+    const points = stationsData.map(station => ({
+      type: 'Feature',
+      properties: { 
+        stationId: station.stationId,
+        stationData: station 
+      },
+      geometry: {
+        type: 'Point',
+        coordinates: [station.longitude, station.latitude]
+      }
+    }));
+    
+    supercluster.load(points);
+    setClusterIndex(supercluster);
+  }, [mapData]);
+
+  // Update clusters when the map moves or zoom changes
+  useEffect(() => {
+    if (!clusterIndex || !mapRef.current) return;
+    
+    const map = mapRef.current.getMap();
+    const zoom = Math.round(map.getZoom());
+    
+    // Only recalculate clusters if zoom has changed significantly
+    if (Math.abs(zoom - clusterZoom) > 0.5) {
+      setClusterZoom(zoom);
+      
+      const bounds = map.getBounds();
+      const bbox = [
+        bounds.getWest(),
+        bounds.getSouth(),
+        bounds.getEast(),
+        bounds.getNorth()
+      ];
+      
+      const clusterData = clusterIndex.getClusters(bbox, Math.floor(zoom));
+      setClusters(clusterData);
+    }
+  }, [viewState, clusterIndex, clusterZoom]);
+
+  // Load GeoJSON when filters change
+  useEffect(() => {
+    // Only load if we have data and haven't loaded these contractors yet
+    if (mapData?.contractors && initialLoadComplete) {
+      const shouldReloadLayers = 
+        // If we have no layers yet but have contractors
+        (allAreaLayers.length === 0 && mapData.contractors.length > 0) || 
+        // OR we have different contractor IDs than before
+        (mapData.contractors.some(c => 
+          !allAreaLayers.some(area => area.contractorId === c.contractorId)
+        ));
+        
+      if (shouldReloadLayers) {
+        loadAllVisibleContractors();
+      }
+    }
+  }, [filters, mapData?.contractors, allAreaLayers, loadAllVisibleContractors, initialLoadComplete]);
+  
+  // Effect for smart zooming when selection changes
+  useEffect(() => {
+    // When contractor selection changes, trigger smart zoom
+    if (mapRef.current) {
+      smartZoom();
+    }
+  }, [selectedContractorId, smartZoom]);
+  
+  // New effect for zooming to cruise when selected
+  useEffect(() => {
+    if (selectedCruiseId && mapData && mapRef.current) {
+      // Find the selected cruise
+      const selectedCruise = mapData.cruises.find(c => c.cruiseId === selectedCruiseId);
+      if (selectedCruise) {
+        // Make sure cruises are visible when selecting a cruise
+        setShowCruises(true);
+        
+        // Zoom to the cruise
+        zoomToCruise(selectedCruise);
+      }
+    }
+  }, [selectedCruiseId, mapData, zoomToCruise]);
+
+  // Add this useEffect to calculate summary data
+  useEffect(() => {
+    if (mapData) {
+      // Helper function to safely calculate total area for a contractor
+      const calculateContractorArea = (contractor) => {
+        if (!contractor.areas || !Array.isArray(contractor.areas)) {
+          return 0;
+        }
+        
+        return contractor.areas.reduce((total, area) => {
+          const areaSize = area.totalAreaSizeKm2;
+          // Check if the area size is a valid number
+          return total + (typeof areaSize === 'number' && !isNaN(areaSize) ? areaSize : 0);
+        }, 0);
+      };
+      
+      // Calculate summary statistics from the mapData
+      const summary = {
+        contractorCount: mapData.contractors.length,
+        areaCount: 0,
+        blockCount: 0,
+        stationCount: 0,
+        cruiseCount: mapData.cruises?.length || 0,  // Explicitly count cruises
+        totalAreaSizeKm2: 0,
+        contractTypes: {},
+        sponsoringStates: {}
+      };
+      
+      // Calculate station count from cruises
+      summary.stationCount = mapData.cruises.reduce((total, c) => 
+        total + (c.stations?.length || 0), 0);
+      
+      // Process contractors based on selection
+      mapData.contractors.forEach(contractor => {
+        // If a specific contractor is selected, only process that one
+        if (selectedContractorId && contractor.contractorId !== selectedContractorId) {
+          return;
+        }
+        
+        // Count areas
+        const areasCount = contractor.areas?.length || 0;
+        summary.areaCount += areasCount;
+        
+        // Count blocks
+        const blocksCount = contractor.areas?.reduce((total, area) => {
+          return total + (area.blocks?.length || 0);
+        }, 0) || 0;
+        summary.blockCount += blocksCount;
+        
+        // Calculate total area
+        summary.totalAreaSizeKm2 += calculateContractorArea(contractor);
+        
+        // Count by contract type
+        if (contractor.contractType) {
+          summary.contractTypes[contractor.contractType] = 
+            (summary.contractTypes[contractor.contractType] || 0) + 1;
+        }
+        
+        // Count by sponsoring state
+        if (contractor.sponsoringState) {
+          summary.sponsoringStates[contractor.sponsoringState] = 
+            (summary.sponsoringStates[contractor.sponsoringState] || 0) + 1;
+        }
+      });
+      
+      console.log("Updated summary data:", summary);
+      setSummaryData(summary);
+    }
+  }, [mapData, selectedContractorId]); // Loading/error states
   if (loading && !mapData) {
     return <div className={styles.mapLoading}>Loading map data...</div>;
   }
@@ -703,34 +869,34 @@ useEffect(() => {
     <div className={styles.mapContainer}>
       {/* Summary Panel */}
       {showSummaryPanel && (
-  <SummaryPanel 
-    data={summaryData} 
-    onClose={() => setShowSummaryPanel(false)}
-    selectedContractorInfo={selectedContractorId ? selectedContractorInfo : null}
-    contractorSummary={selectedContractorId ? contractorSummary : null}
-    onViewContractorSummary={handleViewContractorSummary}
-    mapData={mapData}  // Make sure to pass mapData
-    setSelectedCruiseId={setSelectedCruiseId}
-    setDetailPanelType={setDetailPanelType}
-    setShowDetailPanel={setShowDetailPanel}
-  />
-)}
+        <SummaryPanel 
+          data={summaryData} 
+          onClose={() => setShowSummaryPanel(false)}
+          selectedContractorInfo={selectedContractorId ? selectedContractorInfo : null}
+          contractorSummary={selectedContractorId ? contractorSummary : null}
+          onViewContractorSummary={handleViewContractorSummary}
+          mapData={mapData}  // Make sure to pass mapData
+          setSelectedCruiseId={setSelectedCruiseId}
+          setDetailPanelType={setDetailPanelType}
+          setShowDetailPanel={setShowDetailPanel}
+        />
+      )}
       
       {/* Compact Layer Controls */}
       <CompactLayerControls 
-  showAreas={showAreas}
-  setShowAreas={setShowAreas}
-  showBlocks={showBlocks}
-  setShowBlocks={setShowBlocks}
-  showStations={showStations}
-  setShowStations={setShowStations}
-  showCruises={showCruises}
-  setShowCruises={setShowCruises}
-  mapStyle={mapStyle}
-  setMapStyle={setMapStyle}
-  showSummary={showSummaryPanel}
-  setShowSummary={setShowSummaryPanel}
-/>
+        showAreas={showAreas}
+        setShowAreas={setShowAreas}
+        showBlocks={showBlocks}
+        setShowBlocks={setShowBlocks}
+        showStations={showStations}
+        setShowStations={setShowStations}
+        showCruises={showCruises}
+        setShowCruises={setShowCruises}
+        mapStyle={mapStyle}
+        setMapStyle={setMapStyle}
+        showSummary={showSummaryPanel}
+        setShowSummary={setShowSummaryPanel}
+      />
 
       {/* THE MAP */}
       <Map
@@ -885,20 +1051,16 @@ useEffect(() => {
             </Source>
           )) : []
         )}
-  // This is a partial snippet that shows the changes needed in EnhancedMapComponent.tsx
-// Replace the CruiseVisualizationComponent section with this:
 
-
-
-// Then replace the CruiseVisualizationComponent with:
-{/* Bruk CruiseMarker-komponentene direkte */}
-{showCruises && mapData && mapData.cruises && mapData.cruises.map(cruise => (
-  <CruiseMarker
-    key={`cruise-marker-${cruise.cruiseId}`}
-    cruise={cruise}
-    onClick={handleCruiseClick}
-  />
-))}
+        {/* Cruises */}
+        {showCruises && mapData && mapData.cruises && mapData.cruises.map(cruise => (
+          <CruiseMarker
+            key={`cruise-marker-${cruise.cruiseId}`}
+            cruise={cruise}
+            onClick={handleCruiseClick}
+          />
+        ))}
+        
         {/* Stations */}
         {showStations && clusters.map(cluster => {
           // Is this a cluster?

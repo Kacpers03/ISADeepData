@@ -30,6 +30,8 @@ export const ImprovedFilterPanel = () => {
     refreshData,
     selectedContractorId,
     setSelectedContractorId,
+    selectedCruiseId,
+    setSelectedCruiseId,
     handleContractorSelect
   } = useFilter();
   
@@ -225,6 +227,16 @@ export const ImprovedFilterPanel = () => {
       // For number values
       if (['mineralTypeId', 'contractStatusId', 'year', 'cruiseId'].includes(key)) {
         setFilter(key, parseInt(value, 10));
+        
+        // Special handling for cruiseId to keep cruises visible
+        if (key === 'cruiseId') {
+          setSelectedCruiseId(parseInt(value, 10));
+          
+          // Make sure cruises are visible and zoom to the selected cruise
+          if (window.showCruiseDetails) {
+            window.showCruiseDetails(parseInt(value, 10));
+          }
+        }
       } 
       // Special handling for contractorId to enable smart zooming
       else if (key === 'contractorId') {
@@ -243,7 +255,7 @@ export const ImprovedFilterPanel = () => {
         setFilter(key, value);
       }
     }
-  }, [setFilter, setSelectedContractorId, handleContractorSelect]);
+  }, [setFilter, setSelectedContractorId, setSelectedCruiseId, handleContractorSelect]);
   
   // Debounced select change handler to prevent rapid state updates
   const debouncedSelectChange = useMemo(() => 
@@ -314,7 +326,13 @@ export const ImprovedFilterPanel = () => {
             contractorId: cruise.contractorId,
             startDate: cruise.startDate,
             endDate: cruise.endDate,
-            vesselName: cruise.researchVessel
+            vesselName: cruise.researchVessel,
+            // Add center coordinates if available
+            centerLatitude: cruise.centerLatitude,
+            centerLongitude: cruise.centerLongitude,
+            // Add first station coordinates as fallback
+            stationLatitude: cruise.stations && cruise.stations.length > 0 ? cruise.stations[0].latitude : undefined,
+            stationLongitude: cruise.stations && cruise.stations.length > 0 ? cruise.stations[0].longitude : undefined
           });
         }
         
@@ -360,7 +378,11 @@ export const ImprovedFilterPanel = () => {
                 id: area.areaId,
                 name: areaName,
                 parent: contractor.contractorName,
-                contractorId: contractor.contractorId
+                contractorId: contractor.contractorId,
+                centerLatitude: area.centerLat,
+                centerLongitude: area.centerLon,
+                // If we have bounds available, use them
+                bounds: area.bounds || null
               });
             }
             
@@ -379,7 +401,11 @@ export const ImprovedFilterPanel = () => {
                     parent: `${areaName} (${contractor.contractorName})`,
                     areaId: area.areaId,
                     contractorId: contractor.contractorId,
-                    status: block.status
+                    status: block.status,
+                    centerLatitude: block.centerLat,
+                    centerLongitude: block.centerLon,
+                    // If we have bounds available, use them
+                    bounds: block.bounds || null
                   });
                 }
               });
@@ -428,9 +454,29 @@ export const ImprovedFilterPanel = () => {
         // Set cruise filter and show detail panel
         setFilter('cruiseId', result.id);
         
+        // Make sure we set the selected cruise ID to make sure it stays visible
+        setSelectedCruiseId(result.id);
+        
         // If the main window has a showCruiseDetails function, call it
         if (mainWindow.showCruiseDetails) {
           mainWindow.showCruiseDetails(result.id);
+        } else {
+          // Fallback: If the cruise has coordinates, zoom to them
+          if (mainWindow.mapInstance) {
+            if (result.centerLatitude && result.centerLongitude) {
+              mainWindow.mapInstance.flyTo({
+                center: [result.centerLongitude, result.centerLatitude],
+                zoom: 8,
+                duration: 1000
+              });
+            } else if (result.stationLatitude && result.stationLongitude) {
+              mainWindow.mapInstance.flyTo({
+                center: [result.stationLongitude, result.stationLatitude],
+                zoom: 8,
+                duration: 1000
+              });
+            }
+          }
         }
         break;
         
@@ -452,15 +498,20 @@ export const ImprovedFilterPanel = () => {
         // If station has parent cruise, also set that filter
         if (result.cruiseId) {
           setFilter('cruiseId', result.cruiseId);
+          setSelectedCruiseId(result.cruiseId);
         }
         break;
         
       case 'area':
-        // Zoom to the area if possible
-        if (mainWindow.mapInstance && result.centerLatitude && result.centerLongitude) {
+        // Try to use the dedicated function first
+        if (mainWindow.zoomToArea) {
+          mainWindow.zoomToArea(result.id);
+        } 
+        // Zoom to the area using the coordinates
+        else if (mainWindow.mapInstance && result.centerLatitude && result.centerLongitude) {
           mainWindow.mapInstance.flyTo({
             center: [result.centerLongitude, result.centerLatitude],
-            zoom: 8,
+            zoom: 7, // Appropriate zoom level for an area
             duration: 1000
           });
         }
@@ -469,33 +520,51 @@ export const ImprovedFilterPanel = () => {
         if (setViewBounds && result.bounds) {
           setViewBounds(result.bounds);
         }
+        
+        // If the area has a parent contractor, select it too
+        if (result.contractorId) {
+          if (handleContractorSelect) {
+            handleContractorSelect(result.contractorId);
+          } else {
+            setSelectedContractorId(result.contractorId);
+          }
+        }
         break;
         
       case 'block':
         // Show block analytics panel if available
         if (mainWindow.showBlockAnalytics) {
           mainWindow.showBlockAnalytics(result.id);
-        }
-        
-        // Zoom to the block if possible
-        if (mainWindow.mapInstance && result.centerLatitude && result.centerLongitude) {
-          mainWindow.mapInstance.flyTo({
-            center: [result.centerLongitude, result.centerLatitude],
-            zoom: 10,
-            duration: 1000
-          });
+        } else {
+          // Zoom to the block using coordinates
+          if (mainWindow.mapInstance && result.centerLatitude && result.centerLongitude) {
+            mainWindow.mapInstance.flyTo({
+              center: [result.centerLongitude, result.centerLatitude],
+              zoom: 9, // Higher zoom for blocks
+              duration: 1000
+            });
+          }
         }
         
         // If the block has bounds, set view bounds
         if (setViewBounds && result.bounds) {
           setViewBounds(result.bounds);
         }
+        
+        // If the block has a parent contractor, select it too
+        if (result.contractorId) {
+          if (handleContractorSelect) {
+            handleContractorSelect(result.contractorId);
+          } else {
+            setSelectedContractorId(result.contractorId);
+          }
+        }
         break;
         
       default:
         console.warn('Unhandled result type:', result.type);
     }
-  }, [setFilter, setSelectedContractorId, handleContractorSelect, setViewBounds]);
+  }, [setFilter, setSelectedContractorId, setSelectedCruiseId, handleContractorSelect, setViewBounds]);
   
   // Handle search on Enter key
   const handleKeyPress = useCallback((e) => {
