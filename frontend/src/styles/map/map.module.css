@@ -1016,32 +1016,60 @@
     font-size: 12px;
   }
 }
-.cruiseIcon {
-  width: 16px;
-  height: 2px;
-  background-color: #64748b;
-  border: none;
+/* Add these cruise marker styles to your map.module.css file */
+
+.cruiseMarker {
   position: relative;
-  margin-top: 10px;
-  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  pointer-events: auto;
+  cursor: pointer;
+  margin-bottom: 5px;
 }
 
-.cruiseIcon::before,
-.cruiseIcon::after {
-  content: "";
-  position: absolute;
-  width: 4px;
-  height: 4px;
-  border-radius: 50%;
-  background-color: #64748b;
+.cruiseIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+  transition: transform 0.2s ease;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* SVG colors are controlled directly in the SVG element */
 }
 
-.cruiseIcon::before {
-  left: 0;
-  top: -1px;
+.selectedCruise {
+  transform: scale(1.1);
 }
 
-.cruiseIcon::after {
-  right: 0;
-  top: -1px;
+.cruiseLabel {
+  margin-bottom: 3px;
+  font-size: 12px;
+  color: #333333;
+  font-weight: 700;
+  text-align: center;
+  white-space: nowrap;
+  text-shadow: -1px -1px 0 #fff,
+                1px -1px 0 #fff,
+               -1px  1px 0 #fff,
+                1px  1px 0 #fff;
+  pointer-events: none;
+  user-select: none;
+}
+
+.selectedCruiseLabel {
+  color: #000000; /* Darker when selected */
+}
+
+/* Add a slight scaling effect on hover */
+.cruiseMarker:hover .cruiseIcon {
+  transform: scale(1.1);
+}
+
+.cruiseMarker:hover .cruiseLabel {
+  transform: scale(1.05);
 }
