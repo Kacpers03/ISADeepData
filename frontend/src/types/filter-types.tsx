@@ -6,6 +6,7 @@ export interface MapFilterParams {
     sponsoringState?: string;
     year?: number;
     cruiseId?: number;
+    locationId?: string; 
     minLat?: number;
     maxLat?: number;
     minLon?: number;

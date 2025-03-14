@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useFilter } from '../../contexts/filterContext';
 import styles from '../../styles/map/filter.module.css';
 import { CustomDropdown } from './CustomDropdown';
-
+import { locationBoundaries } from '../../constants/locationBoundaries';
 // Create a simple debounce function instead of importing from lodash
 const debounce = (func, wait) => {
   let timeout;
@@ -206,6 +206,13 @@ export const ImprovedFilterPanel = () => {
     
     setFilteredContractors(contractorOptions);
   }, [originalMapData, mapData, filterOptions, filters]);
+  const locationOptions = [
+    { value: 'all', label: 'All Locations' },
+    ...locationBoundaries.map(location => ({
+      value: location.id,
+      label: location.name
+    }))
+  ];
   
   // Handle select change with proper type conversion
   const handleSelectChange = useCallback((key, value) => {
@@ -780,6 +787,15 @@ export const ImprovedFilterPanel = () => {
             isActive={!!filters.year}
             disabled={loading}
           />
+          <CustomDropdown
+  id="locationId"
+  label="Location"
+  options={locationOptions}
+  value={filters.locationId || 'all'}
+  onChange={(e) => debouncedSelectChange('locationId', e.target.value)}
+  isActive={!!filters.locationId}
+  disabled={loading}
+/>
         </div>
       </div>
       

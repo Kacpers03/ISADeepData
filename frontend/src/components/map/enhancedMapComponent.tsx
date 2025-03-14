@@ -19,6 +19,7 @@ import CompactLayerControls from "./layerControls";
 import SummaryPanel from "./summaryPanel";
 import CruiseMarker from './cruiseMarker';
 import StationMarker from "./stationMarker";
+import { getLocationBoundaryById } from '../../constants/locationBoundaries';
 
 const EnhancedMapComponent = () => {
   // Context and state from filter context
@@ -173,79 +174,105 @@ const EnhancedMapComponent = () => {
   }), []);
   
   // Smart zoom function to be more robust
-  const smartZoom = useCallback(() => {
-    if (!mapRef.current) return;
+ // Complete smartZoom function with location filtering support
+// Import the location utilities at the top of your file:
+// import { getLocationBoundaryById } from '../constants/locationBoundaries';
+
+const smartZoom = useCallback(() => {
+  if (!mapRef.current) return;
+  
+  // If a location is selected, prioritize zooming to that location
+  if (filters.locationId && filters.locationId !== 'all') {
+    const locationBoundary = getLocationBoundaryById(filters.locationId);
     
-    // If a specific contractor is selected, always zoom to their areas regardless of userHasSetView
-    if (selectedContractorId && allAreaLayers.length > 0) {
-      const contractorAreas = allAreaLayers.filter(area => 
-        area.contractorId === selectedContractorId
+    if (locationBoundary) {
+      // Create a bounds object for the location
+      const bounds = [
+        [locationBoundary.bounds.minLon, locationBoundary.bounds.minLat], 
+        [locationBoundary.bounds.maxLon, locationBoundary.bounds.maxLat]
+      ];
+      
+      // Fit the map to these bounds with some padding
+      mapRef.current.fitBounds(
+        bounds as [[number, number], [number, number]],
+        { padding: 80, duration: 1000 }
       );
       
-      if (contractorAreas.length > 0) {
-        // Calculate bounds manually
-        let minLat = 90, maxLat = -90, minLon = 180, maxLon = -180;
-        let boundsSet = false;
-        
-        contractorAreas.forEach(area => {
-          if (area.geoJson && area.geoJson.geometry && area.geoJson.geometry.coordinates) {
-            // For polygon types
-            const coordinates = area.geoJson.geometry.coordinates[0];
-            coordinates.forEach(([lon, lat]) => {
-              minLon = Math.min(minLon, lon);
-              maxLon = Math.max(maxLon, lon);
-              minLat = Math.min(minLat, lat);
-              maxLat = Math.max(maxLat, lat);
-              boundsSet = true;
-            });
-          } else if (area.centerLongitude && area.centerLatitude) {
-            // Fallback to center coordinates
-            minLon = Math.min(minLon, area.centerLongitude);
-            maxLon = Math.max(maxLon, area.centerLongitude);
-            minLat = Math.min(minLat, area.centerLatitude);
-            maxLat = Math.max(maxLat, area.centerLatitude);
-            boundsSet = true;
-          }
-        });
-        
-        // Only zoom if we have valid bounds
-        if (boundsSet && minLon < maxLon && minLat < maxLat) {
-          // Add padding for better view
-          const pad = 2; // Increased padding for a better view
-          
-          mapRef.current.fitBounds(
-            [[minLon - pad, minLat - pad], [maxLon + pad, maxLat + pad]],
-            { padding: 80, duration: 1000, maxZoom: 8 } // Added more padding and reduced maxZoom
-          );
-          
-          console.log("Smart zoomed to contractor areas");
-          
-          // Clear pending zoom since we've successfully zoomed
-          if (pendingZoomContractorId === selectedContractorId) {
-            setPendingZoomContractorId(null);
-            setLocalLoading(false);
-          }
-          
-          return;
-        }
-      } else if (pendingZoomContractorId !== selectedContractorId) {
-        // If we couldn't find any areas for this contractor, set it as pending
-        // This will trigger another zoom attempt when the areas are loaded
-        console.log(`Setting pending zoom for contractor ${selectedContractorId}`);
-        setPendingZoomContractorId(selectedContractorId);
-      }
+      console.log(`Smart zoomed to location: ${locationBoundary.name}`);
+      return; // Exit early since we've already zoomed
     }
+  }
+  
+  // If a specific contractor is selected, always zoom to their areas regardless of userHasSetView
+  if (selectedContractorId && allAreaLayers.length > 0) {
+    const contractorAreas = allAreaLayers.filter(area => 
+      area.contractorId === selectedContractorId
+    );
     
-    // Only reset to world view if no specific contractor filters and user hasn't manually set view
-    // OR if filters have been completely reset
-    if ((Object.keys(filters).length === 0 && !selectedContractorId) || !userHasSetView) {
-      mapRef.current.fitBounds(
-        [[-180, -60], [180, 85]],
-        { padding: 20, duration: 1000 }
-      );
-      console.log("Reset to world view");
+    if (contractorAreas.length > 0) {
+      // Calculate bounds manually
+      let minLat = 90, maxLat = -90, minLon = 180, maxLon = -180;
+      let boundsSet = false;
+      
+      contractorAreas.forEach(area => {
+        if (area.geoJson && area.geoJson.geometry && area.geoJson.geometry.coordinates) {
+          // For polygon types
+          const coordinates = area.geoJson.geometry.coordinates[0];
+          coordinates.forEach(([lon, lat]) => {
+            minLon = Math.min(minLon, lon);
+            maxLon = Math.max(maxLon, lon);
+            minLat = Math.min(minLat, lat);
+            maxLat = Math.max(maxLat, lat);
+            boundsSet = true;
+          });
+        } else if (area.centerLongitude && area.centerLatitude) {
+          // Fallback to center coordinates
+          minLon = Math.min(minLon, area.centerLongitude);
+          maxLon = Math.max(maxLon, area.centerLongitude);
+          minLat = Math.min(minLat, area.centerLatitude);
+          maxLat = Math.max(maxLat, area.centerLatitude);
+          boundsSet = true;
+        }
+      });
+      
+      // Only zoom if we have valid bounds
+      if (boundsSet && minLon < maxLon && minLat < maxLat) {
+        // Add padding for better view
+        const pad = 2; // Increased padding for a better view
+        
+        mapRef.current.fitBounds(
+          [[minLon - pad, minLat - pad], [maxLon + pad, maxLat + pad]],
+          { padding: 80, duration: 1000, maxZoom: 8 } // Added more padding and reduced maxZoom
+        );
+        
+        console.log("Smart zoomed to contractor areas");
+        
+        // Clear pending zoom since we've successfully zoomed
+        if (pendingZoomContractorId === selectedContractorId) {
+          setPendingZoomContractorId(null);
+          setLocalLoading(false);
+        }
+        
+        return;
+      }
+    } else if (pendingZoomContractorId !== selectedContractorId) {
+      // If we couldn't find any areas for this contractor, set it as pending
+      // This will trigger another zoom attempt when the areas are loaded
+      console.log(`Setting pending zoom for contractor ${selectedContractorId}`);
+      setPendingZoomContractorId(selectedContractorId);
     }
-  }, [selectedContractorId, allAreaLayers, filters, userHasSetView, pendingZoomContractorId]);
+  }
+  
+  // Only reset to world view if no specific filters and user hasn't manually set view
+  // OR if filters have been completely reset
+  if ((Object.keys(filters).length === 0 && !selectedContractorId) || !userHasSetView) {
+    mapRef.current.fitBounds(
+      [[-180, -60], [180, 85]],
+      { padding: 20, duration: 1000 }
+    );
+    console.log("Reset to world view");
+  }
+}, [selectedContractorId, allAreaLayers, filters, userHasSetView, pendingZoomContractorId, filters.locationId]);
   
   // Get stations from mapData
   const getAllStations = useCallback(() => {
@@ -528,7 +555,28 @@ const EnhancedMapComponent = () => {
       return contractorIds.includes(area.contractorId);
     });
   }, [allAreaLayers, mapData, filters, selectedContractorId]);
-
+  useEffect(() => {
+    // Zoom to selected location boundary if a location filter is applied
+    if (mapRef.current && filters.locationId && filters.locationId !== 'all') {
+      const locationBoundary = getLocationBoundaryById(filters.locationId);
+      
+      if (locationBoundary) {
+        // Create a bounds object for the location
+        const bounds = [
+          [locationBoundary.bounds.minLon, locationBoundary.bounds.minLat], 
+          [locationBoundary.bounds.maxLon, locationBoundary.bounds.maxLat]
+        ];
+        
+        // Fit the map to these bounds with some padding
+        mapRef.current.fitBounds(
+          bounds as [[number, number], [number, number]],
+          { padding: 80, duration: 1000 }
+        );
+        
+        console.log(`Zoomed map to location: ${locationBoundary.name}`);
+      }
+    }
+  }, [filters.locationId]);
   // Effect for pendingZoom
   useEffect(() => {
     if (pendingZoomContractorId && allAreaLayers.length > 0) {
