@@ -1,0 +1,422 @@
+import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/router';
+import styles from '../../styles/gallery/gallery.module.css';
+import GalleryFilter from './galleryFilter';
+import MediaCard from './mediaCard';
+import MediaModal from './mediaModal';
+
+// Media item interface
+interface MediaItem {
+  mediaId: number;
+  fileName: string;
+  fileUrl: string;
+  mediaType: string;
+  thumbnailUrl: string;
+  captureDate: string;
+  stationId: number;
+  stationCode: string;
+  contractorId: number;
+  contractorName: string;
+  cruiseId: number;
+  cruiseName: string;
+  sampleId: number;
+  sampleCode: string;
+  latitude: number;
+  longitude: number;
+  description: string;
+  cameraSpecs?: string;
+}
+
+// Filter state interface
+interface FilterState {
+  mediaType: string;
+  contractorId: string;
+  cruiseId: string;
+  stationId: string;
+  year: string;
+  searchQuery: string;
+}
+
+const GalleryTemplate: React.FC = () => {
+  const router = useRouter();
+
+  // State for media items and loading
+  const [mediaItems, setMediaItems] = useState<MediaItem[]>([]);
+  const [filteredItems, setFilteredItems] = useState<MediaItem[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  
+  // State for filter options
+  const [contractors, setContractors] = useState<{id: number, name: string}[]>([]);
+  const [cruises, setCruises] = useState<{id: number, name: string}[]>([]);
+  const [stations, setStations] = useState<{id: number, code: string}[]>([]);
+  const [years, setYears] = useState<string[]>([]);
+  
+  // State for modal
+  const [selectedMedia, setSelectedMedia] = useState<MediaItem | null>(null);
+  const [showModal, setShowModal] = useState(false);
+  
+  // State for pagination
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(12);
+  
+  // State for filters
+  const [filters, setFilters] = useState<FilterState>({
+    mediaType: 'all',
+    contractorId: 'all',
+    cruiseId: 'all',
+    stationId: 'all',
+    year: 'all',
+    searchQuery: '',
+  });
+
+  // Initial data fetch
+  useEffect(() => {
+    const fetchMediaItems = async () => {
+      try {
+        setLoading(true);
+        
+        // API base URL
+        const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5062/api';
+        
+        // Fetch media items
+        const response = await fetch(`${API_BASE_URL}/Gallery/media`);
+        
+        if (!response.ok) {
+          throw new Error(`Failed to fetch media. Status: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        setMediaItems(data);
+        setFilteredItems(data);
+        
+        // Extract filter options
+        const contractorOptions = Array.from(new Set(data.map((item: MediaItem) => item.contractorId)))
+          .filter(id => id !== null)
+          .map((id) => ({
+            id,
+            name: data.find((item: MediaItem) => item.contractorId === id)?.contractorName || ''
+          }));
+        
+        const cruiseOptions = Array.from(new Set(data.map((item: MediaItem) => item.cruiseId)))
+          .filter(id => id !== null)
+          .map((id) => ({
+            id,
+            name: data.find((item: MediaItem) => item.cruiseId === id)?.cruiseName || ''
+          }));
+        
+        const stationOptions = Array.from(new Set(data.map((item: MediaItem) => item.stationId)))
+          .filter(id => id !== null)
+          .map((id) => ({
+            id,
+            code: data.find((item: MediaItem) => item.stationId === id)?.stationCode || ''
+          }));
+        
+        const yearOptions = Array.from(new Set(data.map((item: MediaItem) => {
+          if (item.captureDate) {
+            return new Date(item.captureDate).getFullYear().toString();
+          }
+          return null;
+        }))).filter(year => year !== null) as string[];
+        
+        setContractors(contractorOptions);
+        setCruises(cruiseOptions);
+        setStations(stationOptions);
+        setYears(yearOptions.sort());
+      } catch (err) {
+        if (err instanceof Error) {
+          setError(err.message);
+        } else {
+          setError('An unknown error occurred while fetching data');
+        }
+        console.error('Error fetching gallery data:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchMediaItems();
+  }, []);
+
+  // Apply filters whenever filters state changes
+  useEffect(() => {
+    if (mediaItems.length === 0) return;
+    
+    const applyFilters = () => {
+      let filtered = [...mediaItems];
+      
+      // Filter by media type
+      if (filters.mediaType !== 'all') {
+        filtered = filtered.filter(item => {
+          if (filters.mediaType === 'image') {
+            return item.mediaType.toLowerCase().includes('image') || 
+                  item.mediaType.toLowerCase().includes('photo') ||
+                  item.fileName.match(/\.(jpg|jpeg|png|gif|bmp|webp)$/i);
+          } else if (filters.mediaType === 'video') {
+            return item.mediaType.toLowerCase().includes('video') ||
+                  item.fileName.match(/\.(mp4|webm|avi|mov|wmv|flv)$/i);
+          }
+          return true;
+        });
+      }
+      
+      // Filter by contractor
+      if (filters.contractorId !== 'all') {
+        filtered = filtered.filter(item => 
+          item.contractorId.toString() === filters.contractorId
+        );
+      }
+      
+      // Filter by cruise
+      if (filters.cruiseId !== 'all') {
+        filtered = filtered.filter(item => 
+          item.cruiseId.toString() === filters.cruiseId
+        );
+      }
+      
+      // Filter by station
+      if (filters.stationId !== 'all') {
+        filtered = filtered.filter(item => 
+          item.stationId.toString() === filters.stationId
+        );
+      }
+      
+      // Filter by year
+      if (filters.year !== 'all') {
+        filtered = filtered.filter(item => {
+          if (item.captureDate) {
+            const year = new Date(item.captureDate).getFullYear().toString();
+            return year === filters.year;
+          }
+          return false;
+        });
+      }
+      
+      // Filter by search query
+      if (filters.searchQuery.trim() !== '') {
+        const query = filters.searchQuery.toLowerCase();
+        filtered = filtered.filter(item => 
+          item.fileName.toLowerCase().includes(query) ||
+          (item.description && item.description.toLowerCase().includes(query)) ||
+          (item.stationCode && item.stationCode.toLowerCase().includes(query)) ||
+          (item.contractorName && item.contractorName.toLowerCase().includes(query)) ||
+          (item.cruiseName && item.cruiseName.toLowerCase().includes(query)) ||
+          (item.sampleCode && item.sampleCode.toLowerCase().includes(query))
+        );
+      }
+      
+      setFilteredItems(filtered);
+      setCurrentPage(1); // Reset to first page when filters change
+    };
+    
+    applyFilters();
+  }, [filters, mediaItems]);
+
+  // Handle filter changes
+  const handleFilterChange = (filterName: keyof FilterState, value: string) => {
+    setFilters(prev => ({
+      ...prev,
+      [filterName]: value
+    }));
+  };
+
+  // Reset all filters
+  const handleResetFilters = () => {
+    setFilters({
+      mediaType: 'all',
+      contractorId: 'all',
+      cruiseId: 'all',
+      stationId: 'all',
+      year: 'all',
+      searchQuery: '',
+    });
+  };
+
+  // Open modal with selected media
+  const handleMediaClick = (media: MediaItem) => {
+    setSelectedMedia(media);
+    setShowModal(true);
+  };
+
+  // Close modal
+  const handleCloseModal = () => {
+    setShowModal(false);
+    setSelectedMedia(null);
+  };
+
+  // Pagination logic
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = filteredItems.slice(indexOfFirstItem, indexOfLastItem);
+
+  const totalPages = Math.ceil(filteredItems.length / itemsPerPage);
+
+  const handlePageChange = (pageNumber: number) => {
+    setCurrentPage(pageNumber);
+    // Scroll to top when page changes
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  // Generate pagination buttons
+  const renderPaginationButtons = () => {
+    // Maximum number of page buttons to show
+    const maxButtons = 5;
+    let pages = [];
+    
+    if (totalPages <= maxButtons) {
+      // Show all pages if total is less than or equal to maxButtons
+      for (let i = 1; i <= totalPages; i++) {
+        pages.push(i);
+      }
+    } else {
+      // Always include first page, current page, and last page
+      pages.push(1);
+      
+      // Add ellipsis if current page is not near the first page
+      if (currentPage > 3) {
+        pages.push(-1); // -1 represents ellipsis
+      }
+      
+      // Add pages around current page
+      for (let i = Math.max(2, currentPage - 1); i <= Math.min(totalPages - 1, currentPage + 1); i++) {
+        pages.push(i);
+      }
+      
+      // Add ellipsis if current page is not near the last page
+      if (currentPage < totalPages - 2) {
+        pages.push(-2); // -2 represents ellipsis
+      }
+      
+      pages.push(totalPages);
+    }
+    
+    return pages.map((page, index) => {
+      if (page < 0) {
+        // Render ellipsis
+        return (
+          <span key={`ellipsis-${index}`} className={styles.ellipsis}>
+            &hellip;
+          </span>
+        );
+      }
+      
+      return (
+        <button
+          key={page}
+          className={`${styles.pageButton} ${currentPage === page ? styles.activePage : ''}`}
+          onClick={() => handlePageChange(page)}
+        >
+          {page}
+        </button>
+      );
+    });
+  };
+
+  return (
+    <div className={styles.galleryContainer}>
+      <div className={styles.galleryHeader}>
+        <h1 className={styles.galleryTitle}>Deep-Sea Media Gallery</h1>
+        <p className={styles.galleryDescription}>Explore a collection of deep-sea images and videos from various exploration missions and research activities.</p>
+      </div>
+      
+      <div className={styles.galleryContent}>
+        {/* Filters sidebar */}
+        <div className={styles.filterSidebar}>
+          <GalleryFilter
+            filters={filters}
+            onFilterChange={handleFilterChange}
+            onResetFilters={handleResetFilters}
+            contractors={contractors}
+            cruises={cruises}
+            stations={stations}
+            years={years}
+            currentFilteredItems={filteredItems}
+          />
+        </div>
+        
+        {/* Gallery display */}
+        <div className={styles.mediaGallery}>
+          {loading ? (
+            <div className={styles.loadingContainer}>
+              <div className={styles.spinner}></div>
+              <p>Loading media...</p>
+            </div>
+          ) : error ? (
+            <div className={styles.errorContainer}>
+              <p className={styles.errorMessage}>{error}</p>
+              <button 
+                onClick={() => router.reload()}
+                className={styles.retryButton}
+              >
+                Retry
+              </button>
+            </div>
+          ) : currentItems.length === 0 ? (
+            <div className={styles.noResults}>
+              <p>No media found matching your filters.</p>
+              <button
+                onClick={handleResetFilters}
+                className={styles.resetButton}
+              >
+                Reset Filters
+              </button>
+            </div>
+          ) : (
+            <>
+              <div className={styles.resultsInfo}>
+                <p>
+                  Showing {indexOfFirstItem + 1} - {Math.min(indexOfLastItem, filteredItems.length)} of {filteredItems.length} items
+                </p>
+              </div>
+              
+              <div className={styles.mediaGrid}>
+                {currentItems.map((media) => (
+                  <MediaCard
+                    key={media.mediaId}
+                    media={media}
+                    onClick={() => handleMediaClick(media)}
+                  />
+                ))}
+              </div>
+              
+              {/* Pagination */}
+              {totalPages > 1 && (
+                <div className={styles.pagination}>
+                  <button
+                    className={styles.pageButton}
+                    onClick={() => handlePageChange(currentPage - 1)}
+                    disabled={currentPage === 1}
+                  >
+                    &laquo; Previous
+                  </button>
+                  
+                  <div className={styles.pageNumbers}>
+                    {renderPaginationButtons()}
+                  </div>
+                  
+                  <button
+                    className={styles.pageButton}
+                    onClick={() => handlePageChange(currentPage + 1)}
+                    disabled={currentPage === totalPages}
+                  >
+                    Next &raquo;
+                  </button>
+                </div>
+              )}
+            </>
+          )}
+        </div>
+      </div>
+      
+      {/* Media Modal */}
+      {showModal && selectedMedia && (
+        <MediaModal
+          media={selectedMedia}
+          onClose={handleCloseModal}
+        />
+      )}
+    </div>
+  );
+};
+
+export default GalleryTemplate;
