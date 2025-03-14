@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/router';
 import styles from '../../styles/gallery/gallery.module.css';
-import GalleryFilter from './galleryFilter';
+import ImprovedGalleryFilter from './galleryFilter';
 import MediaCard from './mediaCard';
 import MediaModal from './mediaModal';
 
@@ -38,8 +37,6 @@ interface FilterState {
 }
 
 const GalleryTemplate: React.FC = () => {
-  const router = useRouter();
-
   // State for media items and loading
   const [mediaItems, setMediaItems] = useState<MediaItem[]>([]);
   const [filteredItems, setFilteredItems] = useState<MediaItem[]>([]);
@@ -320,9 +317,9 @@ const GalleryTemplate: React.FC = () => {
       </div>
       
       <div className={styles.galleryContent}>
-        {/* Filters sidebar */}
+        {/* Use the new Improved Gallery Filter Component */}
         <div className={styles.filterSidebar}>
-          <GalleryFilter
+          <ImprovedGalleryFilter
             filters={filters}
             onFilterChange={handleFilterChange}
             onResetFilters={handleResetFilters}
@@ -345,7 +342,7 @@ const GalleryTemplate: React.FC = () => {
             <div className={styles.errorContainer}>
               <p className={styles.errorMessage}>{error}</p>
               <button 
-                onClick={() => router.reload()}
+                onClick={() => window.location.reload()}
                 className={styles.retryButton}
               >
                 Retry
