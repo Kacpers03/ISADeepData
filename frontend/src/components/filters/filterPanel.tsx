@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useFilter } from '../../contexts/filterContext';
 import styles from '../../styles/map/filter.module.css';
 import { CustomDropdown } from './CustomDropdown';
-
+import { locationBoundaries } from '../../constants/locationBoundaries';
 // Create a simple debounce function instead of importing from lodash
 const debounce = (func, wait) => {
   let timeout;
@@ -30,7 +30,9 @@ export const ImprovedFilterPanel = () => {
     refreshData,
     selectedContractorId,
     setSelectedContractorId,
-    handleContractorSelect // This is the new function we added
+    selectedCruiseId,
+    setSelectedCruiseId,
+    handleContractorSelect
   } = useFilter();
   
   // State for filtered dropdown options
@@ -52,10 +54,10 @@ export const ImprovedFilterPanel = () => {
     ).length, [filters]);
   
   // Count results if available
-  const contractorCount = useMemo(() => mapData?.contractors.length || 0, [mapData]);
-  const cruiseCount = useMemo(() => mapData?.cruises.length || 0, [mapData]);
+  const contractorCount = useMemo(() => mapData?.contractors?.length || 0, [mapData]);
+  const cruiseCount = useMemo(() => mapData?.cruises?.length || 0, [mapData]);
   const stationCount = useMemo(() => 
-    mapData?.cruises.reduce((total, cruise) => 
+    mapData?.cruises?.reduce((total, cruise) => 
       total + (cruise.stations?.length || 0), 0) || 0, [mapData]);
   
   // Update dropdown options whenever either mapData, originalMapData, or filterOptions change
@@ -68,144 +70,149 @@ export const ImprovedFilterPanel = () => {
   
   // This function updates all the dropdown options based on the original data 
   // while highlighting which options are currently available based on other filters
-  // This function updates all the dropdown options based on the original data 
-// while highlighting which options are currently available based on other filters
-const updateFilteredOptions = useCallback(() => {
-  if (!originalMapData || !filterOptions) return;
-  
-  // Get the full set of data from originalMapData 
-  // and the filtered set from mapData
-  const allContractors = originalMapData.contractors;
-  const filteredContractors = mapData?.contractors || [];
-  
-  // Create sets to track what values are available in the filtered data
-  const filteredMineralTypes = new Set();
-  const filteredContractStatuses = new Set();
-  const filteredSponsoringStates = new Set();
-  const filteredYears = new Set();
-  const filteredContractorIds = new Set();
-  
-  // Collect all values that exist in the filtered data
-  filteredContractors.forEach(contractor => {
-    if (contractor.contractType) filteredMineralTypes.add(contractor.contractType);
-    if (contractor.contractStatus) filteredContractStatuses.add(contractor.contractStatus);
-    if (contractor.sponsoringState) filteredSponsoringStates.add(contractor.sponsoringState);
-    if (contractor.contractualYear) filteredYears.add(contractor.contractualYear);
-    filteredContractorIds.add(contractor.contractorId);
-  });
-  
-  // Get all possible values from the original data
-  const allMineralTypes = new Set();
-  const allContractStatuses = new Set();
-  const allSponsoringStates = new Set();
-  const allYears = new Set();
-  
-  allContractors.forEach(contractor => {
-    if (contractor.contractType) allMineralTypes.add(contractor.contractType);
-    if (contractor.contractStatus) allContractStatuses.add(contractor.contractStatus);
-    if (contractor.sponsoringState) allSponsoringStates.add(contractor.sponsoringState);
-    if (contractor.contractualYear) allYears.add(contractor.contractualYear);
-  });
-  
-  // Count active filters to determine when we have a single filter
-  const activeFilterCount = Object.keys(filters).filter(key => 
-    filters[key] !== undefined && filters[key] !== null
-  ).length;
-  
-  // Check which filter types are currently active
-  const isMineralTypeActive = filters.mineralTypeId !== undefined;
-  const isContractStatusActive = filters.contractStatusId !== undefined;
-  const isSponsoringStateActive = filters.sponsoringState !== undefined;
-  const isYearActive = filters.year !== undefined;
-  const isContractorActive = filters.contractorId !== undefined;
-  
-  // Update mineral types - if mineralTypeId is the only active filter, show all options
-  if (filterOptions.contractTypes) {
-    const updatedMineralTypes = filterOptions.contractTypes.map(type => {
-      // If mineralTypeId is the only active filter, don't disable any options
-      const shouldCheckAvailability = activeFilterCount > 1 || !isMineralTypeActive;
-      
-      // Check if this mineral type exists in the filtered data (only if needed)
-      const isAvailable = !shouldCheckAvailability || filteredMineralTypes.has(type.contractTypeName);
-      
-      return {
-        value: type.contractTypeId.toString(),
-        label: type.contractTypeName,
-        disabled: !isAvailable
-      };
-    });
-    setFilteredMineralTypes(updatedMineralTypes);
-  }
-  
-  // Update contract statuses - similar approach
-  if (filterOptions.contractStatuses) {
-    const updatedContractStatuses = filterOptions.contractStatuses.map(status => {
-      // If contractStatusId is the only active filter, don't disable any options
-      const shouldCheckAvailability = activeFilterCount > 1 || !isContractStatusActive;
-      
-      const isAvailable = !shouldCheckAvailability || filteredContractStatuses.has(status.contractStatusName);
-      
-      return {
-        value: status.contractStatusId.toString(),
-        label: status.contractStatusName,
-        disabled: !isAvailable
-      };
-    });
-    setFilteredContractStatuses(updatedContractStatuses);
-  }
-  
-  // Update sponsoring states
-  if (filterOptions.sponsoringStates) {
-    // If sponsoringState is the only active filter, don't disable any options
-    const updatedSponsoringStates = filterOptions.sponsoringStates.map(state => {
-      const shouldCheckAvailability = activeFilterCount > 1 || !isSponsoringStateActive;
-      
-      const isAvailable = !shouldCheckAvailability || filteredSponsoringStates.has(state);
-      
-      return {
-        value: state,
-        label: state,
-        disabled: !isAvailable
-      };
-    });
-    setFilteredSponsoringStates(updatedSponsoringStates);
-  }
-  
-  // Update years options
-  if (filterOptions.contractualYears) {
-    const updatedYears = filterOptions.contractualYears.map(year => {
-      // If year is the only active filter, don't disable any options
-      const shouldCheckAvailability = activeFilterCount > 1 || !isYearActive;
-      
-      const isAvailable = !shouldCheckAvailability || filteredYears.has(year);
-      
-      return {
-        value: year.toString(),
-        label: year.toString(),
-        disabled: !isAvailable
-      };
-    });
-    setFilteredYears(updatedYears);
-  }
-  
-  // Update contractor options from both datasets
-  // First get all contractors from original data
-  const contractorOptions = allContractors.map(contractor => {
-    // If contractorId is the only active filter, don't disable any options
-    const shouldCheckAvailability = activeFilterCount > 1 || !isContractorActive;
+  const updateFilteredOptions = useCallback(() => {
+    if (!originalMapData || !filterOptions) return;
     
-    // Check if this contractor is in the filtered dataset
-    const isAvailable = !shouldCheckAvailability || filteredContractorIds.has(contractor.contractorId);
+    // Get the full set of data from originalMapData 
+    // and the filtered set from mapData
+    const allContractors = originalMapData.contractors;
+    const filteredContractors = mapData?.contractors || [];
     
-    return {
-      value: contractor.contractorId.toString(),
-      label: contractor.contractorName,
-      disabled: !isAvailable
-    };
-  });
-  
-  setFilteredContractors(contractorOptions);
-}, [originalMapData, mapData, filterOptions, filters]);
+    // Create sets to track what values are available in the filtered data
+    const filteredMineralTypes = new Set();
+    const filteredContractStatuses = new Set();
+    const filteredSponsoringStates = new Set();
+    const filteredYears = new Set();
+    const filteredContractorIds = new Set();
+    
+    // Collect all values that exist in the filtered data
+    filteredContractors.forEach(contractor => {
+      if (contractor.contractType) filteredMineralTypes.add(contractor.contractType);
+      if (contractor.contractStatus) filteredContractStatuses.add(contractor.contractStatus);
+      if (contractor.sponsoringState) filteredSponsoringStates.add(contractor.sponsoringState);
+      if (contractor.contractualYear) filteredYears.add(contractor.contractualYear);
+      filteredContractorIds.add(contractor.contractorId);
+    });
+    
+    // Get all possible values from the original data
+    const allMineralTypes = new Set();
+    const allContractStatuses = new Set();
+    const allSponsoringStates = new Set();
+    const allYears = new Set();
+    
+    allContractors.forEach(contractor => {
+      if (contractor.contractType) allMineralTypes.add(contractor.contractType);
+      if (contractor.contractStatus) allContractStatuses.add(contractor.contractStatus);
+      if (contractor.sponsoringState) allSponsoringStates.add(contractor.sponsoringState);
+      if (contractor.contractualYear) allYears.add(contractor.contractualYear);
+    });
+    
+    // Count active filters to determine when we have a single filter
+    const activeFilterCount = Object.keys(filters).filter(key => 
+      filters[key] !== undefined && filters[key] !== null
+    ).length;
+    
+    // Check which filter types are currently active
+    const isMineralTypeActive = filters.mineralTypeId !== undefined;
+    const isContractStatusActive = filters.contractStatusId !== undefined;
+    const isSponsoringStateActive = filters.sponsoringState !== undefined;
+    const isYearActive = filters.year !== undefined;
+    const isContractorActive = filters.contractorId !== undefined;
+    
+    // Update mineral types - if mineralTypeId is the only active filter, show all options
+    if (filterOptions.contractTypes) {
+      const updatedMineralTypes = filterOptions.contractTypes.map(type => {
+        // If mineralTypeId is the only active filter, don't disable any options
+        const shouldCheckAvailability = activeFilterCount > 1 || !isMineralTypeActive;
+        
+        // Check if this mineral type exists in the filtered data (only if needed)
+        const isAvailable = !shouldCheckAvailability || filteredMineralTypes.has(type.contractTypeName);
+        
+        return {
+          value: type.contractTypeId.toString(),
+          label: type.contractTypeName,
+          disabled: !isAvailable
+        };
+      });
+      setFilteredMineralTypes(updatedMineralTypes);
+    }
+    
+    // Update contract statuses - similar approach
+    if (filterOptions.contractStatuses) {
+      const updatedContractStatuses = filterOptions.contractStatuses.map(status => {
+        // If contractStatusId is the only active filter, don't disable any options
+        const shouldCheckAvailability = activeFilterCount > 1 || !isContractStatusActive;
+        
+        const isAvailable = !shouldCheckAvailability || filteredContractStatuses.has(status.contractStatusName);
+        
+        return {
+          value: status.contractStatusId.toString(),
+          label: status.contractStatusName,
+          disabled: !isAvailable
+        };
+      });
+      setFilteredContractStatuses(updatedContractStatuses);
+    }
+    
+    // Update sponsoring states
+    if (filterOptions.sponsoringStates) {
+      // If sponsoringState is the only active filter, don't disable any options
+      const updatedSponsoringStates = filterOptions.sponsoringStates.map(state => {
+        const shouldCheckAvailability = activeFilterCount > 1 || !isSponsoringStateActive;
+        
+        const isAvailable = !shouldCheckAvailability || filteredSponsoringStates.has(state);
+        
+        return {
+          value: state,
+          label: state,
+          disabled: !isAvailable
+        };
+      });
+      setFilteredSponsoringStates(updatedSponsoringStates);
+    }
+    
+    // Update years options
+    if (filterOptions.contractualYears) {
+      const updatedYears = filterOptions.contractualYears.map(year => {
+        // If year is the only active filter, don't disable any options
+        const shouldCheckAvailability = activeFilterCount > 1 || !isYearActive;
+        
+        const isAvailable = !shouldCheckAvailability || filteredYears.has(year);
+        
+        return {
+          value: year.toString(),
+          label: year.toString(),
+          disabled: !isAvailable
+        };
+      });
+      setFilteredYears(updatedYears);
+    }
+    
+    // Update contractor options from both datasets
+    // First get all contractors from original data
+    const contractorOptions = allContractors.map(contractor => {
+      // If contractorId is the only active filter, don't disable any options
+      const shouldCheckAvailability = activeFilterCount > 1 || !isContractorActive;
+      
+      // Check if this contractor is in the filtered dataset
+      const isAvailable = !shouldCheckAvailability || filteredContractorIds.has(contractor.contractorId);
+      
+      return {
+        value: contractor.contractorId.toString(),
+        label: contractor.contractorName,
+        disabled: !isAvailable
+      };
+    });
+    
+    setFilteredContractors(contractorOptions);
+  }, [originalMapData, mapData, filterOptions, filters]);
+  const locationOptions = [
+    { value: 'all', label: 'All Locations' },
+    ...locationBoundaries.map(location => ({
+      value: location.id,
+      label: location.name
+    }))
+  ];
   
   // Handle select change with proper type conversion
   const handleSelectChange = useCallback((key, value) => {
@@ -227,6 +234,16 @@ const updateFilteredOptions = useCallback(() => {
       // For number values
       if (['mineralTypeId', 'contractStatusId', 'year', 'cruiseId'].includes(key)) {
         setFilter(key, parseInt(value, 10));
+        
+        // Special handling for cruiseId to keep cruises visible
+        if (key === 'cruiseId') {
+          setSelectedCruiseId(parseInt(value, 10));
+          
+          // Make sure cruises are visible and zoom to the selected cruise
+          if (window.showCruiseDetails) {
+            window.showCruiseDetails(parseInt(value, 10));
+          }
+        }
       } 
       // Special handling for contractorId to enable smart zooming
       else if (key === 'contractorId') {
@@ -245,7 +262,7 @@ const updateFilteredOptions = useCallback(() => {
         setFilter(key, value);
       }
     }
-  }, [setFilter, setSelectedContractorId, handleContractorSelect]);
+  }, [setFilter, setSelectedContractorId, setSelectedCruiseId, handleContractorSelect]);
   
   // Debounced select change handler to prevent rapid state updates
   const debouncedSelectChange = useMemo(() => 
@@ -262,7 +279,7 @@ const updateFilteredOptions = useCallback(() => {
     }
   }, []);
   
-  // Handle search submit with improved searching logic
+  // Updated handleSearch function that doesn't use DOM manipulation
   const handleSearch = useCallback(() => {
     if (!searchQuery.trim()) {
       setSearchResults([]);
@@ -270,40 +287,132 @@ const updateFilteredOptions = useCallback(() => {
       return;
     }
     
+    console.log("Searching for:", searchQuery);
+    
     const query = searchQuery.toLowerCase();
     const results = [];
     
-    // Search contractors
-    if (mapData?.contractors) {
+    // Search contractors with explicit null checks
+    if (mapData && mapData.contractors && Array.isArray(mapData.contractors)) {
+      console.log("Searching through", mapData.contractors.length, "contractors");
       mapData.contractors.forEach(contractor => {
-        if (contractor.contractorName.toLowerCase().includes(query)) {
+        if (contractor && contractor.contractorName) {
+          if (contractor.contractorName.toLowerCase().includes(query)) {
+            console.log("MATCH found for contractor:", contractor.contractorName);
+            results.push({
+              type: 'contractor',
+              id: contractor.contractorId,
+              name: contractor.contractorName,
+              sponsoringState: contractor.sponsoringState,
+              contractType: contractor.contractType
+            });
+          }
+        }
+      });
+    } else {
+      console.log("No contractors array found in mapData");
+    }
+    
+    // Search cruises
+    if (mapData && mapData.cruises && Array.isArray(mapData.cruises)) {
+      mapData.cruises.forEach(cruise => {
+        const cruiseName = cruise.cruiseName || `Cruise #${cruise.cruiseId}`;
+        
+        // Search by cruise name or ID
+        if ((cruise.cruiseName && cruise.cruiseName.toLowerCase().includes(query)) ||
+            (cruise.cruiseId && cruise.cruiseId.toString().includes(query))) {
+          
+          // Find the parent contractor for context
+          const parentContractor = mapData.contractors?.find(c => c.contractorId === cruise.contractorId);
+          
           results.push({
-            type: 'contractor',
-            id: contractor.contractorId,
-            name: contractor.contractorName
+            type: 'cruise',
+            id: cruise.cruiseId,
+            name: cruiseName,
+            parent: parentContractor ? parentContractor.contractorName : undefined,
+            contractorId: cruise.contractorId,
+            startDate: cruise.startDate,
+            endDate: cruise.endDate,
+            vesselName: cruise.researchVessel,
+            // Add center coordinates if available
+            centerLatitude: cruise.centerLatitude,
+            centerLongitude: cruise.centerLongitude,
+            // Add first station coordinates as fallback
+            stationLatitude: cruise.stations && cruise.stations.length > 0 ? cruise.stations[0].latitude : undefined,
+            stationLongitude: cruise.stations && cruise.stations.length > 0 ? cruise.stations[0].longitude : undefined
           });
         }
         
-        // Search areas and blocks
-        if (contractor.areas) {
+        // Search stations within this cruise
+        if (cruise.stations && Array.isArray(cruise.stations)) {
+          cruise.stations.forEach(station => {
+            const stationName = station.stationName || station.stationCode || `Station #${station.stationId}`;
+            
+            if ((station.stationName && station.stationName.toLowerCase().includes(query)) ||
+                (station.stationCode && station.stationCode.toLowerCase().includes(query)) ||
+                (station.stationId && station.stationId.toString().includes(query)) ||
+                (station.location && station.location.toLowerCase().includes(query))) {
+              
+              results.push({
+                type: 'station',
+                id: station.stationId,
+                name: stationName,
+                parent: cruiseName,
+                cruiseId: cruise.cruiseId,
+                latitude: station.latitude,
+                longitude: station.longitude,
+                stationType: station.stationType,
+                stationObject: station
+              });
+            }
+          });
+        }
+      });
+    }
+    
+    // Search for areas and blocks
+    if (mapData && mapData.contractors) {
+      mapData.contractors.forEach(contractor => {
+        if (contractor.areas && Array.isArray(contractor.areas)) {
           contractor.areas.forEach(area => {
-            if (area.areaName.toLowerCase().includes(query)) {
+            const areaName = area.areaName || `Area #${area.areaId}`;
+            
+            if ((area.areaName && area.areaName.toLowerCase().includes(query)) ||
+                (area.areaId && area.areaId.toString().includes(query))) {
+              
               results.push({
                 type: 'area',
                 id: area.areaId,
-                name: area.areaName,
-                parent: contractor.contractorName
+                name: areaName,
+                parent: contractor.contractorName,
+                contractorId: contractor.contractorId,
+                centerLatitude: area.centerLat,
+                centerLongitude: area.centerLon,
+                // If we have bounds available, use them
+                bounds: area.bounds || null
               });
             }
             
-            if (area.blocks) {
+            // Search blocks
+            if (area.blocks && Array.isArray(area.blocks)) {
               area.blocks.forEach(block => {
-                if (block.blockName.toLowerCase().includes(query)) {
+                const blockName = block.blockName || `Block #${block.blockId}`;
+                
+                if ((block.blockName && block.blockName.toLowerCase().includes(query)) ||
+                    (block.blockId && block.blockId.toString().includes(query))) {
+                  
                   results.push({
                     type: 'block',
                     id: block.blockId,
-                    name: block.blockName,
-                    parent: `${area.areaName} (${contractor.contractorName})`
+                    name: blockName,
+                    parent: `${areaName} (${contractor.contractorName})`,
+                    areaId: area.areaId,
+                    contractorId: contractor.contractorId,
+                    status: block.status,
+                    centerLatitude: block.centerLat,
+                    centerLongitude: block.centerLon,
+                    // If we have bounds available, use them
+                    bounds: block.bounds || null
                   });
                 }
               });
@@ -313,59 +422,156 @@ const updateFilteredOptions = useCallback(() => {
       });
     }
     
-    // Search stations
-    if (mapData?.cruises) {
-      mapData.cruises.forEach(cruise => {
-        if (cruise.stations) {
-          cruise.stations.forEach(station => {
-            if (station.stationCode.toLowerCase().includes(query)) {
-              results.push({
-                type: 'station',
-                id: station.stationId,
-                name: station.stationCode,
-                parent: cruise.cruiseName,
-                latitude: station.latitude,
-                longitude: station.longitude
-              });
-            }
-          });
-        }
-      });
-    }
+    console.log("Search results:", results);
     
-    setSearchResults(results.slice(0, 10)); // Limit to 10 results
+    // Set results and show panel - no DOM manipulation needed
+    setSearchResults(results);
     setShowResults(true);
+    
   }, [searchQuery, mapData]);
   
-  // Handle search result click
+  // Handle search result click with enhanced functionality
   const handleResultClick = useCallback((result) => {
+    console.log("Search result clicked:", result);
     setShowResults(false);
     setSearchQuery('');
     
-    // Handle different result types
-    switch (result.type) {
+    // Find the main window object to access mapInstance
+    const mainWindow = window;
+    
+    switch(result.type) {
       case 'contractor':
-        // Set both filter and selectedContractorId to trigger smart zoom
+        // Set contractor filter, select it, and show detail panel
         setFilter('contractorId', result.id);
-        setSelectedContractorId(result.id);
-        break;
-      case 'station':
-        // Set the map view to focus on this station WITHOUT resetting other filters
-        if (result.latitude && result.longitude && window.mapInstance) {
-          // Keep current zoom level but center on point
-          const currentZoom = window.mapInstance.getZoom();
-          window.mapInstance.flyTo({
-            center: [result.longitude, result.latitude],
-            zoom: Math.max(currentZoom, 10), // Don't zoom out, only in if needed
-            duration: 1500
-          });
+        
+        // Use the provided handler or standard approach
+        if (handleContractorSelect) {
+          handleContractorSelect(result.id);
+        } else {
+          setSelectedContractorId(result.id);
+        }
+        
+        // If the main window has a showDetailPanel function, call it
+        if (mainWindow.showContractorDetails) {
+          mainWindow.showContractorDetails(result.id);
         }
         break;
-      default:
-        // For other types, handle as needed
+        
+      case 'cruise':
+        // Set cruise filter and show detail panel
+        setFilter('cruiseId', result.id);
+        
+        // Make sure we set the selected cruise ID to make sure it stays visible
+        setSelectedCruiseId(result.id);
+        
+        // If the main window has a showCruiseDetails function, call it
+        if (mainWindow.showCruiseDetails) {
+          mainWindow.showCruiseDetails(result.id);
+        } else {
+          // Fallback: If the cruise has coordinates, zoom to them
+          if (mainWindow.mapInstance) {
+            if (result.centerLatitude && result.centerLongitude) {
+              mainWindow.mapInstance.flyTo({
+                center: [result.centerLongitude, result.centerLatitude],
+                zoom: 8,
+                duration: 1000
+              });
+            } else if (result.stationLatitude && result.stationLongitude) {
+              mainWindow.mapInstance.flyTo({
+                center: [result.stationLongitude, result.stationLatitude],
+                zoom: 8,
+                duration: 1000
+              });
+            }
+          }
+        }
         break;
+        
+      case 'station':
+        // Find the station in the map data and display its info panel
+        if (mainWindow.showStationDetails) {
+          mainWindow.showStationDetails(result.id);
+        }
+        
+        // Also zoom to the station's location
+        if (mainWindow.mapInstance && result.latitude && result.longitude) {
+          mainWindow.mapInstance.flyTo({
+            center: [result.longitude, result.latitude],
+            zoom: 12,
+            duration: 1000
+          });
+        }
+        
+        // If station has parent cruise, also set that filter
+        if (result.cruiseId) {
+          setFilter('cruiseId', result.cruiseId);
+          setSelectedCruiseId(result.cruiseId);
+        }
+        break;
+        
+      case 'area':
+        // Try to use the dedicated function first
+        if (mainWindow.zoomToArea) {
+          mainWindow.zoomToArea(result.id);
+        } 
+        // Zoom to the area using the coordinates
+        else if (mainWindow.mapInstance && result.centerLatitude && result.centerLongitude) {
+          mainWindow.mapInstance.flyTo({
+            center: [result.centerLongitude, result.centerLatitude],
+            zoom: 7, // Appropriate zoom level for an area
+            duration: 1000
+          });
+        }
+        
+        // If the area has bounds, set view bounds
+        if (setViewBounds && result.bounds) {
+          setViewBounds(result.bounds);
+        }
+        
+        // If the area has a parent contractor, select it too
+        if (result.contractorId) {
+          if (handleContractorSelect) {
+            handleContractorSelect(result.contractorId);
+          } else {
+            setSelectedContractorId(result.contractorId);
+          }
+        }
+        break;
+        
+      case 'block':
+        // Show block analytics panel if available
+        if (mainWindow.showBlockAnalytics) {
+          mainWindow.showBlockAnalytics(result.id);
+        } else {
+          // Zoom to the block using coordinates
+          if (mainWindow.mapInstance && result.centerLatitude && result.centerLongitude) {
+            mainWindow.mapInstance.flyTo({
+              center: [result.centerLongitude, result.centerLatitude],
+              zoom: 9, // Higher zoom for blocks
+              duration: 1000
+            });
+          }
+        }
+        
+        // If the block has bounds, set view bounds
+        if (setViewBounds && result.bounds) {
+          setViewBounds(result.bounds);
+        }
+        
+        // If the block has a parent contractor, select it too
+        if (result.contractorId) {
+          if (handleContractorSelect) {
+            handleContractorSelect(result.contractorId);
+          } else {
+            setSelectedContractorId(result.contractorId);
+          }
+        }
+        break;
+        
+      default:
+        console.warn('Unhandled result type:', result.type);
     }
-  }, [setFilter, setSelectedContractorId]);
+  }, [setFilter, setSelectedContractorId, setSelectedCruiseId, handleContractorSelect, setViewBounds]);
   
   // Handle search on Enter key
   const handleKeyPress = useCallback((e) => {
@@ -408,159 +614,191 @@ const updateFilteredOptions = useCallback(() => {
     { value: 'all', label: 'All Years' },
     ...filteredYears
   ];
-  
+
   return (
     <div className={styles.improvedFilterPanel}>
-      <div className={styles.filterHeader}>
-        <h2>Exploration Filters</h2>
-        {activeFilterCount > 0 && (
-          <button 
-            className={styles.resetButton} 
-            onClick={resetFilters}
-            disabled={loading}
-          >
-            Reset ({activeFilterCount})
-          </button>
-        )}
-      </div>
-      
-      {/* Integrated Search Bar */}
-      <div className={styles.searchContainer}>
-        <input
-          type="text"
-          placeholder="Search contractors, areas, blocks, stations..."
-          value={searchQuery}
-          onChange={handleSearchChange}
-          onKeyPress={handleKeyPress}
-          className={styles.searchInput}
-        />
-        <button 
-          onClick={handleSearch}
-          className={styles.searchButton}
-          aria-label="Search"
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <circle cx="11" cy="11" r="8"></circle>
-            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-          </svg>
-        </button>
-      </div>
-      
-      {/* Search Results */}
-      {showResults && searchResults.length > 0 && (
-        <div className={styles.searchResultsList}>
-          <div className={styles.searchResultsHeader}>
-            <h4>Search Results ({searchResults.length})</h4>
+      <div className={styles.filterContent}>
+        <div className={styles.filterHeader}>
+          <h2>Exploration Filters</h2>
+          {activeFilterCount > 0 && (
             <button 
-              onClick={() => setShowResults(false)}
-              className={styles.closeResultsButton}
+              className={styles.resetButton} 
+              onClick={resetFilters}
+              disabled={loading}
             >
-              ×
+              Reset ({activeFilterCount})
+            </button>
+          )}
+        </div>
+        
+        {/* Search Container - Updated to ensure proper positioning */}
+        <div className={styles.searchContainer}>
+          <div className={styles.searchInputWrapper}>
+            <input
+              type="text"
+              placeholder="Search contractors, areas, blocks, stations..."
+              value={searchQuery}
+              onChange={handleSearchChange}
+              onKeyPress={handleKeyPress}
+              className={styles.searchInput}
+            />
+            <button 
+              onClick={handleSearch}
+              className={styles.searchButton}
+              aria-label="Search"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+              </svg>
             </button>
           </div>
           
-          <ul>
-            {searchResults.map((result, index) => (
-              <li 
-                key={`${result.type}-${result.id}-${index}`} 
-                onClick={() => handleResultClick(result)}
-              >
-                <div className={styles.resultType}>
-                  {result.type === 'contractor' && (
-                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M20 7h-3a2 2 0 0 1-2-2V2"></path>
-                      <path d="M16 2H7a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7z"></path>
-                    </svg>
-                  )}
-                  {result.type === 'area' && (
-                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
-                    </svg>
-                  )}
-                  {result.type === 'block' && (
-                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <rect x="3" y="3" width="7" height="7"></rect>
-                      <rect x="14" y="3" width="7" height="7"></rect>
-                      <rect x="14" y="14" width="7" height="7"></rect>
-                      <rect x="3" y="14" width="7" height="7"></rect>
-                    </svg>
-                  )}
-                  {result.type === 'station' && (
-                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
-                      <circle cx="12" cy="10" r="3"></circle>
-                    </svg>
-                  )}
-                  {result.type.charAt(0).toUpperCase() + result.type.slice(1)}
-                </div>
-                <div className={styles.resultName}>{result.name}</div>
-                {result.parent && <div className={styles.resultParent}>{result.parent}</div>}
-              </li>
-            ))}
-          </ul>
+          {/* Search Results - Fixed positioning with in-flow display */}
+          {showResults && (
+            <div id="search-results-panel" className={styles.searchResultsList}>
+              <div className={styles.searchResultsHeader}>
+                <span>Search Results ({searchResults.length})</span>
+                <button 
+                  className={styles.closeResultsButton} 
+                  onClick={() => setShowResults(false)}
+                >
+                  ×
+                </button>
+              </div>
+              
+              <div className={styles.searchResultsContent}>
+                {searchResults.length === 0 ? (
+                  <div className={styles.noResults}>
+                    No results found for "{searchQuery}"
+                  </div>
+                ) : (
+                  <ul>
+                    {searchResults.map((result, index) => (
+                      <li key={`${result.type}-${result.id}-${index}`} onClick={() => handleResultClick(result)}>
+                        <div className={styles.resultType}>
+                          {result.type === 'contractor' && (
+                            <>
+                              <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                <circle cx="12" cy="7" r="4"></circle>
+                              </svg>
+                              Contractor
+                            </>
+                          )}
+                          {result.type === 'cruise' && (
+                            <>
+                              <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <path d="M22 18H2a10 10 0 0 1 20 0Z"></path>
+                                <path d="M6 18v-2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v2"></path>
+                                <path d="M12 4v9"></path>
+                              </svg>
+                              Cruise
+                            </>
+                          )}
+                          {result.type === 'station' && (
+                            <>
+                              <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                                <circle cx="12" cy="10" r="3"></circle>
+                              </svg>
+                              Station
+                            </>
+                          )}
+                          {result.type === 'area' && (
+                            <>
+                              <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <path d="M3 6h18"></path>
+                                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"></path>
+                                <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                              </svg>
+                              Area
+                            </>
+                          )}
+                          {result.type === 'block' && (
+                            <>
+                              <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <rect x="2" y="2" width="20" height="20" rx="5"></rect>
+                              </svg>
+                              Block
+                            </>
+                          )}
+                        </div>
+                        <div className={styles.resultName}>{result.name}</div>
+                        {result.parent && <div className={styles.resultParent}>in {result.parent}</div>}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            </div>
+          )}
         </div>
-      )}
-      
-      <div className={styles.filtersGroup}>
-        <h3>Filter By</h3>
         
-        {/* Contractor Name Filter */}
-        <CustomDropdown
-          id="contractorId"
-          label="Contractor Name"
-          options={contractorOptions}
-          value={filters.contractorId?.toString() || 'all'}
-          onChange={(e) => debouncedSelectChange('contractorId', e.target.value)}
-          isActive={!!filters.contractorId}
-          disabled={loading}
-        />
-        
-        {/* Mineral Type Filter */}
-        <CustomDropdown
-          id="mineralTypeId"
-          label="Mineral Type"
-          options={mineralTypeOptions}
-          value={filters.mineralTypeId?.toString() || 'all'}
-          onChange={(e) => debouncedSelectChange('mineralTypeId', e.target.value)}
-          isActive={!!filters.mineralTypeId}
-          disabled={loading}
-        />
-        
-        {/* Contract Status Filter */}
-        <CustomDropdown
-          id="contractStatusId"
-          label="Contract Status"
-          options={contractStatusOptions}
-          value={filters.contractStatusId?.toString() || 'all'}
-          onChange={(e) => debouncedSelectChange('contractStatusId', e.target.value)}
-          isActive={!!filters.contractStatusId}
-          disabled={loading}
-        />
-        
-        {/* Sponsoring State Filter */}
-        <CustomDropdown
-          id="sponsoringState"
-          label="Sponsoring State"
-          options={sponsoringStateOptions}
-          value={filters.sponsoringState || 'all'}
-          onChange={(e) => debouncedSelectChange('sponsoringState', e.target.value)}
-          isActive={!!filters.sponsoringState}
-          disabled={loading}
-        />
-        
-        {/* Contractual Year Filter */}
-        <CustomDropdown
-          id="year"
-          label="Contract Year"
-          options={yearOptions}
-          value={filters.year?.toString() || 'all'}
-          onChange={(e) => debouncedSelectChange('year', e.target.value)}
-          isActive={!!filters.year}
-          disabled={loading}
-        />
+        <div className={styles.filtersGroup}>
+          <h3>Filter By</h3>
+          
+          <CustomDropdown
+            id="contractorId"
+            label="Contractor Name"
+            options={contractorOptions}
+            value={filters.contractorId?.toString() || 'all'}
+            onChange={(e) => debouncedSelectChange('contractorId', e.target.value)}
+            isActive={!!filters.contractorId}
+            disabled={loading}
+          />
+          
+          <CustomDropdown
+            id="mineralTypeId"
+            label="Mineral Type"
+            options={mineralTypeOptions}
+            value={filters.mineralTypeId?.toString() || 'all'}
+            onChange={(e) => debouncedSelectChange('mineralTypeId', e.target.value)}
+            isActive={!!filters.mineralTypeId}
+            disabled={loading}
+          />
+          
+          <CustomDropdown
+            id="contractStatusId"
+            label="Contract Status"
+            options={contractStatusOptions}
+            value={filters.contractStatusId?.toString() || 'all'}
+            onChange={(e) => debouncedSelectChange('contractStatusId', e.target.value)}
+            isActive={!!filters.contractStatusId}
+            disabled={loading}
+          />
+          
+          <CustomDropdown
+            id="sponsoringState"
+            label="Sponsoring State"
+            options={sponsoringStateOptions}
+            value={filters.sponsoringState || 'all'}
+            onChange={(e) => debouncedSelectChange('sponsoringState', e.target.value)}
+            isActive={!!filters.sponsoringState}
+            disabled={loading}
+          />
+          
+          <CustomDropdown
+            id="year"
+            label="Contract Year"
+            options={yearOptions}
+            value={filters.year?.toString() || 'all'}
+            onChange={(e) => debouncedSelectChange('year', e.target.value)}
+            isActive={!!filters.year}
+            disabled={loading}
+          />
+          <CustomDropdown
+  id="locationId"
+  label="Location"
+  options={locationOptions}
+  value={filters.locationId || 'all'}
+  onChange={(e) => debouncedSelectChange('locationId', e.target.value)}
+  isActive={!!filters.locationId}
+  disabled={loading}
+/>
+        </div>
       </div>
       
-      {/* Results Summary */}
       <div className={styles.resultsInfo}>
         {loading ? (
           <span>Loading data...</span>

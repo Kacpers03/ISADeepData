@@ -8,6 +8,7 @@ import {
 } from "@tanstack/react-table";
 import styles from "../../styles/reports.module.css"; // CSS Module
 import { Row } from "react-bootstrap";
+import { useRouter } from "next/router";
 
 const FileTable = ({ filters }) => {
   const [tableData, setTableData] = useState([]);
@@ -46,19 +47,20 @@ const FileTable = ({ filters }) => {
   const columns = useMemo(
     () => [
       {
-        accessorKey: "fileName",
+        accessorKey: "fileName", // still points to your backend's field
         header: "File-name",
         cell: (info) => {
-          const fileUrl = `https://isalibraryfiles.blob.core.windows.net/files/${info.getValue()}`;
+          const fileUrl = info.getValue(); // this is full URL
+          const fileName = fileUrl.split("/").pop(); // extract only filename from URL
           return (
             <a
               href={fileUrl}
               target="_blank"
               rel="noopener noreferrer"
-              download // 👈 this triggers download instead of opening in browser
+              download
               className={styles.fileLink}
             >
-              {info.getValue()}
+              {fileName}
             </a>
           );
         },
@@ -67,20 +69,37 @@ const FileTable = ({ filters }) => {
       { accessorKey: "theme", header: "Theme" },
       {
         id: "info",
-        header: "Info",
+        header: "Description",
         cell: ({ row }) => (
           <div className={styles.infoIcon}>
             ⓘ
-            <span className={styles.tooltip}>{row.original.description} <br /> <br />
-            Created in year: {row.original.year}<br />
-            Published by: {row.original.contractor}<br />
-            Contact-info: {row.original.email}<br />
-            File size: {row.original.size}<br />
-            Format: {row.original.format} <br />
+            <span className={styles.tooltip}>{row.original.description}
             </span>
           </div>
         ),
       },
+      {
+        id: "moreInfo",
+        header: "",
+        cell: ({ row }) => {
+          const router = useRouter();
+          const handleClick = () => {
+            router.push({
+              pathname: "/library/moreinfo",
+              query: { data: JSON.stringify(row.original) },
+            });
+          };
+      
+          return (
+            <button
+              onClick={handleClick}
+              className="border border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white"
+            >
+              More Info
+            </button>
+          );
+        },
+      }
     ],
     []
   );

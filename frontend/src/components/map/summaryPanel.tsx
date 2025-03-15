@@ -1,3 +1,6 @@
+// Modified portion of SummaryPanel.tsx component
+// This fixes the issue with cruise and station counts not updating correctly
+
 import React, { useState, useRef, useEffect } from 'react';
 import styles from '../../styles/map/summary.module.css';
 
@@ -134,41 +137,12 @@ const SummaryPanel = ({
                       <div className={styles.statValue}>{data?.stationCount || 0}</div>
                       <div className={styles.statLabel}>Stations</div>
                     </div>
-                  </div>
-                  
-                  {/* Conditional rendering of Cruises section */}
-                  {data && mapData && mapData.cruises && mapData.cruises.length > 0 && (
-                    <div className={styles.cruiseSection}>
-                      <h4 className={styles.sectionTitle}>Cruises ({mapData.cruises.length})</h4>
-                      
-                      <div className={styles.cruiseList}>
-                        {mapData.cruises.slice(0, 5).map(cruise => (
-                          <div 
-                            key={cruise.cruiseId} 
-                            className={styles.cruiseSummaryItem}
-                            onClick={() => {
-                              setSelectedCruiseId(cruise.cruiseId);
-                              setDetailPanelType('cruise');
-                              setShowDetailPanel(true);
-                            }}
-                          >
-                            <span className={styles.cruiseSummaryName}>
-                              {cruise.cruiseName}
-                            </span>
-                            <span className={styles.cruiseSummaryCount}>
-                              {cruise.stations?.length || 0} stasjoner
-                            </span>
-                          </div>
-                        ))}
-                        
-                        {mapData.cruises.length > 5 && (
-                          <div className={styles.viewMoreLink}>
-                            og {mapData.cruises.length - 5} flere...
-                          </div>
-                        )}
-                      </div>
+                    <div className={styles.statBox}>
+                      {/* FIX: Use data.cruiseCount instead of mapData.cruises.length */}
+                      <div className={styles.statValue}>{data?.cruiseCount || 0}</div>
+                      <div className={styles.statLabel}>Cruises</div>
                     </div>
-                  )}
+                  </div>
 
                   {/* Total Exploration Area - styled as a box */}
                   <div className={styles.explorationAreaBox}>

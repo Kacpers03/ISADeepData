@@ -207,7 +207,13 @@ const CompactLayerControls = ({
                   </div>
                 </div>
                 <div className={styles.legendItem}>
-          <div className={styles.cruiseIcon}></div>
+          <div className={styles.cruiseIcon}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12 8C14.2091 8 16 6.20914 16 4C16 1.79086 14.2091 0 12 0C9.79086 0 8 1.79086 8 4C8 6.20914 9.79086 8 12 8Z" fill="#8B4513"/>
+              <path d="M12 9V21" stroke="#8B4513" strokeWidth="3" strokeLinecap="round"/>
+              <path d="M5 13.4V17.4C5 17.4 8 21.5 12 17.4C16 21.5 19 17.4 19 17.4V13.4" stroke="#8B4513" strokeWidth="3" strokeLinecap="round"/>
+            </svg>
+          </div>
           <div>
             <strong>Cruises</strong>
             <div className={styles.legendDescription}>Research voyages with connected stations</div>
