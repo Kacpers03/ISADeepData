@@ -458,15 +458,20 @@ export const ImprovedFilterPanel = () => {
         break;
         
       case 'cruise':
+        // Viktig: Vi må sikre at showCruises er satt til true før vi gjør noe annet
+        if (mainWindow.showCruises) {
+          mainWindow.showCruises(true);
+        }
+        
         // Set cruise filter and show detail panel
         setFilter('cruiseId', result.id);
         
         // Make sure we set the selected cruise ID to make sure it stays visible
         setSelectedCruiseId(result.id);
         
-        // If the main window has a showCruiseDetails function, call it
+        // Kall showCruiseDetails uten å vise detaljpanelet (false parameter)
         if (mainWindow.showCruiseDetails) {
-          mainWindow.showCruiseDetails(result.id);
+          mainWindow.showCruiseDetails(result.id, false);
         } else {
           // Fallback: If the cruise has coordinates, zoom to them
           if (mainWindow.mapInstance) {

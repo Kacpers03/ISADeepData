@@ -703,33 +703,62 @@ const smartZoom = useCallback(() => {
     if (mapRef.current) {
       window.mapInstance = mapRef.current.getMap();
       
-      // Expose zoomToBlock and zoomToArea functions for search results
+      // Ny funksjon for å kontrollere visning av cruises
+      window.showCruises = (show) => {
+        setShowCruises(show);
+      };
+      
+      // Expose zoomToBlock og zoomToArea funksjoner for søkeresultater
       window.showBlockAnalytics = (blockId) => {
-        // Find the block first
+        // Finn blokken først
         const block = visibleAreaLayers.flatMap(area => area.blocks || [])
           .find(b => b.blockId === blockId);
         
         if (block) {
-          // Zoom to the block
+          // Zoom til blokken
           zoomToBlock(block);
           
-          // Fetch analytics
+          // Hent analytics
           fetchBlockAnalytics(blockId);
         }
       };
       
-      // Expose zoomToCruise function for search results
-      window.showCruiseDetails = (cruiseId) => {
-        // Find the cruise
+      // Modifisert showCruiseDetails funksjon med valgfri detaljpanel
+      window.showCruiseDetails = (cruiseId, showDetails = false) => {
+        // Finn cruise
         const cruise = mapData?.cruises.find(c => c.cruiseId === cruiseId);
         if (cruise) {
           setSelectedCruiseId(cruiseId);
-          setDetailPanelType('cruise');
-          setShowDetailPanel(true);
           
-          // Make sure cruises are visible and zoom
+          // Vis detaljpanel kun hvis showDetails er true
+          if (showDetails) {
+            setDetailPanelType('cruise');
+            setShowDetailPanel(true);
+          }
+          
+          // Sørg for at cruises er synlige og zoom
           setShowCruises(true);
           zoomToCruise(cruise);
+        }
+      };
+      
+      // Funksjon for å vise stasjonsinformasjon
+      window.showStationDetails = (stationId) => {
+        // Finn stasjonen først
+        const station = getAllStations().find(s => s.stationId === stationId);
+        if (station) {
+          setSelectedStation(station);
+          setDetailPanelType('station');
+          setShowDetailPanel(true);
+          
+          // Zoom til stasjonens posisjon
+          if (mapRef.current && station.latitude && station.longitude) {
+            mapRef.current.flyTo({
+              center: [station.longitude, station.latitude],
+              zoom: 12,
+              duration: 1000
+            });
+          }
         }
       };
     }
@@ -738,8 +767,10 @@ const smartZoom = useCallback(() => {
       window.mapInstance = null;
       window.showBlockAnalytics = null;
       window.showCruiseDetails = null;
+      window.showStationDetails = null;
+      window.showCruises = null; // Rydde opp ny funksjon
     };
-  }, [mapRef.current, visibleAreaLayers, mapData, zoomToBlock, zoomToCruise, setSelectedCruiseId, setDetailPanelType, setShowDetailPanel]);
+  }, [mapRef.current, visibleAreaLayers, mapData, zoomToBlock, zoomToCruise, getAllStations, fetchBlockAnalytics, setSelectedStation, setSelectedCruiseId, setDetailPanelType, setShowDetailPanel]);
 
   // Cluster functionality for stations
   useEffect(() => {
