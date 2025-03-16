@@ -1,8 +1,9 @@
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { useFilter } from '../../contexts/filterContext';
 import styles from '../../styles/map/filter.module.css';
 import { CustomDropdown } from './CustomDropdown';
 import { locationBoundaries } from '../../constants/locationBoundaries';
+
 // Create a simple debounce function instead of importing from lodash
 const debounce = (func, wait) => {
   let timeout;
@@ -46,6 +47,10 @@ export const ImprovedFilterPanel = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState([]);
   const [showResults, setShowResults] = useState(false);
+  const [selectedSearchItem, setSelectedSearchItem] = useState(null);
+  
+  // Reference to keep track of previous filters for proper reset
+  const previousFiltersRef = useRef(null);
   
   // Count active filters
   const activeFilterCount = useMemo(() => 
@@ -67,6 +72,11 @@ export const ImprovedFilterPanel = () => {
     // Process the available options based on current data
     updateFilteredOptions();
   }, [originalMapData, filterOptions, mapData, filters]);
+
+  // Store previous filters before reset
+  useEffect(() => {
+    previousFiltersRef.current = { ...filters };
+  }, [filters]);
   
   // This function updates all the dropdown options based on the original data 
   // while highlighting which options are currently available based on other filters
@@ -206,6 +216,7 @@ export const ImprovedFilterPanel = () => {
     
     setFilteredContractors(contractorOptions);
   }, [originalMapData, mapData, filterOptions, filters]);
+
   const locationOptions = [
     { value: 'all', label: 'All Locations' },
     ...locationBoundaries.map(location => ({
@@ -424,168 +435,178 @@ export const ImprovedFilterPanel = () => {
     
     console.log("Search results:", results);
     
-    // Set results and show panel - no DOM manipulation needed
+    // Set results and show panel
     setSearchResults(results);
     setShowResults(true);
     
   }, [searchQuery, mapData]);
   
- // In filterPanel.tsx, fix the handleResultClick function
-// by removing setShowCruises and only using the window.showCruises function
-
-const handleResultClick = useCallback((result) => {
-  console.log("Search result clicked:", result);
-  setShowResults(false);
-  setSearchQuery('');
-  
-  // Find the main window object to access mapInstance
-  const mainWindow = window;
-  
-  switch(result.type) {
-    case 'contractor':
-      // Set contractor filter, select it, and show detail panel
-      setFilter('contractorId', result.id);
-      
-      // Use the provided handler or standard approach
-      if (handleContractorSelect) {
-        handleContractorSelect(result.id);
-      } else {
-        setSelectedContractorId(result.id);
-      }
-      
-      // If the main window has a showDetailPanel function, call it
-      if (mainWindow.showContractorDetails) {
-        mainWindow.showContractorDetails(result.id);
-      }
-      break;
-      
-    case 'cruise':
-      // IMPORTANT: Make sure cruises are visible FIRST using the window function
-      if (mainWindow.showCruises) {
-        console.log("Making cruises visible via window function");
-        mainWindow.showCruises(true);
-      }
-      
-      // Set cruise filter and selected cruise ID
-      setFilter('cruiseId', result.id);
-      setSelectedCruiseId(result.id);
-      
-      // Call showCruiseDetails without showing detail panel (false parameter)
-      if (mainWindow.showCruiseDetails) {
-        mainWindow.showCruiseDetails(result.id, false);
-      } else {
-        // Fallback: If the cruise has coordinates, zoom to them
-        if (mainWindow.mapInstance) {
-          if (result.centerLatitude && result.centerLongitude) {
+  // Updated handleResultClick function with visual selection tracking
+  const handleResultClick = useCallback((result) => {
+    console.log("Search result clicked:", result);
+    setShowResults(false);
+    setSearchQuery('');
+    
+    // Store the selected result for highlighting
+    setSelectedSearchItem(result);
+    
+    // Find the main window object to access mapInstance
+    const mainWindow = window;
+    
+    switch(result.type) {
+      case 'contractor':
+        // Set contractor filter, select it, and show detail panel
+        setFilter('contractorId', result.id);
+        
+        // Use the provided handler or standard approach
+        if (handleContractorSelect) {
+          handleContractorSelect(result.id);
+        } else {
+          setSelectedContractorId(result.id);
+        }
+        
+        // If the main window has a showDetailPanel function, call it
+        if (mainWindow.showContractorDetails) {
+          mainWindow.showContractorDetails(result.id);
+        }
+        break;
+        
+      case 'cruise':
+        // IMPORTANT: Make sure cruises are visible FIRST using the window function
+        if (mainWindow.showCruises) {
+          console.log("Making cruises visible via window function");
+          mainWindow.showCruises(true);
+        }
+        
+        // Set cruise filter and selected cruise ID
+        setFilter('cruiseId', result.id);
+        setSelectedCruiseId(result.id);
+        
+        // Call showCruiseDetails without showing detail panel (false parameter)
+        if (mainWindow.showCruiseDetails) {
+          mainWindow.showCruiseDetails(result.id, false);
+        } else {
+          // Fallback: If the cruise has coordinates, zoom to them
+          if (mainWindow.mapInstance) {
+            if (result.centerLatitude && result.centerLongitude) {
+              mainWindow.mapInstance.flyTo({
+                center: [result.centerLongitude, result.centerLatitude],
+                zoom: 8,
+                duration: 1000
+              });
+            } else if (result.stationLatitude && result.stationLongitude) {
+              mainWindow.mapInstance.flyTo({
+                center: [result.stationLongitude, result.stationLatitude],
+                zoom: 8,
+                duration: 1000
+              });
+            }
+          }
+        }
+        
+        // IMPORTANT: Add a delayed call to ensure cruises stay visible
+        setTimeout(() => {
+          if (mainWindow.showCruises) {
+            console.log("Ensuring cruises remain visible after search selection");
+            mainWindow.showCruises(true);
+          }
+        }, 200);
+        break;
+        
+      case 'station':
+        // Find the station in the map data and display its info panel
+        if (mainWindow.showStationDetails) {
+          mainWindow.showStationDetails(result.id);
+        }
+        
+        // Also zoom to the station's location
+        if (mainWindow.mapInstance && result.latitude && result.longitude) {
+          mainWindow.mapInstance.flyTo({
+            center: [result.longitude, result.latitude],
+            zoom: 12,
+            duration: 1000
+          });
+        }
+        
+        // If station has parent cruise, also set that filter
+        if (result.cruiseId) {
+          setFilter('cruiseId', result.cruiseId);
+          setSelectedCruiseId(result.cruiseId);
+        }
+        break;
+        
+      case 'area':
+        // Try to use the dedicated function first
+        if (mainWindow.zoomToArea) {
+          mainWindow.zoomToArea(result.id);
+        } 
+        // Zoom to the area using the coordinates
+        else if (mainWindow.mapInstance && result.centerLatitude && result.centerLongitude) {
+          mainWindow.mapInstance.flyTo({
+            center: [result.centerLongitude, result.centerLatitude],
+            zoom: 7, // Appropriate zoom level for an area
+            duration: 1000
+          });
+        }
+        
+        // If the area has bounds, set view bounds
+        if (setViewBounds && result.bounds) {
+          setViewBounds(result.bounds);
+        }
+        
+        // If the area has a parent contractor, select it too
+        if (result.contractorId) {
+          if (handleContractorSelect) {
+            handleContractorSelect(result.contractorId);
+          } else {
+            setSelectedContractorId(result.contractorId);
+          }
+        }
+        break;
+        
+      case 'block':
+        // Show block analytics panel if available
+        if (mainWindow.showBlockAnalytics) {
+          mainWindow.showBlockAnalytics(result.id);
+        } else {
+          // Zoom to the block using coordinates
+          if (mainWindow.mapInstance && result.centerLatitude && result.centerLongitude) {
             mainWindow.mapInstance.flyTo({
               center: [result.centerLongitude, result.centerLatitude],
-              zoom: 8,
-              duration: 1000
-            });
-          } else if (result.stationLatitude && result.stationLongitude) {
-            mainWindow.mapInstance.flyTo({
-              center: [result.stationLongitude, result.stationLatitude],
-              zoom: 8,
+              zoom: 9, // Higher zoom for blocks
               duration: 1000
             });
           }
         }
-      }
-      
-      // IMPORTANT: Add a delayed call to ensure cruises stay visible
-      setTimeout(() => {
-        if (mainWindow.showCruises) {
-          console.log("Ensuring cruises remain visible after search selection");
-          mainWindow.showCruises(true);
+        
+        // If the block has bounds, set view bounds
+        if (setViewBounds && result.bounds) {
+          setViewBounds(result.bounds);
         }
-      }, 200);
-      break;
-      
-    case 'station':
-      // Find the station in the map data and display its info panel
-      if (mainWindow.showStationDetails) {
-        mainWindow.showStationDetails(result.id);
-      }
-      
-      // Also zoom to the station's location
-      if (mainWindow.mapInstance && result.latitude && result.longitude) {
-        mainWindow.mapInstance.flyTo({
-          center: [result.longitude, result.latitude],
-          zoom: 12,
-          duration: 1000
-        });
-      }
-      
-      // If station has parent cruise, also set that filter
-      if (result.cruiseId) {
-        setFilter('cruiseId', result.cruiseId);
-        setSelectedCruiseId(result.cruiseId);
-      }
-      break;
-      
-    case 'area':
-      // Try to use the dedicated function first
-      if (mainWindow.zoomToArea) {
-        mainWindow.zoomToArea(result.id);
-      } 
-      // Zoom to the area using the coordinates
-      else if (mainWindow.mapInstance && result.centerLatitude && result.centerLongitude) {
-        mainWindow.mapInstance.flyTo({
-          center: [result.centerLongitude, result.centerLatitude],
-          zoom: 7, // Appropriate zoom level for an area
-          duration: 1000
-        });
-      }
-      
-      // If the area has bounds, set view bounds
-      if (setViewBounds && result.bounds) {
-        setViewBounds(result.bounds);
-      }
-      
-      // If the area has a parent contractor, select it too
-      if (result.contractorId) {
-        if (handleContractorSelect) {
-          handleContractorSelect(result.contractorId);
-        } else {
-          setSelectedContractorId(result.contractorId);
+        
+        // If the block has a parent contractor, select it too
+        if (result.contractorId) {
+          if (handleContractorSelect) {
+            handleContractorSelect(result.contractorId);
+          } else {
+            setSelectedContractorId(result.contractorId);
+          }
         }
-      }
-      break;
-      
-    case 'block':
-      // Show block analytics panel if available
-      if (mainWindow.showBlockAnalytics) {
-        mainWindow.showBlockAnalytics(result.id);
-      } else {
-        // Zoom to the block using coordinates
-        if (mainWindow.mapInstance && result.centerLatitude && result.centerLongitude) {
-          mainWindow.mapInstance.flyTo({
-            center: [result.centerLongitude, result.centerLatitude],
-            zoom: 9, // Higher zoom for blocks
-            duration: 1000
-          });
-        }
-      }
-      
-      // If the block has bounds, set view bounds
-      if (setViewBounds && result.bounds) {
-        setViewBounds(result.bounds);
-      }
-      
-      // If the block has a parent contractor, select it too
-      if (result.contractorId) {
-        if (handleContractorSelect) {
-          handleContractorSelect(result.contractorId);
-        } else {
-          setSelectedContractorId(result.contractorId);
-        }
-      }
-      break;
-      
-    default:
-      console.warn('Unhandled result type:', result.type);
-  }
-}, [setFilter, setSelectedContractorId, setSelectedCruiseId, handleContractorSelect, setViewBounds]);
+        break;
+        
+      default:
+        console.warn('Unhandled result type:', result.type);
+    }
+  }, [setFilter, setSelectedContractorId, setSelectedCruiseId, handleContractorSelect, setViewBounds]);
+  
+  // Enhanced reset filters function that also clears selected search item
+  const handleResetFilters = useCallback(() => {
+    // Clear the selected search item
+    setSelectedSearchItem(null);
+    
+    // Reset all filters using the context function
+    resetFilters();
+  }, [resetFilters]);
   
   // Handle search on Enter key
   const handleKeyPress = useCallback((e) => {
@@ -637,7 +658,7 @@ const handleResultClick = useCallback((result) => {
           {activeFilterCount > 0 && (
             <button 
               className={styles.resetButton} 
-              onClick={resetFilters}
+              onClick={handleResetFilters}
               disabled={loading}
             >
               Reset ({activeFilterCount})
@@ -689,7 +710,11 @@ const handleResultClick = useCallback((result) => {
                 ) : (
                   <ul>
                     {searchResults.map((result, index) => (
-                      <li key={`${result.type}-${result.id}-${index}`} onClick={() => handleResultClick(result)}>
+                      <li 
+                        key={`${result.type}-${result.id}-${index}`} 
+                        onClick={() => handleResultClick(result)}
+                        className={selectedSearchItem && selectedSearchItem.type === result.type && selectedSearchItem.id === result.id ? styles.selectedResult : ''}
+                      >
                         <div className={styles.resultType}>
                           {result.type === 'contractor' && (
                             <>
@@ -744,6 +769,19 @@ const handleResultClick = useCallback((result) => {
                     ))}
                   </ul>
                 )}
+              </div>
+            </div>
+          )}
+          
+          {/* Selected item indicator - Moved up directly after search results */}
+          {selectedSearchItem && (
+            <div className={styles.selectedItemIndicator}>
+              <div className={styles.selectedItemType}>
+                {selectedSearchItem.type.charAt(0).toUpperCase() + selectedSearchItem.type.slice(1)} Selected:
+              </div>
+              <div className={styles.selectedItemName}>
+                {selectedSearchItem.name}
+                {selectedSearchItem.parent && <span className={styles.selectedItemParent}> in {selectedSearchItem.parent}</span>}
               </div>
             </div>
           )}
@@ -802,14 +840,14 @@ const handleResultClick = useCallback((result) => {
             disabled={loading}
           />
           <CustomDropdown
-  id="locationId"
-  label="Location"
-  options={locationOptions}
-  value={filters.locationId || 'all'}
-  onChange={(e) => debouncedSelectChange('locationId', e.target.value)}
-  isActive={!!filters.locationId}
-  disabled={loading}
-/>
+            id="locationId"
+            label="Location"
+            options={locationOptions}
+            value={filters.locationId || 'all'}
+            onChange={(e) => debouncedSelectChange('locationId', e.target.value)}
+            isActive={!!filters.locationId}
+            disabled={loading}
+          />
         </div>
       </div>
       
