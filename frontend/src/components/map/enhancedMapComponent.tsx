@@ -555,6 +555,15 @@ const smartZoom = useCallback(() => {
       return contractorIds.includes(area.contractorId);
     });
   }, [allAreaLayers, mapData, filters, selectedContractorId]);
+
+  // Add this near other useEffect hooks - especially after the one that zooms to cruises
+useEffect(() => {
+  if (selectedCruiseId) {
+    // Always ensure cruises are visible when a cruise is selected
+    setShowCruises(true);
+    console.log("Cruise selected, ensuring cruise markers are visible");
+  }
+}, [selectedCruiseId]);
   useEffect(() => {
     // Zoom to selected location boundary if a location filter is applied
     if (mapRef.current && filters.locationId && filters.locationId !== 'all') {
@@ -806,23 +815,33 @@ const smartZoom = useCallback(() => {
   useEffect(() => {
     if (!clusterIndex || !mapRef.current) return;
     
-    const map = mapRef.current.getMap();
-    const zoom = Math.round(map.getZoom());
-    
-    // Only recalculate clusters if zoom has changed significantly
-    if (Math.abs(zoom - clusterZoom) > 0.5) {
-      setClusterZoom(zoom);
+    try {
+      const map = mapRef.current.getMap();
+      const zoom = Math.round(map.getZoom());
       
-      const bounds = map.getBounds();
-      const bbox = [
-        bounds.getWest(),
-        bounds.getSouth(),
-        bounds.getEast(),
-        bounds.getNorth()
-      ];
-      
-      const clusterData = clusterIndex.getClusters(bbox, Math.floor(zoom));
-      setClusters(clusterData);
+      // Only recalculate clusters if zoom has changed significantly
+      if (Math.abs(zoom - clusterZoom) > 0.5) {
+        setClusterZoom(zoom);
+        
+        const bounds = map.getBounds();
+        const bbox = [
+          bounds.getWest(),
+          bounds.getSouth(),
+          bounds.getEast(),
+          bounds.getNorth()
+        ];
+        
+        // Get clusters with error handling
+        try {
+          const clusterData = clusterIndex.getClusters(bbox, Math.floor(zoom));
+          setClusters(clusterData);
+        } catch (err) {
+          console.warn('Error getting clusters:', err.message);
+          // Keep existing clusters instead of setting empty
+        }
+      }
+    } catch (err) {
+      console.error('Error updating clusters:', err);
     }
   }, [viewState, clusterIndex, clusterZoom]);
 
@@ -1149,26 +1168,46 @@ const smartZoom = useCallback(() => {
           if (isCluster) {
             return (
               <ClusterMarker
-                key={clusterId}
-                cluster={{
-                  id: clusterId,
-                  longitude: cluster.geometry.coordinates[0],
-                  latitude: cluster.geometry.coordinates[1],
-                  count: cluster.properties.point_count,
-                  expansionZoom: clusterIndex.getClusterExpansionZoom(cluster.properties.cluster_id)
-                }}
-                onClick={() => {
-                  // Zoom in when cluster is clicked
+              key={clusterId}
+              cluster={{
+                id: clusterId,
+                longitude: cluster.geometry.coordinates[0],
+                latitude: cluster.geometry.coordinates[1],
+                count: cluster.properties.point_count,
+                // Add error handling for expansion zoom:
+                expansionZoom: (() => {
+                  try {
+                    return clusterIndex.getClusterExpansionZoom(cluster.properties.cluster_id);
+                  } catch (err) {
+                    console.warn('Could not get expansion zoom for cluster:', cluster.properties.cluster_id);
+                    return Math.min(mapRef.current?.getMap().getZoom() + 2 || 10, 16); // Default zoom increase
+                  }
+                })()
+              }}
+              onClick={() => {
+                // Zoom in when cluster is clicked
+                try {
                   const [longitude, latitude] = cluster.geometry.coordinates;
-                  const expansionZoom = clusterIndex.getClusterExpansionZoom(cluster.properties.cluster_id);
+                  let expansionZoom;
+                  
+                  try {
+                    expansionZoom = clusterIndex.getClusterExpansionZoom(cluster.properties.cluster_id);
+                  } catch (err) {
+                    console.warn('Could not get expansion zoom on click:', err.message);
+                    // Use a default zoom increase as fallback
+                    expansionZoom = Math.min(mapRef.current.getMap().getZoom() + 2, 16);
+                  }
                   
                   mapRef.current.flyTo({
                     center: [longitude, latitude],
                     zoom: expansionZoom,
                     duration: 500
                   });
-                }}
-              />
+                } catch (err) {
+                  console.error('Error handling cluster click:', err);
+                }
+              }}
+            />
             );
           } else {
             // It's a single station

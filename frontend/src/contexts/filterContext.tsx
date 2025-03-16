@@ -173,10 +173,8 @@ export const FilterProvider: React.FC<{ children: ReactNode }> = ({ children }) 
     }
   }, [filters, updateMapData]);
   
-  // Apply filters to existing data in memory - IMPROVED to maintain filter independence
-  // Complete filterExistingData function for filterContext.tsx
-// Import the location utilities at the top of your file:
-// import { isPointInLocation, getLocationBoundaryById } from '../constants/locationBoundaries';
+// This is the complete filterExistingData function with fixes for the cruise visibility issue
+// Place this in the filterContext.tsx file
 
 const filterExistingData = useCallback(() => {
   if (!originalMapData) {
@@ -289,16 +287,41 @@ const filterExistingData = useCallback(() => {
     // STEP 2: Get filtered contractor IDs for relationship filtering
     const filteredContractorIds = new Set(filteredContractors.map(c => c.contractorId));
     
-    // STEP 3: Filter cruises - IMPROVED to maintain relationships
-    // Only include cruises that belong to the filtered contractors
+    // STEP 3: Filter cruises - IMPROVED to ensure selected cruises remain visible
+    // Get all cruises that belong to filtered contractors
     let filteredCruises = filteredData.cruises.filter(cruise => 
       filteredContractorIds.has(cruise.contractorId)
     );
     
-    // If specific cruise filter exists
+    // IMPORTANT FIX: If specific cruise is selected, make sure to include it no matter what
     if (filters.cruiseId) {
-      console.log(`Filtering by cruiseId: ${filters.cruiseId}`);
-      filteredCruises = filteredCruises.filter(c => c.cruiseId === filters.cruiseId);
+      console.log(`Ensuring selected cruiseId: ${filters.cruiseId} remains visible`);
+      
+      // Find the selected cruise from original data
+      const selectedCruise = originalMapData.cruises.find(c => c.cruiseId === filters.cruiseId);
+      
+      if (selectedCruise) {
+        // Check if it's already in the filtered results
+        const alreadyIncluded = filteredCruises.some(c => c.cruiseId === filters.cruiseId);
+        
+        if (!alreadyIncluded) {
+          console.log(`Adding selected cruise back to filtered results`);
+          // If it's not already included, add it
+          filteredCruises.push(selectedCruise);
+          
+          // Also make sure its contractor is included
+          if (!filteredContractorIds.has(selectedCruise.contractorId)) {
+            const cruiseContractor = originalMapData.contractors.find(
+              c => c.contractorId === selectedCruise.contractorId
+            );
+            
+            if (cruiseContractor) {
+              console.log(`Adding cruise's contractor back to filtered results`);
+              filteredData.contractors.push(cruiseContractor);
+            }
+          }
+        }
+      }
     }
     
     // Apply location filter to cruises if needed
@@ -306,7 +329,19 @@ const filterExistingData = useCallback(() => {
       const locationBoundary = getLocationBoundaryById(filters.locationId);
       
       if (locationBoundary) {
+        // Keep track of the selected cruise ID to make sure it's retained
+        let selectedCruise = null;
+        if (filters.cruiseId) {
+          selectedCruise = filteredCruises.find(c => c.cruiseId === filters.cruiseId);
+        }
+        
+        // Filter cruises by location
         filteredCruises = filteredCruises.filter(cruise => {
+          // Always keep the selected cruise
+          if (filters.cruiseId && cruise.cruiseId === filters.cruiseId) {
+            return true;
+          }
+          
           // If the cruise has stations, check if any of them are within the location
           if (cruise.stations && cruise.stations.length > 0) {
             return cruise.stations.some(station => 
@@ -321,6 +356,11 @@ const filterExistingData = useCallback(() => {
           
           return false;
         });
+        
+        // If we have a selected cruise, ensure it's in the results
+        if (selectedCruise && !filteredCruises.some(c => c.cruiseId === filters.cruiseId)) {
+          filteredCruises.push(selectedCruise);
+        }
         
         console.log(`Filtered to ${filteredCruises.length} cruises in location ${locationBoundary.name}`);
       }
@@ -337,9 +377,16 @@ const filterExistingData = useCallback(() => {
         // Loop through each cruise to filter its stations
         filteredData.cruises.forEach(cruise => {
           if (cruise.stations && cruise.stations.length > 0) {
-            cruise.stations = cruise.stations.filter(station =>
-              isPointInLocation(station.latitude, station.longitude, filters.locationId!)
-            );
+            // If this is the selected cruise, keep all its stations
+            if (filters.cruiseId && cruise.cruiseId === filters.cruiseId) {
+              // Keep all stations for the selected cruise
+              console.log(`Keeping all stations for selected cruise: ${cruise.cruiseId}`);
+            } else {
+              // Filter stations by location for other cruises
+              cruise.stations = cruise.stations.filter(station =>
+                isPointInLocation(station.latitude, station.longitude, filters.locationId!)
+              );
+            }
           }
         });
         
