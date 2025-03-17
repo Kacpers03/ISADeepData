@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import styles from '../../styles/map/map.module.css';
-
+import styles from '../../../styles/map/map.module.css';
 interface AccordionProps {
   title: string;
   children: React.ReactNode;

@@ -1,7 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { Source, Layer, useMap } from 'react-map-gl';
-import styles from '../../styles/map/map.module.css';
-
+import styles from '../../../styles/map/map.module.css';
 interface AreaLayerProps {
   area: {
     areaId: number;

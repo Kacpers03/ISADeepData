@@ -1,6 +1,5 @@
 import React from "react";
-import styles from "../../styles/map/map.module.css";
-
+import styles from '../../../styles/map/map.module.css';
 interface BlockAnalyticsPanelProps {
   data: any; // Replace with proper type when you have it defined
   onClose: () => void;

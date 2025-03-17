@@ -1,8 +1,7 @@
 // frontend/src/components/map/DetailPanel.tsx
 import React from "react";
-import { Station, Contractor, Cruise, Sample, Media } from "../../types/filter-types";
-import styles from "../../styles/map/map.module.css";
-
+import { Station, Contractor, Cruise, Sample, Media } from "../../../types/filter-types";
+import styles from '../../../styles/map/map.module.css';
 interface DetailPanelProps {
   type: 'contractor' | 'cruise' | 'station' | null;
   station: Station | null;

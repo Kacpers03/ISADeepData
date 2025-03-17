@@ -8,17 +8,17 @@ import Map, {
 } from 'react-map-gl';
 import Supercluster from 'supercluster';
 
-import ClusterMarker from './clusterMarker';
+import ClusterMarker from './markers/clusterMarker';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { useFilter } from "../../contexts/filterContext";
 import styles from "../../styles/map/map.module.css";
-import { DetailPanel } from "./detailPanel";
-import { BlockAnalyticsPanel } from "./blockAnalyticsPanel";
-import { ContractorSummaryPanel } from "./contractorSummaryPanel";
-import CompactLayerControls from "./layerControls";
-import SummaryPanel from "./summaryPanel";
-import CruiseMarker from './cruiseMarker';
-import StationMarker from "./stationMarker";
+import { DetailPanel } from "./ui/detailPanel";
+import { BlockAnalyticsPanel } from "./ui/blockAnalyticsPanel";
+import { ContractorSummaryPanel } from "./ui/contractorSummaryPanel";
+import CompactLayerControls from "./ui/layerControls";
+import SummaryPanel from "./ui/summaryPanel";
+import CruiseMarker from './markers/cruiseMarker';
+import StationMarker from "./markers/stationMarker";
 import { getLocationBoundaryById } from '../../constants/locationBoundaries';
 
 const EnhancedMapComponent = () => {

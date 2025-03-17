@@ -1,7 +1,6 @@
 import React from 'react';
 import { Marker } from 'react-map-gl';
-import styles from '../../styles/map/map.module.css';
-
+import styles from '../../../styles/map/map.module.css';
 interface ClusterMarkerProps {
   cluster: {
     id: string;

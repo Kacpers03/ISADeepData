@@ -1,7 +1,6 @@
 import React from 'react';
 import { Marker } from 'react-map-gl';
-import styles from '../../styles/map/map.module.css';
-
+import styles from '../../../styles/map/map.module.css';
 const CruiseMarker = ({ cruise, onClick }) => {
   // Calculate cruise position with fallbacks
   const calculatePosition = () => {
