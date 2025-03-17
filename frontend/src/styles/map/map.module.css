@@ -403,6 +403,12 @@
   flex-shrink: 0;
 }
 
+.cruiseIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .infoTip {
   display: flex;
   gap: 6px;
@@ -578,6 +584,63 @@
 
 .clusterMarker[style*="width: 65px"] .clusterCount {
   font-size: 20px;
+}
+
+/* ========== CRUISE MARKER STYLES ========== */
+.cruiseMarker {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  pointer-events: auto;
+  cursor: pointer;
+  margin-bottom: 5px;
+}
+
+.cruiseIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+  transition: transform 0.2s ease;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* SVG colors are controlled directly in the SVG element */
+}
+
+.selectedCruise {
+  transform: scale(1.1);
+}
+
+.cruiseLabel {
+  margin-bottom: 3px;
+  font-size: 12px;
+  color: #333333;
+  font-weight: 700;
+  text-align: center;
+  white-space: nowrap;
+  text-shadow: -1px -1px 0 #fff,
+                1px -1px 0 #fff,
+               -1px  1px 0 #fff,
+                1px  1px 0 #fff;
+  pointer-events: none;
+  user-select: none;
+}
+
+.selectedCruiseLabel {
+  color: #000000; /* Darker when selected */
+}
+
+/* Add a slight scaling effect on hover */
+.cruiseMarker:hover .cruiseIcon {
+  transform: scale(1.1);
+}
+
+.cruiseMarker:hover .cruiseLabel {
+  transform: scale(1.05);
 }
 
 /* ========== COORDINATE DISPLAY ========== */
@@ -1015,61 +1078,4 @@
   .legendItem {
     font-size: 12px;
   }
-}
-/* Add these cruise marker styles to your map.module.css file */
-
-.cruiseMarker {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  pointer-events: auto;
-  cursor: pointer;
-  margin-bottom: 5px;
-}
-
-.cruiseIcon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 2;
-  transition: transform 0.2s ease;
-  width: 32px;
-  height: 32px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  /* SVG colors are controlled directly in the SVG element */
-}
-
-.selectedCruise {
-  transform: scale(1.1);
-}
-
-.cruiseLabel {
-  margin-bottom: 3px;
-  font-size: 12px;
-  color: #333333;
-  font-weight: 700;
-  text-align: center;
-  white-space: nowrap;
-  text-shadow: -1px -1px 0 #fff,
-                1px -1px 0 #fff,
-               -1px  1px 0 #fff,
-                1px  1px 0 #fff;
-  pointer-events: none;
-  user-select: none;
-}
-
-.selectedCruiseLabel {
-  color: #000000; /* Darker when selected */
-}
-
-/* Add a slight scaling effect on hover */
-.cruiseMarker:hover .cruiseIcon {
-  transform: scale(1.1);
-}
-
-.cruiseMarker:hover .cruiseLabel {
-  transform: scale(1.05);
 }
