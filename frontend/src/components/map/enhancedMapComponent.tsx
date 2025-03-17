@@ -274,10 +274,6 @@ const smartZoom = useCallback(() => {
   }
 }, [selectedContractorId, allAreaLayers, filters, userHasSetView, pendingZoomContractorId, filters.locationId]);
   
- // This enhanced code should be placed in the enhancedMapComponent.tsx file
-// to ensure proper station filtering
-
-// Get stations from mapData - IMPROVED to respect filters
 const getAllStations = useCallback(() => {
   if (!mapData) return [];
   
@@ -845,63 +841,7 @@ useEffect(() => {
     };
   }, [mapRef.current, visibleAreaLayers, mapData, zoomToBlock, zoomToCruise, getAllStations, fetchBlockAnalytics, setSelectedStation, setSelectedCruiseId, setDetailPanelType, setShowDetailPanel]);
 
-  useEffect(() => {
-    if (!mapData || !mapData.cruises) return;
-    
-    // Get all stations from the filtered cruises
-    const stationsData = getAllStations();
-    
-    console.log(`Clustering ${stationsData.length} stations from ${mapData.cruises.length} cruises`);
-    
-    // If no stations in the filtered data, clear the clusters
-    if (stationsData.length === 0) {
-      setClusters([]);
-      setClusterIndex(null);
-      return;
-    }
-    
-    const supercluster = new Supercluster({
-      radius: 40,
-      maxZoom: 16
-    });
-    
-    // Format points for supercluster
-    const points = stationsData.map(station => ({
-      type: 'Feature',
-      properties: { 
-        stationId: station.stationId,
-        stationData: station 
-      },
-      geometry: {
-        type: 'Point',
-        coordinates: [station.longitude, station.latitude]
-      }
-    }));
-    
-    supercluster.load(points);
-    setClusterIndex(supercluster);
-    
-    // Immediately update clusters with the current map bounds
-    if (mapRef.current) {
-      const map = mapRef.current.getMap();
-      const zoom = Math.round(map.getZoom());
-      const bounds = map.getBounds();
-      const bbox = [
-        bounds.getWest(),
-        bounds.getSouth(),
-        bounds.getEast(),
-        bounds.getNorth()
-      ];
-      
-      try {
-        const clusterData = supercluster.getClusters(bbox, Math.floor(zoom));
-        setClusters(clusterData);
-      } catch (err) {
-        console.warn('Error getting clusters after filter:', err.message);
-        setClusters([]);
-      }
-    }
-  }, [mapData, filters]);
+
 
   // Update clusters when the map moves or zoom changes
   useEffect(() => {
