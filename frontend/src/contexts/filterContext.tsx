@@ -173,9 +173,7 @@ export const FilterProvider: React.FC<{ children: ReactNode }> = ({ children }) 
     }
   }, [filters, updateMapData]);
   
-// This is the complete filterExistingData function with fixes for the cruise visibility issue
-// Place this in the filterContext.tsx file
-
+// This is the complete filterExistingData function with fixes for the filtering issues
 const filterExistingData = useCallback(() => {
   if (!originalMapData) {
     console.log("No original data available for filtering");

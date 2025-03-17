@@ -274,21 +274,85 @@ const smartZoom = useCallback(() => {
   }
 }, [selectedContractorId, allAreaLayers, filters, userHasSetView, pendingZoomContractorId, filters.locationId]);
   
-  // Get stations from mapData
-  const getAllStations = useCallback(() => {
-    if (!mapData) return [];
+ // This enhanced code should be placed in the enhancedMapComponent.tsx file
+// to ensure proper station filtering
+
+// Get stations from mapData - IMPROVED to respect filters
+const getAllStations = useCallback(() => {
+  if (!mapData) return [];
+  
+  // When no filters are applied, show ALL stations
+  if (Object.keys(filters).length === 0) {
+    return mapData.cruises.flatMap(c => c.stations || []);
+  }
+  
+  // Get contractors that match current filters
+  const filteredContractorIds = mapData.contractors.map(c => c.contractorId);
+  
+  // Only get stations from cruises that belong to filtered contractors
+  return mapData.cruises
+    .filter(cruise => {
+      // Only include cruises from contractors that match the filter
+      return filteredContractorIds.includes(cruise.contractorId);
+    })
+    .flatMap(c => c.stations || []);
+}, [mapData, filters]);
+
+// Cluster functionality for stations - IMPROVED to respect filters
+useEffect(() => {
+  if (!mapData || !mapData.cruises) return;
+  
+  // Important: Use getAllStations to get only filtered stations
+  const stationsData = getAllStations();
+  
+  if (!stationsData.length) {
+    // If no stations match filters, we should empty the cluster
+    setClusters([]);
+    return;
+  }
+  
+  const supercluster = new Supercluster({
+    radius: 40,
+    maxZoom: 16
+  });
+  
+  // Format points for supercluster
+  const points = stationsData.map(station => ({
+    type: 'Feature',
+    properties: { 
+      stationId: station.stationId,
+      stationData: station 
+    },
+    geometry: {
+      type: 'Point',
+      coordinates: [station.longitude, station.latitude]
+    }
+  }));
+  
+  supercluster.load(points);
+  setClusterIndex(supercluster);
+  
+  // Important: When filtering changes, immediately update the clusters
+  if (mapRef.current) {
+    const map = mapRef.current.getMap();
+    const zoom = Math.round(map.getZoom());
+    const bounds = map.getBounds();
+    const bbox = [
+      bounds.getWest(),
+      bounds.getSouth(),
+      bounds.getEast(),
+      bounds.getNorth()
+    ];
     
-    // Get contractors that match current filters
-    const filteredContractorIds = mapData.contractors.map(c => c.contractorId);
-    
-    // Only get stations from cruises that belong to filtered contractors
-    return mapData.cruises
-      .filter(cruise => {
-        // Only include cruises from contractors that match the filter
-        return filteredContractorIds.includes(cruise.contractorId);
-      })
-      .flatMap(c => c.stations || []);
-  }, [mapData, filters]);
+    try {
+      const clusterData = supercluster.getClusters(bbox, Math.floor(zoom));
+      setClusters(clusterData);
+    } catch (err) {
+      console.warn('Error getting clusters after filter:', err.message);
+      setClusters([]);
+    }
+  }
+}, [mapData, filters]); // Add filters dependency to ensure reclustering on filter changes
   
   // New function to handle zooming to a specific area
   const zoomToArea = useCallback((area) => {
@@ -781,13 +845,20 @@ useEffect(() => {
     };
   }, [mapRef.current, visibleAreaLayers, mapData, zoomToBlock, zoomToCruise, getAllStations, fetchBlockAnalytics, setSelectedStation, setSelectedCruiseId, setDetailPanelType, setShowDetailPanel]);
 
-  // Cluster functionality for stations
   useEffect(() => {
     if (!mapData || !mapData.cruises) return;
     
-    // Get stations from mapData
-    const stationsData = mapData.cruises.flatMap(c => c.stations || []);
-    if (!stationsData.length) return;
+    // Get all stations from the filtered cruises
+    const stationsData = getAllStations();
+    
+    console.log(`Clustering ${stationsData.length} stations from ${mapData.cruises.length} cruises`);
+    
+    // If no stations in the filtered data, clear the clusters
+    if (stationsData.length === 0) {
+      setClusters([]);
+      setClusterIndex(null);
+      return;
+    }
     
     const supercluster = new Supercluster({
       radius: 40,
@@ -809,7 +880,28 @@ useEffect(() => {
     
     supercluster.load(points);
     setClusterIndex(supercluster);
-  }, [mapData]);
+    
+    // Immediately update clusters with the current map bounds
+    if (mapRef.current) {
+      const map = mapRef.current.getMap();
+      const zoom = Math.round(map.getZoom());
+      const bounds = map.getBounds();
+      const bbox = [
+        bounds.getWest(),
+        bounds.getSouth(),
+        bounds.getEast(),
+        bounds.getNorth()
+      ];
+      
+      try {
+        const clusterData = supercluster.getClusters(bbox, Math.floor(zoom));
+        setClusters(clusterData);
+      } catch (err) {
+        console.warn('Error getting clusters after filter:', err.message);
+        setClusters([]);
+      }
+    }
+  }, [mapData, filters]);
 
   // Update clusters when the map moves or zoom changes
   useEffect(() => {

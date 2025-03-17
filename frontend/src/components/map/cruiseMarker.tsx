@@ -3,21 +3,36 @@ import { Marker } from 'react-map-gl';
 import styles from '../../styles/map/map.module.css';
 
 const CruiseMarker = ({ cruise, onClick }) => {
-  // Calculate average position for cruise based on stations
-  const calculateAveragePosition = () => {
-    if (!cruise.stations || cruise.stations.length === 0) {
-      return { lat: 0, lng: 0 };
+  // Calculate cruise position with fallbacks
+  const calculatePosition = () => {
+    // First try: Use cruise's centerLatitude and centerLongitude if available
+    if (cruise.centerLatitude && cruise.centerLongitude) {
+      return { lat: cruise.centerLatitude, lng: cruise.centerLongitude };
     }
     
-    const avgLat = cruise.stations.reduce((sum, s) => sum + s.latitude, 0) / cruise.stations.length;
-    const avgLon = cruise.stations.reduce((sum, s) => sum + s.longitude, 0) / cruise.stations.length;
+    // Second try: Calculate average from stations if they exist
+    if (cruise.stations && cruise.stations.length > 0) {
+      const avgLat = cruise.stations.reduce((sum, s) => sum + s.latitude, 0) / cruise.stations.length;
+      const avgLon = cruise.stations.reduce((sum, s) => sum + s.longitude, 0) / cruise.stations.length;
+      return { lat: avgLat, lng: avgLon };
+    }
     
-    return { lat: avgLat, lng: avgLon };
+    // Fallback: Check if cruise has any area or block associations we can use
+    if (cruise.contractorId) {
+      // This is just a placeholder. In a real implementation, you might 
+      // need to access global map data to find areas for this contractor
+      console.log("Using fallback positioning for cruise:", cruise.cruiseName);
+    }
+    
+    // Last resort: If we have no usable coordinates, don't render the cruise
+    return null;
   };
   
-  const position = calculateAveragePosition();
+  const position = calculatePosition();
   
-  if (position.lat === 0 && position.lng === 0) {
+  // Skip rendering if we couldn't determine a valid position
+  if (!position) {
+    console.warn(`Cannot display cruise ${cruise.cruiseName} - no valid coordinates available`);
     return null;
   }
   
