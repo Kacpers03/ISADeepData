@@ -1,10 +1,11 @@
 import React from "react";
-import styles from '../../../styles/map/map.module.css';
+import styles from '../../../styles/map/panels.module.css';
+import layerStyles from '../../../styles/map/layers.module.css';
 interface BlockAnalyticsPanelProps {
   data: any; // Replace with proper type when you have it defined
   onClose: () => void;
 }
-
+const combinedStyles = { ...styles, ...layerStyles };
 export const BlockAnalyticsPanel: React.FC<BlockAnalyticsPanelProps> = ({
   data,
   onClose

@@ -1,7 +1,8 @@
 // frontend/src/components/map/DetailPanel.tsx
 import React from "react";
 import { Station, Contractor, Cruise, Sample, Media } from "../../../types/filter-types";
-import styles from '../../../styles/map/map.module.css';
+import styles from '../../../styles/map/panels.module.css';
+import uiStyles from '../../../styles/map/ui.module.css';
 interface DetailPanelProps {
   type: 'contractor' | 'cruise' | 'station' | null;
   station: Station | null;
@@ -9,7 +10,7 @@ interface DetailPanelProps {
   cruise: Cruise | null;
   onClose: () => void;
 }
-
+const combinedStyles = { ...styles, ...uiStyles };
 export const DetailPanel: React.FC<DetailPanelProps> = ({
   type,
   station,

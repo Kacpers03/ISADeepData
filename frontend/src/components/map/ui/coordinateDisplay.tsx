@@ -1,7 +1,6 @@
 // frontend/src/components/map/ui/CoordinateDisplay.tsx
 import React from 'react';
-import styles from '../../../styles/map/map.module.css';
-
+import styles from '../../../styles/map/base.module.css';
 interface CoordinateDisplayProps {
   latitude: string | number;
   longitude: string | number;

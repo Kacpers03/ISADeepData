@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import styles from '../../../styles/map/map.module.css';
+import styles from '../../../styles/map/controls.module.css';
 const CompactLayerControls = ({ 
   showAreas, 
   setShowAreas, 

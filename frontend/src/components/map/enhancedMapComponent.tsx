@@ -13,7 +13,12 @@ import useMapExport from "./hooks/useMapExport";
 // UI Components
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { useFilter } from "../../contexts/filterContext";
-import styles from "../../styles/map/map.module.css";
+import baseStyles from "../../styles/map/base.module.css";
+import controlStyles from "../../styles/map/controls.module.css";
+import markerStyles from "../../styles/map/markers.module.css";
+import layerStyles from "../../styles/map/layers.module.css";
+import panelStyles from "../../styles/map/panels.module.css";
+import uiStyles from "../../styles/map/ui.module.css";
 
 // Map layers
 import MapLayers from "./layers/mapLayers";
@@ -28,6 +33,14 @@ import CoordinateDisplay from "./ui/coordinateDisplay";
 import ToastNotification from "./ui/toastNotification";
 import LoadingOverlay from "./ui/loadingOverlay";
 
+const styles = {
+  ...baseStyles,
+  ...controlStyles,
+  ...markerStyles,
+  ...layerStyles,
+  ...panelStyles,
+  ...uiStyles
+};
 const MapComponent = () => {
   // Context and state from filter context
   const {

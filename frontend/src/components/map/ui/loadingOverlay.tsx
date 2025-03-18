@@ -1,6 +1,6 @@
 // frontend/src/components/map/ui/loadingOverlay.tsx
 import React from 'react';
-import styles from '../../../styles/map/map.module.css';
+import styles from '../../../styles/map/base.module.css';
 
 const LoadingOverlay = () => {
   return (
