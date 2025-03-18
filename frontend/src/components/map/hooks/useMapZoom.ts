@@ -1,9 +1,12 @@
 import { useCallback, useState, useEffect } from 'react';
 import { getLocationBoundaryById } from '../../../constants/locationBoundaries';
 
-const useMapZoom = (mapRef, allAreaLayers, selectedContractorId, filters, pendingZoomContractorId, setPendingZoomContractorId) => {
+const useMapZoom = (mapRef, allAreaLayers, selectedContractorId, filters) => {
   // User has manually set the view (to prevent auto-zooming when unwanted)
   const [userHasSetView, setUserHasSetView] = useState(false);
+  
+  // Track pending zoom operations
+  const [pendingZoomContractorId, setPendingZoomContractorId] = useState(null);
 
   // Smart zoom function to be more robust
   const smartZoom = useCallback(() => {
@@ -23,7 +26,7 @@ const useMapZoom = (mapRef, allAreaLayers, selectedContractorId, filters, pendin
         // Fit the map to these bounds with some padding
         mapRef.current.fitBounds(
           bounds as [[number, number], [number, number]],
-          { padding: 80, duration: 1000 }
+          { padding: 80, duration: 1000, essential: true }
         );
         
         console.log(`Smart zoomed to location: ${locationBoundary.name}`);
@@ -68,10 +71,12 @@ const useMapZoom = (mapRef, allAreaLayers, selectedContractorId, filters, pendin
           // Add padding for better view
           const pad = 2; // Increased padding for a better view
           
-          mapRef.current.fitBounds(
-            [[minLon - pad, minLat - pad], [maxLon + pad, maxLat + pad]],
-            { padding: 80, duration: 1000, maxZoom: 8 } // Added more padding and reduced maxZoom
-          );
+          setTimeout(() => {
+            mapRef.current.fitBounds(
+              [[minLon - pad, minLat - pad], [maxLon + pad, maxLat + pad]],
+              { padding: 80, duration: 800, maxZoom: 8, essential: true }
+            );
+          }, 50);
           
           console.log("Smart zoomed to contractor areas");
           
@@ -93,10 +98,12 @@ const useMapZoom = (mapRef, allAreaLayers, selectedContractorId, filters, pendin
     // Only reset to world view if no specific filters and user hasn't manually set view
     // OR if filters have been completely reset
     if ((Object.keys(filters).length === 0 && !selectedContractorId) || !userHasSetView) {
-      mapRef.current.fitBounds(
-        [[-180, -60], [180, 85]],
-        { padding: 20, duration: 1000 }
-      );
+      setTimeout(() => {
+        mapRef.current.fitBounds(
+          [[-180, -60], [180, 85]],
+          { padding: 20, duration: 800, essential: true }
+        );
+      }, 50);
       console.log("Reset to world view");
     }
   }, [selectedContractorId, allAreaLayers, filters, userHasSetView, pendingZoomContractorId, filters.locationId, setPendingZoomContractorId, mapRef]);
@@ -118,18 +125,23 @@ const useMapZoom = (mapRef, allAreaLayers, selectedContractorId, filters, pendin
       });
       
       const pad = 1; // Reasonable padding
-      mapRef.current.fitBounds(
-        [[minLon - pad, minLat - pad], [maxLon + pad, maxLat + pad]],
-        { padding: 60, duration: 1000, maxZoom: 9 }
-      );
+      setTimeout(() => {
+        mapRef.current.fitBounds(
+          [[minLon - pad, minLat - pad], [maxLon + pad, maxLat + pad]],
+          { padding: 60, duration: 800, maxZoom: 9, essential: true }
+        );
+      }, 50);
       console.log("Zoomed to area:", area.areaName);
     } else if (area.centerLatitude && area.centerLongitude) {
       // Fallback to center coordinates
-      mapRef.current.flyTo({
-        center: [area.centerLongitude, area.centerLatitude],
-        zoom: 7,
-        duration: 1000
-      });
+      setTimeout(() => {
+        mapRef.current.flyTo({
+          center: [area.centerLongitude, area.centerLatitude],
+          zoom: 7,
+          duration: 800,
+          essential: true
+        });
+      }, 50);
       console.log("Zoomed to area center:", area.areaName);
     }
   }, [mapRef]);
@@ -151,23 +163,28 @@ const useMapZoom = (mapRef, allAreaLayers, selectedContractorId, filters, pendin
       });
       
       const pad = 0.5; // Smaller padding for blocks
-      mapRef.current.fitBounds(
-        [[minLon - pad, minLat - pad], [maxLon + pad, maxLat + pad]],
-        { padding: 60, duration: 1000, maxZoom: 10 }
-      );
+      setTimeout(() => {
+        mapRef.current.fitBounds(
+          [[minLon - pad, minLat - pad], [maxLon + pad, maxLat + pad]],
+          { padding: 60, duration: 800, maxZoom: 10, essential: true }
+        );
+      }, 50);
       console.log("Zoomed to block:", block.blockName);
     } else if (block.centerLatitude && block.centerLongitude) {
       // Fallback to center coordinates
-      mapRef.current.flyTo({
-        center: [block.centerLongitude, block.centerLatitude],
-        zoom: 9,
-        duration: 1000
-      });
+      setTimeout(() => {
+        mapRef.current.flyTo({
+          center: [block.centerLongitude, block.centerLatitude],
+          zoom: 9,
+          duration: 800,
+          essential: true
+        });
+      }, 50);
       console.log("Zoomed to block center:", block.blockName);
     }
   }, [mapRef]);
 
-  // Zoom to specific cruise
+  // Zoom to specific cruise - IMPROVED
   const zoomToCruise = useCallback((cruise, setShowCruises) => {
     if (!mapRef.current || !cruise) return;
     
@@ -177,31 +194,43 @@ const useMapZoom = (mapRef, allAreaLayers, selectedContractorId, filters, pendin
     // Use the first station of the cruise for positioning if available
     if (cruise.stations && cruise.stations.length > 0) {
       const firstStation = cruise.stations[0];
-      mapRef.current.flyTo({
-        center: [firstStation.longitude, firstStation.latitude],
-        zoom: 8,
-        duration: 1000
-      });
+      
+      // Add a small delay to ensure the map is ready
+      setTimeout(() => {
+        mapRef.current.flyTo({
+          center: [firstStation.longitude, firstStation.latitude],
+          zoom: 8,
+          duration: 800, // Reduced from 1000ms to make it faster
+          essential: true // Mark as essential to ensure it executes
+        });
+      }, 50);
+      
       console.log("Zoomed to first station of cruise:", cruise.cruiseName);
     } else if (cruise.centerLatitude && cruise.centerLongitude) {
       // Fallback to cruise center coordinates if available
-      mapRef.current.flyTo({
-        center: [cruise.centerLongitude, cruise.centerLatitude],
-        zoom: 8,
-        duration: 1000
-      });
+      setTimeout(() => {
+        mapRef.current.flyTo({
+          center: [cruise.centerLongitude, cruise.centerLatitude],
+          zoom: 8,
+          duration: 800,
+          essential: true
+        });
+      }, 50);
+      
       console.log("Zoomed to cruise center:", cruise.cruiseName);
     } else {
       // If all else fails, try to find the contractor and zoom to their area
-      if (cruise.contractorId && mapRef.current) {
-        const map = mapRef.current.getMap();
-        map.flyTo({
+      console.log("Could not find specific position for cruise:", cruise.cruiseName);
+      
+      // Default zoom to make sure something happens
+      setTimeout(() => {
+        mapRef.current.flyTo({
           center: [0, 0],
           zoom: 2,
-          duration: 1000
+          duration: 800,
+          essential: true
         });
-        console.log("Could not find specific position for cruise:", cruise.cruiseName);
-      }
+      }, 50);
     }
   }, [mapRef]);
 
@@ -219,7 +248,9 @@ const useMapZoom = (mapRef, allAreaLayers, selectedContractorId, filters, pendin
     smartZoom,
     zoomToArea,
     zoomToBlock,
-    zoomToCruise
+    zoomToCruise,
+    pendingZoomContractorId,
+    setPendingZoomContractorId
   };
 };
 

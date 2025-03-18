@@ -246,16 +246,21 @@ const MapComponent = () => {
     }
   }, [selectedContractorId, smartZoom]);
   
-  // Effect for zooming to cruise when selected
   useEffect(() => {
     if (selectedCruiseId && mapData && mapRef.current) {
-      const selectedCruise = mapData.cruises.find(c => c.cruiseId === selectedCruiseId);
-      if (selectedCruise) {
-        setShowCruises(true);
-        zoomToCruise(selectedCruise, setShowCruises);
+      // We'll only make cruises visible here but NOT trigger another zoom
+      // since zooming is now handled directly in the click handlers
+      setShowCruises(true);
+      
+      // Only zoom if userHasSetView is false (first load or reset)
+      if (!userHasSetView) {
+        const selectedCruise = mapData.cruises.find(c => c.cruiseId === selectedCruiseId);
+        if (selectedCruise) {
+          zoomToCruise(selectedCruise, setShowCruises);
+        }
       }
     }
-  }, [selectedCruiseId, mapData, zoomToCruise]);
+  }, [selectedCruiseId, mapData, zoomToCruise, userHasSetView]);
   
   // Load GeoJSON when filters change
   useEffect(() => {
@@ -340,7 +345,6 @@ const MapComponent = () => {
     }
   }, [mapData, selectedContractorId]);
 
-  // Make map instance available globally for search function
   useEffect(() => {
     if (mapRef.current) {
       window.mapInstance = mapRef.current.getMap();
@@ -374,22 +378,30 @@ const MapComponent = () => {
         }
       };
       
-      // Function for showing cruise details
+      // IMPROVED Function for showing cruise details
       window.showCruiseDetails = (cruiseId, showDetails = false) => {
         // Find cruise
         const cruise = mapData?.cruises.find(c => c.cruiseId === cruiseId);
         if (cruise) {
+          // Ensure cruises are visible first
+          setShowCruises(true);
+          
+          // Set selected cruise ID
           setSelectedCruiseId(cruiseId);
+          
+          // Perform zoom immediately, don't wait for effect
+          if (mapRef.current) {
+            zoomToCruise(cruise, setShowCruises);
+          }
           
           // Show detail panel only if showDetails is true
           if (showDetails) {
-            setDetailPanelType('cruise');
-            setShowDetailPanel(true);
+            // Small delay to ensure zoom happens first
+            setTimeout(() => {
+              setDetailPanelType('cruise');
+              setShowDetailPanel(true);
+            }, 100);
           }
-          
-          // Ensure cruises are visible and zoom
-          setShowCruises(true);
-          zoomToCruise(cruise, setShowCruises);
         }
       };
       
@@ -404,11 +416,14 @@ const MapComponent = () => {
           
           // Zoom to the station's position
           if (mapRef.current && station.latitude && station.longitude) {
-            mapRef.current.flyTo({
-              center: [station.longitude, station.latitude],
-              zoom: 12,
-              duration: 1000
-            });
+            setTimeout(() => {
+              mapRef.current.flyTo({
+                center: [station.longitude, station.latitude],
+                zoom: 12,
+                duration: 800,
+                essential: true
+              });
+            }, 50);
           }
         }
       };

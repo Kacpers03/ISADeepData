@@ -17,7 +17,7 @@ const useMapInteractions = ({
   setPopupInfo,
   setSelectedStation,
   zoomToCruise,
-  zoomToArea,  // Added this parameter
+  zoomToArea,
   zoomToBlock,
   setShowCruises,
   resetFilters,
@@ -53,18 +53,37 @@ const useMapInteractions = ({
     updateClusters(evt.viewState);
   }, [mapRef, setViewState, setUserHasSetView, setViewBounds, updateClusters]);
   
-  // Handle cruise click
+  // Handle cruise click - IMPROVED VERSION
   const handleCruiseClick = useCallback((cruise) => {
     console.log("Cruise clicked:", cruise.cruiseName);
-    setSelectedCruiseId(cruise.cruiseId);
-    setDetailPanelType('cruise');
-    setShowDetailPanel(true);
-    setPopupInfo(null); // Close any open popups
     
-    // Make sure cruises stay visible and zoom to the cruise
+    // First ensure cruises are visible
     setShowCruises(true);
-    zoomToCruise(cruise, setShowCruises);
-  }, [setSelectedCruiseId, setDetailPanelType, setShowDetailPanel, setPopupInfo, setShowCruises, zoomToCruise]);
+    
+    // Set selected cruise ID
+    setSelectedCruiseId(cruise.cruiseId);
+    
+    // Zoom to the cruise immediately (don't wait for effect)
+    if (mapRef.current && cruise) {
+      // Direct zoom call instead of waiting for effect
+      zoomToCruise(cruise, setShowCruises);
+    }
+    
+    // Show detail panel after a small delay to ensure zoom happens first
+    setTimeout(() => {
+      setDetailPanelType('cruise');
+      setShowDetailPanel(true);
+      setPopupInfo(null); // Close any open popups
+    }, 100);
+  }, [
+    setSelectedCruiseId, 
+    setDetailPanelType, 
+    setShowDetailPanel, 
+    setPopupInfo, 
+    setShowCruises, 
+    zoomToCruise,
+    mapRef
+  ]);
   
   // Handle marker (station) click
   const handleMarkerClick = useCallback((station) => {
@@ -184,9 +203,9 @@ const useMapInteractions = ({
     
     const area = visibleAreaLayers.find(a => a.areaId === areaId);
     if (area) {
-      zoomToArea(area);  // This is where zoomToArea is called
+      zoomToArea(area);
     }
-  }, [visibleAreaLayers, zoomToArea]);  // Added zoomToArea to dependencies
+  }, [visibleAreaLayers, zoomToArea]);
   
   // Handle station popup
   const handleStationHover = useCallback((station, show) => {
