@@ -2,8 +2,9 @@
 // This fixes the issue with cruise and station counts not updating correctly
 
 import React, { useState, useRef, useEffect } from 'react';
-import styles from '../../styles/map/summary.module.css';
-
+import styles from '../../../styles/map/summary.module.css';
+import panelStyles from '../../../styles/map/panels.module.css';
+const combinedStyles = { ...styles, ...panelStyles };
 const SummaryPanel = ({
   data,
   selectedContractorInfo,

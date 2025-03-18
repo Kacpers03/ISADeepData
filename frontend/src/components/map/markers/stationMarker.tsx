@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Marker, useMap } from 'react-map-gl';
-import styles from '../../styles/map/map.module.css';
-
+import styles from '../../../styles/map/markers.module.css';
 interface StationMarkerProps {
   station: {
     stationId: number;
