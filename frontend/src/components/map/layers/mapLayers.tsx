@@ -1,7 +1,8 @@
 // frontend/src/components/map/MapLayers.tsx
 import React from 'react';
 import { Popup } from 'react-map-gl';
-import styles from '../../../styles/map/map.module.css';
+import panelStyles from '../../../styles/map/panels.module.css';
+import markerStyles from '../../../styles/map/markers.module.css';
 
 // Import layer components
 import AreaLayer from './areaLayer';
@@ -26,7 +27,10 @@ interface MapLayersProps {
   onCruiseClick: (cruise: any) => void;
   onStationClick: (station: any) => void;
 }
-
+const styles = {
+    ...panelStyles,
+    ...markerStyles
+  };
 const MapLayers: React.FC<MapLayersProps> = ({
   showAreas,
   showBlocks,

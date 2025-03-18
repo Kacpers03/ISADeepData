@@ -1,6 +1,6 @@
 // frontend/src/components/map/ui/ToastNotification.tsx
 import React from 'react';
-import styles from '../../../styles/map/map.module.css';
+import styles from '../../../styles/map/base.module.css';
 
 interface ToastNotificationProps {
   message: string;

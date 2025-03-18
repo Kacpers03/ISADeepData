@@ -1,0 +1,202 @@
+/* ========== STATION MARKER STYLES ========== */
+.mapMarker {
+    width: 20px;
+    height: 20px;
+    background-color: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    position: relative;
+    transform: translate(-50%, -50%) scale(var(--marker-scale, 1));
+    transform-origin: center;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    z-index: 5;
+  }
+  
+  .markerIcon {
+    width: 20px;
+    height: 20px;
+    background-color: #dc2626; /* Bright red */
+    border: 2px solid white;
+    border-radius: 50%;
+    box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.2), 0 3px 6px rgba(0, 0, 0, 0.3);
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  
+  .stationTypeIcon {
+    font-size: 10px;
+    line-height: 1;
+    transform: scale(0.9);
+  }
+  
+  .markerIcon::after {
+    content: '';
+    position: absolute;
+    bottom: -8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 2px;
+    height: 8px;
+    background-color: #dc2626;
+  }
+  
+  .markerHover .markerIcon {
+    transform: scale(1.1);
+    box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.2), 0 4px 8px rgba(0, 0, 0, 0.3);
+  }
+  
+  .stationTooltip {
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-size: 12px;
+    white-space: nowrap;
+    pointer-events: none;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.2s ease, visibility 0.2s ease;
+    z-index: 10;
+    margin-bottom: 10px;
+  }
+  
+  .stationTooltip::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border-width: 5px;
+    border-style: solid;
+    border-color: rgba(0, 0, 0, 0.8) transparent transparent transparent;
+  }
+  
+  .markerHover .stationTooltip {
+    opacity: 1;
+    visibility: visible;
+  }
+  
+  /* ========== ASSOCIATED MARKER STYLES ========== */
+  .associatedMarker .markerIcon {
+    background-color: #15803d !important; /* Dark green */
+    border: 2px solid white;
+  }
+  
+  .associatedMarker .markerIcon::after {
+    background-color: #15803d;
+  }
+  
+  /* ========== CLUSTER MARKER STYLES ========== */
+  .clusterMarker {
+    background: #ff4d4f;
+    border-radius: 50%;
+    box-shadow: 0 0 0 4px white, 0 0 0 5px rgba(0, 0, 0, 0.2), 0 4px 8px rgba(0, 0, 0, 0.3);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+  }
+  
+  .clusterMarker:hover {
+    transform: scale(1.05);
+  }
+  
+  .clusterCount {
+    font-weight: bold;
+    font-size: 14px;
+  }
+  
+  /* Size variations based on count */
+  .clusterMarker[style*="width: 45px"] .clusterCount {
+    font-size: 16px;
+  }
+  
+  .clusterMarker[style*="width: 55px"] .clusterCount {
+    font-size: 18px;
+  }
+  
+  .clusterMarker[style*="width: 65px"] .clusterCount {
+    font-size: 20px;
+  }
+  
+  /* ========== CRUISE MARKER STYLES ========== */
+  .cruiseMarker {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    pointer-events: auto;
+    cursor: pointer;
+    margin-bottom: 5px;
+  }
+  
+  .cruiseIcon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2;
+    transition: transform 0.2s ease;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* SVG colors are controlled directly in the SVG element */
+  }
+  
+  .selectedCruise {
+    transform: scale(1.1);
+  }
+  
+  .cruiseLabel {
+    margin-bottom: 3px;
+    font-size: 12px;
+    color: #333333;
+    font-weight: 700;
+    text-align: center;
+    white-space: nowrap;
+    text-shadow: -1px -1px 0 #fff,
+                  1px -1px 0 #fff,
+                 -1px  1px 0 #fff,
+                  1px  1px 0 #fff;
+    pointer-events: none;
+    user-select: none;
+  }
+  
+  .selectedCruiseLabel {
+    color: #000000; /* Darker when selected */
+  }
+  
+  /* Add a slight scaling effect on hover */
+  .cruiseMarker:hover .cruiseIcon {
+    transform: scale(1.1);
+  }
+  
+  .cruiseMarker:hover .cruiseLabel {
+    transform: scale(1.05);
+  }
+  
+  /* ========== BLOCK TOOLTIP ========== */
+  .blockTooltip {
+    position: absolute;
+    background-color: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-size: 12px;
+    pointer-events: none;
+    z-index: 100;
+    white-space: nowrap;
+  }
