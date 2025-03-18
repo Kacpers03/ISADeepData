@@ -12,7 +12,7 @@ import useMapExport from "./hooks/useMapExport";
 
 // UI Components
 import 'mapbox-gl/dist/mapbox-gl.css';
-import { useFilter } from "../../contexts/filterContext";
+import { useFilter } from "./context/filterContext";
 import baseStyles from "../../styles/map/base.module.css";
 import controlStyles from "../../styles/map/controls.module.css";
 import markerStyles from "../../styles/map/markers.module.css";

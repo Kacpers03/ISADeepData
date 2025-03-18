@@ -1,7 +1,7 @@
 import React from "react";
 import dynamic from "next/dynamic";
 import Head from "next/head";
-import { FilterProvider } from "../../contexts/filterContext";
+import { FilterProvider } from "../../components/map/context/filterContext";
 import styles from "../../styles/map/mapPage.module.css";
 import { ImprovedFilterPanel } from "../../components/filters/filterPanel";
 

@@ -1,6 +1,6 @@
 // src/components/filters/filterPanel.tsx
 import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
-import { useFilter } from '../../contexts/filterContext';
+import { useFilter } from '../../components/map/context/filterContext';
 import styles from '../../styles/map/filter.module.css';
 import { CustomDropdown } from './CustomDropdown';
 import { locationBoundaries } from '../../constants/locationBoundaries';
