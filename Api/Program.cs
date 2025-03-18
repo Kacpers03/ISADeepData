@@ -26,6 +26,10 @@ builder.Services.AddScoped<IMapFilterService, MapFilterService>();
 builder.Services.AddScoped<ISpatialService, SpatialService>();
 builder.Services.AddScoped<ILibraryService, LibraryService>();
 
+// Register gallery services
+builder.Services.AddScoped<Api.Repositories.Interfaces.IGalleryRepository, Api.Repositories.Implementations.GalleryRepository>();
+builder.Services.AddScoped<Api.Services.Interfaces.IGalleryService, Api.Services.Implementations.GalleryService>();
+
 
 
 // Add controllers and configure API
