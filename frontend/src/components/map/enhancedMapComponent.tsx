@@ -1,28 +1,34 @@
-import React, { useState, useEffect, useRef, useMemo, useCallback } from "react";
-import Map, { NavigationControl, Popup, ViewStateChangeEvent } from 'react-map-gl';
+// frontend/src/components/map/MapComponent.tsx
+import React, { useState, useEffect, useRef, useMemo } from "react";
+import Map, { NavigationControl } from 'react-map-gl';
 
 // Custom hooks
 import useMapData from "./hooks/useMapData";
 import useMapZoom from "./hooks/useMapZoom";
 import useCluster from "./hooks/useCluster";
-
-// Custom components
-import AreaLayer from "./layers/areaLayer";
-import BlockLayer from "./layers/blockLayer";
-import StationLayer from "./layers/stationLayer";
-import CruiseLayer from "./layers/cruiseLayer";
+import useMapState from "./hooks/useMapState";
+import useMapInteractions from "./hooks/useMapInteractions";
+import useMapExport from "./hooks/useMapExport";
 
 // UI Components
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { useFilter } from "../../contexts/filterContext";
 import styles from "../../styles/map/map.module.css";
+
+// Map layers
+import MapLayers from "./layers/mapLayers";
+
+// UI Components
 import { DetailPanel } from "./ui/detailPanel";
 import { BlockAnalyticsPanel } from "./ui/blockAnalyticsPanel";
 import { ContractorSummaryPanel } from "./ui/contractorSummaryPanel";
 import CompactLayerControls from "./ui/layerControls";
 import SummaryPanel from "./ui/summaryPanel";
+import CoordinateDisplay from "./ui/coordinateDisplay";
+import ToastNotification from "./ui/toastNotification";
+import LoadingOverlay from "./ui/loadingOverlay";
 
-const EnhancedMapComponent = () => {
+const MapComponent = () => {
   // Context and state from filter context
   const {
     mapData,
@@ -46,51 +52,39 @@ const EnhancedMapComponent = () => {
     resetFilters
   } = useFilter();
 
-  // Local state for map functionality
-  const [viewState, setViewState] = useState({
-    longitude: 0,
-    latitude: 20,
-    zoom: 1.8,
-    bearing: 0,
-    pitch: 0
-  });
+  // Use custom hooks for map state management
+  const { 
+    viewState, 
+    setViewState, 
+    mapRef, 
+    initialLoadComplete, 
+    setInitialLoadComplete,
+    cursorPosition, 
+    setCursorPosition,
+    mapStyle, 
+    setMapStyle 
+  } = useMapState();
   
-  // Reference to maintain current view state across rerenders
-  const mapRef = useRef(null);
-  const initialLoadRef = useRef(true);
-  const [initialLoadComplete, setInitialLoadComplete] = useState(false);
-  
-  // Default to true to ensure cruises are always visible
-  const [showCruises, setShowCruises] = useState(true);
-  
-  // Popup state
-  const [popupInfo, setPopupInfo] = useState(null);
-  
-  // Layer visibility controls
+  // Layer visibility states
   const [showAreas, setShowAreas] = useState(true);
   const [showBlocks, setShowBlocks] = useState(true);
   const [showStations, setShowStations] = useState(true);
+  const [showCruises, setShowCruises] = useState(true);
   
-  // UI state variables
+  // UI state
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
-  const [cursorPosition, setCursorPosition] = useState({ latitude: 0, longitude: 0 });
-  const [mapStyle, setMapStyle] = useState("mapbox://styles/mapbox/outdoors-v11");
-
-  // Summary panel state
   const [showSummaryPanel, setShowSummaryPanel] = useState(false);
   const [summaryData, setSummaryData] = useState(null);
   
-  // Additional state for analytics
+  // Analytics state
   const [selectedContractorInfo, setSelectedContractorInfo] = useState(null);
   const [blockAnalytics, setBlockAnalytics] = useState(null);
   const [contractorSummary, setContractorSummary] = useState(null);
   const [hoveredBlockId, setHoveredBlockId] = useState(null);
+  const [popupInfo, setPopupInfo] = useState(null);
 
-  // Smart zoom function - will be called when a new contractor is selected or filters are reset
-  const [pendingZoomContractorId, setPendingZoomContractorId] = useState(null);
-  
-  // Use custom hooks
+  // Use custom hooks for map functionality
   const {
     allAreaLayers,
     setAllAreaLayers,
@@ -110,49 +104,118 @@ const EnhancedMapComponent = () => {
     smartZoom,
     zoomToArea,
     zoomToBlock,
-    zoomToCruise
-  } = useMapZoom(mapRef, allAreaLayers, selectedContractorId, filters, pendingZoomContractorId, setPendingZoomContractorId);
+    zoomToCruise,
+    pendingZoomContractorId, 
+    setPendingZoomContractorId
+  } = useMapZoom(mapRef, allAreaLayers, selectedContractorId, filters);
   
   const {
     clusterIndex,
     clusters,
     updateClusters
   } = useCluster(mapData, filters, mapRef, getAllStations);
-  
-  // Get selected contractor/cruise
-  const selectedContractor = mapData?.contractors.find(c => c.contractorId === selectedContractorId) || null;
-  const selectedCruise = mapData?.cruises.find(c => c.cruiseId === selectedCruiseId) || null;
 
-  // Memoize visible area layers
+  // Memoize visible area layers with improved filtering
   const visibleAreaLayers = useMemo(() => {
     if (!allAreaLayers.length) return [];
     
-    // If filters are reset but we have no layers loaded, reload them  
+    // If no filters are applied, return all layers (or only the selected contractor's layers)
     if (Object.keys(filters).length === 0) {
+      if (selectedContractorId) {
+        return allAreaLayers.filter(area => area.contractorId === selectedContractorId);
+      }
       return allAreaLayers;
     }
     
-    // Get IDs of contractors that match the current filters
-    const contractorIds = mapData?.contractors.map(c => c.contractorId) || [];
-    
-    // Filter area layers to only those belonging to the filtered contractors
-    return allAreaLayers.filter(area => {
-      // If we have a specific contractorId filter, only show that one
-      if (selectedContractorId) {
-        return area.contractorId === selectedContractorId;
+    // Get contractors that match the current filters
+    const filteredContractors = mapData?.contractors.filter(contractor => {
+      // Apply mineral type filter (contractType)
+      if (filters.contractType && filters.contractType !== 'all' && 
+          contractor.contractType !== filters.contractType) {
+        return false;
       }
       
-      // Otherwise show all areas belonging to the filtered contractors
-      return contractorIds.includes(area.contractorId);
-    });
-  }, [allAreaLayers, mapData, filters, selectedContractorId]);
+      // Apply sponsoring state filter
+      if (filters.sponsoringState && filters.sponsoringState !== 'all' && 
+          contractor.sponsoringState !== filters.sponsoringState) {
+        return false;
+      }
+      
+      // Apply year filter (if it exists in your filter object)
+      if (filters.contractualYear && filters.contractualYear !== 'all' && 
+          contractor.contractualYear !== filters.contractualYear) {
+        return false;
+      }
+      
+      // If all filters pass, include this contractor
+      return true;
+    }) || [];
+    
+    // Get the IDs of contractors that match filters
+    const filteredContractorIds = filteredContractors.map(c => c.contractorId);
+    
+    // If we have a specific contractor selected, only show that one's areas
+    // regardless of other filters
+    if (selectedContractorId) {
+      return allAreaLayers.filter(area => area.contractorId === selectedContractorId);
+    }
+    
+    // Otherwise filter area layers to only those belonging to the filtered contractors
+    return allAreaLayers.filter(area => 
+      filteredContractorIds.includes(area.contractorId)
+    );
+  }, [allAreaLayers, mapData?.contractors, filters, selectedContractorId]);
+  
+  const {
+    handleViewStateChange,
+    handleCruiseClick,
+    handleMarkerClick,
+    handlePanelClose,
+    handleCloseAllPanels,
+    handleViewContractorSummary,
+    handleResetFilters,
+    handleBlockClick,
+    handleMapHover,
+    handleAreaClick,
+    handleStationHover,
+    toggleSummaryPanel
+  } = useMapInteractions({
+    mapRef,
+    viewState,
+    setViewState,
+    setUserHasSetView,
+    setViewBounds,
+    updateClusters,
+    setSelectedCruiseId,
+    setDetailPanelType,
+    setShowDetailPanel,
+    setPopupInfo,
+    setSelectedStation,
+    zoomToCruise,
+    zoomToArea,
+    zoomToBlock,
+    setShowCruises,
+    resetFilters,
+    fetchBlockAnalytics,
+    blockAnalytics,
+    setBlockAnalytics,
+    visibleAreaLayers, // Use visibleAreaLayers, not allAreaLayers
+    selectedContractorId,
+    contractorSummary,
+    setContractorSummary,
+    fetchContractorSummary,
+    setToastMessage,
+    setShowToast
+  });
+
+  // Get selected entities
+  const selectedContractor = mapData?.contractors.find(c => c.contractorId === selectedContractorId) || null;
+  const selectedCruise = mapData?.cruises.find(c => c.cruiseId === selectedCruiseId) || null;
 
   // Ensure cruises are visible when a cruise is selected
   useEffect(() => {
     if (selectedCruiseId) {
-      // Always ensure cruises are visible when a cruise is selected
       setShowCruises(true);
-      console.log("Cruise selected, ensuring cruise markers are visible");
     }
   }, [selectedCruiseId]);
   
@@ -165,22 +228,17 @@ const EnhancedMapComponent = () => {
   
   // Effect for smart zooming when selection changes
   useEffect(() => {
-    // When contractor selection changes, trigger smart zoom
     if (mapRef.current) {
       smartZoom();
     }
   }, [selectedContractorId, smartZoom]);
   
-  // New effect for zooming to cruise when selected
+  // Effect for zooming to cruise when selected
   useEffect(() => {
     if (selectedCruiseId && mapData && mapRef.current) {
-      // Find the selected cruise
       const selectedCruise = mapData.cruises.find(c => c.cruiseId === selectedCruiseId);
       if (selectedCruise) {
-        // Make sure cruises are visible when selecting a cruise
         setShowCruises(true);
-        
-        // Zoom to the cruise
         zoomToCruise(selectedCruise, setShowCruises);
       }
     }
@@ -188,12 +246,9 @@ const EnhancedMapComponent = () => {
   
   // Load GeoJSON when filters change
   useEffect(() => {
-    // Only load if we have data and haven't loaded these contractors yet
     if (mapData?.contractors && initialLoadComplete) {
       const shouldReloadLayers = 
-        // If we have no layers yet but have contractors
         (allAreaLayers.length === 0 && mapData.contractors.length > 0) || 
-        // OR we have different contractor IDs than before
         (mapData.contractors.some(c => 
           !allAreaLayers.some(area => area.contractorId === c.contractorId)
         ));
@@ -215,7 +270,6 @@ const EnhancedMapComponent = () => {
         
         return contractor.areas.reduce((total, area) => {
           const areaSize = area.totalAreaSizeKm2;
-          // Check if the area size is a valid number
           return total + (typeof areaSize === 'number' && !isNaN(areaSize) ? areaSize : 0);
         }, 0);
       };
@@ -269,7 +323,6 @@ const EnhancedMapComponent = () => {
         }
       });
       
-      console.log("Updated summary data:", summary);
       setSummaryData(summary);
     }
   }, [mapData, selectedContractorId]);
@@ -284,7 +337,7 @@ const EnhancedMapComponent = () => {
         setShowCruises(show);
       };
       
-      // Expose zoomToBlock and zoomToArea functions for search results
+      // Expose zoomToBlock function for search results
       window.showBlockAnalytics = (blockId) => {
         // Find the block first
         const block = visibleAreaLayers.flatMap(area => area.blocks || [])
@@ -308,7 +361,7 @@ const EnhancedMapComponent = () => {
         }
       };
       
-      // Modified showCruiseDetails function with optional details panel
+      // Function for showing cruise details
       window.showCruiseDetails = (cruiseId, showDetails = false) => {
         // Find cruise
         const cruise = mapData?.cruises.find(c => c.cruiseId === cruiseId);
@@ -349,135 +402,33 @@ const EnhancedMapComponent = () => {
     }
     
     return () => {
+      // Clean up global objects
       window.mapInstance = null;
       window.showBlockAnalytics = null;
       window.showCruiseDetails = null;
       window.showStationDetails = null;
       window.showCruises = null;
     };
-  }, [mapRef.current, visibleAreaLayers, mapData, zoomToBlock, zoomToCruise, getAllStations, fetchBlockAnalytics, setSelectedStation, setSelectedCruiseId, setDetailPanelType, setShowDetailPanel]);
+  }, [
+    mapRef.current, 
+    visibleAreaLayers, 
+    mapData, 
+    zoomToBlock, 
+    zoomToCruise, 
+    getAllStations, 
+    fetchBlockAnalytics, 
+    setSelectedStation, 
+    setSelectedCruiseId, 
+    setDetailPanelType, 
+    setShowDetailPanel
+  ]);
 
-  // Handle view state change
-  const handleViewStateChange = (evt) => {
-    setViewState(evt.viewState);
-    // User has manually changed the view
-    setUserHasSetView(true);
-    
-    // Update view bounds for future API requests
-    if (mapRef.current) {
-      const bounds = mapRef.current.getMap().getBounds();
-      setViewBounds({
-        minLat: bounds.getSouth(),
-        maxLat: bounds.getNorth(),
-        minLon: bounds.getWest(),
-        maxLon: bounds.getEast()
-      });
+  // Effect for pendingZoom
+  useEffect(() => {
+    if (pendingZoomContractorId && allAreaLayers.length > 0) {
+      smartZoom();
     }
-    
-    // Update clusters when view changes
-    updateClusters(evt.viewState);
-  };
-  
-  const handleCruiseClick = (cruise) => {
-    console.log("Cruise clicked:", cruise.cruiseName);
-    setSelectedCruiseId(cruise.cruiseId);
-    setDetailPanelType('cruise');
-    setShowDetailPanel(true);
-    setPopupInfo(null); // Close any open popups
-    
-    // Make sure cruises stay visible and zoom to the cruise
-    setShowCruises(true);
-    zoomToCruise(cruise, setShowCruises);
-  };
-  
-  // Handle marker click
-  const handleMarkerClick = (station) => {
-    setSelectedStation(station);
-    setDetailPanelType('station');
-    setShowDetailPanel(true);
-    setPopupInfo(null); // Close any open popup
-    
-    // Find cruise
-    if (mapData) {
-      const cruise = mapData.cruises.find(c => 
-        c.stations?.some(s => s.stationId === station.stationId)
-      );
-      if (cruise) {
-        setSelectedCruiseId(cruise.cruiseId);
-      }
-    }
-  };
-  
-  // Handle panel close
-  const handlePanelClose = () => {
-    // Only reset the UI state, but keep the contractor summary data
-    setShowDetailPanel(false);
-    setDetailPanelType(null);
-    
-    // Only reset station selection, keep contractor selection and data
-    setSelectedStation(null);
-    
-    // Only reset block analytics
-    setBlockAnalytics(null);
-  };
-
-  const handleCloseAllPanels = useCallback(() => {
-    // Close the detail panel
-    setShowDetailPanel(false);
-    setDetailPanelType(null);
-    
-    // Close the summary panel
-    setShowSummaryPanel(false);
-    
-    // Reset selected items
-    setSelectedStation(null);
-    
-    // Reset analytics data but don't clear selection
-    setBlockAnalytics(null);
-    setContractorSummary(null);
-  }, [setShowDetailPanel, setDetailPanelType, setShowSummaryPanel, setSelectedStation]);
-
-  // View contractor summary
-  const handleViewContractorSummary = useCallback(() => {
-    if (selectedContractorId && contractorSummary) {
-      setDetailPanelType('contractorSummary');
-      setShowDetailPanel(true);
-    } else if (selectedContractorId) {
-      // If we have the ID but no summary, fetch it first
-      fetchContractorSummary(
-        selectedContractorId, 
-        setContractorSummary, 
-        setToastMessage, 
-        setShowToast
-      ).then((summary) => {
-        if (summary) {
-          setDetailPanelType('contractorSummary');
-          setShowDetailPanel(true);
-        }
-      });
-    }
-  }, [selectedContractorId, contractorSummary, fetchContractorSummary, setDetailPanelType, setShowDetailPanel]);
-  
-  // Handle reset filters with smart zooming
-  const handleResetFilters = () => {
-    resetFilters();
-    setUserHasSetView(false); // Allow auto-zooming after reset
-    // The global view zoom will be handled by the smartZoom effect
-  };
-
-  // Handle block click
-  const handleBlockClick = (blockId) => {
-    fetchBlockAnalytics(
-      blockId, 
-      setBlockAnalytics, 
-      setDetailPanelType, 
-      setShowDetailPanel, 
-      zoomToBlock, 
-      visibleAreaLayers, 
-      setToastMessage, 
-      setShowToast
-    );
-  };
+  }, [allAreaLayers, pendingZoomContractorId, smartZoom]);
 
   // Loading/error states
   if (loading && !mapData) {
@@ -539,7 +490,6 @@ const EnhancedMapComponent = () => {
           area.blocks?.map(block => `block-fill-${block.blockId}`) || []
         )}
         onLoad={() => {
-          console.log("Map successfully loaded!");
           window.mapInstance = mapRef.current?.getMap();
           
           // Initial view on first load - only once
@@ -556,84 +506,32 @@ const EnhancedMapComponent = () => {
         />
         
         {/* Coordinates display */}
-        <div className={styles.coordinateDisplay}>
-          {cursorPosition.latitude}, {cursorPosition.longitude}
-        </div>
-
-        {/* Areas Layers */}
-        {showAreas && visibleAreaLayers.map(area => (
-          <AreaLayer key={`area-${area.areaId}`} area={area} />
-        ))}
-        
-        {/* Blocks Layers */}
-        {showBlocks && visibleAreaLayers.flatMap(area => 
-          area.blocks ? area.blocks.map(block => (
-            <BlockLayer 
-              key={`block-${block.blockId}`} 
-              block={block} 
-              hoveredBlockId={hoveredBlockId}
-              onBlockClick={handleBlockClick}
-            />
-          )) : []
-        )}
-
-        {/* Cruises Layer */}
-        <CruiseLayer 
-          cruises={mapData?.cruises || []} 
-          showCruises={showCruises} 
-          onCruiseClick={handleCruiseClick} 
+        <CoordinateDisplay 
+          latitude={cursorPosition.latitude} 
+          longitude={cursorPosition.longitude} 
         />
-        
-        {/* Stations Layer */}
-        <StationLayer 
-          clusters={clusters} 
-          showStations={showStations} 
+
+        {/* Map Layers Component - Use visibleAreaLayers instead of allAreaLayers */}
+        <MapLayers 
+          showAreas={showAreas}
+          showBlocks={showBlocks}
+          showStations={showStations}
+          showCruises={showCruises}
+          areas={visibleAreaLayers}  // Use filtered layers here
+          cruises={mapData?.cruises || []}
+          clusters={clusters}
           clusterIndex={clusterIndex}
           mapRef={mapRef}
+          hoveredBlockId={hoveredBlockId}
+          onBlockClick={handleBlockClick}
+          onCruiseClick={handleCruiseClick}
           onStationClick={handleMarkerClick}
+          popupInfo={popupInfo}
+          setPopupInfo={setPopupInfo}
         />
 
-        {/* Popup for station info */}
-        {popupInfo && (
-          <Popup
-            longitude={popupInfo.longitude}
-            latitude={popupInfo.latitude}
-            anchor="bottom"
-            onClose={() => setPopupInfo(null)}
-            className={styles.mapPopup}
-            closeOnClick={false}
-          >
-            <div className={styles.popupContent}>
-              <h3>{popupInfo.stationCode}</h3>
-              <div className={styles.popupGrid}>
-                <div className={styles.popupItem}>
-                  <span className={styles.popupLabel}>Type</span>
-                  <span>{popupInfo.stationType || 'Unknown'}</span>
-                </div>
-                <div className={styles.popupItem}>
-                  <span className={styles.popupLabel}>Status</span>
-                  <span>{popupInfo.contractorAreaBlockId ? 'Associated' : 'Unassociated'}</span>
-                </div>
-              </div>
-              <button 
-                className={styles.viewDetailsButton}
-                onClick={() => handleMarkerClick(popupInfo)}
-              >
-                View Details
-              </button>
-            </div>
-          </Popup>
-        )}
-
         {/* Loading overlay */}
-        {(loading || localLoading) && (
-          <div className={styles.mapLoadingOverlay}>
-            <div className={styles.spinnerContainer}>
-              <div className={styles.spinner}></div>
-            </div>
-            <p className={styles.loadingText}>Loading map data...</p>
-          </div>
-        )}
+        {(loading || localLoading) && <LoadingOverlay />}
       </Map>
       
       {/* Detail panels */}
@@ -682,20 +580,15 @@ const EnhancedMapComponent = () => {
         />
       )}
 
-      {/* Toast */}
+      {/* Toast Notification */}
       {showToast && (
-        <div className={styles.toast}>
-          <span>{toastMessage}</span>
-          <button 
-            onClick={() => setShowToast(false)}
-            className={styles.toastCloseButton}
-          >
-            ×
-          </button>
-        </div>
+        <ToastNotification 
+          message={toastMessage} 
+          onClose={() => setShowToast(false)} 
+        />
       )}
     </div>
   );
 };
 
-export default EnhancedMapComponent;
+export default MapComponent;
