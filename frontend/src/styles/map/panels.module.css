@@ -135,20 +135,103 @@
     grid-template-columns: 1fr 1fr;
     gap: 12px;
 }
+
+/* ========== BLOCK ANALYTICS PANEL STYLES ========== */
+/* Improved grid layout for block info */
+.blockBasicInfoGrid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+/* Info group styling */
+.infoGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.infoLabel {
+    font-size: 0.85rem;
+    color: #78909c;
+    font-weight: 400;
+}
+
+.infoValue {
+    font-size: 0.95rem;
+    color: #37474f;
+    font-weight: 500;
+}
+
+/* Section divider */
+.sectionDivider {
+    height: 1px;
+    background-color: #eaeaea;
+    margin: 20px 0;
+}
+
+/* Section title */
+.sectionTitle {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #37474f;
+    margin-bottom: 16px;
+}
+
+/* Status badge styling enhancement */
+.statusBadge {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: white;
+    text-align: center;
+    min-width: 80px;
+}
+
+.statusActive {
+    background-color: #4CAF50;
+}
+
+.statusPending {
+    background-color: #FFC107;
+}
+
+.statusInactive {
+    background-color: #9E9E9E;
+}
+
+.statusReserved {
+    background-color: #3b82f6;
+}
+
+/* Data category styling */
+.dataCategory {
+    margin-bottom: 20px;
+}
+
+.dataCategory h5 {
+    margin-bottom: 10px;
+    font-size: 0.95rem;
+    color: #37474f;
+}
   
 .analyticsCounts,
 .compactSummaryStats {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
     gap: 12px;
-    margin-bottom: 16px;
+    margin-bottom: 24px;
 }
   
 .analyticsCount,
 .statBox {
-    background-color: #f8f9fa;
+    background-color: #f8fafc;
+    border: 1px solid #e2e8f0;
     border-radius: 6px;
-    padding: 12px;
+    padding: 12px 8px;
     text-align: center;
     display: flex;
     flex-direction: column;
@@ -156,14 +239,15 @@
     transition: transform 0.2s ease;
 }
   
-.statBox:hover {
+.statBox:hover,
+.analyticsCount:hover {
     transform: translateY(-3px);
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
   
 .countValue,
 .statValue {
-    font-size: 1.5rem;
+    font-size: 1.3rem;
     font-weight: 600;
     color: #0277bd;
     margin-bottom: 4px;
@@ -171,8 +255,8 @@
   
 .countLabel,
 .statLabel {
-    font-size: 0.85rem;
-    color: #546e7a;
+    font-size: 0.8rem;
+    color: #64748b;
 }
   
 .expeditionInfo {
@@ -232,8 +316,8 @@
 /* ========== CARD CONTAINER STYLES - For Station Samples and Cruise Stations tables ========== */
 .card {
     background-color: white;
-    border-radius: 8px;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+    border-radius: 6px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
     border: 1px solid #e2e8f0;
     overflow: hidden;
     margin-bottom: 16px;
