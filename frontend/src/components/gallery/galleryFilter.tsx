@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { CustomDropdown } from '../filters/CustomDropdown';
+import { CustomDropdown } from '../map/filters/CustomDropdown';
 import styles from '../../styles/gallery/gallery.module.css';
 import mapStyles from '../../styles/map/filter.module.css';
 

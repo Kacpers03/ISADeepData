@@ -1,6 +1,6 @@
 // src/components/filters/FilterOptions.tsx
 import React from 'react';
-import styles from '../../styles/map/filter.module.css';
+import styles from '../../../styles/map/filter.module.css';
 import { CustomDropdown } from './CustomDropdown';
 
 interface FilterOptionsProps {

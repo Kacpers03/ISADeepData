@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import styles from '../../styles/map/filter.module.css';
+import styles from '../../../styles/map/filter.module.css';
 
 interface CustomDropdownProps {
   id: string;

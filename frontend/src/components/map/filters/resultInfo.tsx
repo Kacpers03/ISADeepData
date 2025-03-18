@@ -1,6 +1,6 @@
 // src/components/filters/ResultsInfo.tsx
 import React from 'react';
-import styles from '../../styles/map/filter.module.css';
+import styles from '../../../styles/map/filter.module.css';
 
 interface ResultsInfoProps {
   loading: boolean;

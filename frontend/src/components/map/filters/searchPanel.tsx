@@ -1,6 +1,6 @@
 // src/components/filters/SearchPanel.tsx
 import React, { useCallback } from 'react';
-import styles from '../../styles/map/filter.module.css';
+import styles from '../../../styles/map/filter.module.css';
 
 interface SearchPanelProps {
   searchQuery: string;

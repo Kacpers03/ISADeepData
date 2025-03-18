@@ -1,9 +1,9 @@
 // src/components/filters/filterPanel.tsx
 import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
-import { useFilter } from '../../components/map/context/filterContext';
-import styles from '../../styles/map/filter.module.css';
+import { useFilter } from '../context/filterContext';
+import styles from '../../../styles/map/filter.module.css';
 import { CustomDropdown } from './CustomDropdown';
-import { locationBoundaries } from '../../constants/locationBoundaries';
+import { locationBoundaries } from '../../../constants/locationBoundaries';
 import SearchPanel from './searchPanel';
 import FilterOptions from './filterOptions';
 import ResultsInfo from './resultInfo';
