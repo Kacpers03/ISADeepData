@@ -1,4 +1,4 @@
-// frontend/src/contexts/filterContext/useFilterData.ts
+// frontend/src/components/map/filterHooks/useFilterData.ts
 import { useState, useEffect, useCallback } from 'react';
 import { MapData, FilterOptions } from '../../../types/filter-types';
 import { apiService } from '../../../services/api-service';
@@ -113,7 +113,7 @@ export const useFilterData = (
     }
   }, [filters, updateMapData]);
   
-  // This is the complete filterExistingData function with fixes for the filtering issues
+  // This is the completely revised filterExistingData function that fixes the relationship issues
   const filterExistingData = useCallback(() => {
     if (!originalMapData) {
       console.log("No original data available for filtering");
@@ -129,11 +129,14 @@ export const useFilterData = (
         cruises: JSON.parse(JSON.stringify(originalMapData.cruises))
       };
       
+      // Check if contractor filter is active - this is important for relationship logic
+      const contractorIdSpecified = !!filters.contractorId;
+      
       // STEP 1: Filter contractors based on ALL applied filters simultaneously
       let filteredContractors = [...filteredData.contractors];
       
       // Filter by contractor ID if specified
-      if (filters.contractorId) {
+      if (contractorIdSpecified) {
         console.log(`Filtering by contractorId: ${filters.contractorId}`);
         filteredContractors = filteredContractors.filter(c => c.contractorId === filters.contractorId);
       }
@@ -222,14 +225,20 @@ export const useFilterData = (
       // Update the filtered contractors in the result
       filteredData.contractors = filteredContractors;
       
-      // STEP 2: Get filtered contractor IDs for relationship filtering
-      const filteredContractorIds = new Set(filteredContractors.map(c => c.contractorId));
-      
-      // STEP 3: Filter cruises - IMPROVED to ensure selected cruises remain visible
-      // Get all cruises that belong to filtered contractors
-      let filteredCruises = filteredData.cruises.filter(cruise => 
-        filteredContractorIds.has(cruise.contractorId)
-      );
+      // STEP 2: CRITICAL FIX - Handle cruises based on contractor filter
+      if (contractorIdSpecified) {
+        // ALWAYS keep ALL cruises for the selected contractor
+        filteredData.cruises = originalMapData.cruises.filter(cruise => 
+          cruise.contractorId === filters.contractorId
+        );
+        console.log(`Keeping all ${filteredData.cruises.length} cruises for contractor ${filters.contractorId}`);
+      } else {
+        // For other filter combinations, filter cruises based on filtered contractors
+        const filteredContractorIds = new Set(filteredContractors.map(c => c.contractorId));
+        filteredData.cruises = filteredData.cruises.filter(cruise => 
+          filteredContractorIds.has(cruise.contractorId)
+        );
+      }
       
       // IMPORTANT FIX: If specific cruise is selected, make sure to include it no matter what
       if (filters.cruiseId) {
@@ -240,15 +249,15 @@ export const useFilterData = (
         
         if (selectedCruise) {
           // Check if it's already in the filtered results
-          const alreadyIncluded = filteredCruises.some(c => c.cruiseId === filters.cruiseId);
+          const alreadyIncluded = filteredData.cruises.some(c => c.cruiseId === filters.cruiseId);
           
           if (!alreadyIncluded) {
             console.log(`Adding selected cruise back to filtered results`);
             // If it's not already included, add it
-            filteredCruises.push(selectedCruise);
+            filteredData.cruises.push(selectedCruise);
             
             // Also make sure its contractor is included
-            if (!filteredContractorIds.has(selectedCruise.contractorId)) {
+            if (!filteredContractors.some(c => c.contractorId === selectedCruise.contractorId)) {
               const cruiseContractor = originalMapData.contractors.find(
                 c => c.contractorId === selectedCruise.contractorId
               );
@@ -262,19 +271,19 @@ export const useFilterData = (
         }
       }
       
-      // Apply location filter to cruises if needed
-      if (filters.locationId && filters.locationId !== 'all') {
+      // Apply location filter to cruises if needed (only if no contractor is selected)
+      if (filters.locationId && filters.locationId !== 'all' && !contractorIdSpecified) {
         const locationBoundary = getLocationBoundaryById(filters.locationId);
         
         if (locationBoundary) {
           // Keep track of the selected cruise ID to make sure it's retained
           let selectedCruise = null;
           if (filters.cruiseId) {
-            selectedCruise = filteredCruises.find(c => c.cruiseId === filters.cruiseId);
+            selectedCruise = filteredData.cruises.find(c => c.cruiseId === filters.cruiseId);
           }
           
           // Filter cruises by location
-          filteredCruises = filteredCruises.filter(cruise => {
+          filteredData.cruises = filteredData.cruises.filter(cruise => {
             // Always keep the selected cruise
             if (filters.cruiseId && cruise.cruiseId === filters.cruiseId) {
               return true;
@@ -296,44 +305,11 @@ export const useFilterData = (
           });
           
           // If we have a selected cruise, ensure it's in the results
-          if (selectedCruise && !filteredCruises.some(c => c.cruiseId === filters.cruiseId)) {
-            filteredCruises.push(selectedCruise);
+          if (selectedCruise && !filteredData.cruises.some(c => c.cruiseId === filters.cruiseId)) {
+            filteredData.cruises.push(selectedCruise);
           }
           
-          console.log(`Filtered to ${filteredCruises.length} cruises in location ${locationBoundary.name}`);
-        }
-      }
-      
-      // Update the filtered cruises in the result
-      filteredData.cruises = filteredCruises;
-      
-      // STEP 4: Apply further filtering to stations within cruises based on location
-      if (filters.locationId && filters.locationId !== 'all') {
-        const locationBoundary = getLocationBoundaryById(filters.locationId);
-        
-        if (locationBoundary) {
-          // Loop through each cruise to filter its stations
-          filteredData.cruises.forEach(cruise => {
-            if (cruise.stations && cruise.stations.length > 0) {
-              // If this is the selected cruise, keep all its stations
-              if (filters.cruiseId && cruise.cruiseId === filters.cruiseId) {
-                // Keep all stations for the selected cruise
-                console.log(`Keeping all stations for selected cruise: ${cruise.cruiseId}`);
-              } else {
-                // Filter stations by location for other cruises
-                cruise.stations = cruise.stations.filter(station =>
-                  isPointInLocation(station.latitude, station.longitude, filters.locationId!)
-                );
-              }
-            }
-          });
-          
-          // Count total stations after filtering
-          const totalStations = filteredData.cruises.reduce(
-            (sum, cruise) => sum + (cruise.stations?.length || 0), 0
-          );
-          
-          console.log(`Filtered to ${totalStations} stations in location ${locationBoundary.name}`);
+          console.log(`Filtered to ${filteredData.cruises.length} cruises in location ${locationBoundary.name}`);
         }
       }
       
@@ -371,7 +347,7 @@ export const useFilterData = (
     
   }, [originalMapData, refreshData, resetFilters, updateMapData]);
   
-  // Main data loading logic - FIX: Optimize the dependencies and conditional logic
+  // Main data loading logic
   useEffect(() => {
     const loadInitialData = async () => {
       if (!initialDataLoaded) {

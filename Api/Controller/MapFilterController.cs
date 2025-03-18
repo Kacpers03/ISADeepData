@@ -251,159 +251,164 @@ namespace Api.Controllers
             return media;
         }
 
-        // Comprehensive endpoint that combines data for map display
-        [HttpGet("map-data")]
-        public async Task<ActionResult<object>> GetMapData(
-            [FromQuery] int? contractorId,
-            [FromQuery] int? contractTypeId, 
-            [FromQuery] int? contractStatusId,
-            [FromQuery] string? sponsoringState,
-            [FromQuery] int? year,
-            [FromQuery] int? cruiseId)
+       // In the GetMapData method of MapFilterController.cs
+
+[HttpGet("map-data")]
+public async Task<ActionResult<object>> GetMapData(
+    [FromQuery] int? contractorId,
+    [FromQuery] int? contractTypeId, 
+    [FromQuery] int? contractStatusId,
+    [FromQuery] string? sponsoringState,
+    [FromQuery] int? year,
+    [FromQuery] int? cruiseId)
+{
+    // Start with contractors query
+    var contractorsQuery = _context.Contractors.AsQueryable();
+    
+    if (contractorId.HasValue)
+    {
+        contractorsQuery = contractorsQuery.Where(c => c.ContractorId == contractorId.Value);
+    }
+    
+    if (contractTypeId.HasValue)
+    {
+        contractorsQuery = contractorsQuery.Where(c => c.ContractTypeId == contractTypeId.Value);
+    }
+    
+    if (contractStatusId.HasValue)
+    {
+        contractorsQuery = contractorsQuery.Where(c => c.ContractStatusId == contractStatusId.Value);
+    }
+    
+    if (!string.IsNullOrWhiteSpace(sponsoringState))
+    {
+        contractorsQuery = contractorsQuery.Where(c => c.SponsoringState == sponsoringState);
+    }
+    
+    if (year.HasValue)
+    {
+        contractorsQuery = contractorsQuery.Where(c => c.ContractualYear == year.Value);
+    }
+
+    // Get contractors with their related areas and blocks
+    var contractors = await contractorsQuery
+        .Include(c => c.ContractType)
+        .Include(c => c.ContractStatus)
+        .Include(c => c.ContractorAreas)
+        .ThenInclude(a => a.ContractorAreaBlocks)
+        .ToListAsync();
+
+    // MODIFIED CRUISE QUERY LOGIC - this is the key change:
+    var cruisesQuery = _context.Cruises.AsQueryable();
+    
+    // If a specific cruise ID is requested
+    if (cruiseId.HasValue)
+    {
+        cruisesQuery = cruisesQuery.Where(c => c.CruiseId == cruiseId.Value);
+    }
+    // If a specific contractor ID is requested, get ALL cruises for that contractor
+    else if (contractorId.HasValue)
+    {
+        cruisesQuery = cruisesQuery.Where(c => c.ContractorId == contractorId.Value);
+    }
+    // Otherwise, get cruises for all filtered contractors
+    else if (contractors.Any())
+    {
+        var contractorIds = contractors.Select(c => c.ContractorId).ToList();
+        cruisesQuery = cruisesQuery.Where(c => contractorIds.Contains(c.ContractorId));
+    }
+
+    // Get cruises with their stations
+    var cruises = await cruisesQuery
+        .Include(c => c.Stations)
+        .ToListAsync();
+
+    // Collect all stations for the selected cruises
+    var stationIds = cruises.SelectMany(c => c.Stations.Select(s => s.StationId)).ToList();
+
+    // Get all samples for these stations
+    var samples = await _context.Samples
+        .Where(s => stationIds.Contains(s.StationId))
+        .ToListAsync();
+
+    // Get all photos/videos for these samples
+    var sampleIds = samples.Select(s => s.SampleId).ToList();
+    var media = await _context.PhotoVideos
+        .Where(p => sampleIds.Contains(p.SampleId))
+        .ToListAsync();
+
+    // Organize the data in a structured format
+    var result = new
+    {
+        Contractors = contractors.Select(c => new 
         {
-            // Start with contractors query
-            var contractorsQuery = _context.Contractors.AsQueryable();
-            
-            if (contractorId.HasValue)
+            c.ContractorId,
+            c.ContractorName,
+            ContractType = c.ContractType.ContractTypeName,
+            ContractStatus = c.ContractStatus.ContractStatusName,
+            c.ContractNumber,
+            c.SponsoringState,
+            c.ContractualYear,
+            Areas = c.ContractorAreas.Select(a => new
             {
-                contractorsQuery = contractorsQuery.Where(c => c.ContractorId == contractorId.Value);
-            }
-            
-            if (contractTypeId.HasValue)
-            {
-                contractorsQuery = contractorsQuery.Where(c => c.ContractTypeId == contractTypeId.Value);
-            }
-            
-            if (contractStatusId.HasValue)
-            {
-                contractorsQuery = contractorsQuery.Where(c => c.ContractStatusId == contractStatusId.Value);
-            }
-            
-            if (!string.IsNullOrWhiteSpace(sponsoringState))
-            {
-                contractorsQuery = contractorsQuery.Where(c => c.SponsoringState == sponsoringState);
-            }
-            
-            if (year.HasValue)
-            {
-                contractorsQuery = contractorsQuery.Where(c => c.ContractualYear == year.Value);
-            }
-
-            // Get contractors with their related areas and blocks
-            var contractors = await contractorsQuery
-                .Include(c => c.ContractType)
-                .Include(c => c.ContractStatus)
-                .Include(c => c.ContractorAreas)
-                .ThenInclude(a => a.ContractorAreaBlocks)
-                .ToListAsync();
-
-            var cruisesQuery = _context.Cruises.AsQueryable();
-            
-            if (cruiseId.HasValue)
-            {
-                cruisesQuery = cruisesQuery.Where(c => c.CruiseId == cruiseId.Value);
-            }
-            else if (contractorId.HasValue)
-            {
-                cruisesQuery = cruisesQuery.Where(c => c.ContractorId == contractorId.Value);
-            }
-            else if (contractors.Any())
-            {
-                var contractorIds = contractors.Select(c => c.ContractorId).ToList();
-                cruisesQuery = cruisesQuery.Where(c => contractorIds.Contains(c.ContractorId));
-            }
-
-            // Get cruises with their stations
-            var cruises = await cruisesQuery
-                .Include(c => c.Stations)
-                .ToListAsync();
-
-            // Collect all stations for the selected cruises
-            var stationIds = cruises.SelectMany(c => c.Stations.Select(s => s.StationId)).ToList();
-
-            // Get all samples for these stations
-            var samples = await _context.Samples
-                .Where(s => stationIds.Contains(s.StationId))
-                .ToListAsync();
-
-            // Get all photos/videos for these samples
-            var sampleIds = samples.Select(s => s.SampleId).ToList();
-            var media = await _context.PhotoVideos
-                .Where(p => sampleIds.Contains(p.SampleId))
-                .ToListAsync();
-
-            // Organize the data in a structured format
-            var result = new
-            {
-                Contractors = contractors.Select(c => new 
+                a.AreaId,
+                a.AreaName,
+                a.AreaDescription,
+                Blocks = a.ContractorAreaBlocks.Select(b => new
                 {
-                    c.ContractorId,
-                    c.ContractorName,
-                    ContractType = c.ContractType.ContractTypeName,
-                    ContractStatus = c.ContractStatus.ContractStatusName,
-                    c.ContractNumber,
-                    c.SponsoringState,
-                    c.ContractualYear,
-                    Areas = c.ContractorAreas.Select(a => new
+                    b.BlockId,
+                    b.BlockName,
+                    b.BlockDescription,
+                    b.Status
+                })
+            })
+        }),
+        Cruises = cruises.Select(c => new
+        {
+            c.CruiseId,
+            c.CruiseName,
+            c.ResearchVessel,
+            c.StartDate,
+            c.EndDate,
+            c.ContractorId, // Make sure to include ContractorId for relationship
+            Stations = c.Stations.Select(s => new
+            {
+                s.StationId,
+                s.StationCode,
+                s.StationType,
+                s.Latitude,
+                s.Longitude,
+                Samples = samples
+                    .Where(sample => sample.StationId == s.StationId)
+                    .Select(sample => new
                     {
-                        a.AreaId,
-                        a.AreaName,
-                        a.AreaDescription,
-                        Blocks = a.ContractorAreaBlocks.Select(b => new
-                        {
-                            b.BlockId,
-                            b.BlockName,
-                            b.BlockDescription,
-                            b.Status
-                        })
-                    })
-                }),
-                Cruises = cruises.Select(c => new
-                {
-                    c.CruiseId,
-                    c.CruiseName,
-                    c.ResearchVessel,
-                    c.StartDate,
-                    c.EndDate,
-                    Stations = c.Stations.Select(s => new
-                    {
-                        s.StationId,
-                        s.StationCode,
-                        s.StationType,
-                        s.Latitude,
-                        s.Longitude,
-                        Samples = samples
-                            .Where(sample => sample.StationId == s.StationId)
-                            .Select(sample => new
+                        sample.SampleId,
+                        sample.SampleCode,
+                        sample.SampleType,
+                        sample.MatrixType,
+                        sample.HabitatType,
+                        sample.SamplingDevice,
+                        sample.DepthLower,
+                        sample.DepthUpper,
+                        sample.SampleDescription,
+                        Media = media
+                            .Where(m => m.SampleId == sample.SampleId)
+                            .Select(m => new
                             {
-                                sample.SampleId,
-                                sample.SampleCode,
-                                sample.SampleType,
-                                sample.MatrixType,
-                                sample.HabitatType,
-                                sample.SamplingDevice,
-                                sample.DepthLower,
-                                sample.DepthUpper,
-                                sample.SampleDescription,
-                                Media = media
-                                    .Where(m => m.SampleId == sample.SampleId)
-                                    .Select(m => new
-                                    {
-                                        m.MediaId,
-                                        m.FileName,
-                                        m.MediaType,
-                                        m.CameraSpecs,
-                                        m.CaptureDate,
-                                        m.Remarks
-                                    })
+                                m.MediaId,
+                                m.FileName,
+                                m.MediaType,
+                                m.CameraSpecs,
+                                m.CaptureDate,
+                                m.Remarks
                             })
                     })
-                })
-            };
+            })
+        })
+    };
 
-            return result;
-        }
-
+    return result;
+}
         // Get contract types for filtering
         [HttpGet("contract-types")]
         public async Task<ActionResult<IEnumerable<ContractTypeDto>>> GetContractTypes()

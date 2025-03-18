@@ -62,7 +62,8 @@ const MapComponent = () => {
     filters,
     setFilter,
     refreshData,
-    resetFilters
+    resetFilters,
+    originalMapData
   } = useFilter();
 
   // Use custom hooks for map state management
@@ -457,6 +458,39 @@ const MapComponent = () => {
       smartZoom();
     }
   }, [allAreaLayers, pendingZoomContractorId, smartZoom]);
+  
+  // NY USEEFFECT: Når en kontraktor er valgt, sørg for at cruise og stasjoner er synlige
+  useEffect(() => {
+    if (selectedContractorId) {
+      setShowCruises(true);   // Viktig! Sørg for at cruises vises
+      setShowStations(true);  // Viktig! Sørg for at stasjoner vises
+      console.log(`Contractor ${selectedContractorId} selected - ensuring cruises and stations are visible`);
+    }
+  }, [selectedContractorId]);
+  
+  // NY USEEFFECT: Diagnostikk-funksjon for feilsøking
+  useEffect(() => {
+    // Eksponere en diagnostikk-funksjon som kan kjøres fra konsollen
+    window.diagnoseMapData = () => {
+      const data = {
+        originalMapData,
+        currentMapData: mapData,
+        filters,
+        contractorCount: mapData?.contractors?.length || 0,
+        cruiseCount: mapData?.cruises?.length || 0,
+        stationCount: mapData?.cruises?.reduce((acc, c) => acc + (c.stations?.length || 0), 0) || 0,
+        selectedContractorId,
+        showCruises,  // Sjekk om cruises er satt til å vises
+        showStations  // Sjekk om stasjoner er satt til å vises
+      };
+      console.log("Map Data Diagnostics:", data);
+      return data;
+    };
+    
+    return () => {
+      window.diagnoseMapData = undefined;
+    };
+  }, [mapData, originalMapData, filters, selectedContractorId, showCruises, showStations]);
 
   // Loading/error states
   if (loading && !mapData) {
