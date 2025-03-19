@@ -1004,6 +1004,8 @@ namespace Api.Data
                     FileName = "MAR_Environmental_Baseline_2018.pdf", 
                     Title = "Environmental Baseline Study for the TAG Hydrothermal Field", 
                     Description = "Comprehensive description of the baseline environmental conditions at the TAG Hydrothermal Field exploration area", 
+                    Year = 2023,
+                    Country = "China",
                     SubmissionDate = new DateTime(2018, 12, 15), 
                     IsConfidential = false 
                 },
@@ -1014,6 +1016,8 @@ namespace Api.Data
                     FileName = "MAR_Mineral_Resource_Assessment_2020.pdf", 
                     Title = "Mineral Resource Assessment of Hydrothermal Deposits at the Mid-Atlantic Ridge", 
                     Description = "Technical report on the mineral potential of hydrothermal deposits in the exploration contract area", 
+                    Year = 2022,
+                    Country = "South-Korea",
                     SubmissionDate = new DateTime(2020, 9, 30), 
                     IsConfidential = true 
                 },
@@ -1026,6 +1030,8 @@ namespace Api.Data
                     FileName = "CIR_Environmental_Impact_Statement_2019.pdf", 
                     Title = "Environmental Impact Statement for Exploration Activities in the Central Indian Ridge", 
                     Description = "Assessment of potential environmental impacts from exploration activities", 
+                    Year = 2024,
+                    Country = "India",
                     SubmissionDate = new DateTime(2019, 5, 22), 
                     IsConfidential = false 
                 },
@@ -1038,6 +1044,8 @@ namespace Api.Data
                     FileName = "WP_Crusts_Resource_Report_2021.pdf", 
                     Title = "Cobalt-rich Ferromanganese Crusts Resource Assessment", 
                     Description = "Technical assessment of cobalt-rich crust resources in the Western Pacific exploration area", 
+                    Year = 2025,
+                    Country = "USA",
                     SubmissionDate = new DateTime(2021, 8, 15), 
                     IsConfidential = true 
                 },
@@ -1048,6 +1056,8 @@ namespace Api.Data
                     FileName = "WP_Seamount_Biodiversity_2022.pdf", 
                     Title = "Seamount Biodiversity Survey Results", 
                     Description = "Scientific report on the biodiversity observed on surveyed seamounts", 
+                    Year = 2022,
+                    Country = "USA",
                     SubmissionDate = new DateTime(2022, 2, 28), 
                     IsConfidential = false 
                 }

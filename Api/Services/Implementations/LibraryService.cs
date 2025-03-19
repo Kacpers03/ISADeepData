@@ -49,6 +49,8 @@ namespace Api.Services.Implementations
                 FileName = file.FileName, //  Only file name saved (e.g., "report.pdf")
                 Title = dto.Title,
                 Description = dto.Description,
+                Year = dto.Year,
+                Country = dto.Country,
                 SubmissionDate = dto.SubmissionDate,
                 IsConfidential = dto.IsConfidential
             };
@@ -71,6 +73,8 @@ namespace Api.Services.Implementations
                 FileName = Path.GetFileName(l.FileName), //  Still just the file name here
                 Title = l.Title,
                 Description = l.Description,
+                Year = l.Year,
+                Country = l.Country,
                 SubmissionDate = l.SubmissionDate,
                 IsConfidential = l.IsConfidential
             }).ToList();

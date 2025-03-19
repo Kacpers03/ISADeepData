@@ -158,6 +158,8 @@ namespace Api.Migrations
                     FileName = table.Column<string>(type: "TEXT", maxLength: 255, nullable: false),
                     Title = table.Column<string>(type: "TEXT", maxLength: 255, nullable: false),
                     Description = table.Column<string>(type: "TEXT", nullable: false),
+                    Year = table.Column<int>(type: "INTEGER", nullable: false),
+                    Country = table.Column<string>(type: "TEXT", nullable: false),
                     SubmissionDate = table.Column<DateTime>(type: "TEXT", nullable: false),
                     IsConfidential = table.Column<bool>(type: "INTEGER", nullable: false)
                 },

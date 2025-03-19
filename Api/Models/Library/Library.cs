@@ -26,6 +26,8 @@ namespace Models.Librarys
         public string Title { get; set; } // title
 
         public string Description { get; set; } // description
+        public int Year { get; set; }
+        public string Country { get; set; }
 
         public DateTime SubmissionDate { get; set; } // submission_date
 
