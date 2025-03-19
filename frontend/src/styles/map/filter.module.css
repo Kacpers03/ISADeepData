@@ -384,3 +384,12 @@
 .improvedFilterPanel.hasSelection {
   box-shadow: 0 4px 25px rgba(0, 119, 182, 0.15);
 }
+
+.resultsInfoWrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 24px;
+  border-top: 1px solid #e2e8f0;
+  background-color: white;
+}

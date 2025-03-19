@@ -21,6 +21,79 @@ const debounce = (func, wait) => {
   };
 };
 
+// Helper to escape CSV field values correctly
+const escapeCSV = (text) => {
+  if (text == null) return '';
+  return `"${String(text).replace(/"/g, '""')}"`;
+};
+
+// Convert map data to CSV format
+const convertToCSV = (data) => {
+  if (!data) return '';
+  
+  // Extract contractors, cruises, and stations from data
+  const contractors = data.contractors || [];
+  const cruises = data.cruises || [];
+  
+  // Create headers for CSV
+  const headers = ['Type', 'ID', 'Name', 'Contract Type', 'Sponsoring State', 'Contract Year', 'Location'];
+  
+  // Create rows for contractors
+  const contractorRows = contractors.map(c => [
+    'Contractor',
+    c.contractorId,
+    escapeCSV(c.contractorName),
+    escapeCSV(c.contractType || ''),
+    escapeCSV(c.sponsoringState || ''),
+    c.contractualYear || '',
+    ''
+  ]);
+  
+  // Create rows for cruises
+  const cruiseRows = cruises.map(c => [
+    'Cruise',
+    c.cruiseId,
+    escapeCSV(c.cruiseName || ''),
+    '',
+    '',
+    c.startDate ? new Date(c.startDate).getFullYear() : '',
+    ''
+  ]);
+  
+  // Create rows for stations
+  const stationRows = cruises.flatMap(c => 
+    (c.stations || []).map(s => [
+      'Station',
+      s.stationId,
+      escapeCSV(s.stationCode || ''),
+      '',
+      '',
+      '',
+      s.latitude && s.longitude ? `${s.latitude.toFixed(6)}, ${s.longitude.toFixed(6)}` : ''
+    ])
+  );
+  
+  // Combine all rows
+  const allRows = [headers, ...contractorRows, ...cruiseRows, ...stationRows];
+  
+  // Convert to CSV string
+  return allRows.map(row => row.join(',')).join('\n');
+};
+
+// Function to trigger the download
+const downloadCSV = (csvString, filename) => {
+  const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.setAttribute('href', url);
+  link.setAttribute('download', filename);
+  link.style.visibility = 'hidden';
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+};
+
 export const ImprovedFilterPanel = () => {
   const { 
     filters, 
@@ -295,6 +368,15 @@ export const ImprovedFilterPanel = () => {
     // Reset all filters using the context function
     resetFilters();
   }, [resetFilters]);
+
+  // CSV export functionality
+  const handleDownloadCSV = useCallback(() => {
+    if (!mapData) return;
+    
+    const csvData = convertToCSV(mapData);
+    const date = new Date().toISOString().split('T')[0];
+    downloadCSV(csvData, `exploration-data-${date}.csv`);
+  }, [mapData]);
   
   // If filter options aren't loaded yet, show loading
   if (!filterOptions) {
@@ -381,12 +463,13 @@ export const ImprovedFilterPanel = () => {
         />
       </div>
       
-      {/* Results Info Component */}
+      {/* Results Info Component with Download CSV button */}
       <ResultsInfo 
         loading={loading}
         contractorCount={contractorCount}
         cruiseCount={cruiseCount}
         stationCount={stationCount}
+        onDownloadCSV={handleDownloadCSV}
       />
     </div>
   );
