@@ -19,13 +19,13 @@ export default function FilesPage() {
   const [themes, setThemes] = useState<string[]>([]);
   const [filteredItems, setFilteredItems] = useState<any[]>([]); // Optional count display
 
-  // ✅ Fetch contractors
+  //  Fetch contractors
   useEffect(() => {
     const fetchContractors = async () => {
       try {
         const res = await fetch("http://localhost:5062/api/library/contractors");
         const data = await res.json();
-        console.log("📦 Raw contractor response:", data);
+        console.log(" Raw contractor response:", data);
 
         const formattedContractors = Array.isArray(data.result)
           ? data.result.map((name: string, index: number) => ({
@@ -34,48 +34,48 @@ export default function FilesPage() {
             }))
           : [];
 
-        console.log("✅ Formatted contractors:", formattedContractors);
+        console.log(" Formatted contractors:", formattedContractors);
         setContractors(formattedContractors);
       } catch (err) {
-        console.error("❌ Error fetching contractors:", err);
+        console.error(" Error fetching contractors:", err);
       }
     };
 
     fetchContractors();
   }, []);
 
-  // ✅ Fetch themes
+  //  Fetch themes
   useEffect(() => {
     const fetchThemes = async () => {
       try {
         const res = await fetch("http://localhost:5062/api/library/themes");
         const data = await res.json();
-        console.log("📦 Raw themes response:", data);
+        console.log(" Raw themes response:", data);
 
         const formattedThemes = Array.isArray(data.result) ? data.result : [];
-        console.log("✅ Cleaned themes:", formattedThemes);
+        console.log(" Cleaned themes:", formattedThemes);
 
         setThemes(formattedThemes);
       } catch (err) {
-        console.error("❌ Error fetching themes:", err);
+        console.error(" Error fetching themes:", err);
       }
     };
 
     fetchThemes();
   }, []);
 
-  // ✅ Static test countries/years for now
+  //  Static test countries/years for now
   useEffect(() => {
     setCountries(["Norway", "USA", "Germany", "China"]);
     setYears(["2022", "2023", "2024", "2025"]);
   }, []);
 
-  // ✅ Handle single filter change
+  //  Handle single filter change
   const handleFilterChange = (key: string, value: string) => {
     setFilters((prev) => ({ ...prev, [key]: value }));
   };
 
-  // ✅ Reset all filters
+  //  Reset all filters
   const handleResetFilters = () => {
     setFilters({
       country: "all",
