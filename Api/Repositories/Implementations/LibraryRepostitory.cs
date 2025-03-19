@@ -26,5 +26,13 @@ namespace Api.Repositories.Implementations
                 .Include(l => l.Contractor) // if needed
                 .ToListAsync();
         }
+
+        public async Task<List<Library>> GetAllLibrariesWithContractorsAsync()
+        {
+            return await _context.Libraries
+                .Include(l => l.Contractor)
+                .ToListAsync();
+        }
+
     }
 }

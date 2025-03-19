@@ -44,5 +44,19 @@ namespace Api.Controllers
 
             return Ok(list);
         }
+
+        [HttpGet("contractors")]
+        public IActionResult GetContractors()
+        {
+            var contractorNames = _libraryService.GetDistinctContractors();
+            return Ok(contractorNames);
+        }
+
+        [HttpGet("themes")]
+        public IActionResult GetThemes()
+        {
+            var themes = _libraryService.GetDistinctThemes();
+            return Ok(themes);
+        }
     }
 }

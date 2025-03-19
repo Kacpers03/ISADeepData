@@ -75,5 +75,30 @@ namespace Api.Services.Implementations
                 IsConfidential = l.IsConfidential
             }).ToList();
         }
+
+        public async Task<List<string>> GetDistinctContractors()
+        {
+            var libraries = await _libraryRepository.GetAllLibrariesWithContractorsAsync();
+
+            return libraries
+                .Where(l => l.Contractor != null && !string.IsNullOrEmpty(l.Contractor.ContractorName))
+                .Select(l => l.Contractor.ContractorName)
+                .Distinct()
+                .OrderBy(name => name)
+                .ToList();
+        }
+
+        public async Task<List<string>> GetDistinctThemes()
+        {
+            var libraries = await _libraryRepository.GetAllLibrariesAsync();
+
+            return libraries
+                .Where(l => !string.IsNullOrEmpty(l.Theme))
+                .Select(l => l.Theme)
+                .Distinct()
+                .OrderBy(theme => theme)
+                .ToList();
+        }
+
     }
 }

@@ -7,5 +7,7 @@ namespace Api.Services.Interfaces
     {
         Task<string> UploadFileAsync(IFormFile file, LibraryDto dto);
         Task<List<LibraryDto>> GetAllAsync();
+        Task<List<string>> GetDistinctContractors();
+        Task<List<string>> GetDistinctThemes();
     }
 }

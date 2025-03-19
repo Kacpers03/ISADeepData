@@ -6,5 +6,6 @@ namespace Api.Repositories.Interfaces
     {
         Task AddLibraryAsync(Library library);
         Task<List<Library>> GetAllLibrariesAsync();
+        Task<List<Library>> GetAllLibrariesWithContractorsAsync();
     }
 }
