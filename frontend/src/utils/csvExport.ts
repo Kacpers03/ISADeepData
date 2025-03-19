@@ -1,10 +1,11 @@
 // frontend/src/utils/csvExport.ts
 
 /**
- * Forbedret CSV-eksport med data formatert i kolonner for Excel
+ * Enhanced CSV export with proper Excel compatibility
+ * Ensures each column is properly separated in Excel
  */
 
-// Typer definisjon
+// Types definition
 interface Contractor {
     contractorId: number;
     contractorName: string;
@@ -41,35 +42,27 @@ interface Contractor {
   }
   
   /**
-   * Lager en Excel-vennlig CSV-fil der hver verdi plasseres i egen kolonne
+   * Creates a CSV-formatted string with proper semicolon separation
+   * This ensures Excel will properly separate columns in all locales
    */
   export const convertToCSV = (data: MapData): string => {
     if (!data) return '';
   
-    // Vi bruker tabulatorer som separator for å sikre at Excel tolker hver verdi som egen kolonne
-    // Excel foretrekker tabulatorer for automatisk kolonneseparering
-    const separator = '\t';
+    // Use semicolon as delimiter for better Excel compatibility across all locales
+    const delimiter = ';';
     
-    // Vi lagrer alle rader her
+    // Store all rows here
     const allRows: string[] = [];
     
-    // TABELL 1: CONTRACTORS
+    // SECTION 1: CONTRACTORS
     if (data.contractors && data.contractors.length > 0) {
-      // Legg til tabellnavn i bold (Excel vil tolke dette som en enkel overskrift)
-      allRows.push(`CONTRACTORS`);
+      // Add section title with empty cells for proper column alignment
+      allRows.push(['CONTRACTORS', '', '', '', '', ''].join(delimiter));
       
-      // Kolonneoverskrifter - uten separator, hver verdi i egen celle
-      const contractorHeaders = [
-        'ID', 
-        'Name', 
-        'Mineral Type', 
-        'Sponsoring State', 
-        'Year', 
-        'Status'
-      ];
-      allRows.push(contractorHeaders.join(separator));
+      // Column headers - each in its own column
+      allRows.push(['ID', 'Name', 'Mineral Type', 'Sponsoring State', 'Year', 'Status'].join(delimiter));
       
-      // Legg til contractor data
+      // Add contractor data
       data.contractors.forEach(contractor => {
         const row = [
           contractor.contractorId,
@@ -79,21 +72,21 @@ interface Contractor {
           contractor.contractualYear?.toString() || '',
           contractor.contractStatus || ''
         ];
-        allRows.push(row.join(separator));
+        allRows.push(row.join(delimiter));
       });
       
-      // Legg til tomme rader som separator
-      allRows.push('');
-      allRows.push('');
+      // Add empty rows as separator
+      allRows.push(['', '', '', '', '', ''].join(delimiter));
+      allRows.push(['', '', '', '', '', ''].join(delimiter));
     }
     
-    // TABELL 2: CRUISES
+    // SECTION 2: CRUISES
     if (data.cruises && data.cruises.length > 0) {
-      // Legg til tabellnavn
-      allRows.push(`CRUISES`);
+      // Add section title with empty cells for proper column alignment
+      allRows.push(['CRUISES', '', '', '', '', '', '', ''].join(delimiter));
       
-      // Kolonneoverskrifter
-      const cruiseHeaders = [
+      // Column headers - each in its own column
+      allRows.push([
         'ID', 
         'Name', 
         'Contractor ID',
@@ -102,12 +95,11 @@ interface Contractor {
         'End Date',
         'Latitude',
         'Longitude'
-      ];
-      allRows.push(cruiseHeaders.join(separator));
+      ].join(delimiter));
       
-      // Legg til cruise data med contractor navn
+      // Add cruise data with contractor name
       data.cruises.forEach(cruise => {
-        // Finn tilhørende contractor
+        // Find corresponding contractor
         const contractor = data.contractors.find(c => c.contractorId === cruise.contractorId);
         const contractorName = contractor ? contractor.contractorName : '';
         
@@ -122,16 +114,16 @@ interface Contractor {
           cruise.centerLongitude ? cruise.centerLongitude.toFixed(6) : ''
         ];
         
-        allRows.push(row.join(separator));
+        allRows.push(row.join(delimiter));
       });
       
-      // Legg til tomme rader som separator
-      allRows.push('');
-      allRows.push('');
+      // Add empty rows as separator
+      allRows.push(['', '', '', '', '', '', '', ''].join(delimiter));
+      allRows.push(['', '', '', '', '', '', '', ''].join(delimiter));
     }
     
-    // TABELL 3: STATIONS
-    // Hent alle stasjoner fra alle cruises
+    // SECTION 3: STATIONS
+    // Collect all stations from all cruises
     const allStations = data.cruises.flatMap(cruise => 
       (cruise.stations || []).map(station => ({
         ...station,
@@ -141,11 +133,11 @@ interface Contractor {
     );
     
     if (allStations.length > 0) {
-      // Legg til tabellnavn
-      allRows.push(`STATIONS`);
+      // Add section title with empty cells for proper column alignment
+      allRows.push(['STATIONS', '', '', '', '', '', ''].join(delimiter));
       
-      // Kolonneoverskrifter
-      const stationHeaders = [
+      // Column headers - each in its own column
+      allRows.push([
         'ID', 
         'Code', 
         'Type',
@@ -153,10 +145,9 @@ interface Contractor {
         'Cruise Name',
         'Latitude', 
         'Longitude'
-      ];
-      allRows.push(stationHeaders.join(separator));
+      ].join(delimiter));
       
-      // Legg til station data
+      // Add station data
       allStations.forEach(station => {
         const row = [
           station.stationId,
@@ -168,16 +159,16 @@ interface Contractor {
           station.longitude ? station.longitude.toFixed(6) : ''
         ];
         
-        allRows.push(row.join(separator));
+        allRows.push(row.join(delimiter));
       });
     }
     
-    // Kombiner alle rader
-    return allRows.join('\n');
+    // Combine all rows
+    return allRows.join('\r\n');
   };
   
   /**
-   * Generate and download data as a CSV file
+   * Generate and download data as a CSV file with proper Excel compatibility
    * @param data Map data object
    * @param filename Base filename without extension
    */
@@ -188,17 +179,14 @@ interface Contractor {
     }
     
     try {
-      // Convert data to TSV format (Tab Separated Values for Excel)
-      const tsvString = convertToCSV(data);
+      // Convert data to CSV format
+      const csvString = convertToCSV(data);
       
-      // For Excel-kompatibilitet, legg til BOM (Byte Order Mark)
-      // Dette hjelper Excel med å gjenkjenne UTF-8 tegnsett korrekt
+      // Add UTF-8 BOM for Excel compatibility
       const bomPrefix = '\uFEFF';
-      const fileContent = bomPrefix + tsvString;
+      const fileContent = bomPrefix + csvString;
       
-      // Create a Blob with the TSV data
-      // Selv om vi bruker tab separasjon, beholder vi .csv filending fordi
-      // det er mer kjent for brukerne
+      // Create a Blob with the CSV data
       const blob = new Blob([fileContent], { type: 'text/csv;charset=utf-8;' });
       
       // Create a download URL
@@ -227,51 +215,53 @@ interface Contractor {
     }
   };
   
-  // Eksporter block analytics data på samme måte med tab-separasjon
+  /**
+   * Export analytics data in CSV format with proper Excel compatibility
+   */
   export const exportAnalyticsCSV = (analyticsData: any, filename = 'analytics-data'): boolean => {
     if (!analyticsData) return false;
     
     try {
-      // Vi bruker tabulatorer som separator for Excel
-      const separator = '\t';
+      // Use semicolon as delimiter for better Excel compatibility across all locales
+      const delimiter = ';';
       
-      // Vi lagrer alle rader her
+      // We'll store all rows here
       const allRows: string[] = [];
       
-      // TABELL 1: BLOCK INFORMATION
+      // SECTION 1: BLOCK INFORMATION
       if (analyticsData.block) {
-        // Legg til tabellnavn
-        allRows.push('BLOCK INFORMATION');
+        // Add section title with padding for column alignment
+        allRows.push(['BLOCK INFORMATION', ''].join(delimiter));
         
-        // Kolonneoverskrifter
-        allRows.push(['Property', 'Value'].join(separator));
+        // Column headers - in separate columns
+        allRows.push(['Property', 'Value'].join(delimiter));
         
-        // Legg til grunnleggende informasjon
-        allRows.push(['Block ID', analyticsData.block.blockId].join(separator));
-        allRows.push(['Block Name', analyticsData.block.blockName || ''].join(separator));
-        allRows.push(['Status', analyticsData.block.status || ''].join(separator));
-        allRows.push(['Area', analyticsData.block.area ? analyticsData.block.area.areaName || '' : ''].join(separator));
+        // Add basic information
+        allRows.push(['Block ID', analyticsData.block.blockId].join(delimiter));
+        allRows.push(['Block Name', analyticsData.block.blockName || ''].join(delimiter));
+        allRows.push(['Status', analyticsData.block.status || ''].join(delimiter));
+        allRows.push(['Area', analyticsData.block.area ? analyticsData.block.area.areaName || '' : ''].join(delimiter));
         allRows.push(['Contractor', analyticsData.block.area && analyticsData.block.area.contractor ? 
-          analyticsData.block.area.contractor.contractorName || '' : ''].join(separator));
-        allRows.push(['Size (km²)', analyticsData.block.areaSizeKm2 ? analyticsData.block.areaSizeKm2.toFixed(2) : ''].join(separator));
+          analyticsData.block.area.contractor.contractorName || '' : ''].join(delimiter));
+        allRows.push(['Size (km²)', analyticsData.block.areaSizeKm2 ? analyticsData.block.areaSizeKm2.toFixed(2) : ''].join(delimiter));
         
-        // Legg til tomme rader som separator
-        allRows.push('');
-        allRows.push('');
+        // Add empty rows as separator
+        allRows.push(['', ''].join(delimiter));
+        allRows.push(['', ''].join(delimiter));
       }
       
-      // TABELL 2: ENVIRONMENTAL PARAMETERS
+      // SECTION 2: ENVIRONMENTAL PARAMETERS
       if (analyticsData.environmentalParameters && analyticsData.environmentalParameters.length > 0) {
-        allRows.push('ENVIRONMENTAL PARAMETERS');
+        allRows.push(['ENVIRONMENTAL PARAMETERS', '', '', '', ''].join(delimiter));
         
         analyticsData.environmentalParameters.forEach(category => {
-          // Legg til kategorinavn
-          allRows.push(`${category.category}`);
+          // Add category name with padding for column alignment
+          allRows.push([category.category, '', '', '', ''].join(delimiter));
           
-          // Kolonneoverskrifter
-          allRows.push(['Parameter', 'Average', 'Min', 'Max', 'Unit'].join(separator));
+          // Column headers - properly separated
+          allRows.push(['Parameter', 'Average', 'Min', 'Max', 'Unit'].join(delimiter));
           
-          // Legg til parameterdata
+          // Add parameter data
           category.parameters.forEach(param => {
             const row = [
               param.name || '',
@@ -280,29 +270,29 @@ interface Contractor {
               param.maxValue !== undefined ? param.maxValue.toFixed(2) : '',
               param.unit || ''
             ];
-            allRows.push(row.join(separator));
+            allRows.push(row.join(delimiter));
           });
           
-          // Legg til tom rad mellom kategorier
-          allRows.push('');
+          // Add empty row between categories
+          allRows.push(['', '', '', '', ''].join(delimiter));
         });
         
-        // Legg til tom rad mellom seksjoner
-        allRows.push('');
+        // Add empty row between sections
+        allRows.push(['', '', '', '', ''].join(delimiter));
       }
       
-      // TABELL 3: RESOURCE METRICS
+      // SECTION 3: RESOURCE METRICS
       if (analyticsData.resourceMetrics && analyticsData.resourceMetrics.length > 0) {
-        allRows.push('RESOURCE METRICS');
+        allRows.push(['RESOURCE METRICS', '', '', '', ''].join(delimiter));
         
         analyticsData.resourceMetrics.forEach(category => {
-          // Legg til kategorinavn
-          allRows.push(`${category.category}`);
+          // Add category name with padding for column alignment
+          allRows.push([category.category, '', '', '', ''].join(delimiter));
           
-          // Kolonneoverskrifter
-          allRows.push(['Analysis', 'Average', 'Min', 'Max', 'Unit'].join(separator));
+          // Column headers - properly separated
+          allRows.push(['Analysis', 'Average', 'Min', 'Max', 'Unit'].join(delimiter));
           
-          // Legg til analysisdata
+          // Add analysis data
           category.analyses.forEach(analysis => {
             const row = [
               analysis.analysis || '',
@@ -311,25 +301,25 @@ interface Contractor {
               analysis.maxValue !== undefined ? analysis.maxValue.toFixed(2) : '',
               analysis.unit || ''
             ];
-            allRows.push(row.join(separator));
+            allRows.push(row.join(delimiter));
           });
           
-          // Legg til tom rad mellom kategorier
-          allRows.push('');
+          // Add empty row between categories
+          allRows.push(['', '', '', '', ''].join(delimiter));
         });
         
-        // Legg til tom rad mellom seksjoner
-        allRows.push('');
+        // Add empty row between sections
+        allRows.push(['', '', '', '', ''].join(delimiter));
       }
       
-      // TABELL 4: SAMPLE TYPES
+      // SECTION 4: SAMPLE TYPES
       if (analyticsData.sampleTypes && analyticsData.sampleTypes.length > 0) {
-        allRows.push('SAMPLE TYPES');
+        allRows.push(['SAMPLE TYPES', '', '', '', ''].join(delimiter));
         
-        // Kolonneoverskrifter
-        allRows.push(['Type', 'Count', 'Min Depth', 'Max Depth', 'Units'].join(separator));
+        // Column headers - properly separated
+        allRows.push(['Type', 'Count', 'Min Depth', 'Max Depth', 'Units'].join(delimiter));
         
-        // Legg til sampleType data
+        // Add sampleType data
         analyticsData.sampleTypes.forEach(sampleType => {
           const row = [
             sampleType.sampleType || '',
@@ -338,22 +328,22 @@ interface Contractor {
             sampleType.depthRange ? sampleType.depthRange.max : '',
             'm'
           ];
-          allRows.push(row.join(separator));
+          allRows.push(row.join(delimiter));
         });
         
-        // Legg til tom rad mellom seksjoner
-        allRows.push('');
-        allRows.push('');
+        // Add empty row between sections
+        allRows.push(['', '', '', '', ''].join(delimiter));
+        allRows.push(['', '', '', '', ''].join(delimiter));
       }
       
-      // TABELL 5: RECENT STATIONS
+      // SECTION 5: RECENT STATIONS
       if (analyticsData.recentStations && analyticsData.recentStations.length > 0) {
-        allRows.push('RECENT STATIONS');
+        allRows.push(['RECENT STATIONS', '', '', ''].join(delimiter));
         
-        // Kolonneoverskrifter
-        allRows.push(['Station Code', 'Type', 'Latitude', 'Longitude'].join(separator));
+        // Column headers - properly separated
+        allRows.push(['Station Code', 'Type', 'Latitude', 'Longitude'].join(delimiter));
         
-        // Legg til stationdata
+        // Add station data
         analyticsData.recentStations.forEach(station => {
           const row = [
             station.stationCode || '',
@@ -361,15 +351,15 @@ interface Contractor {
             station.latitude ? station.latitude.toFixed(6) : '',
             station.longitude ? station.longitude.toFixed(6) : ''
           ];
-          allRows.push(row.join(separator));
+          allRows.push(row.join(delimiter));
         });
       }
       
-      // For Excel-kompatibilitet, legg til BOM (Byte Order Mark)
+      // For Excel compatibility, add UTF-8 BOM
       const bomPrefix = '\uFEFF';
-      const fileContent = bomPrefix + allRows.join('\n');
+      const fileContent = bomPrefix + allRows.join('\r\n');
       
-      // Last ned filen
+      // Download the file
       const blob = new Blob([fileContent], { type: 'text/csv;charset=utf-8;' });
       const url = URL.createObjectURL(blob);
       const date = new Date().toISOString().split('T')[0];
