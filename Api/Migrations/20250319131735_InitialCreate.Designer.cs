@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Api.Migrations
 {
     [DbContext(typeof(MyDbContext))]
-    [Migration("20250302202152_InitialCreate")]
+    [Migration("20250319131735_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -347,7 +347,7 @@ namespace Api.Migrations
                     b.ToTable("GeoResults");
                 });
 
-            modelBuilder.Entity("Models.Libarys.Library", b =>
+            modelBuilder.Entity("Models.Librarys.Library", b =>
                 {
                     b.Property<int>("LibraryId")
                         .ValueGeneratedOnAdd()
@@ -355,6 +355,10 @@ namespace Api.Migrations
 
                     b.Property<int>("ContractorId")
                         .HasColumnType("INTEGER");
+
+                    b.Property<string>("Country")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Description")
                         .IsRequired()
@@ -380,6 +384,9 @@ namespace Api.Migrations
                         .IsRequired()
                         .HasMaxLength(255)
                         .HasColumnType("TEXT");
+
+                    b.Property<int>("Year")
+                        .HasColumnType("INTEGER");
 
                     b.HasKey("LibraryId");
 
@@ -647,7 +654,7 @@ namespace Api.Migrations
                     b.Navigation("Sample");
                 });
 
-            modelBuilder.Entity("Models.Libarys.Library", b =>
+            modelBuilder.Entity("Models.Librarys.Library", b =>
                 {
                     b.HasOne("Models.Contractors.Contractor", "Contractor")
                         .WithMany("Libraries")

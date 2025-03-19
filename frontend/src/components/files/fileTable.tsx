@@ -6,14 +6,13 @@ import {
   getPaginationRowModel,
   flexRender,
 } from "@tanstack/react-table";
-import styles from "../../styles/reports.module.css"; // CSS Module
-import { Row } from "react-bootstrap";
+import styles from "../../styles/reports.module.css";
 import { useRouter } from "next/router";
 
-const FileTable = ({ filters }) => {
+const FileTable = ({ filters, setFilteredItems }) => {
   const [tableData, setTableData] = useState([]);
 
-  // Fetch data from .NET API using fetch
+  // Fetch from .NET API
   useEffect(() => {
     const fetchFiles = async () => {
       try {
@@ -33,25 +32,44 @@ const FileTable = ({ filters }) => {
 
   // Apply filters
   const filteredData = useMemo(() => {
-    return tableData.filter((item) => {
-      return (
-        (filters.country === "All" || filters.country.includes(item.country)) &&
-        (filters.contractor === "All" || filters.contractor.includes(item.contractor)) &&
-        (filters.year === "All" || filters.year.includes(item.year)) &&
-        (filters.theme === "All" || filters.theme.includes(item.theme))
-      );
+    const filtered = tableData.filter((item) => {
+      const matchCountry =
+        filters.country === "all" || item.country?.toLowerCase() === filters.country.toLowerCase();
+
+      const matchContractor =
+        filters.contractor === "all" || item.contractor?.toLowerCase() === filters.contractor.toLowerCase();
+
+      const matchYear =
+        filters.year === "all" || item.year?.toString() === filters.year;
+
+      const matchTheme =
+        filters.theme === "all" || item.theme?.toLowerCase() === filters.theme.toLowerCase();
+
+      const matchSearch =
+        !filters.searchQuery ||
+        item.fileName?.toLowerCase().includes(filters.searchQuery.toLowerCase()) ||
+        item.description?.toLowerCase().includes(filters.searchQuery.toLowerCase());
+
+      return matchCountry && matchContractor && matchYear && matchTheme && matchSearch;
     });
+
+    // Push filtered items count to parent
+    if (setFilteredItems) {
+      setFilteredItems(filtered);
+    }
+
+    return filtered;
   }, [filters, tableData]);
 
   // Table columns
   const columns = useMemo(
     () => [
       {
-        accessorKey: "fileName", // still points to your backend's field
+        accessorKey: "fileName",
         header: "File-name",
         cell: (info) => {
-          const fileUrl = info.getValue(); // this is full URL
-          const fileName = fileUrl.split("/").pop(); // extract only filename from URL
+          const fileUrl = info.getValue();
+          const fileName = fileUrl?.split("/").pop();
           return (
             <a
               href={fileUrl}
@@ -66,6 +84,8 @@ const FileTable = ({ filters }) => {
         },
       },
       { accessorKey: "contractor", header: "Contractor" },
+      { accessorKey: "country", header: "Country" },
+      { accessorKey: "year", header: "Year" },
       { accessorKey: "theme", header: "Theme" },
       {
         id: "info",
@@ -73,8 +93,7 @@ const FileTable = ({ filters }) => {
         cell: ({ row }) => (
           <div className={styles.infoIcon}>
             ⓘ
-            <span className={styles.tooltip}>{row.original.description}
-            </span>
+            <span className={styles.tooltip}>{row.original.description}</span>
           </div>
         ),
       },
@@ -89,7 +108,7 @@ const FileTable = ({ filters }) => {
               query: { data: JSON.stringify(row.original) },
             });
           };
-      
+
           return (
             <button
               onClick={handleClick}
@@ -99,7 +118,7 @@ const FileTable = ({ filters }) => {
             </button>
           );
         },
-      }
+      },
     ],
     []
   );
@@ -152,31 +171,31 @@ const FileTable = ({ filters }) => {
           </tbody>
         </table>
 
-        {/* Pagination controls */}
-        <button onClick={() => table.firstPage()} disabled={!table.getCanPreviousPage()}>
-          {"<<"}
-        </button>
-        <button onClick={() => table.previousPage()} disabled={!table.getCanPreviousPage()}>
-          {"<"}
-        </button>
-        <button onClick={() => table.nextPage()} disabled={!table.getCanNextPage()}>
-          {">"}
-        </button>
-        <button onClick={() => table.lastPage()} disabled={!table.getCanNextPage()}>
-          {">>"}
-        </button>
-        <select
-          value={table.getState().pagination.pageSize}
-          onChange={(e) => {
-            table.setPageSize(Number(e.target.value));
-          }}
-        >
-          {[10, 20, 30, 40, 50].map((pageSize) => (
-            <option key={pageSize} value={pageSize}>
-              {pageSize}
-            </option>
-          ))}
-        </select>
+        {/* Pagination */}
+        <div className={styles.pagination}>
+          <button onClick={() => table.firstPage()} disabled={!table.getCanPreviousPage()}>
+            {"<<"}
+          </button>
+          <button onClick={() => table.previousPage()} disabled={!table.getCanPreviousPage()}>
+            {"<"}
+          </button>
+          <button onClick={() => table.nextPage()} disabled={!table.getCanNextPage()}>
+            {">"}
+          </button>
+          <button onClick={() => table.lastPage()} disabled={!table.getCanNextPage()}>
+            {">>"}
+          </button>
+          <select
+            value={table.getState().pagination.pageSize}
+            onChange={(e) => table.setPageSize(Number(e.target.value))}
+          >
+            {[10, 20, 30, 40, 50].map((pageSize) => (
+              <option key={pageSize} value={pageSize}>
+                {pageSize}
+              </option>
+            ))}
+          </select>
+        </div>
       </div>
     </div>
   );

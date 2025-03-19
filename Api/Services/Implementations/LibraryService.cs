@@ -49,6 +49,8 @@ namespace Api.Services.Implementations
                 FileName = file.FileName, //  Only file name saved (e.g., "report.pdf")
                 Title = dto.Title,
                 Description = dto.Description,
+                Year = dto.Year,
+                Country = dto.Country,
                 SubmissionDate = dto.SubmissionDate,
                 IsConfidential = dto.IsConfidential
             };
@@ -71,9 +73,36 @@ namespace Api.Services.Implementations
                 FileName = Path.GetFileName(l.FileName), //  Still just the file name here
                 Title = l.Title,
                 Description = l.Description,
+                Year = l.Year,
+                Country = l.Country,
                 SubmissionDate = l.SubmissionDate,
                 IsConfidential = l.IsConfidential
             }).ToList();
         }
+
+        public async Task<List<string>> GetDistinctContractors()
+        {
+            var libraries = await _libraryRepository.GetAllLibrariesWithContractorsAsync();
+
+            return libraries
+                .Where(l => l.Contractor != null && !string.IsNullOrEmpty(l.Contractor.ContractorName))
+                .Select(l => l.Contractor.ContractorName)
+                .Distinct()
+                .OrderBy(name => name)
+                .ToList();
+        }
+
+        public async Task<List<string>> GetDistinctThemes()
+        {
+            var libraries = await _libraryRepository.GetAllLibrariesAsync();
+
+            return libraries
+                .Where(l => !string.IsNullOrEmpty(l.Theme))
+                .Select(l => l.Theme)
+                .Distinct()
+                .OrderBy(theme => theme)
+                .ToList();
+        }
+
     }
 }
