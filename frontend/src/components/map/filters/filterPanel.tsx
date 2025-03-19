@@ -7,6 +7,7 @@ import { locationBoundaries } from '../../../constants/locationBoundaries';
 import SearchPanel from './searchPanel';
 import FilterOptions from './filterOptions';
 import ResultsInfo from './resultInfo';
+import { downloadCSV } from '../../../utils/csvExport';
 
 // Create a simple debounce function instead of importing from lodash
 const debounce = (func, wait) => {
@@ -19,79 +20,6 @@ const debounce = (func, wait) => {
     clearTimeout(timeout);
     timeout = setTimeout(later, wait);
   };
-};
-
-// Helper to escape CSV field values correctly
-const escapeCSV = (text) => {
-  if (text == null) return '';
-  return `"${String(text).replace(/"/g, '""')}"`;
-};
-
-// Convert map data to CSV format
-const convertToCSV = (data) => {
-  if (!data) return '';
-  
-  // Extract contractors, cruises, and stations from data
-  const contractors = data.contractors || [];
-  const cruises = data.cruises || [];
-  
-  // Create headers for CSV
-  const headers = ['Type', 'ID', 'Name', 'Contract Type', 'Sponsoring State', 'Contract Year', 'Location'];
-  
-  // Create rows for contractors
-  const contractorRows = contractors.map(c => [
-    'Contractor',
-    c.contractorId,
-    escapeCSV(c.contractorName),
-    escapeCSV(c.contractType || ''),
-    escapeCSV(c.sponsoringState || ''),
-    c.contractualYear || '',
-    ''
-  ]);
-  
-  // Create rows for cruises
-  const cruiseRows = cruises.map(c => [
-    'Cruise',
-    c.cruiseId,
-    escapeCSV(c.cruiseName || ''),
-    '',
-    '',
-    c.startDate ? new Date(c.startDate).getFullYear() : '',
-    ''
-  ]);
-  
-  // Create rows for stations
-  const stationRows = cruises.flatMap(c => 
-    (c.stations || []).map(s => [
-      'Station',
-      s.stationId,
-      escapeCSV(s.stationCode || ''),
-      '',
-      '',
-      '',
-      s.latitude && s.longitude ? `${s.latitude.toFixed(6)}, ${s.longitude.toFixed(6)}` : ''
-    ])
-  );
-  
-  // Combine all rows
-  const allRows = [headers, ...contractorRows, ...cruiseRows, ...stationRows];
-  
-  // Convert to CSV string
-  return allRows.map(row => row.join(',')).join('\n');
-};
-
-// Function to trigger the download
-const downloadCSV = (csvString, filename) => {
-  const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement('a');
-  link.setAttribute('href', url);
-  link.setAttribute('download', filename);
-  link.style.visibility = 'hidden';
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
-  URL.revokeObjectURL(url);
 };
 
 export const ImprovedFilterPanel = () => {
@@ -296,14 +224,6 @@ export const ImprovedFilterPanel = () => {
     setFilteredContractors(contractorOptions);
   }, [originalMapData, mapData, filterOptions, filters]);
 
-  const locationOptions = [
-    { value: 'all', label: 'All Locations' },
-    ...locationBoundaries.map(location => ({
-      value: location.id,
-      label: location.name
-    }))
-  ];
-  
   // Handle select change with proper type conversion
   const handleSelectChange = useCallback((key, value) => {
     if (value === 'all') {
@@ -372,10 +292,8 @@ export const ImprovedFilterPanel = () => {
   // CSV export functionality
   const handleDownloadCSV = useCallback(() => {
     if (!mapData) return;
-    
-    const csvData = convertToCSV(mapData);
-    const date = new Date().toISOString().split('T')[0];
-    downloadCSV(csvData, `exploration-data-${date}.csv`);
+    // Use our CSV export utility
+    downloadCSV(mapData, `exploration-data`);
   }, [mapData]);
   
   // If filter options aren't loaded yet, show loading
@@ -411,6 +329,14 @@ export const ImprovedFilterPanel = () => {
   const yearOptions = [
     { value: 'all', label: 'All Years' },
     ...filteredYears
+  ];
+
+  const locationOptions = [
+    { value: 'all', label: 'All Locations' },
+    ...locationBoundaries.map(location => ({
+      value: location.id,
+      label: location.name
+    }))
   ];
 
   return (
@@ -469,7 +395,7 @@ export const ImprovedFilterPanel = () => {
         contractorCount={contractorCount}
         cruiseCount={cruiseCount}
         stationCount={stationCount}
-        onDownloadCSV={handleDownloadCSV}
+        mapData={mapData}  // Pass the actual mapData for use in CSV export
       />
     </div>
   );
