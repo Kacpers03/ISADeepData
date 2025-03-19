@@ -6,6 +6,7 @@ using Models.Librarys;
 using Api.Services.Interfaces;
 using Api.Data;
 using Api.Repositories.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace Api.Services.Implementations
 {
@@ -29,12 +30,10 @@ namespace Api.Services.Implementations
             if (file == null || file.Length == 0)
                 throw new ArgumentException("File is missing.");
 
-            // Connect to Azure Blob Storage
             var blobServiceClient = new BlobServiceClient(_connectionString);
             var containerClient = blobServiceClient.GetBlobContainerClient(_containerName);
             await containerClient.CreateIfNotExistsAsync();
 
-            // Upload file using original file name
             var blobClient = containerClient.GetBlobClient(file.FileName);
 
             using (var stream = file.OpenReadStream())
@@ -46,7 +45,7 @@ namespace Api.Services.Implementations
             {
                 ContractorId = dto.ContractorId,
                 Theme = dto.Theme,
-                FileName = file.FileName, //  Only file name saved (e.g., "report.pdf")
+                FileName = file.FileName,
                 Title = dto.Title,
                 Description = dto.Description,
                 Year = dto.Year,
@@ -57,20 +56,23 @@ namespace Api.Services.Implementations
 
             await _libraryRepository.AddLibraryAsync(libraryEntity);
 
-            // Optionally return the file name (or full URL if you ever need)
             return file.FileName;
         }
 
         public async Task<List<LibraryDto>> GetAllAsync()
         {
-            var items = await _libraryRepository.GetAllLibrariesAsync();
+            // Ensure Contractor is included
+            var items = await _context.Libraries
+                .Include(l => l.Contractor)
+                .ToListAsync();
 
             return items.Select(l => new LibraryDto
             {
                 LibraryId = l.LibraryId,
                 ContractorId = l.ContractorId,
+                Contractor = l.Contractor.ContractorName,
                 Theme = l.Theme,
-                FileName = Path.GetFileName(l.FileName), //  Still just the file name here
+                FileName = Path.GetFileName(l.FileName),
                 Title = l.Title,
                 Description = l.Description,
                 Year = l.Year,
@@ -103,6 +105,5 @@ namespace Api.Services.Implementations
                 .OrderBy(theme => theme)
                 .ToList();
         }
-
     }
 }

@@ -12,25 +12,23 @@ import { useRouter } from "next/router";
 const FileTable = ({ filters, setFilteredItems }) => {
   const [tableData, setTableData] = useState([]);
 
-  // Fetch from .NET API
   useEffect(() => {
     const fetchFiles = async () => {
       try {
         const response = await fetch("http://localhost:5062/api/library/list");
-        if (!response.ok) {
-          throw new Error("Network response was not ok");
-        }
+        if (!response.ok) throw new Error("Network response was not ok");
+
         const data = await response.json();
+        console.log("Library files response:", data);
         setTableData(data);
       } catch (error) {
-        console.error("Failed to fetch files:", error);
+        console.error("Error fetching files:", error);
       }
     };
 
     fetchFiles();
   }, []);
 
-  // Apply filters
   const filteredData = useMemo(() => {
     const filtered = tableData.filter((item) => {
       const matchCountry =
@@ -53,7 +51,6 @@ const FileTable = ({ filters, setFilteredItems }) => {
       return matchCountry && matchContractor && matchYear && matchTheme && matchSearch;
     });
 
-    // Push filtered items count to parent
     if (setFilteredItems) {
       setFilteredItems(filtered);
     }
@@ -61,7 +58,6 @@ const FileTable = ({ filters, setFilteredItems }) => {
     return filtered;
   }, [filters, tableData]);
 
-  // Table columns
   const columns = useMemo(
     () => [
       {
@@ -83,10 +79,23 @@ const FileTable = ({ filters, setFilteredItems }) => {
           );
         },
       },
-      { accessorKey: "contractor", header: "Contractor" },
-      { accessorKey: "country", header: "Country" },
-      { accessorKey: "year", header: "Year" },
-      { accessorKey: "theme", header: "Theme" },
+      {
+        accessorKey: "contractor",
+        header: "Contractor",
+        cell: (info) => <span>{info.getValue() || "Unknown"}</span>,
+      },      
+      {
+        accessorKey: "country",
+        header: "Country",
+      },
+      {
+        accessorKey: "year",
+        header: "Year",
+      },
+      {
+        accessorKey: "theme",
+        header: "Theme",
+      },
       {
         id: "info",
         header: "Description",
@@ -112,7 +121,7 @@ const FileTable = ({ filters, setFilteredItems }) => {
           return (
             <button
               onClick={handleClick}
-              className="border border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white"
+              className="border border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white px-2 py-1 rounded"
             >
               More Info
             </button>
@@ -171,7 +180,6 @@ const FileTable = ({ filters, setFilteredItems }) => {
           </tbody>
         </table>
 
-        {/* Pagination */}
         <div className={styles.pagination}>
           <button onClick={() => table.firstPage()} disabled={!table.getCanPreviousPage()}>
             {"<<"}
