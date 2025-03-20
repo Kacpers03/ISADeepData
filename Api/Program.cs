@@ -30,6 +30,9 @@ builder.Services.AddScoped<ILibraryService, LibraryService>();
 builder.Services.AddScoped<Api.Repositories.Interfaces.IGalleryRepository, Api.Repositories.Implementations.GalleryRepository>();
 builder.Services.AddScoped<Api.Services.Interfaces.IGalleryService, Api.Services.Implementations.GalleryService>();
 
+// Register Sample services
+builder.Services.AddScoped<ISampleService, SampleService>();
+builder.Services.AddScoped<ISampleRepository, SampleRepository>();
 
 
 // Add controllers and configure API

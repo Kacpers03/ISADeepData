@@ -7,48 +7,48 @@ import {
   flexRender,
 } from "@tanstack/react-table";
 import styles from "../../styles/files/reports.module.css";
-import { useRouter } from "next/router";
 
-const FileTable = ({ filters, setFilteredItems }) => {
+interface SampleTableProps {
+  filters: any;
+  setFilteredItems?: (items: any[]) => void;
+}
+
+const SampleTable: React.FC<SampleTableProps> = ({ filters, setFilteredItems }) => {
   const [tableData, setTableData] = useState([]);
 
   useEffect(() => {
-    const fetchFiles = async () => {
+    const fetchSamples = async () => {
       try {
-        const response = await fetch("http://localhost:5062/api/library/list");
+        const response = await fetch("http://localhost:5062/api/sample/list");
         if (!response.ok) throw new Error("Network response was not ok");
-
         const data = await response.json();
-        console.log("Library files response:", data);
+        console.log("Sample data response:", data);
         setTableData(data);
       } catch (error) {
-        console.error("Error fetching files:", error);
+        console.error("Error fetching samples:", error);
       }
     };
 
-    fetchFiles();
+    fetchSamples();
   }, []);
 
   const filteredData = useMemo(() => {
     const filtered = tableData.filter((item) => {
-      const matchCountry =
-        filters.country === "all" || item.country?.toLowerCase() === filters.country.toLowerCase();
+      const matchSampleType =
+        filters?.sampleType === "all" || item.sampleType?.toLowerCase() === filters.sampleType?.toLowerCase();
 
-      const matchContractor =
-        filters.contractor === "all" || item.contractor?.toLowerCase() === filters.contractor.toLowerCase();
+      const matchMatrixType =
+        filters?.matrixType === "all" || item.matrixType?.toLowerCase() === filters.matrixType?.toLowerCase();
 
-      const matchYear =
-        filters.year === "all" || item.year?.toString() === filters.year;
-
-      const matchTheme =
-        filters.theme === "all" || item.theme?.toLowerCase() === filters.theme.toLowerCase();
+      const matchHabitatType =
+        filters?.habitatType === "all" || item.habitatType?.toLowerCase() === filters.habitatType?.toLowerCase();
 
       const matchSearch =
-        !filters.searchQuery ||
-        item.fileName?.toLowerCase().includes(filters.searchQuery.toLowerCase()) ||
+        !filters?.searchQuery ||
+        item.sampleCode?.toLowerCase().includes(filters.searchQuery.toLowerCase()) ||
         item.description?.toLowerCase().includes(filters.searchQuery.toLowerCase());
 
-      return matchCountry && matchContractor && matchYear && matchTheme && matchSearch;
+      return matchSampleType && matchMatrixType && matchHabitatType && matchSearch;
     });
 
     if (setFilteredItems) {
@@ -61,72 +61,32 @@ const FileTable = ({ filters, setFilteredItems }) => {
   const columns = useMemo(
     () => [
       {
-        accessorKey: "fileName",
-        header: "File-name",
+        accessorKey: "sampleCode",
+        header: "Sample Code",
+      },
+      {
+        accessorKey: "sampleType",
+        header: "Sample Type",
+      },
+      {
+        accessorKey: "matrixType",
+        header: "Matrix Type",
+      },
+      {
+        accessorKey: "habitatType",
+        header: "Habitat Type",
+      },
+      {
+        accessorKey: "collectionDate",
+        header: "Collection Date",
         cell: (info) => {
-          const fileUrl = info.getValue();
-          const fileName = fileUrl?.split("/").pop();
-          return (
-            <a
-              href={fileUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              download
-              className={styles.fileLink}
-            >
-              {fileName}
-            </a>
-          );
+          const date = info.getValue();
+          return date ? new Date(date).toLocaleDateString() : "-";
         },
       },
       {
-        accessorKey: "contractor",
-        header: "Contractor",
-        cell: (info) => <span>{info.getValue() || "Unknown"}</span>,
-      },      
-      {
-        accessorKey: "country",
-        header: "Country",
-      },
-      {
-        accessorKey: "year",
-        header: "Year",
-      },
-      {
-        accessorKey: "theme",
-        header: "Theme",
-      },
-      {
-        id: "info",
+        accessorKey: "description",
         header: "Description",
-        cell: ({ row }) => (
-          <div className={styles.infoIcon}>
-            ⓘ
-            <span className={styles.tooltip}>{row.original.description}</span>
-          </div>
-        ),
-      },
-      {
-        id: "moreInfo",
-        header: "",
-        cell: ({ row }) => {
-          const router = useRouter();
-          const handleClick = () => {
-            router.push({
-              pathname: "/library/moreinfo",
-              query: { data: JSON.stringify(row.original) },
-            });
-          };
-
-          return (
-            <button
-              onClick={handleClick}
-              className="border border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white px-2 py-1 rounded"
-            >
-              More Info
-            </button>
-          );
-        },
       },
     ],
     []
@@ -148,7 +108,7 @@ const FileTable = ({ filters, setFilteredItems }) => {
 
   return (
     <div className={styles.homeWrapper}>
-      <h1 className={styles.title}>File Management</h1>
+      <h1 className={styles.title}>Sample Management</h1>
       <div className={styles.tableContainer}>
         <table className={styles.table}>
           <thead>
@@ -171,15 +131,14 @@ const FileTable = ({ filters, setFilteredItems }) => {
             {table.getRowModel().rows.map((row) => (
               <tr key={row.id}>
                 {row.getVisibleCells().map((cell) => (
-                  <td key={cell.id}>
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </td>
+                  <td key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</td>
                 ))}
               </tr>
             ))}
           </tbody>
         </table>
 
+        {/* Pagination Controls */}
         <div className={styles.pagination}>
           <button onClick={() => table.firstPage()} disabled={!table.getCanPreviousPage()}>
             {"<<"}
@@ -197,9 +156,9 @@ const FileTable = ({ filters, setFilteredItems }) => {
             value={table.getState().pagination.pageSize}
             onChange={(e) => table.setPageSize(Number(e.target.value))}
           >
-            {[10, 20, 30, 40, 50].map((pageSize) => (
-              <option key={pageSize} value={pageSize}>
-                {pageSize}
+            {[10, 20, 30, 40, 50].map((size) => (
+              <option key={size} value={size}>
+                {size}
               </option>
             ))}
           </select>
@@ -209,4 +168,4 @@ const FileTable = ({ filters, setFilteredItems }) => {
   );
 };
 
-export default FileTable;
+export default SampleTable;
