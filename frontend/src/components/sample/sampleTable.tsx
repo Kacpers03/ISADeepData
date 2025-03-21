@@ -8,12 +8,7 @@ import {
 } from "@tanstack/react-table";
 import styles from "../../styles/files/reports.module.css";
 
-interface SampleTableProps {
-  filters: any;
-  setFilteredItems?: (items: any[]) => void;
-}
-
-const SampleTable: React.FC<SampleTableProps> = ({ filters, setFilteredItems }) => {
+const SampleTable = ({ filters, visibleColumns }) => {
   const [tableData, setTableData] = useState([]);
 
   useEffect(() => {
@@ -22,7 +17,6 @@ const SampleTable: React.FC<SampleTableProps> = ({ filters, setFilteredItems }) 
         const response = await fetch("http://localhost:5062/api/sample/list");
         if (!response.ok) throw new Error("Network response was not ok");
         const data = await response.json();
-        console.log("Sample data response:", data);
         setTableData(data);
       } catch (error) {
         console.error("Error fetching samples:", error);
@@ -33,69 +27,64 @@ const SampleTable: React.FC<SampleTableProps> = ({ filters, setFilteredItems }) 
   }, []);
 
   const filteredData = useMemo(() => {
-    const filtered = tableData.filter((item) => {
+    return tableData.filter((item) => {
       const matchSampleType =
-        filters?.sampleType === "all" || item.sampleType?.toLowerCase() === filters.sampleType?.toLowerCase();
-
+        filters.sampleType === "all" || item.sampleType?.toLowerCase() === filters.sampleType?.toLowerCase();
       const matchMatrixType =
-        filters?.matrixType === "all" || item.matrixType?.toLowerCase() === filters.matrixType?.toLowerCase();
-
+        filters.matrixType === "all" || item.matrixType?.toLowerCase() === filters.matrixType?.toLowerCase();
       const matchHabitatType =
-        filters?.habitatType === "all" || item.habitatType?.toLowerCase() === filters.habitatType?.toLowerCase();
-
-        const matchAnalysis =
-        filters?.analysis === "all" || item.analysis?.toLowerCase() === filters.analysis?.toLowerCase();
-      
-
+        filters.habitatType === "all" || item.habitatType?.toLowerCase() === filters.habitatType?.toLowerCase();
+      const matchAnalysis =
+        filters.analysis === "all" || item.analysis?.toLowerCase() === filters.analysis?.toLowerCase();
       const matchSearch =
-        !filters?.searchQuery ||
+        !filters.searchQuery ||
         item.sampleCode?.toLowerCase().includes(filters.searchQuery.toLowerCase()) ||
         item.description?.toLowerCase().includes(filters.searchQuery.toLowerCase());
 
-      return matchSampleType && matchMatrixType && matchHabitatType && matchSearch && matchAnalysis;
+      return matchSampleType && matchMatrixType && matchHabitatType && matchAnalysis && matchSearch;
     });
-
-    if (setFilteredItems) {
-      setFilteredItems(filtered);
-    }
-
-    return filtered;
   }, [filters, tableData]);
 
-  const columns = useMemo(
-    () => [
-      {
-        accessorKey: "sampleCode",
-        header: "Sample Code",
-      },
-      {
-        accessorKey: "sampleType",
-        header: "Sample Type",
-      },
-      {
-        accessorKey: "matrixType",
-        header: "Matrix Type",
-      },
-      {
-        accessorKey: "habitatType",
-        header: "Habitat Type",
-      },
-      {
-        accessorKey: "analysis",
-        header: "Analysis",
-      },
-      {
-        accessorKey: "result",
-        header: "Result",
-        cell: (info) => info.getValue() ?? "-"
-      },      
-      {
-        accessorKey: "sampleDescription",
-        header: "Description",
-      },
-    ],
-    []
-  );
+  // 👇 Define all possible columns
+  const allColumns = {
+    sampleCode: {
+      accessorKey: "sampleCode",
+      header: "Sample Code",
+    },
+    sampleType: {
+      accessorKey: "sampleType",
+      header: "Sample Type",
+    },
+    matrixType: {
+      accessorKey: "matrixType",
+      header: "Matrix Type",
+    },
+    habitatType: {
+      accessorKey: "habitatType",
+      header: "Habitat Type",
+    },
+    analysis: {
+      accessorKey: "analysis",
+      header: "Analysis",
+    },
+    result: {
+      accessorKey: "result",
+      header: "Result",
+      cell: (info) => info.getValue() ?? "-",
+    },
+    sampleDescription: {
+      accessorKey: "sampleDescription",
+      header: "Description",
+    },
+  };
+
+  //  Only include columns the user selected
+  const columns = useMemo(() => {
+    return Object.keys(allColumns)
+      .filter((key) => visibleColumns.includes(key))
+      .map((key) => allColumns[key]);
+  }, [visibleColumns]);
+  
 
   const [sorting, setSorting] = useState([]);
   const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 10 });
@@ -106,7 +95,7 @@ const SampleTable: React.FC<SampleTableProps> = ({ filters, setFilteredItems }) 
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
-    state: { pagination, sorting },
+    state: { sorting, pagination },
     onSortingChange: setSorting,
     onPaginationChange: setPagination,
   });
@@ -119,11 +108,11 @@ const SampleTable: React.FC<SampleTableProps> = ({ filters, setFilteredItems }) 
           <thead>
             {table.getHeaderGroups().map((headerGroup) => (
               <tr key={headerGroup.id}>
-                {headerGroup.headers.map((column) => (
-                  <th key={column.id} onClick={column.column.getToggleSortingHandler()}>
-                    {flexRender(column.column.columnDef.header, column.getContext())}
-                    {column.column.getIsSorted()
-                      ? column.column.getIsSorted() === "desc"
+                {headerGroup.headers.map((header) => (
+                  <th key={header.id} onClick={header.column.getToggleSortingHandler()}>
+                    {flexRender(header.column.columnDef.header, header.getContext())}
+                    {header.column.getIsSorted()
+                      ? header.column.getIsSorted() === "desc"
                         ? " 🔽"
                         : " 🔼"
                       : ""}
@@ -143,7 +132,7 @@ const SampleTable: React.FC<SampleTableProps> = ({ filters, setFilteredItems }) 
           </tbody>
         </table>
 
-        {/* Pagination Controls */}
+        {/* Pagination */}
         <div className={styles.pagination}>
           <button onClick={() => table.firstPage()} disabled={!table.getCanPreviousPage()}>
             {"<<"}
