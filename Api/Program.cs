@@ -27,17 +27,14 @@ builder.Services.AddScoped<ISpatialService, SpatialService>();
 builder.Services.AddScoped<ILibraryService, LibraryService>();
 
 // Register gallery services
-<<<<<<< HEAD
+
 builder.Services.AddScoped<IGalleryRepository, GalleryRepository>();
 builder.Services.AddScoped<IGalleryService, GalleryService>();
-=======
-builder.Services.AddScoped<Api.Repositories.Interfaces.IGalleryRepository, Api.Repositories.Implementations.GalleryRepository>();
-builder.Services.AddScoped<Api.Services.Interfaces.IGalleryService, Api.Services.Implementations.GalleryService>();
 
 // Register Sample services
 builder.Services.AddScoped<ISampleService, SampleService>();
 builder.Services.AddScoped<ISampleRepository, SampleRepository>();
->>>>>>> 8e9b1b03ad68c6498c20c0944c02d9383621db1c
+
 
 
 // Add controllers and configure API
