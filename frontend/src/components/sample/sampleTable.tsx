@@ -43,12 +43,16 @@ const SampleTable: React.FC<SampleTableProps> = ({ filters, setFilteredItems }) 
       const matchHabitatType =
         filters?.habitatType === "all" || item.habitatType?.toLowerCase() === filters.habitatType?.toLowerCase();
 
+        const matchAnalysis =
+        filters?.analysis === "all" || item.analysis?.toLowerCase() === filters.analysis?.toLowerCase();
+      
+
       const matchSearch =
         !filters?.searchQuery ||
         item.sampleCode?.toLowerCase().includes(filters.searchQuery.toLowerCase()) ||
         item.description?.toLowerCase().includes(filters.searchQuery.toLowerCase());
 
-      return matchSampleType && matchMatrixType && matchHabitatType && matchSearch;
+      return matchSampleType && matchMatrixType && matchHabitatType && matchSearch && matchAnalysis;
     });
 
     if (setFilteredItems) {
@@ -77,15 +81,16 @@ const SampleTable: React.FC<SampleTableProps> = ({ filters, setFilteredItems }) 
         header: "Habitat Type",
       },
       {
-        accessorKey: "collectionDate",
-        header: "Collection Date",
-        cell: (info) => {
-          const date = info.getValue();
-          return date ? new Date(date).toLocaleDateString() : "-";
-        },
+        accessorKey: "analysis",
+        header: "Analysis",
       },
       {
-        accessorKey: "description",
+        accessorKey: "result",
+        header: "Result",
+        cell: (info) => info.getValue() ?? "-"
+      },      
+      {
+        accessorKey: "sampleDescription",
         header: "Description",
       },
     ],

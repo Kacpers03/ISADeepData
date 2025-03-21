@@ -5,12 +5,14 @@ import stylesTable from "../../styles/files/reports.module.css";
 import stylesFilter from "../../styles/files/filefilter.module.css";
 
 export default function SamplesPage() {
-  const [filters, setFilters] = useState({
-    sampleType: "all",
-    matrixType: "all",
-    habitatType: "all",
-    searchQuery: "",
-  });
+    const [filters, setFilters] = useState({
+        sampleType: "all",
+        matrixType: "all",
+        habitatType: "all",
+        analysis: "all",
+        searchQuery: "",
+      });
+      
 
   const applyFilters = (newFilters) => {
     setFilters(newFilters);

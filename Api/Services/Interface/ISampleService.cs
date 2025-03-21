@@ -8,5 +8,7 @@ namespace Api.Services.Interfaces
         Task<List<string>> GetDistinctSampleTypesAsync();
         Task<List<string>> GetDistinctMatrixTypesAsync();
         Task<List<string>> GetDistinctHabitatTypesAsync();
+        Task<List<string>> GetDistinctAnalysesAsync();
+
     }
 }

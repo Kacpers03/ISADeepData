@@ -28,8 +28,17 @@ namespace Api.Services.Implementations
                 SampleType = s.SampleType,
                 MatrixType = s.MatrixType,
                 HabitatType = s.HabitatType,
+                SamplingDevice = s.SamplingDevice,
+                DepthLower = s.DepthLower,
+                DepthUpper = s.DepthUpper,
+                SampleDescription = s.SampleDescription,
+                Analysis = s.Analysis,        
+                Result = s.Result, 
+                Unit = s.Unit           
+                 // or map if you add it to entity
             }).ToList();
         }
+
 
 
         // Get distinct SampleTypes (for filtering dropdown)
@@ -68,6 +77,18 @@ namespace Api.Services.Implementations
                 .Select(s => s.HabitatType)
                 .Distinct()
                 .OrderBy(s => s)
+                .ToList();
+        }
+
+        public async Task<List<string>> GetDistinctAnalysesAsync()
+        {
+            var samples = await _sampleRepository.GetAllSamplesAsync();
+
+            return samples
+                .Where(s => !string.IsNullOrEmpty(s.Analysis))
+                .Select(s => s.Analysis)
+                .Distinct()
+                .OrderBy(a => a)
                 .ToList();
         }
     }

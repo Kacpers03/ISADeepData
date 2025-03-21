@@ -275,7 +275,10 @@ namespace Api.Migrations
                     SamplingDevice = table.Column<string>(type: "TEXT", maxLength: 255, nullable: false),
                     DepthLower = table.Column<double>(type: "REAL", nullable: false),
                     DepthUpper = table.Column<double>(type: "REAL", nullable: false),
-                    SampleDescription = table.Column<string>(type: "TEXT", nullable: false)
+                    SampleDescription = table.Column<string>(type: "TEXT", nullable: false),
+                    Analysis = table.Column<string>(type: "TEXT", maxLength: 100, nullable: false),
+                    Result = table.Column<double>(type: "REAL", nullable: false),
+                    Unit = table.Column<string>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
                 {

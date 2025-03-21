@@ -202,7 +202,10 @@ namespace Api.Repositories.Implementations
                     SamplingDevice = s.SamplingDevice,
                     DepthLower = s.DepthLower,
                     DepthUpper = s.DepthUpper,
-                    SampleDescription = s.SampleDescription
+                    SampleDescription = s.SampleDescription,
+                    Analysis = s.Analysis,
+                    Result = s.Result,
+                    Unit = s.Unit
                 })
                 .ToListAsync();
         }

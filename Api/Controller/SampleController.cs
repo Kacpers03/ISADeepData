@@ -44,5 +44,12 @@ namespace Api.Controllers
             var types = await _sampleService.GetDistinctHabitatTypesAsync();
             return Ok(new { result = types });
         }
+
+        [HttpGet("analyses")]
+        public async Task<IActionResult> GetAnalyses()
+        {
+            var types = await _sampleService.GetDistinctAnalysesAsync();
+            return Ok(new { result = types });
+        }
     }
 }

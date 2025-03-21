@@ -605,141 +605,173 @@ namespace Api.Data
             // --- Seed Samples ---
             // Original samples
             context.Samples.AddRange(
-                new Sample { SampleId = 1, StationId = 1, SampleCode = "Bio12-48SC", SampleType = "Water", MatrixType = "Seawater", HabitatType = "Water Column", SamplingDevice = "CTD Rosette", DepthLower = 4.0, DepthUpper = 4.01, SampleDescription = "Surface water sample" },
-                new Sample { SampleId = 2, StationId = 2, SampleCode = "DOR31", SampleType = "Water", MatrixType = "Seawater", HabitatType = "Water Column", SamplingDevice = "CTD Rosette", DepthLower = 0.0, DepthUpper = 0.01, SampleDescription = "Surface water sample" },
-                new Sample { SampleId = 3, StationId = 2, SampleCode = "DOR32", SampleType = "Water", MatrixType = "Seawater", HabitatType = "Water Column", SamplingDevice = "CTD Rosette", DepthLower = 0.0, DepthUpper = 0.01, SampleDescription = "Duplicate surface water sample" },
-                new Sample { SampleId = 4, StationId = 4, SampleCode = "DY79I-KW1-CTD01-01", SampleType = "Water", MatrixType = "Seawater", HabitatType = "Water Column", SamplingDevice = "CTD Rosette", DepthLower = 5.0, DepthUpper = 5.01, SampleDescription = "Near-surface water sample" },
-                new Sample { SampleId = 5, StationId = 4, SampleCode = "DY79I-KW1-CTD01-03", SampleType = "Water", MatrixType = "Seawater", HabitatType = "Water Column", SamplingDevice = "CTD Rosette", DepthLower = 125.0, DepthUpper = 125.01, SampleDescription = "Mid-depth water sample" }
-            );
+            new Sample { SampleId = 1, StationId = 1, SampleCode = "Bio12-48SC", SampleType = "Water", MatrixType = "Seawater", HabitatType = "Water Column", SamplingDevice = "CTD Rosette", DepthLower = 4.0, DepthUpper = 4.01, SampleDescription = "Surface water sample", Analysis = "Salinity", Result = 35.1, Unit = "PSU" },
+            new Sample { SampleId = 2, StationId = 2, SampleCode = "DOR31", SampleType = "Water", MatrixType = "Seawater", HabitatType = "Water Column", SamplingDevice = "CTD Rosette", DepthLower = 0.0, DepthUpper = 0.01, SampleDescription = "Surface water sample", Analysis = "Temperature", Result = 16.3, Unit = "°C" },
+            new Sample { SampleId = 3, StationId = 2, SampleCode = "DOR32", SampleType = "Water", MatrixType = "Seawater", HabitatType = "Water Column", SamplingDevice = "CTD Rosette", DepthLower = 0.0, DepthUpper = 0.01, SampleDescription = "Duplicate surface water sample", Analysis = "Dissolved Oxygen", Result = 6.8, Unit = "mg/L" },
+            new Sample { SampleId = 4, StationId = 4, SampleCode = "DY79I-KW1-CTD01-01", SampleType = "Water", MatrixType = "Seawater", HabitatType = "Water Column", SamplingDevice = "CTD Rosette", DepthLower = 5.0, DepthUpper = 5.01, SampleDescription = "Near-surface water sample", Analysis = "Nitrate", Result = 3.4, Unit = "µmol/L" },
+            new Sample { SampleId = 5, StationId = 4, SampleCode = "DY79I-KW1-CTD01-03", SampleType = "Water", MatrixType = "Seawater", HabitatType = "Water Column", SamplingDevice = "CTD Rosette", DepthLower = 125.0, DepthUpper = 125.01, SampleDescription = "Mid-depth water sample", Analysis = "Phosphate", Result = 0.72, Unit = "µmol/L" }
+        );
+
 
             // New samples for the new stations
             context.Samples.AddRange(
-                // Mid-Atlantic Ridge samples
-                new Sample { 
-                    SampleId = 6, 
-                    StationId = 5, 
-                    SampleCode = "MAR18-001-01", 
-                    SampleType = "Rock", 
-                    MatrixType = "Sulfide", 
-                    HabitatType = "Hydrothermal Vent", 
-                    SamplingDevice = "ROV Manipulator", 
-                    DepthLower = 3400.0, 
-                    DepthUpper = 3400.1, 
-                    SampleDescription = "Black smoker chimney fragment" 
-                },
-                new Sample { 
-                    SampleId = 7, 
-                    StationId = 6, 
-                    SampleCode = "MAR18-002-CTD", 
-                    SampleType = "Water", 
-                    MatrixType = "Seawater", 
-                    HabitatType = "Water Column", 
-                    SamplingDevice = "CTD Rosette", 
-                    DepthLower = 10.0, 
-                    DepthUpper = 10.01, 
-                    SampleDescription = "Near-surface water sample" 
-                },
-                new Sample { 
-                    SampleId = 8, 
-                    StationId = 6, 
-                    SampleCode = "MAR18-002-CTD2", 
-                    SampleType = "Water", 
-                    MatrixType = "Seawater", 
-                    HabitatType = "Water Column", 
-                    SamplingDevice = "CTD Rosette", 
-                    DepthLower = 2000.0, 
-                    DepthUpper = 2000.01, 
-                    SampleDescription = "Deep water sample" 
-                },
-                new Sample { 
-                    SampleId = 9, 
-                    StationId = 7, 
-                    SampleCode = "MAR20-015-R1", 
-                    SampleType = "Sediment", 
-                    MatrixType = "Metalliferous Sediment", 
-                    HabitatType = "Seafloor", 
-                    SamplingDevice = "Push Core", 
-                    DepthLower = 3520.0, 
-                    DepthUpper = 3520.1, 
-                    SampleDescription = "Oxidized surface sediment" 
-                },
-                
-                // Indian Ocean samples
-                new Sample { 
-                    SampleId = 10, 
-                    StationId = 9, 
-                    SampleCode = "CIR17-001-W1", 
-                    SampleType = "Water", 
-                    MatrixType = "Seawater", 
-                    HabitatType = "Water Column", 
-                    SamplingDevice = "CTD Rosette", 
-                    DepthLower = 5.0, 
-                    DepthUpper = 5.01, 
-                    SampleDescription = "Surface water sample" 
-                },
-                new Sample { 
-                    SampleId = 11, 
-                    StationId = 10, 
-                    SampleCode = "CIR17-002-R1", 
-                    SampleType = "Rock", 
-                    MatrixType = "Basalt", 
-                    HabitatType = "Seafloor", 
-                    SamplingDevice = "Dredge", 
-                    DepthLower = 3100.0, 
-                    DepthUpper = 3100.1, 
-                    SampleDescription = "Fresh basalt with glass rim" 
-                },
-                new Sample { 
-                    SampleId = 12, 
-                    StationId = 11, 
-                    SampleCode = "CIR19-008-S1", 
-                    SampleType = "Sediment", 
-                    MatrixType = "Pelagic Sediment", 
-                    HabitatType = "Seafloor", 
-                    SamplingDevice = "Multicore", 
-                    DepthLower = 3450.0, 
-                    DepthUpper = 3450.1, 
-                    SampleDescription = "Surface sediment, brown color" 
-                },
-                
-                // Western Pacific samples
-                new Sample { 
-                    SampleId = 13, 
-                    StationId = 13, 
-                    SampleCode = "WP19-001-D1", 
-                    SampleType = "Rock", 
-                    MatrixType = "Fe-Mn Crust", 
-                    HabitatType = "Seamount", 
-                    SamplingDevice = "Dredge", 
-                    DepthLower = 1800.0, 
-                    DepthUpper = 1800.1, 
-                    SampleDescription = "Ferromanganese crust, 4cm thickness" 
-                },
-                new Sample { 
-                    SampleId = 14, 
-                    StationId = 14, 
-                    SampleCode = "WP19-002-W1", 
-                    SampleType = "Water", 
-                    MatrixType = "Seawater", 
-                    HabitatType = "Water Column", 
-                    SamplingDevice = "CTD Rosette", 
-                    DepthLower = 10.0, 
-                    DepthUpper = 10.01, 
-                    SampleDescription = "Surface water sample" 
-                },
-                new Sample { 
-                    SampleId = 15, 
-                    StationId = 15, 
-                    SampleCode = "WP21-010-BC", 
-                    SampleType = "Sediment", 
-                    MatrixType = "Calcareous Ooze", 
-                    HabitatType = "Seafloor", 
-                    SamplingDevice = "Box Corer", 
-                    DepthLower = 2200.0, 
-                    DepthUpper = 2200.1, 
-                    SampleDescription = "Surface sediment sample" 
-                }
-            );
+    // Mid-Atlantic Ridge samples
+            new Sample { 
+                SampleId = 6, 
+                StationId = 5, 
+                SampleCode = "MAR18-001-01", 
+                SampleType = "Rock", 
+                MatrixType = "Sulfide", 
+                HabitatType = "Hydrothermal Vent", 
+                SamplingDevice = "ROV Manipulator", 
+                DepthLower = 3400.0, 
+                DepthUpper = 3400.1, 
+                SampleDescription = "Black smoker chimney fragment", 
+                Analysis = "Iron (Fe) Concentration", 
+                Result = 45.7, 
+                Unit = "wt%" 
+            },
+            new Sample { 
+                SampleId = 7, 
+                StationId = 6, 
+                SampleCode = "MAR18-002-CTD", 
+                SampleType = "Water", 
+                MatrixType = "Seawater", 
+                HabitatType = "Water Column", 
+                SamplingDevice = "CTD Rosette", 
+                DepthLower = 10.0, 
+                DepthUpper = 10.01, 
+                SampleDescription = "Near-surface water sample", 
+                Analysis = "Chlorophyll-a", 
+                Result = 0.28, 
+                Unit = "µg/L" 
+            },
+            new Sample { 
+                SampleId = 8, 
+                StationId = 6, 
+                SampleCode = "MAR18-002-CTD2", 
+                SampleType = "Water", 
+                MatrixType = "Seawater", 
+                HabitatType = "Water Column", 
+                SamplingDevice = "CTD Rosette", 
+                DepthLower = 2000.0, 
+                DepthUpper = 2000.01, 
+                SampleDescription = "Deep water sample", 
+                Analysis = "Silicate", 
+                Result = 130.2, 
+                Unit = "µmol/L" 
+            },
+            new Sample { 
+                SampleId = 9, 
+                StationId = 7, 
+                SampleCode = "MAR20-015-R1", 
+                SampleType = "Sediment", 
+                MatrixType = "Metalliferous Sediment", 
+                HabitatType = "Seafloor", 
+                SamplingDevice = "Push Core", 
+                DepthLower = 3520.0, 
+                DepthUpper = 3520.1, 
+                SampleDescription = "Oxidized surface sediment", 
+                Analysis = "Copper (Cu) Content", 
+                Result = 824, 
+                Unit = "mg/kg" 
+            },
+
+            // Indian Ocean samples
+            new Sample { 
+                SampleId = 10, 
+                StationId = 9, 
+                SampleCode = "CIR17-001-W1", 
+                SampleType = "Water", 
+                MatrixType = "Seawater", 
+                HabitatType = "Water Column", 
+                SamplingDevice = "CTD Rosette", 
+                DepthLower = 5.0, 
+                DepthUpper = 5.01, 
+                SampleDescription = "Surface water sample", 
+                Analysis = "Temperature", 
+                Result = 18.7, 
+                Unit = "°C" 
+            },
+            new Sample { 
+                SampleId = 11, 
+                StationId = 10, 
+                SampleCode = "CIR17-002-R1", 
+                SampleType = "Rock", 
+                MatrixType = "Basalt", 
+                HabitatType = "Seafloor", 
+                SamplingDevice = "Dredge", 
+                DepthLower = 3100.0, 
+                DepthUpper = 3100.1, 
+                SampleDescription = "Fresh basalt with glass rim", 
+                Analysis = "SiO₂ Content", 
+                Result = 49.6, 
+                Unit = "wt%" 
+            },
+            new Sample { 
+                SampleId = 12, 
+                StationId = 11, 
+                SampleCode = "CIR19-008-S1", 
+                SampleType = "Sediment", 
+                MatrixType = "Pelagic Sediment", 
+                HabitatType = "Seafloor", 
+                SamplingDevice = "Multicore", 
+                DepthLower = 3450.0, 
+                DepthUpper = 3450.1, 
+                SampleDescription = "Surface sediment, brown color", 
+                Analysis = "Total Organic Carbon (TOC)", 
+                Result = 1.3, 
+                Unit = "%" 
+            },
+
+            // Western Pacific samples
+            new Sample { 
+                SampleId = 13, 
+                StationId = 13, 
+                SampleCode = "WP19-001-D1", 
+                SampleType = "Rock", 
+                MatrixType = "Fe-Mn Crust", 
+                HabitatType = "Seamount", 
+                SamplingDevice = "Dredge", 
+                DepthLower = 1800.0, 
+                DepthUpper = 1800.1, 
+                SampleDescription = "Ferromanganese crust, 4cm thickness", 
+                Analysis = "Manganese (Mn) Content", 
+                Result = 24.3, 
+                Unit = "wt%" 
+            },
+            new Sample { 
+                SampleId = 14, 
+                StationId = 14, 
+                SampleCode = "WP19-002-W1", 
+                SampleType = "Water", 
+                MatrixType = "Seawater", 
+                HabitatType = "Water Column", 
+                SamplingDevice = "CTD Rosette", 
+                DepthLower = 10.0, 
+                DepthUpper = 10.01, 
+                SampleDescription = "Surface water sample", 
+                Analysis = "Dissolved Oxygen", 
+                Result = 5.9, 
+                Unit = "mg/L" 
+            },
+            new Sample { 
+                SampleId = 15, 
+                StationId = 15, 
+                SampleCode = "WP21-010-BC", 
+                SampleType = "Sediment", 
+                MatrixType = "Calcareous Ooze", 
+                HabitatType = "Seafloor", 
+                SamplingDevice = "Box Corer", 
+                DepthLower = 2200.0, 
+                DepthUpper = 2200.1, 
+                SampleDescription = "Surface sediment sample", 
+                Analysis = "CaCO₃ Content", 
+                Result = 85.2, 
+                Unit = "%" 
+            }
+        );
+
 
             // --- Seed CTD Data ---
             context.CtdDataSet.AddRange(
