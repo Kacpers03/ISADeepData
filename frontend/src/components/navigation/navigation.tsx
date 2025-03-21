@@ -25,7 +25,7 @@ export default function Navigation() {
               items={[
                 { text: t('nav.librarySubItems.reports'), link: "/library/reports" },
                 { text: t('nav.librarySubItems.publications'), link: "/library/publications" },
-                { text: t('nav.librarySubItems.research'), link: "/library/research" },
+                { text: t('nav.librarySubItems.samples'), link: "/library/samples" },
               ]}
             />
             <NavItem text={t('nav.gallery')} link="/gallery" />

@@ -12,34 +12,38 @@ namespace Models.Samples
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int SampleId { get; set; } // sample_id
+        public int SampleId { get; set; }
 
-        // Utenlandsk nøkkel: Hvilken Station tilhører denne prøven?
-        public int StationId { get; set; }
+        public int StationId { get; set; } // Nullable
         [ForeignKey("StationId")]
         public Station Station { get; set; }
 
         [StringLength(100)]
-        public string SampleCode { get; set; } // sample_code
+        public string SampleCode { get; set; }
 
         [StringLength(100)]
-        public string SampleType { get; set; } // sample_type
+        public string SampleType { get; set; }
 
         [StringLength(100)]
-        public string MatrixType { get; set; } // matrix_type
+        public string MatrixType { get; set; }
 
         [StringLength(100)]
-        public string HabitatType { get; set; } // habitat_type
+        public string HabitatType { get; set; }
 
         [StringLength(255)]
-        public string SamplingDevice { get; set; } // sampling_device
+        public string SamplingDevice { get; set; }
 
-        public double DepthLower { get; set; } // depth_lower
-        public double DepthUpper { get; set; } // depth_upper
+        public double DepthLower { get; set; }
+        public double DepthUpper { get; set; }
 
-        public string SampleDescription { get; set; } // sample_description
+        public string SampleDescription { get; set; }
 
-        // Navigasjon: resultater, bilder/video
+        [StringLength(100)]
+        public string Analysis { get; set; }
+
+        public Double Result { get; set; }
+        public string Unit {get; set;}
+
         public ICollection<EnvResult> EnvResults { get; set; }
         public ICollection<GeoResult> GeoResults { get; set; }
         public ICollection<PhotoVideo> PhotoVideos { get; set; }

@@ -6,7 +6,7 @@ import {
   getPaginationRowModel,
   flexRender,
 } from "@tanstack/react-table";
-import styles from "../../styles/reports.module.css";
+import styles from "../../styles/files/reports.module.css";
 import { useRouter } from "next/router";
 
 const FileTable = ({ filters, setFilteredItems }) => {

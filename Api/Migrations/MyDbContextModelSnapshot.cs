@@ -456,6 +456,11 @@ namespace Api.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
+                    b.Property<string>("Analysis")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("TEXT");
+
                     b.Property<double>("DepthLower")
                         .HasColumnType("REAL");
 
@@ -471,6 +476,9 @@ namespace Api.Migrations
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("TEXT");
+
+                    b.Property<double>("Result")
+                        .HasColumnType("REAL");
 
                     b.Property<string>("SampleCode")
                         .IsRequired()
@@ -493,6 +501,10 @@ namespace Api.Migrations
 
                     b.Property<int>("StationId")
                         .HasColumnType("INTEGER");
+
+                    b.Property<string>("Unit")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
 
                     b.HasKey("SampleId");
 

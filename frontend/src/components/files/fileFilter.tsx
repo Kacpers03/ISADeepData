@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { CustomDropdown } from "../map/filters/CustomDropdown";
-import styles from "../../styles/filefilter.module.css";
+import styles from "../../styles/files/filefilter.module.css";
 import mapStyles from "../../styles/map/filter.module.css";
 
 interface FileFilterProps {
@@ -65,7 +65,7 @@ const FileFilter: React.FC<FileFilterProps> = ({
 
   const contractorOptions = [
     { value: "all", label: "All Contractors" },
-    ...contractors.map((c) => ({ value: c.id.toString(), label: c.name })),
+    ...contractors.map((c) => ({ value: c.name, label: c.name })), // <-- change c.id to c.name
   ];
 
   const countryOptions = [
