@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import styles from '../../styles/gallery/gallery.module.css';
+import React, { useState } from "react";
+import styles from "../../styles/gallery/gallery.module.css";
 
 interface MediaItem {
   mediaId: number;
@@ -32,13 +32,14 @@ const MediaCard: React.FC<MediaCardProps> = ({ media, onClick }) => {
   const [isLoading, setIsLoading] = useState(true);
 
   // Determine if media is video or image
-  const isVideo = media.mediaType?.toLowerCase().includes('video') || 
-                  media.fileName.match(/\.(mp4|webm|avi|mov|wmv|flv)$/i);
+  const isVideo =
+    media.mediaType?.toLowerCase().includes("video") ||
+    media.fileName.match(/\.(mp4|webm|avi|mov|wmv|flv)$/i);
 
   // Format date for display
-  const formattedDate = media.captureDate 
+  const formattedDate = media.captureDate
     ? new Date(media.captureDate).toLocaleDateString()
-    : 'Date unknown';
+    : "Date unknown";
 
   // Handle thumbnail load error
   const handleImageError = () => {
@@ -54,9 +55,12 @@ const MediaCard: React.FC<MediaCardProps> = ({ media, onClick }) => {
   // Truncate filename if too long
   const truncateFileName = (name: string, maxLength: number = 20) => {
     if (name.length <= maxLength) return name;
-    const extension = name.split('.').pop();
-    const baseName = name.substring(0, name.lastIndexOf('.'));
-    return `${baseName.substring(0, maxLength - extension!.length - 3)}...${extension}`;
+    const extension = name.split(".").pop();
+    const baseName = name.substring(0, name.lastIndexOf("."));
+    return `${baseName.substring(
+      0,
+      maxLength - extension!.length - 3
+    )}...${extension}`;
   };
 
   return (
@@ -67,13 +71,13 @@ const MediaCard: React.FC<MediaCardProps> = ({ media, onClick }) => {
             <div className={styles.spinner}></div>
           </div>
         )}
-        
+
         {isVideo ? (
           // Video thumbnail with play icon overlay
           <>
             {!imageError ? (
               <img
-                src={media.thumbnailUrl || '/images/video-placeholder.jpg'}
+                src={media.thumbnailUrl || "/images/video-placeholder.jpg"}
                 alt={media.fileName}
                 className={styles.thumbnailImage}
                 onError={handleImageError}
@@ -90,34 +94,36 @@ const MediaCard: React.FC<MediaCardProps> = ({ media, onClick }) => {
               </svg>
             </div>
           </>
+        ) : // Image thumbnail
+        !imageError ? (
+          <img
+            src={
+              media.thumbnailUrl ||
+              media.fileUrl ||
+              "/images/image-placeholder.jpg"
+            }
+            alt={media.fileName}
+            className={styles.thumbnailImage}
+            onError={handleImageError}
+            onLoad={handleImageLoad}
+          />
         ) : (
-          // Image thumbnail
-          !imageError ? (
-            <img
-              src={media.thumbnailUrl || media.fileUrl || '/images/image-placeholder.jpg'}
-              alt={media.fileName}
-              className={styles.thumbnailImage}
-              onError={handleImageError}
-              onLoad={handleImageLoad}
-            />
-          ) : (
-            <div className={styles.fallbackThumbnail}>
-              <span className={styles.imageIcon}>🖼️</span>
-            </div>
-          )
+          <div className={styles.fallbackThumbnail}>
+            <span className={styles.imageIcon}>🖼️</span>
+          </div>
         )}
-        
+
         {/* Media type badge */}
         <div className={styles.mediaTypeBadge}>
-          {isVideo ? 'Video' : 'Image'}
+          {isVideo ? "Video" : "Image"}
         </div>
       </div>
-      
+
       <div className={styles.mediaInfo}>
         <h3 className={styles.mediaTitle} title={media.fileName}>
           {truncateFileName(media.fileName)}
         </h3>
-        
+
         <div className={styles.mediaDetails}>
           {media.stationCode && (
             <div className={styles.detailItem}>
@@ -125,20 +131,20 @@ const MediaCard: React.FC<MediaCardProps> = ({ media, onClick }) => {
               <span className={styles.detailValue}>{media.stationCode}</span>
             </div>
           )}
-          
+
           {media.captureDate && (
             <div className={styles.detailItem}>
               <span className={styles.detailLabel}>Date:</span>
               <span className={styles.detailValue}>{formattedDate}</span>
             </div>
           )}
-          
+
           {media.contractorName && (
             <div className={styles.detailItem}>
               <span className={styles.detailLabel}>Contractor:</span>
               <span className={styles.detailValue} title={media.contractorName}>
-                {media.contractorName.length > 15 
-                  ? `${media.contractorName.substring(0, 15)}...` 
+                {media.contractorName.length > 15
+                  ? `${media.contractorName.substring(0, 15)}...`
                   : media.contractorName}
               </span>
             </div>

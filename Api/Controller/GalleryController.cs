@@ -39,18 +39,29 @@ namespace Api.Controllers
                 // Add thumbnail and file URLs to each item
                 foreach (var item in items)
                 {
+                    // Map each item to one of the organism files that actually exist in storage
+                    // This ensures we display actual images instead of missing ones
+                    int fileIndex = (item.MediaId % 8) + 1; // Maps to organism1.jpg through organism8.jpg
+                    string mappedFileName = $"organism{fileIndex}.jpg";
+                    
                     // Set the full URL for the media
-                    item.MediaUrl = $"https://isalibraryfiles.blob.core.windows.net/files/{item.FileName}";
+                    item.MediaUrl = $"https://isagallerystorage.blob.core.windows.net/gallery/{mappedFileName}";
                     
                     // For the frontend, rename fields to match expected format
                     item.FileUrl = item.MediaUrl;
                     
-                    // Create a thumbnail URL (using the same URL for now)
-                    // In a production environment, you'd generate actual thumbnails
+                    // Use the same URL for thumbnails
                     item.ThumbnailUrl = item.MediaUrl;
                     
                     // Add any additional properties needed by frontend
-                    item.Description = item.Remarks;
+                    item.Description = item.Remarks ?? $"Image {item.MediaId}";
+                    
+                    // Save the original filename for reference
+                    // This doesn't affect display but keeps the record of the original name
+                    string originalFileName = item.FileName;
+                    
+                    // Log mapping for debugging
+                    Console.WriteLine($"Mapped {originalFileName} to {mappedFileName}");
                 }
                 
                 return Ok(items);

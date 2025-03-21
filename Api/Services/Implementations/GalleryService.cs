@@ -11,20 +11,20 @@ using DTOs.Gallery_Dto;
 
 namespace Api.Services.Implementations
 {
-    public class GalleryService : IGalleryService
+   public class GalleryService : IGalleryService
+{
+    private readonly IGalleryRepository _repository;
+    private readonly string _connectionString;
+    private readonly string _containerName;
+    
+    public GalleryService(
+        IGalleryRepository repository,
+        IConfiguration configuration)
     {
-        private readonly IGalleryRepository _repository;
-        private readonly string _connectionString;
-        private readonly string _containerName;
-        
-        public GalleryService(
-            IGalleryRepository repository,
-            IConfiguration configuration)
-        {
-            _repository = repository;
-            _connectionString = configuration.GetSection("AzureBlobStorage:ConnectionString").Value;
-            _containerName = configuration.GetSection("AzureBlobStorage:ContainerName").Value;
-        }
+        _repository = repository;
+        _connectionString = configuration.GetSection("AzureStorage:GalleryStorage:ConnectionString").Value;
+        _containerName = configuration.GetSection("AzureStorage:GalleryStorage:ContainerName").Value;
+    }
         
         public async Task<IEnumerable<GalleryItemDto>> GetGalleryItemsAsync(
             int? contractorId, 
@@ -55,7 +55,6 @@ namespace Api.Services.Implementations
                     MediaId = item.MediaId,
                     FileName = item.FileName,
                     MediaType = item.MediaType,
-                    MediaUrl = "", // Will be set in controller
                     CaptureDate = item.CaptureDate,
                     CameraSpecs = item.CameraSpecs,
                     Remarks = item.Remarks,
@@ -69,11 +68,7 @@ namespace Api.Services.Implementations
                     CruiseId = item.Sample.Station.Cruise.CruiseId,
                     CruiseName = item.Sample.Station.Cruise.CruiseName,
                     ContractorId = item.Sample.Station.Cruise.Contractor.ContractorId,
-                    ContractorName = item.Sample.Station.Cruise.Contractor.ContractorName,
-                    // Properties for frontend
-                    FileUrl = "", // Will be set in controller
-                    ThumbnailUrl = "", // Will be set in controller
-                    Description = item.Remarks // Use remarks as description
+                    ContractorName = item.Sample.Station.Cruise.Contractor.ContractorName
                 });
             }
             
