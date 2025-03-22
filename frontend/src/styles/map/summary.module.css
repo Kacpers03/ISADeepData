@@ -10,10 +10,13 @@
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
   z-index: 10;
   overflow: hidden;
+  transition: all 0.3s ease;
 }
 
 .collapsed {
-  width: 120px; /* Smaller when collapsed */
+  width: 280px; /* Keep the same width */
+  height: 42px; /* Just enough for the header */
+  overflow: hidden;
 }
 
 .summaryHeader {
@@ -23,6 +26,7 @@
   padding: 10px 12px;
   background-color: #0077b6;
   color: white;
+  cursor: pointer; /* Make entire header clickable */
 }
 
 .summaryHeader h3 {
@@ -49,6 +53,7 @@
   justify-content: center;
   cursor: pointer;
   border-radius: 4px;
+  z-index: 11; /* Make sure it's above the header for clickability */
 }
 
 .collapseButton:hover,
@@ -249,6 +254,10 @@
 
 .viewDetailsButton:hover {
   background-color: #00598c;
+}
+
+.globalSummarySection {
+  padding: 5px 0;
 }
 
 .cruiseSection {
