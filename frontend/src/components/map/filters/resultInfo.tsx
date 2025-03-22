@@ -1,7 +1,7 @@
 // frontend/src/components/map/filters/resultInfo.tsx
 import React, { useState } from 'react';
 import styles from '../../../styles/map/filter.module.css';
-import { downloadCSV } from '../../../utils/csvExport';
+import { downloadCSV, analyzeMapData } from '../../../utils/csvExport';
 
 interface ResultsInfoProps {
   loading: boolean;
@@ -19,23 +19,40 @@ const ResultsInfo: React.FC<ResultsInfoProps> = ({
   mapData
 }) => {
   const [isExporting, setIsExporting] = useState(false);
+  const [exportState, setExportState] = useState<string | null>(null);
   
-  // Handler for CSV download
+  // Handler for CSV download with improved error handling and data analysis
   const handleDownloadCSV = async () => {
     if (!mapData || isExporting) return;
     
     setIsExporting(true);
+    setExportState('Analyzing data...');
     
     try {
-      // Use the utility function to download the CSV
-      await downloadCSV(mapData, `exploration-data`);
+      // Check if all data is properly loaded
+      const dataCounts = analyzeMapData(mapData);
+      console.log('Data analysis for export:', dataCounts);
+      
+      // Set status message to show what's being exported
+      setExportState(`Preparing CSV with ${dataCounts.contractors} contractors, ${dataCounts.cruises} cruises...`);
+      
+      // Use the enhanced utility function to download the CSV
+      const result = await downloadCSV(mapData, `exploration-data`);
+      
+      if (result) {
+        setExportState('CSV downloaded successfully!');
+      } else {
+        setExportState('Error during download');
+      }
     } catch (error) {
       console.error('Error exporting CSV:', error);
+      setExportState('Error: ' + (error.message || 'Failed to export data'));
     } finally {
-      // Short delay to show loading state
+      // Reset state after a delay
       setTimeout(() => {
         setIsExporting(false);
-      }, 500);
+        setExportState(null);
+      }, 2000);
     }
   };
 
@@ -53,17 +70,17 @@ const ResultsInfo: React.FC<ResultsInfoProps> = ({
         )}
       </div>
       
-      {/* CSV Export Button with loading state */}
+      {/* CSV Export Button with improved loading state and feedback */}
       <button 
         className={styles.downloadButton}
         onClick={handleDownloadCSV}
         disabled={loading || contractorCount === 0 || isExporting}
-        title="Download data as CSV file"
+        title="Download complete data as CSV file"
       >
         {isExporting ? (
           <>
             <span className={styles.buttonSpinner}></span>
-            <span>Exporting...</span>
+            <span>{exportState || 'Exporting...'}</span>
           </>
         ) : (
           <>Download CSV</>

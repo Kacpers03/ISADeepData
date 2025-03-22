@@ -1,25 +1,59 @@
 // frontend/src/utils/enhancedCsvExport.ts
 
 /**
- * Enhanced CSV export with complete data
- * Ensures all related data is included for filtered elements
+ * Enhanced CSV export with complete data and exact column name mapping to match backend
+ * Ensures all related data including GeoResult, CTDData, and Library are included
  */
 
-// Types definition
+// Types definition matching backend models
 interface Contractor {
     contractorId: number;
     contractorName: string;
     contractType?: string;
+    contractTypeId?: number;
     sponsoringState?: string;
     contractualYear?: number;
     contractStatus?: string;
-    areas?: any[];
+    contractStatusId?: number;
+    contractNumber?: string;
+    remarks?: string;
+    areas?: Area[];
+    cruises?: Cruise[];
+    libraries?: Library[];
+}
+
+interface Area {
+    areaId: number;
+    areaName: string;
+    areaDescription?: string;
+    contractorId: number;
+    centerLatitude?: number;
+    centerLongitude?: number;
+    totalAreaSizeKm2?: number;
+    geoJsonBoundary?: string;
+    allocationDate?: string;
+    expiryDate?: string;
+    blocks?: Block[];
+}
+
+interface Block {
+    blockId: number;
+    blockName: string;
+    blockDescription?: string;
+    areaId: number;
+    status?: string;
+    geoJsonBoundary?: string;
+    centerLatitude?: number;
+    centerLongitude?: number;
+    areaSizeKm2?: number;
+    category?: string;
 }
 
 interface Cruise {
     cruiseId: number;
     cruiseName?: string;
     contractorId: number;
+    researchVessel?: string;
     startDate?: string;
     endDate?: string;
     centerLatitude?: number;
@@ -31,25 +65,85 @@ interface Station {
     stationId: number;
     stationCode?: string;
     stationType?: string;
+    cruiseId: number;
     latitude: number;
     longitude: number;
-    collectionDate?: string;
     samples?: Sample[];
+    ctdDataSet?: CTDData[];
 }
 
 interface Sample {
     sampleId: number;
     sampleCode?: string;
     sampleType?: string;
+    stationId: number;
     matrixType?: string;
     habitatType?: string;
     samplingDevice?: string;
     depthLower?: number;
     depthUpper?: number;
     sampleDescription?: string;
-    envResults?: any[];
-    geoResults?: any[];
-    media?: any[];
+    analysis?: string;
+    result?: number;
+    unit?: string;
+    envResults?: EnvResult[];
+    geoResults?: GeoResult[];
+    photoVideos?: PhotoVideo[];
+}
+
+interface EnvResult {
+    envResultId: number;
+    sampleId: number;
+    analysisCategory?: string;
+    analysisName?: string;
+    analysisValue?: number;
+    units?: string;
+    remarks?: string;
+}
+
+interface GeoResult {
+    geoResultId: number;
+    sampleId: number;
+    category?: string;
+    analysis?: string;
+    value?: number;
+    units?: string;
+    qualifier?: string;
+    remarks?: string;
+}
+
+interface CTDData {
+    ctdId: number;
+    stationId: number;
+    depthM?: number;
+    temperatureC?: number;
+    salinity?: number;
+    oxygen?: number;
+    ph?: number;
+    measurementTime?: string;
+}
+
+interface PhotoVideo {
+    mediaId: number;
+    sampleId: number;
+    fileName?: string;
+    mediaType?: string;
+    cameraSpecs?: string;
+    captureDate?: string;
+    remarks?: string;
+}
+
+interface Library {
+    libraryId: number;
+    contractorId: number;
+    theme?: string;
+    fileName?: string;
+    title?: string;
+    description?: string;
+    year?: number;
+    country?: string;
+    submissionDate?: string;
+    isConfidential?: boolean;
 }
 
 interface MapData {
@@ -71,181 +165,319 @@ export const convertToCSV = (data: MapData): string => {
     // Store all rows here
     const allRows: string[] = [];
     
-    // SECTION 1: CONTRACTORS
+    // SECTION 1: CONTRACTORS - Matching exact column names from DbInitializer.cs
     if (data.contractors && data.contractors.length > 0) {
         // Add section title with empty cells for proper column alignment
-        allRows.push(['CONTRACTORS', '', '', '', '', ''].join(delimiter));
+        allRows.push(['CONTRACTORS', '', '', '', '', '', '', ''].join(delimiter));
         
-        // Column headers - each in its own column
-        allRows.push(['ID', 'Name', 'Mineral Type', 'Sponsoring State', 'Year', 'Status'].join(delimiter));
+        // Column headers - each in its own column matching DbInitializer.cs
+        allRows.push(['ContractorId', 'ContractorName', 'ContractTypeId', 'ContractStatusId', 'ContractNumber', 'SponsoringState', 'ContractualYear', 'Remarks'].join(delimiter));
         
         // Add contractor data
         data.contractors.forEach(contractor => {
             const row = [
                 contractor.contractorId,
                 contractor.contractorName || '',
-                contractor.contractType || '',
+                contractor.contractTypeId || '',
+                contractor.contractStatusId || '',
+                contractor.contractNumber || '',
                 contractor.sponsoringState || '',
                 contractor.contractualYear?.toString() || '',
-                contractor.contractStatus || ''
+                contractor.remarks || ''
             ];
             allRows.push(row.join(delimiter));
         });
         
         // Add empty rows as separator
-        allRows.push(['', '', '', '', '', ''].join(delimiter));
-        allRows.push(['', '', '', '', '', ''].join(delimiter));
+        allRows.push(['', '', '', '', '', '', '', ''].join(delimiter));
+        allRows.push(['', '', '', '', '', '', '', ''].join(delimiter));
     }
     
-    // SECTION 2: CRUISES
-    if (data.cruises && data.cruises.length > 0) {
-        // Add section title with empty cells for proper column alignment
-        allRows.push(['CRUISES', '', '', '', '', '', '', ''].join(delimiter));
+    // SECTION 2: CONTRACTOR AREAS - Matching exact column names from DbInitializer.cs
+    const allAreas = data.contractors.flatMap(contractor => 
+        (contractor.areas || []).map(area => ({
+            ...area,
+            contractorId: contractor.contractorId,
+            contractorName: contractor.contractorName
+        }))
+    );
+    
+    if (allAreas.length > 0) {
+        allRows.push(['CONTRACTOR AREAS', '', '', '', '', '', '', '', '', ''].join(delimiter));
         
-        // Column headers - each in its own column
         allRows.push([
-            'ID', 
-            'Name', 
-            'Contractor ID',
-            'Contractor Name',
-            'Start Date', 
-            'End Date',
-            'Latitude',
-            'Longitude'
+            'AreaId', 
+            'ContractorId', 
+            'ContractorName',
+            'AreaName', 
+            'AreaDescription',
+            'CenterLatitude',
+            'CenterLongitude',
+            'TotalAreaSizeKm2',
+            'AllocationDate',
+            'ExpiryDate'
         ].join(delimiter));
         
-        // Add cruise data with contractor name
-        data.cruises.forEach(cruise => {
-            // Find corresponding contractor
-            const contractor = data.contractors.find(c => c.contractorId === cruise.contractorId);
-            const contractorName = contractor ? contractor.contractorName : '';
-            
+        allAreas.forEach(area => {
             const row = [
-                cruise.cruiseId,
-                cruise.cruiseName || '',
-                cruise.contractorId,
-                contractorName,
-                cruise.startDate ? new Date(cruise.startDate).toISOString().split('T')[0] : '',
-                cruise.endDate ? new Date(cruise.endDate).toISOString().split('T')[0] : '',
-                cruise.centerLatitude ? cruise.centerLatitude.toFixed(6) : '',
-                cruise.centerLongitude ? cruise.centerLongitude.toFixed(6) : ''
+                area.areaId,
+                area.contractorId,
+                area.contractorName || '',
+                area.areaName || '',
+                area.areaDescription || '',
+                area.centerLatitude ? area.centerLatitude.toFixed(6) : '',
+                area.centerLongitude ? area.centerLongitude.toFixed(6) : '',
+                area.totalAreaSizeKm2 ? area.totalAreaSizeKm2.toString() : '',
+                area.allocationDate ? new Date(area.allocationDate).toISOString().split('T')[0] : '',
+                area.expiryDate ? new Date(area.expiryDate).toISOString().split('T')[0] : ''
             ];
             
             allRows.push(row.join(delimiter));
         });
         
         // Add empty rows as separator
-        allRows.push(['', '', '', '', '', '', '', ''].join(delimiter));
-        allRows.push(['', '', '', '', '', '', '', ''].join(delimiter));
+        allRows.push(['', '', '', '', '', '', '', '', '', ''].join(delimiter));
+        allRows.push(['', '', '', '', '', '', '', '', '', ''].join(delimiter));
     }
     
-    // SECTION 3: STATIONS
+    // SECTION 3: CONTRACTOR AREA BLOCKS - Matching exact column names from DbInitializer.cs
+    const allBlocks = allAreas.flatMap(area => 
+        (area.blocks || []).map(block => ({
+            ...block,
+            areaId: area.areaId,
+            areaName: area.areaName,
+            contractorId: area.contractorId,
+            contractorName: area.contractorName
+        }))
+    );
+    
+    if (allBlocks.length > 0) {
+        allRows.push(['CONTRACTOR AREA BLOCKS', '', '', '', '', '', '', '', '', '', ''].join(delimiter));
+        
+        allRows.push([
+            'BlockId', 
+            'AreaId', 
+            'AreaName',
+            'ContractorId',
+            'ContractorName',
+            'BlockName', 
+            'BlockDescription',
+            'Status',
+            'CenterLatitude',
+            'CenterLongitude',
+            'AreaSizeKm2'
+        ].join(delimiter));
+        
+        allBlocks.forEach(block => {
+            const row = [
+                block.blockId,
+                block.areaId,
+                block.areaName || '',
+                block.contractorId,
+                block.contractorName || '',
+                block.blockName || '',
+                block.blockDescription || '',
+                block.status || '',
+                block.centerLatitude ? block.centerLatitude.toFixed(6) : '',
+                block.centerLongitude ? block.centerLongitude.toFixed(6) : '',
+                block.areaSizeKm2 ? block.areaSizeKm2.toString() : ''
+            ];
+            
+            allRows.push(row.join(delimiter));
+        });
+        
+        // Add empty rows as separator
+        allRows.push(['', '', '', '', '', '', '', '', '', '', ''].join(delimiter));
+        allRows.push(['', '', '', '', '', '', '', '', '', '', ''].join(delimiter));
+    }
+    
+    // SECTION 4: CRUISES - Matching exact column names from DbInitializer.cs
+    if (data.cruises && data.cruises.length > 0) {
+        // Add section title with empty cells for proper column alignment
+        allRows.push(['CRUISES', '', '', '', '', ''].join(delimiter));
+        
+        // Column headers - each in its own column matching DbInitializer.cs
+        allRows.push([
+            'CruiseId', 
+            'ContractorId',
+            'CruiseName', 
+            'ResearchVessel', 
+            'StartDate', 
+            'EndDate'
+        ].join(delimiter));
+        
+        // Add cruise data
+        data.cruises.forEach(cruise => {
+            const row = [
+                cruise.cruiseId,
+                cruise.contractorId,
+                cruise.cruiseName || '',
+                cruise.researchVessel || '',
+                cruise.startDate ? new Date(cruise.startDate).toISOString().split('T')[0] : '',
+                cruise.endDate ? new Date(cruise.endDate).toISOString().split('T')[0] : ''
+            ];
+            
+            allRows.push(row.join(delimiter));
+        });
+        
+        // Add empty rows as separator
+        allRows.push(['', '', '', '', '', ''].join(delimiter));
+        allRows.push(['', '', '', '', '', ''].join(delimiter));
+    }
+    
+    // SECTION 5: STATIONS - Matching exact column names from DbInitializer.cs
     // Collect all stations from all cruises
     const allStations = data.cruises.flatMap(cruise => 
         (cruise.stations || []).map(station => ({
             ...station,
             cruiseId: cruise.cruiseId,
-            cruiseName: cruise.cruiseName
+            cruiseName: cruise.cruiseName,
+            contractorId: cruise.contractorId
         }))
     );
     
     if (allStations.length > 0) {
         // Add section title with empty cells for proper column alignment
-        allRows.push(['STATIONS', '', '', '', '', '', '', ''].join(delimiter));
+        allRows.push(['STATIONS', '', '', '', '', ''].join(delimiter));
         
-        // Column headers - each in its own column
+        // Column headers - each in its own column matching DbInitializer.cs
         allRows.push([
-            'ID', 
-            'Code', 
-            'Type',
-            'Cruise ID',
-            'Cruise Name',
+            'StationId', 
+            'CruiseId',
+            'StationCode', 
+            'StationType', 
             'Latitude', 
-            'Longitude',
-            'Date'
+            'Longitude'
         ].join(delimiter));
         
         // Add station data
         allStations.forEach(station => {
             const row = [
                 station.stationId,
+                station.cruiseId,
                 station.stationCode || '',
                 station.stationType || '',
-                station.cruiseId,
-                station.cruiseName || '',
                 station.latitude ? station.latitude.toFixed(6) : '',
-                station.longitude ? station.longitude.toFixed(6) : '',
-                station.collectionDate ? new Date(station.collectionDate).toISOString().split('T')[0] : ''
+                station.longitude ? station.longitude.toFixed(6) : ''
             ];
             
             allRows.push(row.join(delimiter));
         });
         
         // Add empty rows as separator
-        allRows.push(['', '', '', '', '', '', '', ''].join(delimiter));
-        allRows.push(['', '', '', '', '', '', '', ''].join(delimiter));
+        allRows.push(['', '', '', '', '', ''].join(delimiter));
+        allRows.push(['', '', '', '', '', ''].join(delimiter));
     }
     
-    // SECTION 4: SAMPLES
+    // SECTION 6: CTD DATA - Matching exact column names from DbInitializer.cs
+    // Collect all CTD data from all stations
+    const allCTDData = allStations.flatMap(station => 
+        (station.ctdDataSet || []).map(ctd => ({
+            ...ctd,
+            stationId: station.stationId,
+            stationCode: station.stationCode,
+            cruiseId: station.cruiseId
+        }))
+    );
+    
+    if (allCTDData.length > 0) {
+        // Add section title
+        allRows.push(['CTD DATA', '', '', '', '', '', '', ''].join(delimiter));
+        
+        // Column headers matching DbInitializer.cs
+        allRows.push([
+            'CtdId',
+            'StationId',
+            'StationCode',
+            'DepthM',
+            'TemperatureC',
+            'Salinity',
+            'Oxygen',
+            'Ph',
+            'MeasurementTime'
+        ].join(delimiter));
+        
+        // Add CTD data
+        allCTDData.forEach(ctd => {
+            const row = [
+                ctd.ctdId,
+                ctd.stationId,
+                ctd.stationCode || '',
+                ctd.depthM || '',
+                ctd.temperatureC || '',
+                ctd.salinity || '',
+                ctd.oxygen || '',
+                ctd.ph || '',
+                ctd.measurementTime ? new Date(ctd.measurementTime).toISOString() : ''
+            ];
+            
+            allRows.push(row.join(delimiter));
+        });
+        
+        // Add empty rows as separator
+        allRows.push(['', '', '', '', '', '', '', '', ''].join(delimiter));
+        allRows.push(['', '', '', '', '', '', '', '', ''].join(delimiter));
+    }
+    
+    // SECTION 7: SAMPLES - Matching exact column names from DbInitializer.cs
     // Collect all samples from all stations
     const allSamples = allStations.flatMap(station => 
         (station.samples || []).map(sample => ({
             ...sample,
             stationId: station.stationId,
             stationCode: station.stationCode,
-            cruiseId: station.cruiseId,
-            cruiseName: station.cruiseName
+            cruiseId: station.cruiseId
         }))
     );
     
     if (allSamples.length > 0) {
-        // Add section title with empty cells for proper column alignment
-        allRows.push(['SAMPLES', '', '', '', '', '', '', '', '', '', ''].join(delimiter));
+        // Add section title
+        allRows.push(['SAMPLES', '', '', '', '', '', '', '', '', '', '', '', '', ''].join(delimiter));
         
-        // Column headers - each in its own column
+        // Column headers matching DbInitializer.cs
         allRows.push([
-            'ID', 
-            'Code', 
-            'Type',
-            'Station ID',
-            'Station Code',
-            'Cruise ID',
-            'Cruise Name',
-            'Matrix Type',
-            'Habitat Type',
-            'Sampling Device',
-            'Depth Range (m)'
+            'SampleId', 
+            'StationId',
+            'SampleCode', 
+            'SampleType',
+            'MatrixType',
+            'HabitatType',
+            'SamplingDevice',
+            'DepthLower',
+            'DepthUpper',
+            'SampleDescription',
+            'Analysis',
+            'Result',
+            'Unit'
         ].join(delimiter));
         
         // Add sample data
         allSamples.forEach(sample => {
-            const depthRange = (sample.depthLower !== undefined && sample.depthUpper !== undefined)
-                ? `${sample.depthLower} - ${sample.depthUpper}` 
-                : '';
-                
             const row = [
                 sample.sampleId,
+                sample.stationId,
                 sample.sampleCode || '',
                 sample.sampleType || '',
-                sample.stationId,
-                sample.stationCode || '',
-                sample.cruiseId,
-                sample.cruiseName || '',
                 sample.matrixType || '',
                 sample.habitatType || '',
                 sample.samplingDevice || '',
-                depthRange
+                sample.depthLower !== undefined ? sample.depthLower.toString() : '',
+                sample.depthUpper !== undefined ? sample.depthUpper.toString() : '',
+                sample.sampleDescription || '',
+                sample.analysis || '',
+                sample.result !== undefined ? sample.result.toString() : '',
+                sample.unit || ''
             ];
             
             allRows.push(row.join(delimiter));
         });
         
         // Add empty rows as separator
-        allRows.push(['', '', '', '', '', '', '', '', '', '', ''].join(delimiter));
-        allRows.push(['', '', '', '', '', '', '', '', '', '', ''].join(delimiter));
+        allRows.push(['', '', '', '', '', '', '', '', '', '', '', '', ''].join(delimiter));
+        allRows.push(['', '', '', '', '', '', '', '', '', '', '', '', ''].join(delimiter));
     }
     
-    // SECTION 5: ENVIRONMENTAL RESULTS
+    // SECTION 8: ENVIRONMENTAL RESULTS - Matching exact column names from DbInitializer.cs
     // Collect all environmental results from all samples
     const allEnvResults = allSamples.flatMap(sample => 
         (sample.envResults || []).map(result => ({
@@ -253,25 +485,23 @@ export const convertToCSV = (data: MapData): string => {
             sampleId: sample.sampleId,
             sampleCode: sample.sampleCode,
             stationId: sample.stationId,
-            stationCode: sample.stationCode,
-            cruiseId: sample.cruiseId
+            stationCode: sample.stationCode
         }))
     );
     
     if (allEnvResults.length > 0) {
         // Add section title
-        allRows.push(['ENVIRONMENTAL RESULTS', '', '', '', '', '', '', ''].join(delimiter));
+        allRows.push(['ENVIRONMENTAL RESULTS', '', '', '', '', '', ''].join(delimiter));
         
-        // Column headers
+        // Column headers matching DbInitializer.cs
         allRows.push([
-            'ID',
-            'Sample ID',
-            'Sample Code',
-            'Station ID',
-            'Category',
-            'Analysis',
-            'Value',
-            'Unit'
+            'EnvResultId',
+            'SampleId',
+            'AnalysisCategory',
+            'AnalysisName',
+            'AnalysisValue',
+            'Units',
+            'Remarks'
         ].join(delimiter));
         
         // Add environmental result data
@@ -279,50 +509,46 @@ export const convertToCSV = (data: MapData): string => {
             const row = [
                 result.envResultId || '',
                 result.sampleId,
-                result.sampleCode || '',
-                result.stationId,
                 result.analysisCategory || '',
                 result.analysisName || '',
-                result.analysisValue || '',
-                result.units || ''
+                result.analysisValue !== undefined ? result.analysisValue.toString() : '',
+                result.units || '',
+                result.remarks || ''
             ];
             
             allRows.push(row.join(delimiter));
         });
         
         // Add empty rows as separator
-        allRows.push(['', '', '', '', '', '', '', ''].join(delimiter));
-        allRows.push(['', '', '', '', '', '', '', ''].join(delimiter));
+        allRows.push(['', '', '', '', '', '', ''].join(delimiter));
+        allRows.push(['', '', '', '', '', '', ''].join(delimiter));
     }
     
-    // SECTION 6: GEOLOGICAL RESULTS
+    // SECTION 9: GEOLOGICAL RESULTS - Matching exact column names from DbInitializer.cs
     // Collect all geological results from all samples
     const allGeoResults = allSamples.flatMap(sample => 
         (sample.geoResults || []).map(result => ({
             ...result,
             sampleId: sample.sampleId,
             sampleCode: sample.sampleCode,
-            stationId: sample.stationId,
-            stationCode: sample.stationCode,
-            cruiseId: sample.cruiseId
+            stationId: sample.stationId
         }))
     );
     
     if (allGeoResults.length > 0) {
         // Add section title
-        allRows.push(['GEOLOGICAL RESULTS', '', '', '', '', '', '', '', ''].join(delimiter));
+        allRows.push(['GEOLOGICAL RESULTS', '', '', '', '', '', '', ''].join(delimiter));
         
-        // Column headers
+        // Column headers matching DbInitializer.cs
         allRows.push([
-            'ID',
-            'Sample ID',
-            'Sample Code',
-            'Station ID',
+            'GeoResultId',
+            'SampleId',
             'Category',
             'Analysis',
             'Value',
-            'Unit',
-            'Qualifier'
+            'Units',
+            'Qualifier',
+            'Remarks'
         ].join(delimiter));
         
         // Add geological result data
@@ -330,48 +556,45 @@ export const convertToCSV = (data: MapData): string => {
             const row = [
                 result.geoResultId || '',
                 result.sampleId,
-                result.sampleCode || '',
-                result.stationId,
                 result.category || '',
                 result.analysis || '',
-                result.value || '',
+                result.value !== undefined ? result.value.toString() : '',
                 result.units || '',
-                result.qualifier || ''
+                result.qualifier || '',
+                result.remarks || ''
             ];
             
             allRows.push(row.join(delimiter));
         });
         
         // Add empty rows as separator
-        allRows.push(['', '', '', '', '', '', '', '', ''].join(delimiter));
-        allRows.push(['', '', '', '', '', '', '', '', ''].join(delimiter));
+        allRows.push(['', '', '', '', '', '', '', ''].join(delimiter));
+        allRows.push(['', '', '', '', '', '', '', ''].join(delimiter));
     }
     
-    // SECTION 7: MEDIA (PHOTOS/VIDEOS)
+    // SECTION 10: PHOTO/VIDEO - Matching exact column names from DbInitializer.cs
     // Collect all media from all samples
     const allMedia = allSamples.flatMap(sample => 
-        (sample.media || []).map(media => ({
+        (sample.photoVideos || []).map(media => ({
             ...media,
             sampleId: sample.sampleId,
             sampleCode: sample.sampleCode,
-            stationId: sample.stationId,
-            stationCode: sample.stationCode,
-            cruiseId: sample.cruiseId
+            stationId: sample.stationId
         }))
     );
     
     if (allMedia.length > 0) {
         // Add section title
-        allRows.push(['MEDIA (PHOTOS/VIDEOS)', '', '', '', '', '', ''].join(delimiter));
+        allRows.push(['PHOTO_VIDEO', '', '', '', '', '', ''].join(delimiter));
         
-        // Column headers
+        // Column headers matching DbInitializer.cs
         allRows.push([
-            'ID',
-            'Sample ID',
-            'Filename',
-            'Media Type',
-            'Capture Date',
-            'Camera Specs',
+            'MediaId',
+            'SampleId',
+            'FileName',
+            'MediaType',
+            'CameraSpecs',
+            'CaptureDate',
             'Remarks'
         ].join(delimiter));
         
@@ -382,9 +605,62 @@ export const convertToCSV = (data: MapData): string => {
                 media.sampleId,
                 media.fileName || '',
                 media.mediaType || '',
-                media.captureDate ? new Date(media.captureDate).toISOString().split('T')[0] : '',
                 media.cameraSpecs || '',
+                media.captureDate ? new Date(media.captureDate).toISOString().split('T')[0] : '',
                 media.remarks || ''
+            ];
+            
+            allRows.push(row.join(delimiter));
+        });
+        
+        // Add empty rows as separator
+        allRows.push(['', '', '', '', '', '', ''].join(delimiter));
+        allRows.push(['', '', '', '', '', '', ''].join(delimiter));
+    }
+    
+    // SECTION 11: LIBRARY - Matching exact column names from DbInitializer.cs
+    // Collect all library entries from all contractors
+    const allLibraries = data.contractors.flatMap(contractor => 
+        (contractor.libraries || []).map(library => ({
+            ...library,
+            contractorId: contractor.contractorId,
+            contractorName: contractor.contractorName
+        }))
+    );
+    
+    if (allLibraries.length > 0) {
+        // Add section title
+        allRows.push(['LIBRARY', '', '', '', '', '', '', '', '', ''].join(delimiter));
+        
+        // Column headers matching DbInitializer.cs
+        allRows.push([
+            'LibraryId',
+            'ContractorId',
+            'ContractorName',
+            'Theme',
+            'FileName',
+            'Title',
+            'Description',
+            'Year',
+            'Country',
+            'SubmissionDate',
+            'IsConfidential'
+        ].join(delimiter));
+        
+        // Add library data
+        allLibraries.forEach(library => {
+            const row = [
+                library.libraryId || '',
+                library.contractorId,
+                library.contractorName || '',
+                library.theme || '',
+                library.fileName || '',
+                library.title || '',
+                library.description || '',
+                library.year || '',
+                library.country || '',
+                library.submissionDate ? new Date(library.submissionDate).toISOString().split('T')[0] : '',
+                library.isConfidential ? 'true' : 'false'
             ];
             
             allRows.push(row.join(delimiter));
@@ -397,6 +673,8 @@ export const convertToCSV = (data: MapData): string => {
 
 /**
  * Generate and download data as a CSV file with all related data
+ * Column names exactly match the backend DbInitializer.cs file
+ * 
  * @param data MapData object
  * @param filename Base filename without extension
  * @returns true if successful, false on error
@@ -445,173 +723,74 @@ export const downloadCSV = (data: MapData, filename = 'exploration-data'): boole
 };
 
 /**
- * Export analytics data in CSV format
+ * Recursively traverse the map data to ensure all related data is loaded
+ * This helps find any missing data like CTDData, Libraries, etc.
+ * 
+ * @param data MapData object to check
+ * @returns Object with counts of each entity type
  */
-export const exportBlockAnalyticsCSV = (analyticsData: any, filename = 'block-analytics'): boolean => {
-    if (!analyticsData) return false;
+export const analyzeMapData = (data: MapData): any => {
+    if (!data) return { error: 'No data provided' };
     
-    try {
-        // Use semicolon as delimiter for better Excel compatibility
-        const delimiter = ';';
+    const counts = {
+        contractors: 0,
+        areas: 0,
+        blocks: 0,
+        cruises: 0,
+        stations: 0,
+        samples: 0,
+        ctdData: 0,
+        envResults: 0,
+        geoResults: 0,
+        media: 0,
+        libraries: 0
+    };
+    
+    // Count contractors
+    counts.contractors = data.contractors?.length || 0;
+    
+    // Count areas and blocks
+    data.contractors?.forEach(contractor => {
+        // Count areas
+        counts.areas += contractor.areas?.length || 0;
         
-        // We'll store all rows here
-        const allRows: string[] = [];
+        // Count blocks
+        contractor.areas?.forEach(area => {
+            counts.blocks += area.blocks?.length || 0;
+        });
         
-        // SECTION 1: BLOCK INFORMATION
-        if (analyticsData.block) {
-            // Add section title with padding for column alignment
-            allRows.push(['BLOCK INFORMATION', ''].join(delimiter));
-            
-            // Column headers - in separate columns
-            allRows.push(['Property', 'Value'].join(delimiter));
-            
-            // Add basic information
-            allRows.push(['Block ID', analyticsData.block.blockId].join(delimiter));
-            allRows.push(['Block Name', analyticsData.block.blockName || ''].join(delimiter));
-            allRows.push(['Status', analyticsData.block.status || ''].join(delimiter));
-            allRows.push(['Area', analyticsData.block.area ? analyticsData.block.area.areaName || '' : ''].join(delimiter));
-            allRows.push(['Contractor', analyticsData.block.area && analyticsData.block.area.contractor ? 
-                analyticsData.block.area.contractor.contractorName || '' : ''].join(delimiter));
-            allRows.push(['Size (km²)', analyticsData.block.areaSizeKm2 ? analyticsData.block.areaSizeKm2.toFixed(2) : ''].join(delimiter));
-            
-            // Add empty rows as separator
-            allRows.push(['', ''].join(delimiter));
-            allRows.push(['', ''].join(delimiter));
-        }
+        // Count libraries
+        counts.libraries += contractor.libraries?.length || 0;
+    });
+    
+    // Count cruises and stations
+    counts.cruises = data.cruises?.length || 0;
+    
+    data.cruises?.forEach(cruise => {
+        // Count stations
+        counts.stations += cruise.stations?.length || 0;
         
-        // SECTION 2: ENVIRONMENTAL PARAMETERS
-        if (analyticsData.environmentalParameters && analyticsData.environmentalParameters.length > 0) {
-            allRows.push(['ENVIRONMENTAL PARAMETERS', '', '', '', ''].join(delimiter));
+        // Count CTD data
+        cruise.stations?.forEach(station => {
+            counts.ctdData += station.ctdDataSet?.length || 0;
             
-            analyticsData.environmentalParameters.forEach(category => {
-                // Add category name with padding for column alignment
-                allRows.push([category.category, '', '', '', ''].join(delimiter));
-                
-                // Column headers - properly separated
-                allRows.push(['Parameter', 'Average', 'Min', 'Max', 'Unit'].join(delimiter));
-                
-                // Add parameter data
-                category.parameters.forEach(param => {
-                    const row = [
-                        param.name || '',
-                        param.averageValue !== undefined ? param.averageValue.toFixed(2) : '',
-                        param.minValue !== undefined ? param.minValue.toFixed(2) : '',
-                        param.maxValue !== undefined ? param.maxValue.toFixed(2) : '',
-                        param.unit || ''
-                    ];
-                    allRows.push(row.join(delimiter));
-                });
-                
-                // Add empty row between categories
-                allRows.push(['', '', '', '', ''].join(delimiter));
+            // Count samples
+            counts.samples += station.samples?.length || 0;
+            
+            // Count sample-related data
+            station.samples?.forEach(sample => {
+                counts.envResults += sample.envResults?.length || 0;
+                counts.geoResults += sample.geoResults?.length || 0;
+                counts.media += sample.photoVideos?.length || 0;
             });
-            
-            // Add empty row between sections
-            allRows.push(['', '', '', '', ''].join(delimiter));
-        }
-        
-        // SECTION 3: RESOURCE METRICS
-        if (analyticsData.resourceMetrics && analyticsData.resourceMetrics.length > 0) {
-            allRows.push(['RESOURCE METRICS', '', '', '', ''].join(delimiter));
-            
-            analyticsData.resourceMetrics.forEach(category => {
-                // Add category name with padding for column alignment
-                allRows.push([category.category, '', '', '', ''].join(delimiter));
-                
-                // Column headers - properly separated
-                allRows.push(['Analysis', 'Average', 'Min', 'Max', 'Unit'].join(delimiter));
-                
-                // Add analysis data
-                category.analyses.forEach(analysis => {
-                    const row = [
-                        analysis.analysis || '',
-                        analysis.averageValue !== undefined ? analysis.averageValue.toFixed(2) : '',
-                        analysis.minValue !== undefined ? analysis.minValue.toFixed(2) : '',
-                        analysis.maxValue !== undefined ? analysis.maxValue.toFixed(2) : '',
-                        analysis.unit || ''
-                    ];
-                    allRows.push(row.join(delimiter));
-                });
-                
-                // Add empty row between categories
-                allRows.push(['', '', '', '', ''].join(delimiter));
-            });
-            
-            // Add empty row between sections
-            allRows.push(['', '', '', '', ''].join(delimiter));
-        }
-        
-        // SECTION 4: SAMPLE TYPES
-        if (analyticsData.sampleTypes && analyticsData.sampleTypes.length > 0) {
-            allRows.push(['SAMPLE TYPES', '', '', '', ''].join(delimiter));
-            
-            // Column headers - properly separated
-            allRows.push(['Type', 'Count', 'Min Depth', 'Max Depth', 'Units'].join(delimiter));
-            
-            // Add sampleType data
-            analyticsData.sampleTypes.forEach(sampleType => {
-                const row = [
-                    sampleType.sampleType || '',
-                    sampleType.count || 0,
-                    sampleType.depthRange ? sampleType.depthRange.min : '',
-                    sampleType.depthRange ? sampleType.depthRange.max : '',
-                    'm'
-                ];
-                allRows.push(row.join(delimiter));
-            });
-            
-            // Add empty row between sections
-            allRows.push(['', '', '', '', ''].join(delimiter));
-            allRows.push(['', '', '', '', ''].join(delimiter));
-        }
-        
-        // SECTION 5: RECENT STATIONS
-        if (analyticsData.recentStations && analyticsData.recentStations.length > 0) {
-            allRows.push(['RECENT STATIONS', '', '', ''].join(delimiter));
-            
-            // Column headers - properly separated
-            allRows.push(['Station Code', 'Type', 'Latitude', 'Longitude'].join(delimiter));
-            
-            // Add station data
-            analyticsData.recentStations.forEach(station => {
-                const row = [
-                    station.stationCode || '',
-                    station.stationType || '',
-                    station.latitude ? station.latitude.toFixed(6) : '',
-                    station.longitude ? station.longitude.toFixed(6) : ''
-                ];
-                allRows.push(row.join(delimiter));
-            });
-        }
-        
-        // For Excel compatibility, add UTF-8 BOM
-        const bomPrefix = '\uFEFF';
-        const fileContent = bomPrefix + allRows.join('\r\n');
-        
-        // Download the file
-        const blob = new Blob([fileContent], { type: 'text/csv;charset=utf-8;' });
-        const url = URL.createObjectURL(blob);
-        const date = new Date().toISOString().split('T')[0];
-        const fullFilename = `${filename}-${date}.csv`;
-        
-        const link = document.createElement('a');
-        link.setAttribute('href', url);
-        link.setAttribute('download', fullFilename);
-        link.style.visibility = 'hidden';
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        URL.revokeObjectURL(url);
-        
-        return true;
-    } catch (error) {
-        console.error('Error creating analytics CSV export:', error);
-        return false;
-    }
+        });
+    });
+    
+    return counts;
 };
 
 export default {
     convertToCSV,
     downloadCSV,
-    exportBlockAnalyticsCSV
+    analyzeMapData
 };
