@@ -349,6 +349,7 @@ public async Task<ActionResult<object>> GetMapData(
             c.ContractNumber,
             c.SponsoringState,
             c.ContractualYear,
+            c.Remarks,
             Areas = c.ContractorAreas.Select(a => new
             {
                 a.AreaId,

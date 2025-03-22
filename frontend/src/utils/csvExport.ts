@@ -178,8 +178,8 @@ export const convertToCSV = (data: MapData): string => {
             const row = [
                 contractor.contractorId,
                 contractor.contractorName || '',
-                contractor.contractTypeId || '',
-                contractor.contractStatusId || '',
+                contractor.contractType || '',
+                contractor.contractStatus || '',
                 contractor.contractNumber || '',
                 contractor.sponsoringState || '',
                 contractor.contractualYear?.toString() || '',
