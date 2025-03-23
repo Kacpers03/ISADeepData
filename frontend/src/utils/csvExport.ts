@@ -1,4 +1,4 @@
-// frontend/src/utils/enhancedCsvExport.ts
+// frontend/src/utils/csvExport.ts
 
 /**
  * Enhanced CSV export with complete data and exact column name mapping to match backend
@@ -152,12 +152,77 @@ interface MapData {
 }
 
 /**
+ * Case-insensitive property getter - works with both camelCase and PascalCase
+ * @param obj Object to get property from
+ * @param propName Property name (in camelCase format)
+ * @returns The property value or undefined if not found
+ */
+function getProp(obj: any, propName: string): any {
+    if (!obj || typeof obj !== 'object') return undefined;
+    
+    // Check direct property access (case-sensitive)
+    if (obj[propName] !== undefined) {
+        return obj[propName];
+    }
+    
+    // Try PascalCase version
+    const pascalCase = propName.charAt(0).toUpperCase() + propName.slice(1);
+    if (obj[pascalCase] !== undefined) {
+        return obj[pascalCase];
+    }
+    
+    // Try case-insensitive search (slower but thorough)
+    const lowerPropName = propName.toLowerCase();
+    for (const key in obj) {
+        if (key.toLowerCase() === lowerPropName) {
+            return obj[key];
+        }
+    }
+    
+    return undefined;
+}
+
+/**
+ * Normalizes an object's properties to camelCase for consistent access
+ * @param data Object or array to normalize
+ * @returns Normalized data with consistent property names
+ */
+function normalizeCase(data: any): any {
+    if (!data) return data;
+    
+    if (Array.isArray(data)) {
+        return data.map(item => normalizeCase(item));
+    }
+    
+    if (typeof data === 'object' && data !== null) {
+        const result: any = {};
+        
+        for (const key in data) {
+            // Convert key to camelCase if it's in PascalCase
+            const camelKey = key.charAt(0).toLowerCase() + key.slice(1);
+            result[camelKey] = normalizeCase(data[key]);
+        }
+        
+        return result;
+    }
+    
+    return data;
+}
+
+/**
  * Converts data to CSV format with all related data
  * @param data MapData object to be converted
  * @returns CSV-formatted string with semicolon delimiter
  */
 export const convertToCSV = (data: MapData): string => {
     if (!data) return '';
+    
+    // Log the data structure to debug
+    console.log('Raw data for CSV export:', data);
+    
+    // Normalize all data to camelCase for consistent access
+    const normalizedData = normalizeCase(data);
+    console.log('Normalized data for CSV export:', normalizedData);
 
     // Use semicolon as delimiter for better Excel compatibility
     const delimiter = ';';
@@ -166,7 +231,7 @@ export const convertToCSV = (data: MapData): string => {
     const allRows: string[] = [];
     
     // SECTION 1: CONTRACTORS - Matching exact column names from DbInitializer.cs
-    if (data.contractors && data.contractors.length > 0) {
+    if (normalizedData.contractors && normalizedData.contractors.length > 0) {
         // Add section title with empty cells for proper column alignment
         allRows.push(['CONTRACTORS', '', '', '', '', '', '', ''].join(delimiter));
         
@@ -174,16 +239,16 @@ export const convertToCSV = (data: MapData): string => {
         allRows.push(['ContractorId', 'ContractorName', 'ContractTypeId', 'ContractStatusId', 'ContractNumber', 'SponsoringState', 'ContractualYear', 'Remarks'].join(delimiter));
         
         // Add contractor data
-        data.contractors.forEach(contractor => {
+        normalizedData.contractors.forEach((contractor: any) => {
             const row = [
-                contractor.contractorId,
-                contractor.contractorName || '',
-                contractor.contractType || '',
-                contractor.contractStatus || '',
-                contractor.contractNumber || '',
-                contractor.sponsoringState || '',
-                contractor.contractualYear?.toString() || '',
-                contractor.remarks || ''
+                getProp(contractor, 'contractorId'),
+                getProp(contractor, 'contractorName') || '',
+                getProp(contractor, 'contractType') || '',
+                getProp(contractor, 'contractStatus') || '',
+                getProp(contractor, 'contractNumber') || '',
+                getProp(contractor, 'sponsoringState') || '',
+                getProp(contractor, 'contractualYear')?.toString() || '',
+                getProp(contractor, 'remarks') || ''
             ];
             allRows.push(row.join(delimiter));
         });
@@ -194,21 +259,21 @@ export const convertToCSV = (data: MapData): string => {
     }
     
     // SECTION 2: CONTRACTOR AREAS - Matching exact column names from DbInitializer.cs
-    const allAreas = data.contractors.flatMap(contractor => 
-        (contractor.areas || []).map(area => ({
+    const allAreas = normalizedData.contractors.flatMap((contractor: any) => 
+        (getProp(contractor, 'areas') || []).map((area: any) => ({
             ...area,
-            contractorId: contractor.contractorId,
-            contractorName: contractor.contractorName
+            contractorId: getProp(contractor, 'contractorId'),
+            contractorName: getProp(contractor, 'contractorName')
         }))
     );
     
     if (allAreas.length > 0) {
         allRows.push(['CONTRACTOR AREAS', '', '', '', '', '', '', '', '', ''].join(delimiter));
         
+        // Headers matching exactly the columns in DbInitializer.cs
         allRows.push([
             'AreaId', 
-            'ContractorId', 
-            'ContractorName',
+            'ContractorId',
             'AreaName', 
             'AreaDescription',
             'CenterLatitude',
@@ -218,18 +283,20 @@ export const convertToCSV = (data: MapData): string => {
             'ExpiryDate'
         ].join(delimiter));
         
-        allAreas.forEach(area => {
+        allAreas.forEach((area: any) => {
+            // Log the area object to debug
+            console.log('Processing area for CSV:', area);
+            
             const row = [
-                area.areaId,
-                area.contractorId,
-                area.contractorName || '',
-                area.areaName || '',
-                area.areaDescription || '',
-                area.centerLatitude ? area.centerLatitude.toFixed(6) : '',
-                area.centerLongitude ? area.centerLongitude.toFixed(6) : '',
-                area.totalAreaSizeKm2 ? area.totalAreaSizeKm2.toString() : '',
-                area.allocationDate ? new Date(area.allocationDate).toISOString().split('T')[0] : '',
-                area.expiryDate ? new Date(area.expiryDate).toISOString().split('T')[0] : ''
+                getProp(area, 'areaId'),
+                getProp(area, 'contractorId'),
+                getProp(area, 'areaName') || '',
+                getProp(area, 'areaDescription') || '',
+                getProp(area, 'centerLatitude') ? getProp(area, 'centerLatitude').toFixed(6) : '',
+                getProp(area, 'centerLongitude') ? getProp(area, 'centerLongitude').toFixed(6) : '',
+                getProp(area, 'totalAreaSizeKm2') ? getProp(area, 'totalAreaSizeKm2').toString() : '',
+                getProp(area, 'allocationDate') ? new Date(getProp(area, 'allocationDate')).toISOString().split('T')[0] : '',
+                getProp(area, 'expiryDate') ? new Date(getProp(area, 'expiryDate')).toISOString().split('T')[0] : ''
             ];
             
             allRows.push(row.join(delimiter));
@@ -241,46 +308,46 @@ export const convertToCSV = (data: MapData): string => {
     }
     
     // SECTION 3: CONTRACTOR AREA BLOCKS - Matching exact column names from DbInitializer.cs
-    const allBlocks = allAreas.flatMap(area => 
-        (area.blocks || []).map(block => ({
+    const allBlocks = allAreas.flatMap((area: any) => 
+        (getProp(area, 'blocks') || []).map((block: any) => ({
             ...block,
-            areaId: area.areaId,
-            areaName: area.areaName,
-            contractorId: area.contractorId,
-            contractorName: area.contractorName
+            areaId: getProp(area, 'areaId'),
+            areaName: getProp(area, 'areaName'),
+            contractorId: getProp(area, 'contractorId'),
+            contractorName: getProp(area, 'contractorName')
         }))
     );
     
     if (allBlocks.length > 0) {
-        allRows.push(['CONTRACTOR AREA BLOCKS', '', '', '', '', '', '', '', '', '', ''].join(delimiter));
+        allRows.push(['CONTRACTOR AREA BLOCKS', '', '', '', '', '', '', '', ''].join(delimiter));
         
+        // Headers matching exactly the columns in DbInitializer.cs
         allRows.push([
             'BlockId', 
             'AreaId', 
-            'AreaName',
-            'ContractorId',
-            'ContractorName',
             'BlockName', 
             'BlockDescription',
             'Status',
             'CenterLatitude',
             'CenterLongitude',
-            'AreaSizeKm2'
+            'AreaSizeKm2',
+            'Category'
         ].join(delimiter));
         
-        allBlocks.forEach(block => {
+        allBlocks.forEach((block: any) => {
+            // Log the block object to debug
+            console.log('Processing block for CSV:', block);
+            
             const row = [
-                block.blockId,
-                block.areaId,
-                block.areaName || '',
-                block.contractorId,
-                block.contractorName || '',
-                block.blockName || '',
-                block.blockDescription || '',
-                block.status || '',
-                block.centerLatitude ? block.centerLatitude.toFixed(6) : '',
-                block.centerLongitude ? block.centerLongitude.toFixed(6) : '',
-                block.areaSizeKm2 ? block.areaSizeKm2.toString() : ''
+                getProp(block, 'blockId'),
+                getProp(block, 'areaId'),
+                getProp(block, 'blockName') || '',
+                getProp(block, 'blockDescription') || '',
+                getProp(block, 'status') || '',
+                getProp(block, 'centerLatitude') ? getProp(block, 'centerLatitude').toFixed(6) : '',
+                getProp(block, 'centerLongitude') ? getProp(block, 'centerLongitude').toFixed(6) : '',
+                getProp(block, 'areaSizeKm2') ? getProp(block, 'areaSizeKm2').toString() : '',
+                getProp(block, 'category') || ''
             ];
             
             allRows.push(row.join(delimiter));
@@ -292,7 +359,7 @@ export const convertToCSV = (data: MapData): string => {
     }
     
     // SECTION 4: CRUISES - Matching exact column names from DbInitializer.cs
-    if (data.cruises && data.cruises.length > 0) {
+    if (normalizedData.cruises && normalizedData.cruises.length > 0) {
         // Add section title with empty cells for proper column alignment
         allRows.push(['CRUISES', '', '', '', '', ''].join(delimiter));
         
@@ -307,14 +374,14 @@ export const convertToCSV = (data: MapData): string => {
         ].join(delimiter));
         
         // Add cruise data
-        data.cruises.forEach(cruise => {
+        normalizedData.cruises.forEach((cruise: any) => {
             const row = [
-                cruise.cruiseId,
-                cruise.contractorId,
-                cruise.cruiseName || '',
-                cruise.researchVessel || '',
-                cruise.startDate ? new Date(cruise.startDate).toISOString().split('T')[0] : '',
-                cruise.endDate ? new Date(cruise.endDate).toISOString().split('T')[0] : ''
+                getProp(cruise, 'cruiseId'),
+                getProp(cruise, 'contractorId'),
+                getProp(cruise, 'cruiseName') || '',
+                getProp(cruise, 'researchVessel') || '',
+                getProp(cruise, 'startDate') ? new Date(getProp(cruise, 'startDate')).toISOString().split('T')[0] : '',
+                getProp(cruise, 'endDate') ? new Date(getProp(cruise, 'endDate')).toISOString().split('T')[0] : ''
             ];
             
             allRows.push(row.join(delimiter));
@@ -327,12 +394,12 @@ export const convertToCSV = (data: MapData): string => {
     
     // SECTION 5: STATIONS - Matching exact column names from DbInitializer.cs
     // Collect all stations from all cruises
-    const allStations = data.cruises.flatMap(cruise => 
-        (cruise.stations || []).map(station => ({
+    const allStations = normalizedData.cruises.flatMap((cruise: any) => 
+        (getProp(cruise, 'stations') || []).map((station: any) => ({
             ...station,
-            cruiseId: cruise.cruiseId,
-            cruiseName: cruise.cruiseName,
-            contractorId: cruise.contractorId
+            cruiseId: getProp(cruise, 'cruiseId'),
+            cruiseName: getProp(cruise, 'cruiseName'),
+            contractorId: getProp(cruise, 'contractorId')
         }))
     );
     
@@ -351,14 +418,14 @@ export const convertToCSV = (data: MapData): string => {
         ].join(delimiter));
         
         // Add station data
-        allStations.forEach(station => {
+        allStations.forEach((station: any) => {
             const row = [
-                station.stationId,
-                station.cruiseId,
-                station.stationCode || '',
-                station.stationType || '',
-                station.latitude ? station.latitude.toFixed(6) : '',
-                station.longitude ? station.longitude.toFixed(6) : ''
+                getProp(station, 'stationId'),
+                getProp(station, 'cruiseId'),
+                getProp(station, 'stationCode') || '',
+                getProp(station, 'stationType') || '',
+                getProp(station, 'latitude') ? getProp(station, 'latitude').toFixed(6) : '',
+                getProp(station, 'longitude') ? getProp(station, 'longitude').toFixed(6) : ''
             ];
             
             allRows.push(row.join(delimiter));
@@ -371,12 +438,12 @@ export const convertToCSV = (data: MapData): string => {
     
     // SECTION 6: CTD DATA - Matching exact column names from DbInitializer.cs
     // Collect all CTD data from all stations
-    const allCTDData = allStations.flatMap(station => 
-        (station.ctdDataSet || []).map(ctd => ({
+    const allCTDData = allStations.flatMap((station: any) => 
+        (getProp(station, 'ctdDataSet') || []).map((ctd: any) => ({
             ...ctd,
-            stationId: station.stationId,
-            stationCode: station.stationCode,
-            cruiseId: station.cruiseId
+            stationId: getProp(station, 'stationId'),
+            stationCode: getProp(station, 'stationCode'),
+            cruiseId: getProp(station, 'cruiseId')
         }))
     );
     
@@ -398,17 +465,17 @@ export const convertToCSV = (data: MapData): string => {
         ].join(delimiter));
         
         // Add CTD data
-        allCTDData.forEach(ctd => {
+        allCTDData.forEach((ctd: any) => {
             const row = [
-                ctd.ctdId,
-                ctd.stationId,
-                ctd.stationCode || '',
-                ctd.depthM || '',
-                ctd.temperatureC || '',
-                ctd.salinity || '',
-                ctd.oxygen || '',
-                ctd.ph || '',
-                ctd.measurementTime ? new Date(ctd.measurementTime).toISOString() : ''
+                getProp(ctd, 'ctdId'),
+                getProp(ctd, 'stationId'),
+                getProp(ctd, 'stationCode') || '',
+                getProp(ctd, 'depthM') || '',
+                getProp(ctd, 'temperatureC') || '',
+                getProp(ctd, 'salinity') || '',
+                getProp(ctd, 'oxygen') || '',
+                getProp(ctd, 'ph') || '',
+                getProp(ctd, 'measurementTime') ? new Date(getProp(ctd, 'measurementTime')).toISOString() : ''
             ];
             
             allRows.push(row.join(delimiter));
@@ -421,12 +488,12 @@ export const convertToCSV = (data: MapData): string => {
     
     // SECTION 7: SAMPLES - Matching exact column names from DbInitializer.cs
     // Collect all samples from all stations
-    const allSamples = allStations.flatMap(station => 
-        (station.samples || []).map(sample => ({
+    const allSamples = allStations.flatMap((station: any) => 
+        (getProp(station, 'samples') || []).map((sample: any) => ({
             ...sample,
-            stationId: station.stationId,
-            stationCode: station.stationCode,
-            cruiseId: station.cruiseId
+            stationId: getProp(station, 'stationId'),
+            stationCode: getProp(station, 'stationCode'),
+            cruiseId: getProp(station, 'cruiseId')
         }))
     );
     
@@ -452,21 +519,24 @@ export const convertToCSV = (data: MapData): string => {
         ].join(delimiter));
         
         // Add sample data
-        allSamples.forEach(sample => {
+        allSamples.forEach((sample: any) => {
+            // Debug the sample object to see all available properties
+            console.log('Processing sample for CSV:', sample);
+            
             const row = [
-                sample.sampleId,
-                sample.stationId,
-                sample.sampleCode || '',
-                sample.sampleType || '',
-                sample.matrixType || '',
-                sample.habitatType || '',
-                sample.samplingDevice || '',
-                sample.depthLower !== undefined ? sample.depthLower.toString() : '',
-                sample.depthUpper !== undefined ? sample.depthUpper.toString() : '',
-                sample.sampleDescription || '',
-                sample.analysis || '',
-                sample.result !== undefined ? sample.result.toString() : '',
-                sample.unit || ''
+                getProp(sample, 'sampleId') || '',
+                getProp(sample, 'stationId') || '',
+                getProp(sample, 'sampleCode') || '',
+                getProp(sample, 'sampleType') || '',
+                getProp(sample, 'matrixType') || '',
+                getProp(sample, 'habitatType') || '',
+                getProp(sample, 'samplingDevice') || '',
+                getProp(sample, 'depthLower') !== undefined ? getProp(sample, 'depthLower').toString() : '',
+                getProp(sample, 'depthUpper') !== undefined ? getProp(sample, 'depthUpper').toString() : '',
+                getProp(sample, 'sampleDescription') || '',
+                getProp(sample, 'analysis') || '',
+                getProp(sample, 'result') !== undefined ? getProp(sample, 'result').toString() : '',
+                getProp(sample, 'unit') || ''
             ];
             
             allRows.push(row.join(delimiter));
@@ -479,13 +549,13 @@ export const convertToCSV = (data: MapData): string => {
     
     // SECTION 8: ENVIRONMENTAL RESULTS - Matching exact column names from DbInitializer.cs
     // Collect all environmental results from all samples
-    const allEnvResults = allSamples.flatMap(sample => 
-        (sample.envResults || []).map(result => ({
+    const allEnvResults = allSamples.flatMap((sample: any) => 
+        (getProp(sample, 'envResults') || []).map((result: any) => ({
             ...result,
-            sampleId: sample.sampleId,
-            sampleCode: sample.sampleCode,
-            stationId: sample.stationId,
-            stationCode: sample.stationCode
+            sampleId: getProp(sample, 'sampleId'),
+            sampleCode: getProp(sample, 'sampleCode'),
+            stationId: getProp(sample, 'stationId'),
+            stationCode: getProp(sample, 'stationCode')
         }))
     );
     
@@ -505,15 +575,15 @@ export const convertToCSV = (data: MapData): string => {
         ].join(delimiter));
         
         // Add environmental result data
-        allEnvResults.forEach(result => {
+        allEnvResults.forEach((result: any) => {
             const row = [
-                result.envResultId || '',
-                result.sampleId,
-                result.analysisCategory || '',
-                result.analysisName || '',
-                result.analysisValue !== undefined ? result.analysisValue.toString() : '',
-                result.units || '',
-                result.remarks || ''
+                getProp(result, 'envResultId') || '',
+                getProp(result, 'sampleId'),
+                getProp(result, 'analysisCategory') || '',
+                getProp(result, 'analysisName') || '',
+                getProp(result, 'analysisValue') !== undefined ? getProp(result, 'analysisValue').toString() : '',
+                getProp(result, 'units') || '',
+                getProp(result, 'remarks') || ''
             ];
             
             allRows.push(row.join(delimiter));
@@ -526,12 +596,12 @@ export const convertToCSV = (data: MapData): string => {
     
     // SECTION 9: GEOLOGICAL RESULTS - Matching exact column names from DbInitializer.cs
     // Collect all geological results from all samples
-    const allGeoResults = allSamples.flatMap(sample => 
-        (sample.geoResults || []).map(result => ({
+    const allGeoResults = allSamples.flatMap((sample: any) => 
+        (getProp(sample, 'geoResults') || []).map((result: any) => ({
             ...result,
-            sampleId: sample.sampleId,
-            sampleCode: sample.sampleCode,
-            stationId: sample.stationId
+            sampleId: getProp(sample, 'sampleId'),
+            sampleCode: getProp(sample, 'sampleCode'),
+            stationId: getProp(sample, 'stationId')
         }))
     );
     
@@ -552,16 +622,16 @@ export const convertToCSV = (data: MapData): string => {
         ].join(delimiter));
         
         // Add geological result data
-        allGeoResults.forEach(result => {
+        allGeoResults.forEach((result: any) => {
             const row = [
-                result.geoResultId || '',
-                result.sampleId,
-                result.category || '',
-                result.analysis || '',
-                result.value !== undefined ? result.value.toString() : '',
-                result.units || '',
-                result.qualifier || '',
-                result.remarks || ''
+                getProp(result, 'geoResultId') || '',
+                getProp(result, 'sampleId'),
+                getProp(result, 'category') || '',
+                getProp(result, 'analysis') || '',
+                getProp(result, 'value') !== undefined ? getProp(result, 'value').toString() : '',
+                getProp(result, 'units') || '',
+                getProp(result, 'qualifier') || '',
+                getProp(result, 'remarks') || ''
             ];
             
             allRows.push(row.join(delimiter));
@@ -574,12 +644,12 @@ export const convertToCSV = (data: MapData): string => {
     
     // SECTION 10: PHOTO/VIDEO - Matching exact column names from DbInitializer.cs
     // Collect all media from all samples
-    const allMedia = allSamples.flatMap(sample => 
-        (sample.photoVideos || []).map(media => ({
+    const allMedia = allSamples.flatMap((sample: any) => 
+        (getProp(sample, 'photoVideos') || []).map((media: any) => ({
             ...media,
-            sampleId: sample.sampleId,
-            sampleCode: sample.sampleCode,
-            stationId: sample.stationId
+            sampleId: getProp(sample, 'sampleId'),
+            sampleCode: getProp(sample, 'sampleCode'),
+            stationId: getProp(sample, 'stationId')
         }))
     );
     
@@ -599,15 +669,15 @@ export const convertToCSV = (data: MapData): string => {
         ].join(delimiter));
         
         // Add media data
-        allMedia.forEach(media => {
+        allMedia.forEach((media: any) => {
             const row = [
-                media.mediaId || '',
-                media.sampleId,
-                media.fileName || '',
-                media.mediaType || '',
-                media.cameraSpecs || '',
-                media.captureDate ? new Date(media.captureDate).toISOString().split('T')[0] : '',
-                media.remarks || ''
+                getProp(media, 'mediaId') || '',
+                getProp(media, 'sampleId'),
+                getProp(media, 'fileName') || '',
+                getProp(media, 'mediaType') || '',
+                getProp(media, 'cameraSpecs') || '',
+                getProp(media, 'captureDate') ? new Date(getProp(media, 'captureDate')).toISOString().split('T')[0] : '',
+                getProp(media, 'remarks') || ''
             ];
             
             allRows.push(row.join(delimiter));
@@ -620,11 +690,11 @@ export const convertToCSV = (data: MapData): string => {
     
     // SECTION 11: LIBRARY - Matching exact column names from DbInitializer.cs
     // Collect all library entries from all contractors
-    const allLibraries = data.contractors.flatMap(contractor => 
-        (contractor.libraries || []).map(library => ({
+    const allLibraries = normalizedData.contractors.flatMap((contractor: any) => 
+        (getProp(contractor, 'libraries') || []).map((library: any) => ({
             ...library,
-            contractorId: contractor.contractorId,
-            contractorName: contractor.contractorName
+            contractorId: getProp(contractor, 'contractorId'),
+            contractorName: getProp(contractor, 'contractorName')
         }))
     );
     
@@ -648,19 +718,19 @@ export const convertToCSV = (data: MapData): string => {
         ].join(delimiter));
         
         // Add library data
-        allLibraries.forEach(library => {
+        allLibraries.forEach((library: any) => {
             const row = [
-                library.libraryId || '',
-                library.contractorId,
-                library.contractorName || '',
-                library.theme || '',
-                library.fileName || '',
-                library.title || '',
-                library.description || '',
-                library.year || '',
-                library.country || '',
-                library.submissionDate ? new Date(library.submissionDate).toISOString().split('T')[0] : '',
-                library.isConfidential ? 'true' : 'false'
+                getProp(library, 'libraryId') || '',
+                getProp(library, 'contractorId'),
+                getProp(library, 'contractorName') || '',
+                getProp(library, 'theme') || '',
+                getProp(library, 'fileName') || '',
+                getProp(library, 'title') || '',
+                getProp(library, 'description') || '',
+                getProp(library, 'year') || '',
+                getProp(library, 'country') || '',
+                getProp(library, 'submissionDate') ? new Date(getProp(library, 'submissionDate')).toISOString().split('T')[0] : '',
+                getProp(library, 'isConfidential') ? 'true' : 'false'
             ];
             
             allRows.push(row.join(delimiter));
@@ -723,6 +793,44 @@ export const downloadCSV = (data: MapData, filename = 'exploration-data'): boole
 };
 
 /**
+ * Debug utility to log the exact field names available in the data
+ * @param obj Any object to analyze 
+ */
+export const debugDataFields = (data: any): void => {
+    if (!data) {
+        console.log('No data to debug');
+        return;
+    }
+    
+    console.log('--- DEBUG DATA STRUCTURE ---');
+    
+    // For each section, log the first item to see its structure
+    if (data.contractors?.length > 0) {
+        console.log('Contractor fields:', Object.keys(data.contractors[0]));
+        
+        if (data.contractors[0].areas?.length > 0) {
+            console.log('Area fields:', Object.keys(data.contractors[0].areas[0]));
+            
+            if (data.contractors[0].areas[0].blocks?.length > 0) {
+                console.log('Block fields:', Object.keys(data.contractors[0].areas[0].blocks[0]));
+            }
+        }
+    }
+    
+    if (data.cruises?.length > 0) {
+        console.log('Cruise fields:', Object.keys(data.cruises[0]));
+        
+        if (data.cruises[0].stations?.length > 0) {
+            console.log('Station fields:', Object.keys(data.cruises[0].stations[0]));
+            
+            if (data.cruises[0].stations[0].samples?.length > 0) {
+                console.log('Sample fields:', Object.keys(data.cruises[0].stations[0].samples[0]));
+            }
+        }
+    }
+};
+
+/**
  * Recursively traverse the map data to ensure all related data is loaded
  * This helps find any missing data like CTDData, Libraries, etc.
  * 
@@ -747,41 +855,41 @@ export const analyzeMapData = (data: MapData): any => {
     };
     
     // Count contractors
-    counts.contractors = data.contractors?.length || 0;
+    counts.contractors = getProp(data, 'contractors')?.length || 0;
     
     // Count areas and blocks
-    data.contractors?.forEach(contractor => {
+    data.contractors?.forEach((contractor: any) => {
         // Count areas
-        counts.areas += contractor.areas?.length || 0;
+        counts.areas += getProp(contractor, 'areas')?.length || 0;
         
         // Count blocks
-        contractor.areas?.forEach(area => {
-            counts.blocks += area.blocks?.length || 0;
+        getProp(contractor, 'areas')?.forEach((area: any) => {
+            counts.blocks += getProp(area, 'blocks')?.length || 0;
         });
         
         // Count libraries
-        counts.libraries += contractor.libraries?.length || 0;
+        counts.libraries += getProp(contractor, 'libraries')?.length || 0;
     });
     
     // Count cruises and stations
-    counts.cruises = data.cruises?.length || 0;
+    counts.cruises = getProp(data, 'cruises')?.length || 0;
     
-    data.cruises?.forEach(cruise => {
+    data.cruises?.forEach((cruise: any) => {
         // Count stations
-        counts.stations += cruise.stations?.length || 0;
+        counts.stations += getProp(cruise, 'stations')?.length || 0;
         
         // Count CTD data
-        cruise.stations?.forEach(station => {
-            counts.ctdData += station.ctdDataSet?.length || 0;
+        getProp(cruise, 'stations')?.forEach((station: any) => {
+            counts.ctdData += getProp(station, 'ctdDataSet')?.length || 0;
             
             // Count samples
-            counts.samples += station.samples?.length || 0;
+            counts.samples += getProp(station, 'samples')?.length || 0;
             
             // Count sample-related data
-            station.samples?.forEach(sample => {
-                counts.envResults += sample.envResults?.length || 0;
-                counts.geoResults += sample.geoResults?.length || 0;
-                counts.media += sample.photoVideos?.length || 0;
+            getProp(station, 'samples')?.forEach((sample: any) => {
+                counts.envResults += getProp(sample, 'envResults')?.length || 0;
+                counts.geoResults += getProp(sample, 'geoResults')?.length || 0;
+                counts.media += getProp(sample, 'photoVideos')?.length || 0;
             });
         });
     });
@@ -792,5 +900,6 @@ export const analyzeMapData = (data: MapData): any => {
 export default {
     convertToCSV,
     downloadCSV,
-    analyzeMapData
+    analyzeMapData,
+    debugDataFields
 };

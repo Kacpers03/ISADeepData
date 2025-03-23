@@ -66,10 +66,15 @@ namespace Api.Controllers
             var areas = await query
                 .Select(a => new ContractorAreaDto
                 {
-                    AreaId = a.AreaId,
-                    ContractorId = a.ContractorId,
-                    AreaName = a.AreaName,
-                    AreaDescription = a.AreaDescription
+                     AreaId = a.AreaId,
+        ContractorId = a.ContractorId,
+        AreaName = a.AreaName,
+        AreaDescription = a.AreaDescription,
+        CenterLatitude = a.CenterLatitude,
+        CenterLongitude = a.CenterLongitude,
+        TotalAreaSizeKm2 = a.TotalAreaSizeKm2,
+        AllocationDate = a.AllocationDate,
+        ExpiryDate = a.ExpiryDate
                 })
                 .ToListAsync();
 
@@ -91,11 +96,18 @@ namespace Api.Controllers
             var blocks = await query
                 .Select(b => new ContractorAreaBlockDto
                 {
-                    BlockId = b.BlockId,
-                    AreaId = b.AreaId,
-                    BlockName = b.BlockName,
-                    BlockDescription = b.BlockDescription,
-                    Status = b.Status
+                   BlockId = b.BlockId,
+        AreaId = b.AreaId,
+        AreaName = b.ContractorArea.AreaName,
+        ContractorId = b.ContractorArea.ContractorId,
+        ContractorName = b.ContractorArea.Contractor.ContractorName,
+        BlockName = b.BlockName,
+        BlockDescription = b.BlockDescription,
+        Status = b.Status,
+        CenterLatitude = b.CenterLatitude,
+        CenterLongitude = b.CenterLongitude,
+        AreaSizeKm2 = b.AreaSizeKm2,
+        Category = b.Category 
                 })
                 .ToListAsync();
 
@@ -210,7 +222,10 @@ namespace Api.Controllers
                     SamplingDevice = s.SamplingDevice,
                     DepthLower = s.DepthLower,
                     DepthUpper = s.DepthUpper,
-                    SampleDescription = s.SampleDescription
+                    SampleDescription = s.SampleDescription,
+                    Analysis = s.Analysis,
+        Result = s.Result,
+        Unit = s.Unit
                 })
                 .ToListAsync();
 
@@ -352,15 +367,24 @@ public async Task<ActionResult<object>> GetMapData(
             c.Remarks,
             Areas = c.ContractorAreas.Select(a => new
             {
-                a.AreaId,
-                a.AreaName,
-                a.AreaDescription,
+                 a.AreaId,
+            a.AreaName,
+            a.AreaDescription,
+            a.CenterLatitude,        // Add these
+            a.CenterLongitude,       // geographical 
+            a.TotalAreaSizeKm2,      // properties
+            a.AllocationDate,
+            a.ExpiryDate,
                 Blocks = a.ContractorAreaBlocks.Select(b => new
                 {
                     b.BlockId,
-                    b.BlockName,
-                    b.BlockDescription,
-                    b.Status
+                b.BlockName,
+                b.BlockDescription,
+                b.Status,
+                b.CenterLatitude,    // Add these
+                b.CenterLongitude,   // geographical
+                b.AreaSizeKm2,
+                b.Category
                 })
             })
         }),
