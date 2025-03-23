@@ -1,7 +1,7 @@
 // frontend/src/components/map/filters/resultInfo.tsx
 import React, { useState } from 'react';
 import styles from '../../../styles/map/filter.module.css';
-import { downloadCSV, analyzeMapData } from '../../../utils/csvExport';
+import { downloadCSV, analyzeMapData } from '../../../utils';
 
 interface ResultsInfoProps {
   loading: boolean;
