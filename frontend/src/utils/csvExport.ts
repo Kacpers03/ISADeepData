@@ -706,7 +706,6 @@ export const convertToCSV = (data: MapData): string => {
         allRows.push([
             'LibraryId',
             'ContractorId',
-            'ContractorName',
             'Theme',
             'FileName',
             'Title',
@@ -722,7 +721,6 @@ export const convertToCSV = (data: MapData): string => {
             const row = [
                 getProp(library, 'libraryId') || '',
                 getProp(library, 'contractorId'),
-                getProp(library, 'contractorName') || '',
                 getProp(library, 'theme') || '',
                 getProp(library, 'fileName') || '',
                 getProp(library, 'title') || '',
