@@ -416,6 +416,9 @@ public async Task<ActionResult<object>> GetMapData(
                         sample.DepthLower,
                         sample.DepthUpper,
                         sample.SampleDescription,
+                          sample.Analysis,   
+        sample.Result,     
+        sample.Unit,
                         Media = media
                             .Where(m => m.SampleId == sample.SampleId)
                             .Select(m => new
