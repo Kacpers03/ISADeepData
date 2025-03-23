@@ -626,36 +626,38 @@ useEffect(() => {
         {(loading || localLoading) && <LoadingOverlay />}
       </Map>
       
-      {/* Detail panels */}
       {showDetailPanel && detailPanelType === 'station' && (
-        <DetailPanel
-          type={'station'}
-          station={selectedStation}
-          contractor={null}
-          cruise={null}
-          onClose={handlePanelClose}
-        />
-      )}
-      
-      {showDetailPanel && detailPanelType === 'contractor' && (
-        <DetailPanel
-          type={'contractor'}
-          station={null}
-          contractor={selectedContractor}
-          cruise={null}
-          onClose={handlePanelClose}
-        />
-      )}
-      
-      {showDetailPanel && detailPanelType === 'cruise' && (
-        <DetailPanel
-          type={'cruise'}
-          station={null}
-          contractor={null}
-          cruise={selectedCruise}
-          onClose={handlePanelClose}
-        />
-      )}
+  <DetailPanel
+    type={'station'}
+    station={selectedStation}
+    contractor={null}
+    cruise={null}
+    onClose={handlePanelClose}
+    mapData={mapData} 
+  />
+)}
+
+{showDetailPanel && detailPanelType === 'contractor' && (
+  <DetailPanel
+    type={'contractor'}
+    station={null}
+    contractor={selectedContractor}
+    cruise={null}
+    onClose={handlePanelClose}
+    mapData={mapData}
+  />
+)}
+
+{showDetailPanel && detailPanelType === 'cruise' && (
+  <DetailPanel
+    type={'cruise'}
+    station={null}
+    contractor={null}
+    cruise={selectedCruise}
+    onClose={handlePanelClose}
+    mapData={mapData}
+  />
+)}
       
       {showDetailPanel && detailPanelType === 'blockAnalytics' && blockAnalytics && (
         <BlockAnalyticsPanel

@@ -1,9 +1,10 @@
-// frontend/src/components/map/DetailPanel.tsx
-import React from "react";
+// frontend/src/components/map/ui/detailPanel.tsx
+import React, { useState } from "react";
 import { Station, Contractor, Cruise, Sample, Media } from "../../../types/filter-types";
 import styles from '../../../styles/map/panels.module.css';
 import uiStyles from '../../../styles/map/ui.module.css';
 import layerStyles from '../../../styles/map/layers.module.css';
+import { exportStationCSV, exportCruiseCSV, exportContractorCSV } from "../../../utils/detailExport";
 
 interface DetailPanelProps {
   type: 'contractor' | 'cruise' | 'station' | null;
@@ -11,6 +12,7 @@ interface DetailPanelProps {
   contractor: Contractor | null;
   cruise: Cruise | null;
   onClose: () => void;
+  mapData?: any; // Full map data for contractor exports
 }
 
 const combinedStyles = { ...styles, ...uiStyles, ...layerStyles };
@@ -20,11 +22,58 @@ export const DetailPanel: React.FC<DetailPanelProps> = ({
   station,
   contractor,
   cruise,
-  onClose
+  onClose,
+  mapData
 }) => {
+  // State for download status
+  const [isExporting, setIsExporting] = useState(false);
+  const [exportStatus, setExportStatus] = useState<string | null>(null);
+  
   // Format date
   const formatDate = (dateString: string) => {
+    if (!dateString) return "N/A";
     return new Date(dateString).toLocaleDateString();
+  };
+  
+  // Handle CSV download based on panel type
+  const handleDownloadCSV = () => {
+    if (!mapData) {
+      console.error("Missing mapData for export");
+      return;
+    }
+    
+    setIsExporting(true);
+    setExportStatus("Preparing data...");
+    
+    try {
+      let success = false;
+      
+      // Call appropriate export function based on panel type
+      if (type === 'station' && station) {
+        success = exportStationCSV(station, mapData, 'station-data');
+      } 
+      else if (type === 'cruise' && cruise) {
+        success = exportCruiseCSV(cruise, mapData, 'cruise-data');
+      }
+      else if (type === 'contractor' && contractor) {
+        success = exportContractorCSV(contractor, mapData, 'contractor-data');
+      }
+      
+      if (success) {
+        setExportStatus("Download successful!");
+      } else {
+        setExportStatus("Export failed. Try again.");
+      }
+    } catch (error) {
+      console.error("Error during CSV export:", error);
+      setExportStatus("Error exporting data");
+    }
+    
+    // Reset status after a delay
+    setTimeout(() => {
+      setIsExporting(false);
+      setExportStatus(null);
+    }, 2000);
   };
   
   return (
@@ -144,7 +193,7 @@ export const DetailPanel: React.FC<DetailPanelProps> = ({
               <span>{formatDate(cruise.endDate)}</span>
             </div>
             
-            {/* Stations - FIXED: Added proper table formatting */}
+            {/* Stations */}
             {cruise.stations && cruise.stations.length > 0 && (
               <div className={styles.detailSection}>
                 <h4>Stations ({cruise.stations.length})</h4>
@@ -193,7 +242,7 @@ export const DetailPanel: React.FC<DetailPanelProps> = ({
               <span>{station.latitude.toFixed(6)}, {station.longitude.toFixed(6)}</span>
             </div>
             
-            {/* Samples - FIXED: Added proper container/box styling */}
+            {/* Samples */}
             {station.samples && station.samples.length > 0 && (
               <div className={styles.detailSection}>
                 <h4>Samples ({station.samples.length})</h4>
@@ -253,6 +302,22 @@ export const DetailPanel: React.FC<DetailPanelProps> = ({
       {/* Action buttons */}
       <div className={styles.detailActions}>
         <button className={styles.actionButton} onClick={onClose}>Close</button>
+        
+        {/* CSV Download button */}
+        <button 
+          className={styles.downloadButton || styles.actionButton} 
+          onClick={handleDownloadCSV}
+          disabled={isExporting}
+        >
+          {isExporting ? (
+            <>
+              <span className={styles.buttonSpinner}></span>
+              <span>{exportStatus || 'Exporting...'}</span>
+            </>
+          ) : (
+            <>Download CSV</>
+          )}
+        </button>
       </div>
     </div>
   );

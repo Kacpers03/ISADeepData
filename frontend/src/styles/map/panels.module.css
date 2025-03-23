@@ -456,3 +456,44 @@
         left: 5%;
     }
 }
+
+/* Add these styles to your panels.module.css file */
+
+.downloadButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 16px;
+    background-color: #2563eb;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    gap: 8px;
+  }
+  
+  .downloadButton:hover {
+    background-color: #1d4ed8;
+  }
+  
+  .downloadButton:disabled {
+    background-color: #93c5fd;
+    cursor: not-allowed;
+  }
+  
+  /* Spinner animation for loading state */
+  .buttonSpinner {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    border-top-color: white;
+    animation: spin 1s ease-in-out infinite;
+  }
+  
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
