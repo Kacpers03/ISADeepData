@@ -3,7 +3,7 @@ import React, { useState, useEffect, useRef, useMemo } from "react";
 import Map, { NavigationControl } from 'react-map-gl';
 
 // Custom hooks
-import useMapData from "./hooks/useMapData";
+import useMapData from "./hooks/useMapdata";
 import useMapZoom from "./hooks/useMapZoom";
 import useCluster from "./hooks/useCluster";
 import useMapState from "./hooks/useMapState";
@@ -385,29 +385,116 @@ useEffect(() => {
         setShowCruises(show);
       };
       
-      // Expose zoomToBlock function for search results
-      window.showBlockAnalytics = (blockId) => {
-        // Find the block first
-        const block = visibleAreaLayers.flatMap(area => area.blocks || [])
-          .find(b => b.blockId === blockId);
-        
-        if (block) {
-          // Zoom to the block
-          zoomToBlock(block);
-          
-          // Fetch analytics
-          fetchBlockAnalytics(
-            blockId, 
-            setBlockAnalytics, 
-            setDetailPanelType, 
-            setShowDetailPanel, 
-            zoomToBlock, 
-            visibleAreaLayers, 
-            setToastMessage, 
-            setShowToast
-          );
+// First, let's add a window function to call the AssociateStationsWithBlocks endpoint
+// Add this to the enhancedMapComponent.tsx:
+
+window.associateStationsWithBlocks = async () => {
+  try {
+    setLocalLoading(true);
+    setToastMessage('Associating stations with blocks...');
+    setShowToast(true);
+    
+    const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5062/api';
+    const response = await fetch(`${API_BASE_URL}/Analytics/associate-stations-blocks`, {
+      method: 'POST'
+    });
+    
+    if (!response.ok) {
+      throw new Error('Failed to associate stations with blocks');
+    }
+    
+    setToastMessage('Stations successfully associated with blocks!');
+    setShowToast(true);
+    
+    // Refresh data to show updated associations
+    refreshData();
+  } catch (error) {
+    console.error('Error associating stations with blocks:', error);
+    setToastMessage('Error associating stations with blocks');
+    setShowToast(true);
+  } finally {
+    setLocalLoading(false);
+  }
+};
+
+// Now for the showBlockAnalytics function that uses spatial awareness:
+
+window.showBlockAnalytics = async (blockId) => {
+  // Set loading state immediately for user feedback
+  setLocalLoading(true);
+  
+  try {
+    console.log(`Fetching analytics for block ${blockId}`);
+    
+    // First, call the API to associate stations with blocks based on coordinates
+    // This ensures we catch any stations that are geographically within the block boundaries
+    await window.associateStationsWithBlocks();
+    
+    // Now find the block in visible layers if possible
+    const block = visibleAreaLayers.flatMap(area => area.blocks || [])
+      .find(b => b.blockId === blockId);
+    
+    if (block) {
+      console.log(`Block ${blockId} found in visible layers`);
+      zoomToBlock(block);
+    }
+    
+    // Fetch analytics with the updated associations
+    const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5062/api';
+    const response = await fetch(`${API_BASE_URL}/Analytics/block/${blockId}`);
+    
+    if (!response.ok) {
+      throw new Error(`Failed to fetch block analytics: ${response.status}`);
+    }
+    
+    const data = await response.json();
+    console.log("Block analytics data received:", data);
+    
+    // Now we should have proper data with spatial associations included
+    setBlockAnalytics(data);
+    setDetailPanelType('blockAnalytics');
+    setShowDetailPanel(true);
+    
+    // If we didn't find the block in visible layers, try to find it in all data
+    if (!block) {
+      console.log("Block not in visible layers, finding in all data");
+      const allBlocks = mapData?.contractors
+        ?.flatMap(c => c.areas || [])
+        ?.flatMap(a => a.blocks || []) || [];
+      
+      const fullBlock = allBlocks.find(b => b.blockId === blockId);
+      
+      if (fullBlock) {
+        // If we find the block, select its contractor for context
+        if (fullBlock.contractorId) {
+          handleContractorSelect(fullBlock.contractorId);
         }
-      };
+        
+        // And zoom to it
+        if (fullBlock.centerLatitude && fullBlock.centerLongitude) {
+          mapRef.current.flyTo({
+            center: [fullBlock.centerLongitude, fullBlock.centerLatitude],
+            zoom: 9,
+            duration: 800
+          });
+        }
+      } else if (data.block?.centerLongitude && data.block?.centerLatitude) {
+        // Fallback to API coordinates
+        mapRef.current.flyTo({
+          center: [data.block.centerLongitude, data.block.centerLatitude],
+          zoom: 9,
+          duration: 800
+        });
+      }
+    }
+  } catch (error) {
+    console.error("Error in showBlockAnalytics:", error);
+    setToastMessage('Error retrieving block data');
+    setShowToast(true);
+  } finally {
+    setLocalLoading(false);
+  }
+};
       
       // IMPROVED Function for showing cruise details
       window.showCruiseDetails = (cruiseId, showDetails = false) => {

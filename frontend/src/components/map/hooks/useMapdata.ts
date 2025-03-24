@@ -155,39 +155,119 @@ const useMapData = (mapData, loading, filters, selectedContractorId) => {
     }
   };
 
-  // Block analytics fetch
-  const fetchBlockAnalytics = async (blockId, setBlockAnalytics, setDetailPanelType, setShowDetailPanel, zoomToBlock, visibleAreaLayers, setToastMessage, setShowToast) => {
-    try {
-      const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5062/api';
-      const response = await fetch(`${API_BASE_URL}/Analytics/block/${blockId}`);
-      
-      if (!response.ok) {
-        throw new Error(`Failed to fetch block analytics: ${response.status}`);
-      }
-      
-      const data = await response.json();
-      setBlockAnalytics(data);
-      setDetailPanelType('blockAnalytics');
-      setShowDetailPanel(true);
-      
-      // Find the block and zoom to it
-      const block = visibleAreaLayers.flatMap(area => area.blocks || [])
-        .find(b => b.blockId === blockId);
-        
-      if (block) {
-        zoomToBlock(block);
-      }
-      
-      return data;
-    } catch (error) {
-      console.error('Error fetching block analytics:', error);
-      if (setToastMessage && setShowToast) {
-        setToastMessage('Error fetching block data');
-        setShowToast(true);
-      }
-      return null;
+// Replace the fetchBlockAnalytics function in useMapData.ts with this improved version
+
+const fetchBlockAnalytics = async (blockId, setBlockAnalytics, setDetailPanelType, setShowDetailPanel, zoomToBlock, visibleAreaLayers, setToastMessage, setShowToast) => {
+  setLocalLoading(true);
+  
+  try {
+    console.log(`Fetching analytics for block ${blockId}`);
+    const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5062/api';
+    const response = await fetch(`${API_BASE_URL}/Analytics/block/${blockId}`);
+    
+    if (!response.ok) {
+      throw new Error(`Failed to fetch block analytics: ${response.status}`);
     }
-  };
+    
+    const data = await response.json();
+    console.log("Block analytics data received:", data);
+    
+    // Ensure data has the expected structure with default values
+    const enhancedData = {
+      block: data.block || {
+        blockId: blockId,
+        blockName: `Block ID ${blockId}`,
+        status: "Unknown",
+        areaSizeKm2: 0,
+        area: {
+          areaName: "Unknown Area",
+          contractor: {
+            contractorName: "Unknown Contractor"
+          }
+        }
+      },
+      counts: data.counts || {
+        stations: 0,
+        samples: 0,
+        environmentalResults: 0,
+        geologicalResults: 0
+      },
+      environmentalParameters: data.environmentalParameters || [],
+      resourceMetrics: data.resourceMetrics || [],
+      sampleTypes: data.sampleTypes || [],
+      recentStations: data.recentStations || []
+    };
+    
+    // Update the UI
+    setBlockAnalytics(enhancedData);
+    setDetailPanelType('blockAnalytics');
+    setShowDetailPanel(true);
+    
+    // Find the block and zoom to it if possible
+    const block = visibleAreaLayers.flatMap(area => area.blocks || [])
+      .find(b => b.blockId === blockId);
+      
+    if (block) {
+      zoomToBlock(block);
+    } else if (data.block?.centerLatitude && data.block?.centerLongitude) {
+      // Use coordinates from the API response if available
+      console.log("Block not found in visible layers, zooming using API coordinates");
+      if (window.mapInstance) {
+        window.mapInstance.flyTo({
+          center: [data.block.centerLongitude, data.block.centerLatitude],
+          zoom: 9,
+          duration: 800
+        });
+      }
+    } else {
+      console.warn(`Block ${blockId} not found in visible layers for zooming`);
+    }
+    
+    return enhancedData;
+  } catch (error) {
+    console.error('Error fetching block analytics:', error);
+    
+    // Create a minimal default structure to avoid rendering errors
+    const defaultData = {
+      block: {
+        blockId: blockId,
+        blockName: `Block ID ${blockId}`,
+        status: "Unknown",
+        areaSizeKm2: 0,
+        area: {
+          areaName: "Unknown Area",
+          contractor: {
+            contractorName: "Unknown Contractor"
+          }
+        }
+      },
+      counts: {
+        stations: 0,
+        samples: 0,
+        environmentalResults: 0,
+        geologicalResults: 0
+      },
+      environmentalParameters: [],
+      resourceMetrics: [],
+      sampleTypes: [],
+      recentStations: []
+    };
+    
+    // Still update the UI to show something
+    setBlockAnalytics(defaultData);
+    setDetailPanelType('blockAnalytics');
+    setShowDetailPanel(true);
+    
+    if (setToastMessage && setShowToast) {
+      setToastMessage('Error fetching block data. Showing limited information.');
+      setShowToast(true);
+    }
+    
+    return defaultData;
+  } finally {
+    setLocalLoading(false);
+  }
+};
 
   return {
     allAreaLayers,

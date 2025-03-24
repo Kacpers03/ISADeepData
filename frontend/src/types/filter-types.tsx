@@ -172,7 +172,7 @@ export interface ContractorAreaBlock {
     depthLower: number;
     depthUpper: number;
     sampleDescription: string;
-    media?: Media[];
+    PhotoVideos: Media[];
   }
   
   // Media data
