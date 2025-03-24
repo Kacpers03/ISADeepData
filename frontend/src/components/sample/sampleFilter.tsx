@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import styles from "../../styles/files/filefilter.module.css";
+import styles from "../../styles/samples/filter.module.css"; // Updated to use new stylesheet
 
 const SampleFilter = ({ filters, setFilters, visibleColumns, setVisibleColumns }) => {
   const [sampleTypes, setSampleTypes] = useState([]);
@@ -73,78 +73,80 @@ const SampleFilter = ({ filters, setFilters, visibleColumns, setVisibleColumns }
   };
 
   return (
-    <div className={styles.filterContainer}>
-      <h3 className={styles.title}>Search Filters</h3>
+    <div className={styles.improvedFilterPanel}>
+      <div className={styles.filterContent}>
+        <div className={styles.filterHeader}>
+          <h2>Sample Filters</h2>
+          <button className={styles.resetButton} onClick={handleClearFilters}>
+            Reset
+          </button>
+        </div>
 
-      {/* --- Existing Filters --- */}
-      <div className={styles.filterGroup}>
-        <label htmlFor="sampleType">Sample Type</label>
-        <select name="sampleType" value={filters.sampleType} onChange={handleFilterChange}>
-          <option value="all">All Sample Types</option>
-          {sampleTypes.map((type, index) => (
-            <option key={index} value={type}>{type}</option>
+        <div className={styles.filtersGroup}>
+          <h3>Filter By</h3>
+
+          <label className={styles.filterLabel} htmlFor="sampleType">Sample Type</label>
+          <select name="sampleType" value={filters.sampleType} onChange={handleFilterChange} className={styles.customSelect}>
+            <option value="all">All Sample Types</option>
+            {sampleTypes.map((type, index) => (
+              <option key={index} value={type}>{type}</option>
+            ))}
+          </select>
+
+          <label className={styles.filterLabel} htmlFor="matrixType">Matrix Type</label>
+          <select name="matrixType" value={filters.matrixType} onChange={handleFilterChange} className={styles.customSelect}>
+            <option value="all">All Matrix Types</option>
+            {matrixTypes.map((type, index) => (
+              <option key={index} value={type}>{type}</option>
+            ))}
+          </select>
+
+          <label className={styles.filterLabel} htmlFor="habitatType">Habitat Type</label>
+          <select name="habitatType" value={filters.habitatType} onChange={handleFilterChange} className={styles.customSelect}>
+            <option value="all">All Habitat Types</option>
+            {habitatTypes.map((type, index) => (
+              <option key={index} value={type}>{type}</option>
+            ))}
+          </select>
+
+          <label className={styles.filterLabel} htmlFor="analysis">Analysis</label>
+          <select name="analysis" value={filters.analysis} onChange={handleFilterChange} className={styles.customSelect}>
+            <option value="all">All Analyses</option>
+            {analyses.map((type, index) => (
+              <option key={index} value={type}>{type}</option>
+            ))}
+          </select>
+
+          <label className={styles.filterLabel} htmlFor="searchQuery">Search</label>
+          <input
+            type="text"
+            name="searchQuery"
+            value={filters.searchQuery || ""}
+            onChange={handleFilterChange}
+            placeholder="Search sample code or description..."
+            className={styles.searchInput}
+          />
+        </div>
+      </div>
+
+      <div className={styles.resultsInfo}>
+        <div className={styles.resultsInfoWrapper}>
+          <span>Visible Columns</span>
+        </div>
+        <div className={styles.filtersGroup}>
+          {allColumnOptions.map((col) => (
+            <div key={col.key}>
+              <input
+                type="checkbox"
+                value={col.key}
+                checked={visibleColumns.includes(col.key)}
+                onChange={handleColumnToggle}
+              />
+              <label>{col.label}</label>
+            </div>
           ))}
-        </select>
+        </div>
       </div>
-
-      <div className={styles.filterGroup}>
-        <label htmlFor="matrixType">Matrix Type</label>
-        <select name="matrixType" value={filters.matrixType} onChange={handleFilterChange}>
-          <option value="all">All Matrix Types</option>
-          {matrixTypes.map((type, index) => (
-            <option key={index} value={type}>{type}</option>
-          ))}
-        </select>
-      </div>
-
-      <div className={styles.filterGroup}>
-        <label htmlFor="habitatType">Habitat Type</label>
-        <select name="habitatType" value={filters.habitatType} onChange={handleFilterChange}>
-          <option value="all">All Habitat Types</option>
-          {habitatTypes.map((type, index) => (
-            <option key={index} value={type}>{type}</option>
-          ))}
-        </select>
-      </div>
-
-      <div className={styles.filterGroup}>
-        <label htmlFor="analysis">Analysis</label>
-        <select name="analysis" value={filters.analysis} onChange={handleFilterChange}>
-          <option value="all">All Analyses</option>
-          {analyses.map((type, index) => (
-            <option key={index} value={type}>{type}</option>
-          ))}
-        </select>
-      </div>
-
-      <div className={styles.filterGroup}>
-        <label htmlFor="searchQuery">Search</label>
-        <input
-          type="text"
-          name="searchQuery"
-          value={filters.searchQuery || ""}
-          onChange={handleFilterChange}
-          placeholder="Search sample code or description..."
-        />
-      </div>
-
-      {/* Metadata column visibility toggles */}
-      <div className={styles.filterGroup}>
-        <label>Visible Columns</label>
-        {allColumnOptions.map((col) => (
-          <div key={col.key}>
-            <input
-              type="checkbox"
-              value={col.key}
-              checked={visibleColumns.includes(col.key)}
-              onChange={handleColumnToggle}
-            />
-            <label>{col.label}</label>
-          </div>
-        ))}
-      </div>
-
-      <button className={styles.clearButton} onClick={handleClearFilters}>Clear Filters</button>
     </div>
   );
 };

@@ -8,7 +8,7 @@
     border-radius: 12px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
     overflow: hidden;
-    padding: 32px;
+    padding: 20px;
     margin: 0; /* REMOVE auto-centering */
     margin-bottom: 50px;
 }
@@ -86,7 +86,6 @@
     border-radius: 50%;
     width: 20px;
     height: 20px;
-    margin-left: 32px;
     text-align: center;
     line-height: 20px;
     background-color: #007bff;
@@ -96,7 +95,7 @@
   
   .tooltip {
     visibility: hidden;
-    width: 400px; /* Make it a larger square */
+    width: 300px; /* Make it a larger square */
     background-color: rgba(0, 0, 0, 0.85);
     color: #fff;
     text-align: left;
@@ -118,10 +117,15 @@
   }
 
   .AllComponents {
-    display: flex !important;
-    gap: 16px !important;
-    align-items: flex-start !important;
-}
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden; /* ✨ This is the real blocker */
+    box-sizing: border-box;
+  }
+  
 
 .table tr:nth-child(even) {
     background-color: #f3f4f6; /* Light gray */
@@ -130,6 +134,7 @@
 .table tr:nth-child(odd) {
     background-color: #ffffff; /* White */
 }
+
 
 
 

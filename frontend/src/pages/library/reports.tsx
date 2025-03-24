@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import FileFilter from "../../components/files/fileFilter";
 import FileTable from "../../components/files/fileTable";
 import stylestable from "../../styles/files/reports.module.css"; // Table styles
-import stylesfilter from "../../styles//files/filefilter.module.css"; // Filter styles
+import stylesfilter from "../../styles/files/filefilter.module.css"; // Filter styles
 
 export default function FilesPage() {
   const [filters, setFilters] = useState({

@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import SampleFilter from "../../components/sample/sampleFilter";
 import SampleTable from "../../components/sample/sampleTable";
-import stylesTable from "../../styles/files/reports.module.css";
-import stylesFilter from "../../styles/files/filefilter.module.css";
+import stylesTable from "../../styles/samples/table.module.css";
+import stylesFilter from "../../styles/samples/filter.module.css";
 
 export default function SamplesPage() {
   const [filters, setFilters] = useState({
