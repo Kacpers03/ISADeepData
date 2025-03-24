@@ -266,9 +266,7 @@ namespace Api.Controllers
             return media;
         }
 
-       // In the GetMapData method of MapFilterController.cs
-
-[HttpGet("map-data")]
+ [HttpGet("map-data")]
 public async Task<ActionResult<object>> GetMapData(
     [FromQuery] int? contractorId,
     [FromQuery] int? contractTypeId, 
@@ -311,12 +309,12 @@ public async Task<ActionResult<object>> GetMapData(
         .Include(c => c.ContractStatus)
         .Include(c => c.ContractorAreas)
         .ThenInclude(a => a.ContractorAreaBlocks)
+        .Include(c => c.Libraries) // Include libraries
         .ToListAsync();
 
-    // MODIFIED CRUISE QUERY LOGIC - this is the key change:
+    // If a specific cruise ID is requested
     var cruisesQuery = _context.Cruises.AsQueryable();
     
-    // If a specific cruise ID is requested
     if (cruiseId.HasValue)
     {
         cruisesQuery = cruisesQuery.Where(c => c.CruiseId == cruiseId.Value);
@@ -345,9 +343,26 @@ public async Task<ActionResult<object>> GetMapData(
     var samples = await _context.Samples
         .Where(s => stationIds.Contains(s.StationId))
         .ToListAsync();
+    
+    // Get sample IDs for related data
+    var sampleIds = samples.Select(s => s.SampleId).ToList();
+
+    // Get all CTD data for these stations
+    var ctdData = await _context.CtdDataSet
+        .Where(ctd => stationIds.Contains(ctd.StationId))
+        .ToListAsync();
+
+    // Get all environmental results for these samples
+    var envResults = await _context.EnvResults
+        .Where(er => sampleIds.Contains(er.SampleId))
+        .ToListAsync();
+
+    // Get all geological results for these samples
+    var geoResults = await _context.GeoResults
+        .Where(gr => sampleIds.Contains(gr.SampleId))
+        .ToListAsync();
 
     // Get all photos/videos for these samples
-    var sampleIds = samples.Select(s => s.SampleId).ToList();
     var media = await _context.PhotoVideos
         .Where(p => sampleIds.Contains(p.SampleId))
         .ToListAsync();
@@ -367,25 +382,37 @@ public async Task<ActionResult<object>> GetMapData(
             c.Remarks,
             Areas = c.ContractorAreas.Select(a => new
             {
-                 a.AreaId,
-            a.AreaName,
-            a.AreaDescription,
-            a.CenterLatitude,        // Add these
-            a.CenterLongitude,       // geographical 
-            a.TotalAreaSizeKm2,      // properties
-            a.AllocationDate,
-            a.ExpiryDate,
+                a.AreaId,
+                a.AreaName,
+                a.AreaDescription,
+                a.CenterLatitude,
+                a.CenterLongitude,
+                a.TotalAreaSizeKm2,
+                a.AllocationDate,
+                a.ExpiryDate,
                 Blocks = a.ContractorAreaBlocks.Select(b => new
                 {
                     b.BlockId,
-                b.BlockName,
-                b.BlockDescription,
-                b.Status,
-                b.CenterLatitude,    // Add these
-                b.CenterLongitude,   // geographical
-                b.AreaSizeKm2,
-                b.Category
+                    b.BlockName,
+                    b.BlockDescription,
+                    b.Status,
+                    b.CenterLatitude,
+                    b.CenterLongitude,
+                    b.AreaSizeKm2,
+                    b.Category
                 })
+            }),
+            Libraries = c.Libraries.Select(lib => new
+            {
+                lib.LibraryId,
+                lib.Theme,
+                lib.FileName,
+                lib.Title,
+                lib.Description,
+                lib.Year,
+                lib.Country,
+                lib.SubmissionDate,
+                lib.IsConfidential
             })
         }),
         Cruises = cruises.Select(c => new
@@ -395,7 +422,7 @@ public async Task<ActionResult<object>> GetMapData(
             c.ResearchVessel,
             c.StartDate,
             c.EndDate,
-            c.ContractorId, // Make sure to include ContractorId for relationship
+            c.ContractorId,
             Stations = c.Stations.Select(s => new
             {
                 s.StationId,
@@ -403,6 +430,19 @@ public async Task<ActionResult<object>> GetMapData(
                 s.StationType,
                 s.Latitude,
                 s.Longitude,
+                // Include CTD data for this station
+                CtdDataSet = ctdData
+                    .Where(ctd => ctd.StationId == s.StationId)
+                    .Select(ctd => new
+                    {
+                        ctd.CtdId,
+                        ctd.DepthM,
+                        ctd.TemperatureC,
+                        ctd.Salinity,
+                        ctd.Oxygen,
+                        ctd.Ph,
+                        ctd.MeasurementTime
+                    }),
                 Samples = samples
                     .Where(sample => sample.StationId == s.StationId)
                     .Select(sample => new
@@ -416,10 +456,36 @@ public async Task<ActionResult<object>> GetMapData(
                         sample.DepthLower,
                         sample.DepthUpper,
                         sample.SampleDescription,
-                          sample.Analysis,   
-        sample.Result,     
-        sample.Unit,
-                        Media = media
+                        sample.Analysis,   
+                        sample.Result,     
+                        sample.Unit,
+                        // Include environmental results for this sample
+                        EnvResults = envResults
+                            .Where(er => er.SampleId == sample.SampleId)
+                            .Select(er => new
+                            {
+                                er.EnvResultId,
+                                er.AnalysisCategory,
+                                er.AnalysisName,
+                                er.AnalysisValue,
+                                er.Units,
+                                er.Remarks
+                            }),
+                        // Include geological results for this sample
+                        GeoResults = geoResults
+                            .Where(gr => gr.SampleId == sample.SampleId)
+                            .Select(gr => new
+                            {
+                                gr.GeoResultId,
+                                gr.Category,
+                                gr.Analysis,
+                                gr.Value,
+                                gr.Units,
+                                gr.Qualifier,
+                                gr.Remarks
+                            }),
+                        // Include media (photos/videos) for this sample
+                        PhotoVideos = media
                             .Where(m => m.SampleId == sample.SampleId)
                             .Select(m => new
                             {
