@@ -28,37 +28,48 @@ const findCruise = (mapData: MapData, cruiseId: number): Cruise | null => {
  * Export station data including its parent cruise and contractor
  * to ensure all relationships are maintained in the export
  * 
- * @param station The station to export
+ * @param station The station to export (only needs stationId)
  * @param mapData The full map data to find relationships
  * @param filename The base filename (without extension)
  * @returns boolean indicating success or failure
  */
 export const exportStationCSV = (station: Station, mapData: MapData, filename = 'station-data'): boolean => {
-  if (!station) {
-    console.error('No station data provided for CSV export');
+  if (!station || !station.stationId) {
+    console.error('No station ID provided for CSV export');
     return false;
   }
   
   try {
-    // Find the parent cruise in the full dataset to get complete cruise data
-    const parentCruise = findCruise(mapData, station.cruiseId);
+    // Find the cruise that contains this station directly from mapData
+    let parentCruise: Cruise | null = null;
+    let fullStation: Station | null = null;
+    
+    // Search through all cruises to find the one containing our station
+    for (const cruise of mapData.cruises || []) {
+      const foundStation = cruise.stations?.find(s => s.stationId === station.stationId);
+      if (foundStation) {
+        parentCruise = cruise;
+        fullStation = foundStation;
+        break;
+      }
+    }
+    
+    if (!parentCruise || !fullStation) {
+      console.error(`Station with ID ${station.stationId} not found in any cruise`);
+      return false;
+    }
     
     // Find the contractor if we have a cruise with contractorId
-    const contractorId = parentCruise?.contractorId;
+    const contractorId = parentCruise.contractorId;
     const parentContractor = contractorId ? findContractor(mapData, contractorId) : null;
     
-    // Create a mini-dataset focused on this station with all relationships intact
+    // Create a mini-dataset focused on this station
     const exportData: MapData = {
       contractors: parentContractor ? [parentContractor] : [], 
-      cruises: parentCruise ? [{
+      cruises: [{
         ...parentCruise,
-        // Make sure the cruise only includes this specific station
-        stations: [station]
-      }] : [{
-        cruiseId: station.cruiseId,
-        cruiseName: station.cruiseName || `Cruise #${station.cruiseId}`,
-        contractorId: station.contractorId || 0,
-        stations: [station]
+        // Only include this specific station
+        stations: parentCruise.stations?.filter(s => s.stationId === station.stationId)
       }]
     };
     
@@ -77,7 +88,7 @@ export const exportStationCSV = (station: Station, mapData: MapData, filename = 
     
     // Add date and station code to filename for uniqueness
     const date = new Date().toISOString().split('T')[0];
-    const stationCode = station.stationCode || `station-${station.stationId}`;
+    const stationCode = fullStation.stationCode || `station-${fullStation.stationId}`;
     const fullFilename = `${filename}-${stationCode.replace(/\s+/g, '_')}-${date}.csv`;
     
     // Create and trigger a download link
