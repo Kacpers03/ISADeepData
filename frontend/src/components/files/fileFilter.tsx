@@ -1,7 +1,6 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { CustomDropdown } from "../map/filters/CustomDropdown";
-import styles from "../../styles/files/filefilter.module.css";
-import mapStyles from "../../styles/map/filter.module.css";
+import styles from "../../styles/files/filefilter.module.css"; // Using the new CSS module
 
 interface FileFilterProps {
   filters: {
@@ -65,7 +64,7 @@ const FileFilter: React.FC<FileFilterProps> = ({
 
   const contractorOptions = [
     { value: "all", label: "All Contractors" },
-    ...contractors.map((c) => ({ value: c.name, label: c.name })), // <-- change c.id to c.name
+    ...contractors.map((c) => ({ value: c.name, label: c.name })),
   ];
 
   const countryOptions = [
@@ -82,35 +81,31 @@ const FileFilter: React.FC<FileFilterProps> = ({
     { value: "all", label: "All Themes" },
     ...themes.map((theme) => ({ value: theme, label: theme })),
   ];
-  
 
   return (
-    <div className={`${mapStyles.improvedFilterPanel} ${styles.filterContainer}`}>
-      <div className={mapStyles.filterContent}>
-        <div className={mapStyles.filterHeader}>
+    <div className={`${styles.improvedFilterPanel}`}>
+      <div className={styles.filterContent}>
+        <div className={styles.filterHeader}>
           <h2>File Filters</h2>
           {countActiveFilters() > 0 && (
-            <button
-              className={mapStyles.resetButton}
-              onClick={onResetFilters}
-            >
+            <button className={styles.resetButton} onClick={onResetFilters}>
               Reset ({countActiveFilters()})
             </button>
           )}
         </div>
 
-        <div className={mapStyles.searchContainer}>
-          <div className={mapStyles.searchInputWrapper}>
+        <div className={styles.searchContainer}>
+          <div className={styles.searchInputWrapper}>
             <input
               type="text"
               placeholder="Search files..."
               value={searchQuery}
               onChange={handleSearchChange}
-              className={mapStyles.searchInput}
+              className={styles.searchInput}
             />
             <button
               onClick={() => onFilterChange("searchQuery", searchQuery)}
-              className={mapStyles.searchButton}
+              className={styles.searchButton}
               aria-label="Search"
             >
               🔍
@@ -118,7 +113,7 @@ const FileFilter: React.FC<FileFilterProps> = ({
           </div>
         </div>
 
-        <div className={mapStyles.filtersGroup}>
+        <div className={styles.filtersGroup}>
           <h3>Filter By</h3>
 
           <CustomDropdown
@@ -159,7 +154,7 @@ const FileFilter: React.FC<FileFilterProps> = ({
         </div>
       </div>
 
-      <div className={mapStyles.resultsInfo}>
+      <div className={styles.resultsInfo}>
         <span>{currentFilteredItems.length} items match your filters</span>
       </div>
     </div>
