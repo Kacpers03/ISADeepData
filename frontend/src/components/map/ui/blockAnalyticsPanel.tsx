@@ -314,10 +314,7 @@ export const BlockAnalyticsPanel: React.FC<BlockAnalyticsPanelProps> = ({
           </button>
         )}
         
-        {/* Only show export if we have actual data */}
-        {displayData.counts && (displayData.counts.stations > 0 || displayData.counts.samples > 0) && (
-          <button className={styles.actionButton}>Export Data</button>
-        )}
+       
       </div>
     </div>
   );
