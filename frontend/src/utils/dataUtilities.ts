@@ -86,6 +86,7 @@ export function formatNumericValue(value: any): string {
  * @param includeTime Whether to include time in the output
  * @returns Formatted date string
  */
+// Corrected formatDateValue function for frontend/src/utils/dataUtilities.ts
 export function formatDateValue(date: string | Date | undefined, includeTime: boolean = false): string {
     if (!date) return '';
     
@@ -93,9 +94,11 @@ export function formatDateValue(date: string | Date | undefined, includeTime: bo
         const dateObj = typeof date === 'string' ? new Date(date) : date;
         
         if (includeTime) {
-            return dateObj.toISOString();
+            // Use local time format instead of ISO
+            return `${dateObj.getFullYear()}-${String(dateObj.getMonth() + 1).padStart(2, '0')}-${String(dateObj.getDate()).padStart(2, '0')}T${String(dateObj.getHours()).padStart(2, '0')}:${String(dateObj.getMinutes()).padStart(2, '0')}:${String(dateObj.getSeconds()).padStart(2, '0')}`;
         } else {
-            return dateObj.toISOString().split('T')[0];
+            // Use local date format instead of ISO split
+            return `${dateObj.getFullYear()}-${String(dateObj.getMonth() + 1).padStart(2, '0')}-${String(dateObj.getDate()).padStart(2, '0')}`;
         }
     } catch (error) {
         console.error('Error formatting date:', error);
