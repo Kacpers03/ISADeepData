@@ -34,6 +34,14 @@ export const DetailPanel: React.FC<DetailPanelProps> = ({
     if (!dateString) return "N/A";
     return new Date(dateString).toLocaleDateString();
   };
+
+  // Generate media URL based on MediaId (following the pattern from GalleryController.cs)
+  const getMediaUrl = (mediaId: number) => {
+    // Map each MediaId to one of organism1.jpg through organism8.jpg (same logic as backend)
+    const fileIndex = (mediaId % 8) + 1;
+    const mappedFileName = `organism${fileIndex}.jpg`;
+    return `https://isagallerystorage.blob.core.windows.net/gallery/${mappedFileName}`;
+  };
   
   // Handle CSV download based on panel type
   const handleDownloadCSV = () => {
@@ -271,13 +279,27 @@ export const DetailPanel: React.FC<DetailPanelProps> = ({
                             <span>{sample.depthLower} - {sample.depthUpper} m</span>
                           </div>
                           
-                          {/* Media */}
-                          {sample.media && sample.media.length > 0 && (
+                          {/* Media - Updated to display images */}
+                          {sample.photoVideos && sample.photoVideos.length > 0 && (
                             <div className={styles.mediaList}>
-                              <h5>Media ({sample.media.length})</h5>
+                              <h5>Media ({sample.photoVideos.length})</h5>
                               <div className={styles.mediaGrid}>
-                                {sample.media.map(media => (
+                                {sample.photoVideos.map(media => (
                                   <div key={media.mediaId} className={styles.mediaCard}>
+                                    {/* Add the image display */}
+                                    <div className={styles.mediaImage}>
+                                      <img 
+                                        src={getMediaUrl(media.mediaId)} 
+                                        alt={media.fileName || 'Sample media'} 
+                                        style={{ 
+                                          width: '100%', 
+                                          height: '120px', 
+                                          objectFit: 'cover',
+                                          borderTopLeftRadius: '6px',
+                                          borderTopRightRadius: '6px'
+                                        }} 
+                                      />
+                                    </div>
                                     <div className={styles.mediaInfo}>
                                       <strong>{media.fileName}</strong>
                                       <span>{media.mediaType}</span>

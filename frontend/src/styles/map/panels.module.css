@@ -497,3 +497,66 @@
   @keyframes spin {
     to { transform: rotate(360deg); }
   }
+
+  /* Add these styles to your panels.module.css file */
+
+/* ========== MEDIA STYLES ========== */
+.mediaList {
+    margin-top: 16px;
+  }
+  
+  .mediaGrid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 10px;
+  }
+  
+  .mediaCard {
+    border: 1px solid #eaeaea;
+    border-radius: 6px;
+    overflow: hidden;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+    transition: transform 0.2s ease;
+  }
+  
+  .mediaCard:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .mediaImage {
+    width: 100%;
+    height: 120px;
+    overflow: hidden;
+  }
+  
+  .mediaInfo {
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    background-color: #f8f9fa;
+  }
+  
+  .mediaInfo strong {
+    font-size: 0.85rem;
+    margin-bottom: 4px;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    color: #263238;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  
+  .mediaInfo span {
+    font-size: 0.75rem;
+    color: #78909c;
+    margin-bottom: 2px;
+  }
+  
+  /* Responsive adjustments for small screens */
+  @media (max-width: 480px) {
+    .mediaGrid {
+      grid-template-columns: 1fr;
+    }
+  }
