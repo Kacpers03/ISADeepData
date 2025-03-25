@@ -38,8 +38,8 @@ public class MapFilterControllerTests
 
     private void SeedDatabase()
 {
-    _dbContext.Database.EnsureDeleted(); // ✅ Clears all data and resets identity values
-    _dbContext.Database.EnsureCreated(); // ✅ Recreates schema with reset identity
+    _dbContext.Database.EnsureDeleted(); // 
+    _dbContext.Database.EnsureCreated(); // 
 
     // Add Contractor
     var contractor = new Contractor
