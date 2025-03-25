@@ -184,54 +184,124 @@ const useMapZoom = (mapRef, allAreaLayers, selectedContractorId, filters) => {
     }
   }, [mapRef]);
 
-  // Zoom to specific cruise - IMPROVED
-  const zoomToCruise = useCallback((cruise, setShowCruises) => {
-    if (!mapRef.current || !cruise) return;
-    
-    // When zooming to a cruise, make sure cruises are visible
-    setShowCruises(true);
-    
-    // Use the first station of the cruise for positioning if available
-    if (cruise.stations && cruise.stations.length > 0) {
-      const firstStation = cruise.stations[0];
-      
-      // Add a small delay to ensure the map is ready
+  // Zoom to specific cruise - COMPLETELY IMPROVED
+const zoomToCruise = useCallback((cruise, setShowCruises) => {
+  if (!mapRef.current || !cruise) return;
+  
+  // When zooming to a cruise, make sure cruises are visible
+  setShowCruises(true);
+  
+  // PRIORITY 1: Use cruise's own centerLatitude and centerLongitude if available
+  if (cruise.centerLatitude && cruise.centerLongitude) {
+    console.log("Zooming to cruise's own center coordinates:", cruise.cruiseName);
+    setTimeout(() => {
+      mapRef.current.flyTo({
+        center: [cruise.centerLongitude, cruise.centerLatitude],
+        zoom: 8,
+        duration: 800,
+        essential: true
+      });
+    }, 50);
+    return;
+  }
+  
+  // PRIORITY 2: If cruise has stations, calculate a bounding box to fit all stations
+  if (cruise.stations && cruise.stations.length > 0) {
+    // If there's only one station, zoom to it
+    if (cruise.stations.length === 1) {
+      const station = cruise.stations[0];
+      console.log("Zooming to single station of cruise:", cruise.cruiseName);
       setTimeout(() => {
         mapRef.current.flyTo({
-          center: [firstStation.longitude, firstStation.latitude],
-          zoom: 8,
-          duration: 800, // Reduced from 1000ms to make it faster
-          essential: true // Mark as essential to ensure it executes
-        });
-      }, 50);
-      
-      console.log("Zoomed to first station of cruise:", cruise.cruiseName);
-    } else if (cruise.centerLatitude && cruise.centerLongitude) {
-      // Fallback to cruise center coordinates if available
-      setTimeout(() => {
-        mapRef.current.flyTo({
-          center: [cruise.centerLongitude, cruise.centerLatitude],
-          zoom: 8,
+          center: [station.longitude, station.latitude],
+          zoom: 10,
           duration: 800,
           essential: true
         });
       }, 50);
-      
-      console.log("Zoomed to cruise center:", cruise.cruiseName);
-    } else {
-      // If all else fails, try to find the contractor and zoom to their area
-      console.log("Could not find specific position for cruise:", cruise.cruiseName);
-      
-      // Default zoom to make sure something happens
-      setTimeout(() => {
-        mapRef.current.flyTo({
-          center: [0, 0],
-          zoom: 2,
-          duration: 800,
-          essential: true
-        });
-      }, 50);
+      return;
     }
+    
+    // Calculate bounds from all stations to show the entire cruise path
+    console.log("Calculating bounds from all stations of cruise:", cruise.cruiseName);
+    let minLat = 90, maxLat = -90, minLon = 180, maxLon = -180;
+    let validCoordinates = false;
+    
+    cruise.stations.forEach(station => {
+      if (station.latitude !== undefined && station.longitude !== undefined) {
+        minLat = Math.min(minLat, station.latitude);
+        maxLat = Math.max(maxLat, station.latitude);
+        minLon = Math.min(minLon, station.longitude);
+        maxLon = Math.max(maxLon, station.longitude);
+        validCoordinates = true;
+      }
+    });
+    
+    // Add padding to the bounds for better visibility
+    const padding = 0.5; // degrees
+    
+    // Only use bounds if we have valid coordinates
+    if (validCoordinates) {
+      console.log("Zooming to bounds of all stations in cruise:", cruise.cruiseName);
+      setTimeout(() => {
+        mapRef.current.fitBounds(
+          [
+            [minLon - padding, minLat - padding], 
+            [maxLon + padding, maxLat + padding]
+          ],
+          {
+            padding: 50,
+            duration: 800,
+            maxZoom: 10, // Prevent zooming in too far
+            essential: true
+          }
+        );
+      }, 50);
+      return;
+    }
+    
+    // If we couldn't calculate bounds but have stations, use average position as fallback
+    if (cruise.stations.length > 0) {
+      let totalLat = 0, totalLon = 0, count = 0;
+      
+      cruise.stations.forEach(station => {
+        if (station.latitude !== undefined && station.longitude !== undefined) {
+          totalLat += station.latitude;
+          totalLon += station.longitude;
+          count++;
+        }
+      });
+      
+      if (count > 0) {
+        const avgLat = totalLat / count;
+        const avgLon = totalLon / count;
+        
+        console.log("Zooming to average position of all stations:", cruise.cruiseName);
+        setTimeout(() => {
+          mapRef.current.flyTo({
+            center: [avgLon, avgLat],
+            zoom: 8,
+            duration: 800,
+            essential: true
+          });
+        }, 50);
+        return;
+      }
+    }
+  } else {
+    // If all else fails, try to find the contractor and zoom to their area
+    console.log("Could not find specific position for cruise:", cruise.cruiseName);
+    
+    // Default zoom to make sure something happens
+    setTimeout(() => {
+      mapRef.current.flyTo({
+        center: [0, 0],
+        zoom: 2,
+        duration: 800,
+        essential: true
+      });
+    }, 50);
+  }
   }, [mapRef]);
 
   // Effect for pendingZoom

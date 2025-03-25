@@ -53,37 +53,48 @@ const useMapInteractions = ({
     updateClusters(evt.viewState);
   }, [mapRef, setViewState, setUserHasSetView, setViewBounds, updateClusters]);
   
-  // Handle cruise click - IMPROVED VERSION
-  const handleCruiseClick = useCallback((cruise) => {
-    console.log("Cruise clicked:", cruise.cruiseName);
+ // Handle cruise click - FULLY ENHANCED VERSION
+ const handleCruiseClick = useCallback((cruise) => {
+  console.log("Cruise clicked:", cruise.cruiseName);
+  
+  // First ensure cruises are visible
+  setShowCruises(true);
+  
+  // Set selected cruise ID
+  setSelectedCruiseId(cruise.cruiseId);
+  
+  // Make sure user has set view is false to allow our zoom to take effect
+  setUserHasSetView(false);
+  
+  // Zoom to the cruise immediately (don't wait for effect)
+  if (mapRef.current && cruise) {
+    // Log information about the cruise for debugging
+    console.log(`Zooming to cruise: ${cruise.cruiseName}`, {
+      hasCenter: !!cruise.centerLatitude && !!cruise.centerLongitude,
+      stationCount: cruise.stations?.length || 0,
+      contractorId: cruise.contractorId
+    });
     
-    // First ensure cruises are visible
-    setShowCruises(true);
-    
-    // Set selected cruise ID
-    setSelectedCruiseId(cruise.cruiseId);
-    
-    // Zoom to the cruise immediately (don't wait for effect)
-    if (mapRef.current && cruise) {
-      // Direct zoom call instead of waiting for effect
-      zoomToCruise(cruise, setShowCruises);
-    }
-    
-    // Show detail panel after a small delay to ensure zoom happens first
-    setTimeout(() => {
-      setDetailPanelType('cruise');
-      setShowDetailPanel(true);
-      setPopupInfo(null); // Close any open popups
-    }, 100);
-  }, [
-    setSelectedCruiseId, 
-    setDetailPanelType, 
-    setShowDetailPanel, 
-    setPopupInfo, 
-    setShowCruises, 
-    zoomToCruise,
-    mapRef
-  ]);
+    // Direct zoom call instead of waiting for effect
+    zoomToCruise(cruise, setShowCruises);
+  }
+  
+  // Show detail panel after a small delay to ensure zoom happens first
+  setTimeout(() => {
+    setDetailPanelType('cruise');
+    setShowDetailPanel(true);
+    setPopupInfo(null); // Close any open popups
+  }, 200); // Increased delay to ensure zoom completes
+}, [
+  setSelectedCruiseId, 
+  setDetailPanelType, 
+  setShowDetailPanel, 
+  setPopupInfo, 
+  setShowCruises,
+  setUserHasSetView,
+  zoomToCruise,
+  mapRef
+]);
   
   // Handle marker (station) click
   const handleMarkerClick = useCallback((station) => {

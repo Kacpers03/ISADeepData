@@ -495,34 +495,46 @@ window.showBlockAnalytics = async (blockId) => {
     setLocalLoading(false);
   }
 };
-      
-      // IMPROVED Function for showing cruise details
-      window.showCruiseDetails = (cruiseId, showDetails = false) => {
-        // Find cruise
-        const cruise = mapData?.cruises.find(c => c.cruiseId === cruiseId);
-        if (cruise) {
-          // Ensure cruises are visible first
-          setShowCruises(true);
+     // ENHANCED Function for showing cruise details with better zooming
+     window.showCruiseDetails = (cruiseId, showDetails = false) => {
+      // Find cruise
+      const cruise = mapData?.cruises.find(c => c.cruiseId === cruiseId);
+      if (cruise) {
+        console.log(`Showing cruise details for ${cruise.cruiseName}`);
+        
+        // Ensure cruises are visible first
+        setShowCruises(true);
+        
+        // Set selected cruise ID
+        setSelectedCruiseId(cruiseId);
+        
+        // Make sure user has set view is false to allow our zoom to take effect
+        setUserHasSetView(false);
+        
+        // Perform zoom immediately, don't wait for effect
+        if (mapRef.current) {
+          // Log information about the cruise for debugging
+          console.log(`Zooming to cruise: ${cruise.cruiseName}`, {
+            hasCenter: !!cruise.centerLatitude && !!cruise.centerLongitude,
+            stationCount: cruise.stations?.length || 0,
+            contractorId: cruise.contractorId
+          });
           
-          // Set selected cruise ID
-          setSelectedCruiseId(cruiseId);
-          
-          // Perform zoom immediately, don't wait for effect
-          if (mapRef.current) {
-            zoomToCruise(cruise, setShowCruises);
-          }
-          
-          // Show detail panel only if showDetails is true
-          if (showDetails) {
-            // Small delay to ensure zoom happens first
-            setTimeout(() => {
-              setDetailPanelType('cruise');
-              setShowDetailPanel(true);
-            }, 100);
-          }
+          zoomToCruise(cruise, setShowCruises);
         }
-      };
-      
+        
+        // Show detail panel only if showDetails is true
+        if (showDetails) {
+          // Increased delay to ensure zoom happens first
+          setTimeout(() => {
+            setDetailPanelType('cruise');
+            setShowDetailPanel(true);
+          }, 200);
+        }
+      } else {
+        console.warn(`Cruise with ID ${cruiseId} not found`);
+      }
+    };
       // Function to show station information
       window.showStationDetails = (stationId) => {
         // Find the station first
