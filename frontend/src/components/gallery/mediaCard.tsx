@@ -63,9 +63,14 @@ const MediaCard: React.FC<MediaCardProps> = ({ media, onClick }) => {
     )}...${extension}`;
   };
 
+  // Prevent click propagation when clicking download
+  const handleDownloadClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+  };
+
   return (
-    <div className={styles.mediaCard} onClick={onClick}>
-      <div className={styles.mediaThumbnail}>
+    <div className={styles.mediaCard}>
+      <div className={styles.mediaThumbnail} onClick={onClick}>
         {isLoading && (
           <div className={styles.thumbnailLoading}>
             <div className={styles.spinner}></div>
@@ -119,7 +124,7 @@ const MediaCard: React.FC<MediaCardProps> = ({ media, onClick }) => {
         </div>
       </div>
 
-      <div className={styles.mediaInfo}>
+      <div className={styles.mediaInfo} onClick={onClick}>
         <h3 className={styles.mediaTitle} title={media.fileName}>
           {truncateFileName(media.fileName)}
         </h3>
@@ -150,6 +155,22 @@ const MediaCard: React.FC<MediaCardProps> = ({ media, onClick }) => {
             </div>
           )}
         </div>
+      </div>
+
+      {/* Card actions */}
+      <div className={styles.cardActions}>
+        <button className={styles.viewButton} onClick={onClick}>
+          View Details
+        </button>
+        <a
+          href={media.fileUrl}
+          target="_blank"
+          rel="noopener noreferrer" 
+          className={styles.downloadButton}
+          onClick={handleDownloadClick}
+        >
+          Download
+        </a>
       </div>
     </div>
   );
