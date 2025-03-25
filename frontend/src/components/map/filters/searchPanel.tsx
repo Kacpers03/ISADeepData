@@ -240,25 +240,21 @@ const SearchPanel: React.FC<SearchPanelProps> = ({
         setFilter('cruiseId', result.id);
         setSelectedCruiseId(result.id);
         
-        // Call showCruiseDetails without showing detail panel (false parameter)
-        if (mainWindow.showCruiseDetails) {
-          mainWindow.showCruiseDetails(result.id, false);
-        } else {
-          // Fallback: If the cruise has coordinates, zoom to them
-          if (mainWindow.mapInstance) {
-            if (result.centerLatitude && result.centerLongitude) {
-              mainWindow.mapInstance.flyTo({
-                center: [result.centerLongitude, result.centerLatitude],
-                zoom: 8,
-                duration: 1000
-              });
-            } else if (result.stationLatitude && result.stationLongitude) {
-              mainWindow.mapInstance.flyTo({
-                center: [result.stationLongitude, result.stationLatitude],
-                zoom: 8,
-                duration: 1000
-              });
-            }
+        if (mainWindow.mapInstance) {
+          if (result.centerLatitude && result.centerLongitude) {
+            mainWindow.mapInstance.flyTo({
+              center: [result.centerLongitude, result.centerLatitude],
+              zoom: 15,
+              duration: 1000,
+            
+            });
+          } else if (result.stationLatitude && result.stationLongitude) {
+            mainWindow.mapInstance.flyTo({
+              center: [result.stationLongitude, result.stationLatitude],
+              zoom: 15,
+              duration: 1000,
+             
+            });
           }
         }
         
@@ -273,15 +269,13 @@ const SearchPanel: React.FC<SearchPanelProps> = ({
         
       case 'station':
         // Find the station in the map data and display its info panel
-        if (mainWindow.showStationDetails) {
-          mainWindow.showStationDetails(result.id);
-        }
+       
         
         // Also zoom to the station's location
         if (mainWindow.mapInstance && result.latitude && result.longitude) {
           mainWindow.mapInstance.flyTo({
             center: [result.longitude, result.latitude],
-            zoom: 12,
+            zoom: 20,
             duration: 1000
           });
         }
