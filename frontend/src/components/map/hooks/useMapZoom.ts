@@ -184,55 +184,217 @@ const useMapZoom = (mapRef, allAreaLayers, selectedContractorId, filters) => {
     }
   }, [mapRef]);
 
-  // Zoom to specific cruise - IMPROVED
-  const zoomToCruise = useCallback((cruise, setShowCruises) => {
-    if (!mapRef.current || !cruise) return;
+// Zoom to specific cruise - IMPROVED AND FIXED 
+// Added flag to track active zoom operations
+let isZooming = false; 
+
+const zoomToCruise = useCallback((cruise, setShowCruises) => {
+  if (!mapRef.current || !cruise) {
+    console.error("Missing mapRef or cruise object");
+    return;
+  }
+  
+  // Prevent duplicate zoom operations
+  if (isZooming) {
+    console.log("Zoom already in progress, ignoring new request");
+    return;
+  }
+  
+  // Set zooming flag to prevent interruptions
+  isZooming = true;
+  
+  // Ensure we have a valid map instance
+  const mapInstance = mapRef.current.getMap();
+  if (!mapInstance) {
+    console.error("Map instance not available");
+    isZooming = false;
+    return;
+  }
+  
+  // When zooming to a cruise, make sure cruises are visible FIRST
+  setShowCruises(true);
+  
+  // Log cruise information to debug
+  console.log(`DEBUG: Zooming to cruise ${cruise.cruiseName}`, {
+    hasCenter: !!cruise.centerLatitude && !!cruise.centerLongitude,
+    stations: cruise.stations?.length || 0
+  });
+  
+  // PRIORITY 1: Use cruise's own centerLatitude and centerLongitude if available
+  if (cruise.centerLatitude && cruise.centerLongitude) {
+    console.log(`Zooming to coordinates: [${cruise.centerLongitude}, ${cruise.centerLatitude}]`);
     
-    // When zooming to a cruise, make sure cruises are visible
-    setShowCruises(true);
+    // Use direct mapInstance reference instead of mapRef.current
+    const coordinates = [cruise.centerLongitude, cruise.centerLatitude];
     
-    // Use the first station of the cruise for positioning if available
-    if (cruise.stations && cruise.stations.length > 0) {
-      const firstStation = cruise.stations[0];
+    // CRITICAL: Lock user interaction during zoom
+    mapInstance.once('moveend', () => {
+      console.log("Zoom completed successfully");
+      // Reset flag when zoom finishes
+      isZooming = false;
+    });
+    
+    // IMPORTANT: Use a direct call without any delay
+    try {
+      // Force a more aggressive zoom that can't be interrupted
+      mapInstance.jumpTo({
+        center: coordinates,
+      });
       
-      // Add a small delay to ensure the map is ready
-      setTimeout(() => {
-        mapRef.current.flyTo({
-          center: [firstStation.longitude, firstStation.latitude],
-          zoom: 8,
-          duration: 800, // Reduced from 1000ms to make it faster
-          essential: true // Mark as essential to ensure it executes
-        });
-      }, 50);
-      
-      console.log("Zoomed to first station of cruise:", cruise.cruiseName);
-    } else if (cruise.centerLatitude && cruise.centerLongitude) {
-      // Fallback to cruise center coordinates if available
-      setTimeout(() => {
-        mapRef.current.flyTo({
-          center: [cruise.centerLongitude, cruise.centerLatitude],
-          zoom: 8,
-          duration: 800,
-          essential: true
-        });
-      }, 50);
-      
-      console.log("Zoomed to cruise center:", cruise.cruiseName);
-    } else {
-      // If all else fails, try to find the contractor and zoom to their area
-      console.log("Could not find specific position for cruise:", cruise.cruiseName);
-      
-      // Default zoom to make sure something happens
-      setTimeout(() => {
-        mapRef.current.flyTo({
-          center: [0, 0],
-          zoom: 2,
-          duration: 800,
-          essential: true
-        });
-      }, 50);
+      // Then animate to the final zoom level
+      mapInstance.easeTo({
+        center: coordinates,
+        zoom: 8,
+        duration: 1200, // Longer duration
+        essential: true // This ensures the operation can't be interrupted
+      });
+      console.log("Zoom operation initiated successfully");
+    } catch (error) {
+      console.error("Error during zoom:", error);
+      isZooming = false;
     }
-  }, [mapRef]);
+    return;
+  }
+  
+  // PRIORITY 2: If cruise has stations, calculate a bounding box to fit all stations
+  if (cruise.stations && cruise.stations.length > 0) {
+    // If there's only one station, zoom to it
+    if (cruise.stations.length === 1) {
+      const station = cruise.stations[0];
+      console.log("Zooming to single station of cruise:", cruise.cruiseName);
+      
+      try {
+        // Add event listener to track when zoom completes
+        mapInstance.once('moveend', () => {
+          console.log("Zoom to station completed");
+          isZooming = false;
+        });
+        
+        // Use jumpTo first to ensure the move happens
+        mapInstance.jumpTo({
+          center: [station.longitude, station.latitude]
+        });
+        
+        // Then animate to the final zoom level
+        mapInstance.easeTo({
+          center: [station.longitude, station.latitude],
+          zoom: 10,
+          duration: 1200,
+          essential: true
+        });
+      } catch (error) {
+        console.error("Error zooming to station:", error);
+        isZooming = false;
+      }
+      return;
+    }
+    
+    // Calculate bounds from all stations to show the entire cruise path
+    console.log("Calculating bounds from all stations of cruise:", cruise.cruiseName);
+    let minLat = 90, maxLat = -90, minLon = 180, maxLon = -180;
+    let validCoordinates = false;
+    
+    cruise.stations.forEach(station => {
+      if (station.latitude !== undefined && station.longitude !== undefined) {
+        minLat = Math.min(minLat, station.latitude);
+        maxLat = Math.max(maxLat, station.latitude);
+        minLon = Math.min(minLon, station.longitude);
+        maxLon = Math.max(maxLon, station.longitude);
+        validCoordinates = true;
+      }
+    });
+    
+    // Add padding to the bounds for better visibility
+    const padding = 0.5; // degrees
+    
+    // Only use bounds if we have valid coordinates
+    if (validCoordinates) {
+      console.log("Zooming to bounds of all stations in cruise:", cruise.cruiseName);
+      
+      try {
+        // Direct call to fitBounds
+        mapInstance.fitBounds(
+          [
+            [minLon - padding, minLat - padding], 
+            [maxLon + padding, maxLat + padding]
+          ],
+          {
+            padding: 50,
+            duration: 1000,
+            maxZoom: 10, // Prevent zooming in too far
+            essential: true
+          }
+        );
+      } catch (error) {
+        console.error("Error during fitBounds:", error);
+        
+        // Fallback to simple flyTo to center of bounds
+        try {
+          mapInstance.flyTo({
+            center: [(minLon + maxLon) / 2, (minLat + maxLat) / 2],
+            zoom: 8,
+            duration: 1000,
+            essential: true
+          });
+        } catch (e) {
+          console.error("Fallback zoom failed:", e);
+        }
+      }
+      return;
+    }
+    
+    // If we couldn't calculate bounds but have stations, use average position as fallback
+    if (cruise.stations.length > 0) {
+      let totalLat = 0, totalLon = 0, count = 0;
+      
+      cruise.stations.forEach(station => {
+        if (station.latitude !== undefined && station.longitude !== undefined) {
+          totalLat += station.latitude;
+          totalLon += station.longitude;
+          count++;
+        }
+      });
+      
+      if (count > 0) {
+        const avgLat = totalLat / count;
+        const avgLon = totalLon / count;
+        
+        console.log("Zooming to average position of all stations:", cruise.cruiseName);
+        
+        // Direct call without setTimeout
+        try {
+          mapInstance.flyTo({
+            center: [avgLon, avgLat],
+            zoom: 8,
+            duration: 1000,
+            essential: true
+          });
+        } catch (error) {
+          console.error("Error zooming to average position:", error);
+        }
+        return;
+      }
+    }
+  }
+  
+  // If all else fails, use default zoom
+  console.log("No valid coordinates found, using default zoom");
+  try {
+    mapInstance.flyTo({
+      center: [0, 0],
+      zoom: 2,
+      duration: 1000,
+      essential: true
+    });
+  } catch (error) {
+    console.error("Default zoom failed:", error);
+  } finally {
+    // Always reset zooming flag when done
+    setTimeout(() => {
+      isZooming = false;
+    }, 1500);
+  }
+}, [mapRef]);
 
   // Effect for pendingZoom
   useEffect(() => {

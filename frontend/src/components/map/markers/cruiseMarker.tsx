@@ -1,19 +1,47 @@
 import React from 'react';
 import { Marker } from 'react-map-gl';
 import styles from '../../../styles/map/markers.module.css';
+
+/**
+ * CruiseMarker component for displaying cruises on the map
+ * @param {Object} cruise - The cruise data to display
+ * @param {Function} onClick - Function to handle when the marker is clicked
+ */
 const CruiseMarker = ({ cruise, onClick }) => {
-  // Calculate cruise position with fallbacks
+  // Calculate cruise position with improved fallbacks
   const calculatePosition = () => {
     // First try: Use cruise's centerLatitude and centerLongitude if available
     if (cruise.centerLatitude && cruise.centerLongitude) {
+      // Store these values on the cruise object if they weren't already there
+      if (!cruise.centerLatSet) {
+        cruise.centerLatSet = true; // Mark that we've processed this cruise
+        console.log(`Using explicit center coordinates for cruise ${cruise.cruiseName}`);
+      }
       return { lat: cruise.centerLatitude, lng: cruise.centerLongitude };
     }
     
     // Second try: Calculate average from stations if they exist
     if (cruise.stations && cruise.stations.length > 0) {
-      const avgLat = cruise.stations.reduce((sum, s) => sum + s.latitude, 0) / cruise.stations.length;
-      const avgLon = cruise.stations.reduce((sum, s) => sum + s.longitude, 0) / cruise.stations.length;
-      return { lat: avgLat, lng: avgLon };
+      // Filter out stations with invalid coordinates first
+      const validStations = cruise.stations.filter(s => 
+        s.latitude !== undefined && s.longitude !== undefined && 
+        !isNaN(s.latitude) && !isNaN(s.longitude)
+      );
+      
+      if (validStations.length > 0) {
+        const avgLat = validStations.reduce((sum, s) => sum + s.latitude, 0) / validStations.length;
+        const avgLon = validStations.reduce((sum, s) => sum + s.longitude, 0) / validStations.length;
+        
+        // Store the calculated center on the cruise object for future use
+        if (!cruise.centerLatSet) {
+          cruise.centerLatitude = avgLat;
+          cruise.centerLongitude = avgLon;
+          cruise.centerLatSet = true; // Mark that we've set a calculated center
+          console.log(`Calculated and stored center coordinates for cruise ${cruise.cruiseName}`);
+        }
+        
+        return { lat: avgLat, lng: avgLon };
+      }
     }
     
     // Fallback: Check if cruise has any area or block associations we can use
@@ -21,6 +49,10 @@ const CruiseMarker = ({ cruise, onClick }) => {
       // This is just a placeholder. In a real implementation, you might 
       // need to access global map data to find areas for this contractor
       console.log("Using fallback positioning for cruise:", cruise.cruiseName);
+      
+      // If we have a parent contractor, we could try to use its center
+      // This part would require accessing the global mapData, which
+      // isn't directly available here
     }
     
     // Last resort: If we have no usable coordinates, don't render the cruise

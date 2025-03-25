@@ -561,7 +561,7 @@ const GalleryTemplate: React.FC = () => {
         </div>
 
         {/* Gallery display */}
-        <div className={styles.mediaGallery}>
+        <div className={styles.mediaGalleryContainer}>
           {loading ? (
             <div className={styles.loadingContainer}>
               <div className={styles.spinner}></div>
@@ -651,6 +651,7 @@ const GalleryTemplate: React.FC = () => {
                 </p>
               </div>
 
+              {/* Media Grid - 3 column layout */}
               <div className={styles.mediaGrid}>
                 {currentItems.map((media) => (
                   <MediaCard
