@@ -1,16 +1,19 @@
 import React from "react";
 import styles from "../../styles/topics/Workshops.module.css";
 
-const Workshops: React.FC = () => {
+interface WorkshopsProps {
+  t: (key: string) => string;
+}
+
+const Workshops: React.FC<WorkshopsProps> = ({ t }) => {
   return (
     <div className={styles.container}>
       {/* HERO SECTION */}
       <section className={styles.hero}>
         <div className={styles.heroText}>
-          <h1 className={styles.heroTitle}>Workshops &amp; Webinars</h1>
+          <h1 className={styles.heroTitle}>{t('workshops.hero.title')}</h1>
           <p className={styles.heroSubtitle}>
-            Expanding knowledge and fostering collaboration through interactive
-            events.
+            {t('workshops.hero.subtitle')}
           </p>
         </div>
       </section>
@@ -18,28 +21,24 @@ const Workshops: React.FC = () => {
       {/* ABOUT SECTION */}
       <section className={styles.about}>
         <div className={styles.textBlock}>
-          <h2>Engage, Learn, and Innovate</h2>
+          <h2>{t('workshops.about.title')}</h2>
           <p>
-            ISA’s Workshops &amp; Webinars bring together experts, researchers,
-            and policymakers to discuss the latest developments in deep seabed
-            exploration and marine environmental protection. These events aim to
-            promote capacity-building, knowledge exchange, and innovative
-            solutions for the sustainable management of ocean resources.
+            {t('workshops.about.description')}
           </p>
 
           <div className={styles.features}>
             <div className={styles.feature}>
-              <h3>Capacity Building</h3>
-              <p>Hands-on training sessions to enhance skills and expertise.</p>
+              <h3>{t('workshops.about.features.capacity.title')}</h3>
+              <p>{t('workshops.about.features.capacity.description')}</p>
             </div>
             <div className={styles.feature}>
-              <h3>Knowledge Sharing</h3>
-              <p>Exchange ideas and best practices with global stakeholders.</p>
+              <h3>{t('workshops.about.features.knowledge.title')}</h3>
+              <p>{t('workshops.about.features.knowledge.description')}</p>
             </div>
             <div className={styles.feature}>
-              <h3>Networking</h3>
+              <h3>{t('workshops.about.features.networking.title')}</h3>
               <p>
-                Connect with professionals, researchers, and industry leaders.
+                {t('workshops.about.features.networking.description')}
               </p>
             </div>
           </div>
@@ -48,7 +47,7 @@ const Workshops: React.FC = () => {
         <div className={styles.imageBlock}>
           <img
             src="/images/workshops-webinars.jpg"
-            alt="ISA Workshops"
+            alt={t('workshops.about.imageAlt')}
             className={styles.image}
           />
         </div>
@@ -56,29 +55,23 @@ const Workshops: React.FC = () => {
 
       {/* DETAILS SECTION */}
       <section className={styles.details}>
-        <h2 className={styles.sectionTitle}>Upcoming &amp; Past Events</h2>
+        <h2 className={styles.sectionTitle}>{t('workshops.details.title')}</h2>
         <p>
-          Stay informed about upcoming workshops and webinars on topics ranging
-          from marine technology advancements to regulatory updates. Our past
-          events library offers recorded sessions and materials for continued
-          learning and reference.
+          {t('workshops.details.description')}
         </p>
         <p>
-          <strong>Featured Topics:</strong> Deep-sea ecosystem research,
-          environmental impact assessments, resource evaluation methods, and
-          more.
+          <strong>{t('workshops.details.featuredTopics.label')}</strong> {t('workshops.details.featuredTopics.topics')}
         </p>
       </section>
 
       {/* CTA SECTION */}
       <section className={styles.cta}>
-        <h2>Join the Conversation</h2>
+        <h2>{t('workshops.cta.title')}</h2>
         <p>
-          Sign up for our next workshop or webinar to learn from leading experts
-          and contribute to shaping the future of ocean governance.
+          {t('workshops.cta.description')}
         </p>
         <a href="/contact" className={styles.ctaButton}>
-          Contact Us
+          {t('workshops.cta.button')}
         </a>
       </section>
     </div>

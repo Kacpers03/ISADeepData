@@ -1,6 +1,8 @@
 import React from "react";
 import ExplorationContracts from "../../components/topics/ExplorationContractsTemplate";
+import { useLanguage } from "../../contexts/languageContext";
 
 export default function ExplorationContractsPage() {
-  return <ExplorationContracts />;
+  const { t } = useLanguage();
+  return <ExplorationContracts t={t} />;
 }

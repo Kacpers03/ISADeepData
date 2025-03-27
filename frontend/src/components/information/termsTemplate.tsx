@@ -1,15 +1,19 @@
 import React from "react";
 import styles from "../../styles/information/terms.module.css";
 
-export const Terms: React.FC = () => {
+interface TermsProps {
+  t: (key: string) => string;
+}
+
+export const Terms: React.FC<TermsProps> = ({ t }) => {
   return (
     <>
       {/* Hero Section */}
       <section className={styles.hero}>
         <div className={styles.heroContainer}>
-          <h1 className={styles.heroTitle}>Terms &amp; Conditions</h1>
+          <h1 className={styles.heroTitle}>{t('terms.title')}</h1>
           <p className={styles.heroSubtitle}>
-            International Seabed Authority Website
+            {t('terms.subtitle')}
           </p>
         </div>
       </section>
@@ -19,22 +23,22 @@ export const Terms: React.FC = () => {
         <ul className={styles.tocList}>
           <li>
             <a href="#disclaimers" className={styles.tocLink}>
-              Disclaimers
+              {t('terms.toc.disclaimers')}
             </a>
           </li>
           <li>
             <a href="#immunities" className={styles.tocLink}>
-              Preservation of Immunities
+              {t('terms.toc.immunities')}
             </a>
           </li>
           <li>
             <a href="#general" className={styles.tocLink}>
-              General
+              {t('terms.toc.general')}
             </a>
           </li>
           <li>
             <a href="#amendments" className={styles.tocLink}>
-              Notification of Amendments
+              {t('terms.toc.amendments')}
             </a>
           </li>
         </ul>
@@ -43,19 +47,12 @@ export const Terms: React.FC = () => {
       {/* Overview Section */}
       <section className={styles.overview}>
         <div className={styles.overviewContent}>
-          <h2 className={styles.sectionTitle}>Overview</h2>
+          <h2 className={styles.sectionTitle}>{t('terms.overview.title')}</h2>
           <p className={styles.sectionText}>
-            The user of this website constitutes agreement with the following
-            terms and conditions. The International Seabed Authority (ISA)
-            maintains this website (the “Site”) as a courtesy to those who may
-            choose to access it (“Users”). The information presented is for
-            informational purposes only.
+            {t('terms.overview.paragraph1')}
           </p>
           <p className={styles.sectionText}>
-            ISA grants permission to Users to visit the Site and to download,
-            copy and print the information, documents and materials
-            (collectively, “Materials”) for the User’s personal, non-commercial
-            use, subject to more specific restrictions that may apply.
+            {t('terms.overview.paragraph2')}
           </p>
         </div>
       </section>
@@ -74,7 +71,7 @@ export const Terms: React.FC = () => {
                 aria-expanded="true"
                 aria-controls="collapseOne"
               >
-                <span className={styles.accordionIcon}>⚠️</span> Disclaimers
+                <span className={styles.accordionIcon}>⚠️</span> {t('terms.disclaimers.title')}
               </button>
             </h2>
             <div
@@ -85,17 +82,10 @@ export const Terms: React.FC = () => {
             >
               <div className="accordion-body">
                 <p className={styles.sectionText}>
-                  Materials provided on the Site are provided “as is,” without
-                  warranty of any kind, either express or implied. ISA does not
-                  make any warranties or representations as to the accuracy or
-                  completeness of any such Materials.
+                  {t('terms.disclaimers.paragraph1')}
                 </p>
                 <p className={styles.sectionText}>
-                  Under no circumstances shall ISA be liable for any loss,
-                  damage, liability or expense incurred or suffered that is
-                  claimed to have resulted from the use of the Site, including,
-                  without limitation, any fault, error, omission, interruption
-                  or delay.
+                  {t('terms.disclaimers.paragraph2')}
                 </p>
               </div>
             </div>
@@ -112,8 +102,7 @@ export const Terms: React.FC = () => {
                 aria-expanded="false"
                 aria-controls="collapseTwo"
               >
-                <span className={styles.accordionIcon}>🛡️</span> Preservation of
-                Immunities
+                <span className={styles.accordionIcon}>🛡️</span> {t('terms.immunities.title')}
               </button>
             </h2>
             <div
@@ -124,9 +113,7 @@ export const Terms: React.FC = () => {
             >
               <div className="accordion-body">
                 <p className={styles.sectionText}>
-                  Nothing herein shall constitute or be considered to be a
-                  limitation upon or a waiver of the privileges and immunities
-                  of ISA, which are specifically reserved.
+                  {t('terms.immunities.paragraph1')}
                 </p>
               </div>
             </div>
@@ -143,7 +130,7 @@ export const Terms: React.FC = () => {
                 aria-expanded="false"
                 aria-controls="collapseThree"
               >
-                <span className={styles.accordionIcon}>⚙️</span> General
+                <span className={styles.accordionIcon}>⚙️</span> {t('terms.general.title')}
               </button>
             </h2>
             <div
@@ -154,17 +141,10 @@ export const Terms: React.FC = () => {
             >
               <div className="accordion-body">
                 <p className={styles.sectionText}>
-                  ISA reserves its exclusive right in its sole discretion to
-                  alter, limit, or discontinue the Site or any Materials in any
-                  respect. ISA shall have no obligation to take the needs of any
-                  User into consideration in connection therewith.
+                  {t('terms.general.paragraph1')}
                 </p>
                 <p className={styles.sectionText}>
-                  ISA reserves the right to deny in its sole discretion any user
-                  access to this Site or any portion thereof without notice. No
-                  waiver by ISA of any provision of these Terms and Conditions
-                  shall be binding except as set forth in writing and signed by
-                  its duly authorized representative.
+                  {t('terms.general.paragraph2')}
                 </p>
               </div>
             </div>
@@ -181,8 +161,7 @@ export const Terms: React.FC = () => {
                 aria-expanded="false"
                 aria-controls="collapseFour"
               >
-                <span className={styles.accordionIcon}>✏️</span> Notification of
-                Amendments
+                <span className={styles.accordionIcon}>✏️</span> {t('terms.amendments.title')}
               </button>
             </h2>
             <div
@@ -193,9 +172,7 @@ export const Terms: React.FC = () => {
             >
               <div className="accordion-body">
                 <p className={styles.sectionText}>
-                  ISA reserves the right to amend this policy at its own
-                  discretion. If you do not agree to any such modifications, you
-                  should immediately discontinue use of the Site.
+                  {t('terms.amendments.paragraph1')}
                 </p>
               </div>
             </div>

@@ -3,47 +3,47 @@ import Image from "next/image";
 import Link from "next/link";
 import styles from "../../styles/topics/ExplorationContracts.module.css";
 
-const contractTypes = [
-  {
-    title: "Polymetallic Nodules",
-    count: 19,
-    description:
-      "Contracts for exploration of polymetallic nodules on the seabed",
-    icon: "nodules",
-  },
-  {
-    title: "Polymetallic Sulphides",
-    count: 7,
-    description:
-      "Contracts for exploration of polymetallic sulphides in hydrothermal vents",
-    icon: "sulphides",
-  },
-  {
-    title: "Cobalt-rich Crusts",
-    count: 5,
-    description:
-      "Contracts for exploration of cobalt-rich ferromanganese crusts on seamounts",
-    icon: "cobalt",
-  },
-];
+interface ExplorationContractsProps {
+  t: (key: string) => string;
+}
 
-const ExplorationContracts = () => {
+const ExplorationContracts: React.FC<ExplorationContractsProps> = ({ t }) => {
+  const contractTypes = [
+    {
+      title: t('explorationContracts.types.polymetallic.title'),
+      count: 19,
+      description: t('explorationContracts.types.polymetallic.description'),
+      icon: "nodules",
+    },
+    {
+      title: t('explorationContracts.types.sulphides.title'),
+      count: 7,
+      description: t('explorationContracts.types.sulphides.description'),
+      icon: "sulphides",
+    },
+    {
+      title: t('explorationContracts.types.cobalt.title'),
+      count: 5,
+      description: t('explorationContracts.types.cobalt.description'),
+      icon: "cobalt",
+    },
+  ];
+
   return (
     <div className={styles.container}>
       {/* HERO SECTION - Modern full-width design */}
       <section className={styles.hero}>
         <div className={styles.heroContent}>
-          <h1 className={styles.heroTitle}>Exploration Contracts</h1>
+          <h1 className={styles.heroTitle}>{t('explorationContracts.hero.title')}</h1>
           <p className={styles.heroSubtitle}>
-            Enabling sustainable and transparent seabed exploration for the
-            benefit of all humanity
+            {t('explorationContracts.hero.subtitle')}
           </p>
           <div className={styles.heroActions}>
             <Link href="/contracts/database" className={styles.primaryButton}>
-              Browse Contracts <span className={styles.arrowIcon}>→</span>
+              {t('explorationContracts.hero.browseButton')} <span className={styles.arrowIcon}>→</span>
             </Link>
             <Link href="/learn-more" className={styles.secondaryButton}>
-              Learn More
+              {t('explorationContracts.hero.learnMoreButton')}
             </Link>
           </div>
         </div>
@@ -53,31 +53,26 @@ const ExplorationContracts = () => {
       <section className={styles.statsBanner}>
         <div className={styles.statItem}>
           <span className={styles.statNumber}>31</span>
-          <span className={styles.statLabel}>Active Contracts</span>
+          <span className={styles.statLabel}>{t('explorationContracts.stats.activeContracts')}</span>
         </div>
         <div className={styles.statDivider}></div>
         <div className={styles.statItem}>
           <span className={styles.statNumber}>22</span>
-          <span className={styles.statLabel}>Sponsoring States</span>
+          <span className={styles.statLabel}>{t('explorationContracts.stats.sponsoringStates')}</span>
         </div>
         <div className={styles.statDivider}></div>
         <div className={styles.statItem}>
           <span className={styles.statNumber}>1.5m</span>
-          <span className={styles.statLabel}>km² Area</span>
+          <span className={styles.statLabel}>{t('explorationContracts.stats.area')}</span>
         </div>
       </section>
 
       {/* ABOUT SECTION - Improved layout */}
       <section className={styles.about}>
         <div className={styles.textBlock}>
-          <h2 className={styles.sectionHeading}>About Exploration Contracts</h2>
+          <h2 className={styles.sectionHeading}>{t('explorationContracts.about.title')}</h2>
           <p className={styles.leadText}>
-            The International Seabed Authority grants contracts for the
-            exploration of mineral resources in the international seabed Area.
-            These legally binding agreements outline the rights and obligations
-            of contractors, ensuring that exploration activities adhere to
-            environmental safeguards, reporting requirements, and the
-            overarching principle of the common heritage of mankind.
+            {t('explorationContracts.about.description')}
           </p>
 
           <div className={styles.features}>
@@ -85,30 +80,27 @@ const ExplorationContracts = () => {
               <div className={styles.featureIconWrapper}>
                 <span className={styles.iconPlaceholder}>📄</span>
               </div>
-              <h3>Legal Framework</h3>
+              <h3>{t('explorationContracts.about.features.legal.title')}</h3>
               <p>
-                Each contract operates under strict rules to maintain
-                transparency and accountability.
+                {t('explorationContracts.about.features.legal.description')}
               </p>
             </div>
             <div className={styles.feature}>
               <div className={styles.featureIconWrapper}>
                 <span className={styles.iconPlaceholder}>🛡️</span>
               </div>
-              <h3>Environmental Safeguards</h3>
+              <h3>{t('explorationContracts.about.features.environmental.title')}</h3>
               <p>
-                Contractors must follow best practices to protect marine
-                ecosystems.
+                {t('explorationContracts.about.features.environmental.description')}
               </p>
             </div>
             <div className={styles.feature}>
               <div className={styles.featureIconWrapper}>
                 <span className={styles.iconPlaceholder}>💾</span>
               </div>
-              <h3>Research &amp; Data Sharing</h3>
+              <h3>{t('explorationContracts.about.features.research.title')}</h3>
               <p>
-                Promoting scientific research and knowledge exchange to advance
-                seabed exploration.
+                {t('explorationContracts.about.features.research.description')}
               </p>
             </div>
           </div>
@@ -118,7 +110,7 @@ const ExplorationContracts = () => {
           <div className={styles.imageWrapper}>
             <Image
               src="/images/exploration-vessel.jpg"
-              alt="Exploration vessel on ocean"
+              alt={t('explorationContracts.about.imageAlt')}
               fill
               className={styles.image}
               sizes="(max-width: 768px) 100vw, 50vw"
@@ -130,7 +122,7 @@ const ExplorationContracts = () => {
       {/* CONTRACT TYPES SECTION */}
       <section className={styles.contractTypes}>
         <h2 className={styles.sectionHeading}>
-          Types of Exploration Contracts
+          {t('explorationContracts.typesSection.title')}
         </h2>
         <div className={styles.contractTypeGrid}>
           {contractTypes.map((type, index) => (
@@ -154,7 +146,7 @@ const ExplorationContracts = () => {
                 href={`/contracts/${type.icon}`}
                 className={styles.contractCardLink}
               >
-                View Details <span className={styles.arrowIcon}>→</span>
+                {t('explorationContracts.typesSection.viewDetails')} <span className={styles.arrowIcon}>→</span>
               </Link>
             </div>
           ))}
@@ -165,28 +157,22 @@ const ExplorationContracts = () => {
       <section className={styles.details}>
         <div className={styles.detailsCard}>
           <h2 className={styles.detailsTitle}>
-            Contractors &amp; Sponsoring States
+            {t('explorationContracts.details.title')}
           </h2>
           <p>
-            Exploration contracts are typically awarded to entities sponsored by
-            a State Party to the United Nations Convention on the Law of the
-            Sea. These sponsoring States bear responsibility for ensuring that
-            contractors comply with regulations and uphold environmental and
-            financial obligations.
+            {t('explorationContracts.details.paragraph1')}
           </p>
           <p>
-            The ISA regularly reviews contractor performance, requiring detailed
-            annual reports on exploration activities, environmental baseline
-            studies, and any potential impacts on the marine environment.
+            {t('explorationContracts.details.paragraph2')}
           </p>
           <div className={styles.infoBox}>
-            <h4>Key Requirements for Contractors:</h4>
+            <h4>{t('explorationContracts.details.requirements.title')}</h4>
             <ul className={styles.requirementsList}>
-              <li>Annual activity reports</li>
-              <li>Environmental monitoring</li>
-              <li>Financial guarantees</li>
-              <li>Technology transfer commitments</li>
-              <li>Compliance with ISA regulations</li>
+              <li>{t('explorationContracts.details.requirements.item1')}</li>
+              <li>{t('explorationContracts.details.requirements.item2')}</li>
+              <li>{t('explorationContracts.details.requirements.item3')}</li>
+              <li>{t('explorationContracts.details.requirements.item4')}</li>
+              <li>{t('explorationContracts.details.requirements.item5')}</li>
             </ul>
           </div>
         </div>
@@ -194,16 +180,15 @@ const ExplorationContracts = () => {
 
       {/* INTERACTIVE MAP SECTION */}
       <section className={styles.mapSection}>
-        <h2 className={styles.sectionHeading}>Exploration Areas</h2>
+        <h2 className={styles.sectionHeading}>{t('explorationContracts.map.title')}</h2>
         <p className={styles.mapDescription}>
-          View the geographic distribution of current exploration contracts
-          around the world.
+          {t('explorationContracts.map.description')}
         </p>
         <div className={styles.mapContainer}>
           <div className={styles.mapPlaceholder}>
-            <span>Interactive Map of Exploration Areas</span>
+            <span>{t('explorationContracts.map.placeholder')}</span>
             <Link href="/exploration-map" className={styles.viewFullMapButton}>
-              View Full Map
+              {t('explorationContracts.map.viewFullMapButton')}
             </Link>
           </div>
         </div>
@@ -212,18 +197,16 @@ const ExplorationContracts = () => {
       {/* CTA SECTION - Modernized */}
       <section className={styles.cta}>
         <div className={styles.ctaContent}>
-          <h2>Learn More About Exploration Contracts</h2>
+          <h2>{t('explorationContracts.cta.title')}</h2>
           <p>
-            Discover the framework, obligations, and opportunities associated
-            with exploration contracts, and find out how ISA works to balance
-            resource development with environmental protection.
+            {t('explorationContracts.cta.description')}
           </p>
           <div className={styles.ctaButtons}>
             <Link href="/contact" className={styles.primaryButton}>
-              Contact Us
+              {t('explorationContracts.cta.contactButton')}
             </Link>
             <Link href="/resources" className={styles.outlineButton}>
-              Download Resources
+              {t('explorationContracts.cta.resourcesButton')}
             </Link>
           </div>
         </div>

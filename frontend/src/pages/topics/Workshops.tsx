@@ -1,6 +1,8 @@
 import React from "react";
 import Workshops from "../../components/topics/WorkshopsTemplate";
+import { useLanguage } from "../../contexts/languageContext";
 
 export default function WorkshopsPage() {
-  return <Workshops />;
+  const { t } = useLanguage();
+  return <Workshops t={t} />;
 }

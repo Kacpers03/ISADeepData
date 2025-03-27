@@ -1,142 +1,358 @@
 {
-    "header": {
-      "home": "ISA DeepData",
-      "subtitle": "Autoridad Internacional de los Fondos Marinos"
+  "header": {
+    "home": "ISA DeepData",
+    "subtitle": "Autoridad Internacional de los Fondos Marinos"
+  },
+  "nav": {
+    "about": "Acerca de ISA",
+    "aboutSubItems": {
+      "about": "Acerca de",
+      "purpose": "Propósito",
+      "missions": "Misiones"
     },
-    "nav": {
-      "about": "Acerca de ISA",
-      "aboutSubItems": {
-        "about": "Acerca de",
-        "purpose": "Propósito",
-        "missions": "Misiones"
-      },
-      "map": "Mapa",
-      "library": "Biblioteca",
-      "librarySubItems": {
-        "reports": "Informes",
-        "publications": "Publicaciones",
-        "research": "Investigación",
-        "samples": "Muestras"
-      },
-      "gallery": "Galería",
-      "documents": "Documentos"
+    "map": "Mapa",
+    "library": "Biblioteca",
+    "librarySubItems": {
+      "reports": "Informes",
+      "publications": "Publicaciones",
+      "research": "Investigación",
+      "samples": "Muestras"
     },
-    "home": {
-      "title": "Bienvenido a ISA DeepData",
-      "subtitle": "Explora las profundidades del océano con nuestros mapas y recursos interactivos."
-    },
-    "languages": {
-      "en": "Inglés",
-      "es": "Español",
-      "fr": "Francés"
-    },
+    "gallery": "Galería",
+    "documents": "Documentos"
+  },
+  "home": {
+    "title": "Bienvenido a ISA DeepData",
+    "subtitle": "Explora las profundidades del océano con nuestros mapas y recursos interactivos."
+  },
+  "languages": {
+    "en": "Inglés",
+    "es": "Español",
+    "fr": "Francés"
+  },
 
-    "footer": {
-  "contact": "Contacto",
-  "topics": "Temas",
-  "information": "Información",
-  "address": "14 - 20 Port Royal Street, Kingston, Jamaica",
-  "email": "news@isa.org.jm",
-  "phone": "+1 (876) 922-9105",
-  "termsOfUse": "Términos de Uso",
-  "strategicPlan": "Plan Estratégico",
-  "miningCode": "Código de Minería",
-  "marineProtection": "Protección del Medio Marino",
-  "explorationContracts": "Contratos de Exploración",
-  "workshops": "Talleres",
-  "copyright": "© 2025 Todos los derechos reservados."
+  "footer": {
+"contact": "Contacto",
+"topics": "Temas",
+"information": "Información",
+"address": "14 - 20 Port Royal Street, Kingston, Jamaica",
+"email": "news@isa.org.jm",
+"phone": "+1 (876) 922-9105",
+"termsOfUse": "Términos de Uso",
+"strategicPlan": "Plan Estratégico",
+"miningCode": "Código de Minería",
+"marineProtection": "Protección del Medio Marino",
+"explorationContracts": "Contratos de Exploración",
+"workshops": "Talleres",
+"copyright": "© 2025 Todos los derechos reservados."
 },
 
 "about": {
-  "title": "Acerca de ISA DeepData",
-  "leadText": "ISA DeepData ofrece soluciones innovadoras para el análisis de datos marinos profundos.",
-  "description": "Nuestra plataforma aprovecha tecnología de vanguardia para transformar datos marinos brutos en información procesable, permitiendo a las partes interesadas tomar decisiones informadas sobre la gestión sostenible de los recursos marinos.",
-  "features": {
-    "innovativeAnalytics": {
-      "title": "Análisis Innovador",
-      "description": "Transformamos datos marinos brutos en información clara y procesable."
-    },
-    "marineInsights": {
-      "title": "Información Marina",
-      "description": "Aprovechamos análisis expertos para la gestión marina sostenible."
-    },
-    "collaborativeExpertise": {
-      "title": "Experiencia Colaborativa",
-      "description": "Colaboramos con líderes de la industria para impulsar la innovación y la excelencia."
-    }
+"title": "Acerca de ISA DeepData",
+"leadText": "ISA DeepData ofrece soluciones innovadoras para el análisis de datos marinos profundos.",
+"description": "Nuestra plataforma aprovecha tecnología de vanguardia para transformar datos marinos brutos en información procesable, permitiendo a las partes interesadas tomar decisiones informadas sobre la gestión sostenible de los recursos marinos.",
+"features": {
+  "innovativeAnalytics": {
+    "title": "Análisis Innovador",
+    "description": "Transformamos datos marinos brutos en información clara y procesable."
   },
-  "joinSection": {
-    "title": "Únase a Nuestra Revolución de Datos Profundos",
-    "description": "Descubra cómo ISA DeepData está transformando la industria marina. Explore nuestras herramientas interactivas, informes completos e investigación de vanguardia para mantenerse a la vanguardia en el mundo de los datos de aguas profundas."
+  "marineInsights": {
+    "title": "Información Marina",
+    "description": "Aprovechamos análisis expertos para la gestión marina sostenible."
+  },
+  "collaborativeExpertise": {
+    "title": "Experiencia Colaborativa",
+    "description": "Colaboramos con líderes de la industria para impulsar la innovación y la excelencia."
   }
+},
+"joinSection": {
+  "title": "Únase a Nuestra Revolución de Datos Profundos",
+  "description": "Descubra cómo ISA DeepData está transformando la industria marina. Explore nuestras herramientas interactivas, informes completos e investigación de vanguardia para mantenerse a la vanguardia en el mundo de los datos de aguas profundas."
+}
 },
 
 "strategicPlan": {
-  "hero": {
-    "title": "Plan Estratégico de la ISA",
-    "subtitle": "Guiando el futuro sostenible de la minería de los fondos marinos."
+"hero": {
+  "title": "Plan Estratégico de la ISA",
+  "subtitle": "Guiando el futuro sostenible de la minería de los fondos marinos."
+},
+"about": {
+  "title": "Acerca del Plan Estratégico",
+  "description": "El Plan Estratégico de la ISA describe nuestra visión para un enfoque equilibrado, sostenible y científicamente informado de la gestión de los recursos de los fondos marinos. Proporciona una hoja de ruta para la regulación efectiva, la investigación y el desarrollo de capacidades, asegurando que la exploración y explotación beneficien a toda la humanidad."
+},
+"features": {
+  "regulation": {
+    "title": "Regulación Robusta",
+    "description": "Estableciendo marcos sólidos para gobernar las actividades de los fondos marinos.",
+    "details": "Nuestro sólido marco regulatorio está diseñado para proporcionar directrices claras y medidas aplicables. Al incorporar revisiones periódicas y participación continua de las partes interesadas, aseguramos que nuestras regulaciones permanezcan receptivas y efectivas, fomentando un ambiente de responsabilidad y transparencia."
   },
-  "about": {
-    "title": "Acerca del Plan Estratégico",
-    "description": "El Plan Estratégico de la ISA describe nuestra visión para un enfoque equilibrado, sostenible y científicamente informado de la gestión de los recursos de los fondos marinos. Proporciona una hoja de ruta para la regulación efectiva, la investigación y el desarrollo de capacidades, asegurando que la exploración y explotación beneficien a toda la humanidad."
+  "environment": {
+    "title": "Protección Ambiental",
+    "description": "Preservando los ecosistemas marinos para las generaciones futuras.",
+    "details": "La protección ambiental está en el centro de nuestra misión. Implementamos medidas de conservación integrales, incluidas evaluaciones ambientales regulares y programas de monitoreo proactivo, para garantizar la gestión sostenible de los ecosistemas marinos. Este enfoque no solo protege la biodiversidad, sino que también promueve la resiliencia ecológica a largo plazo."
   },
-  "features": {
-    "regulation": {
-      "title": "Regulación Robusta",
-      "description": "Estableciendo marcos sólidos para gobernar las actividades de los fondos marinos.",
-      "details": "Nuestro sólido marco regulatorio está diseñado para proporcionar directrices claras y medidas aplicables. Al incorporar revisiones periódicas y participación continua de las partes interesadas, aseguramos que nuestras regulaciones permanezcan receptivas y efectivas, fomentando un ambiente de responsabilidad y transparencia."
-    },
-    "environment": {
-      "title": "Protección Ambiental",
-      "description": "Preservando los ecosistemas marinos para las generaciones futuras.",
-      "details": "La protección ambiental está en el centro de nuestra misión. Implementamos medidas de conservación integrales, incluidas evaluaciones ambientales regulares y programas de monitoreo proactivo, para garantizar la gestión sostenible de los ecosistemas marinos. Este enfoque no solo protege la biodiversidad, sino que también promueve la resiliencia ecológica a largo plazo."
-    },
-    "collaboration": {
-      "title": "Colaboración Global",
-      "description": "Fomentando asociaciones con partes interesadas en todo el mundo.",
-      "details": "La colaboración global es esencial para aprovechar la experiencia colectiva de nuestros socios internacionales. Al trabajar estrechamente con las partes interesadas globales, los organismos reguladores y las comunidades científicas, nos esforzamos por construir un marco cohesivo e innovador que beneficie a todas las partes involucradas. Este espíritu de asociación asegura que compartamos conocimientos, armonicemos las mejores prácticas y abordemos conjuntamente los desafíos de la minería de los fondos marinos."
-    }
-  },
-  "download": {
-    "title": "Descargar el Plan Estratégico",
-    "description": "Acceda al documento completo del Plan Estratégico de la ISA y explore los objetivos clave, regulaciones e iniciativas que están dando forma al futuro de la minería de los fondos marinos.",
-    "button": "Ver y Descargar PDF"
+  "collaboration": {
+    "title": "Colaboración Global",
+    "description": "Fomentando asociaciones con partes interesadas en todo el mundo.",
+    "details": "La colaboración global es esencial para aprovechar la experiencia colectiva de nuestros socios internacionales. Al trabajar estrechamente con las partes interesadas globales, los organismos reguladores y las comunidades científicas, nos esforzamos por construir un marco cohesivo e innovador que beneficie a todas las partes involucradas. Este espíritu de asociación asegura que compartamos conocimientos, armonicemos las mejores prácticas y abordemos conjuntamente los desafíos de la minería de los fondos marinos."
   }
+},
+"download": {
+  "title": "Descargar el Plan Estratégico",
+  "description": "Acceda al documento completo del Plan Estratégico de la ISA y explore los objetivos clave, regulaciones e iniciativas que están dando forma al futuro de la minería de los fondos marinos.",
+  "button": "Ver y Descargar PDF"
+}
 },
 
 "miningCode": {
+"hero": {
+  "title": "El Código de Minería",
+  "subtitle": "Un conjunto completo de normas, reglamentos y procedimientos para la exploración y explotación sostenible de minerales marinos."
+},
+"about": {
+  "title": "Acerca del Código de Minería",
+  "description": "El \"Código de Minería\" se refiere al marco completo emitido por la Autoridad Internacional de los Fondos Marinos para regular la prospección, exploración y explotación de minerales marinos en la Zona internacional de los fondos marinos. Abarca reglamentos, recomendaciones y procedimientos diseñados para garantizar que las actividades de los fondos marinos se realicen de manera responsable y beneficien a toda la humanidad."
+},
+"features": {
+  "polymetallic": {
+    "title": "Nódulos Polimetálicos",
+    "description": "Regulaciones para la exploración de nódulos ricos en níquel, cobre, cobalto y manganeso."
+  },
+  "sulphides": {
+    "title": "Sulfuros Polimetálicos",
+    "description": "Orientación sobre la exploración sostenible de sulfuros masivos del fondo marino."
+  },
+  "cobalt": {
+    "title": "Cortezas Ricas en Cobalto",
+    "description": "Regulaciones para cortezas que contienen cobalto, hierro y otros metales."
+  }
+},
+"details": {
+  "title": "Marco Regulatorio",
+  "description1": "El Código de Minería evoluciona continuamente para abordar nuevas tecnologías y consideraciones ambientales. Está complementado por recomendaciones de la Comisión Jurídica y Técnica, asegurando que la mejor información científica y técnica disponible se integre en las regulaciones.",
+  "description2": "La ISA también trabaja en <strong>proyectos de reglamentos de explotación</strong>, comúnmente conocidos como el \"Código de Minería\", que describen las responsabilidades de los contratistas y los Estados que los patrocinan, las medidas de protección ambiental y las estructuras de pago financiero."
+},
+"cta": {
+  "title": "Explore el Código Más a Fondo",
+  "description": "Conozca cómo el Código de Minería fomenta la gestión sostenible de los recursos de los fondos marinos, promueve la cooperación internacional y equilibra el desarrollo económico con la protección del medio ambiente marino.",
+  "button": "Contáctenos"
+}
+},
+
+"mission": {
+"title": "Nuestra Misión",
+"subtitle": "En ISA DeepData, aprovechamos el poder de los datos de aguas profundas para impulsar la innovación marina sostenible.",
+"description": "Descubra los elementos centrales que impulsan nuestro compromiso con la gestión sostenible e innovadora de datos marinos.",
+"keyObjectives": {
+  "title": "Pilares Clave de Nuestra Misión",
+  "objective1": {
+    "title": "Sostenibilidad",
+    "description": "Promover la gestión responsable y sostenible de los recursos de los fondos marinos."
+  },
+  "objective2": {
+    "title": "Protección Marina",
+    "description": "Apoyar iniciativas que salvaguarden y preserven los ecosistemas marinos."
+  },
+  "objective3": {
+    "title": "Acceso Abierto a Datos",
+    "description": "Proporcionar datos de investigación de aguas profundas transparentes y de alta calidad para la toma de decisiones informadas."
+  },
+  "objective4": {
+    "title": "Colaboración Global",
+    "description": "Fomentar la cooperación entre los estados miembros y las instituciones de investigación de todo el mundo."
+  }
+},
+"impact": {
+  "title": "Impulsando la Innovación e Impacto",
+  "description1": "Nuestra plataforma no solo descifra datos marinos complejos, sino que también genera soluciones innovadoras que transforman la industria marina. Al integrar análisis avanzados con prácticas sostenibles, ISA DeepData permite descubrimientos revolucionarios y potencia la toma de decisiones informadas.",
+  "description2": "Nos asociamos con expertos globales para garantizar que cada conocimiento contribuya a un ecosistema oceánico más saludable y sostenible."
+}
+},
+
+
+"terms": {
+  "title": "Términos y Condiciones",
+  "subtitle": "Sitio Web de la Autoridad Internacional de los Fondos Marinos",
+  "toc": {
+    "disclaimers": "Descargos de Responsabilidad",
+    "immunities": "Preservación de Inmunidades",
+    "general": "General",
+    "amendments": "Notificación de Enmiendas"
+  },
+  "overview": {
+    "title": "Visión General",
+    "paragraph1": "El usuario de este sitio web constituye acuerdo con los siguientes términos y condiciones. La Autoridad Internacional de los Fondos Marinos (ISA) mantiene este sitio web (el \"Sitio\") como cortesía para aquellos que puedan elegir acceder a él (\"Usuarios\"). La información presentada es solo para fines informativos.",
+    "paragraph2": "ISA otorga permiso a los Usuarios para visitar el Sitio y descargar, copiar e imprimir la información, documentos y materiales (colectivamente, \"Materiales\") para el uso personal y no comercial del Usuario, sujeto a restricciones más específicas que puedan aplicarse."
+  },
+  "disclaimers": {
+    "title": "Descargos de Responsabilidad",
+    "paragraph1": "Los materiales proporcionados en el Sitio se proporcionan \"tal cual\", sin garantía de ningún tipo, ya sea expresa o implícita. ISA no hace ninguna garantía o representación en cuanto a la exactitud o integridad de dichos Materiales.",
+    "paragraph2": "Bajo ninguna circunstancia ISA será responsable por cualquier pérdida, daño, responsabilidad o gasto incurrido o sufrido que se afirme que resultó del uso del Sitio, incluido, sin limitación, cualquier falla, error, omisión, interrupción o retraso."
+  },
+  "immunities": {
+    "title": "Preservación de Inmunidades",
+    "paragraph1": "Nada de lo aquí contenido constituirá o se considerará una limitación o una renuncia a los privilegios e inmunidades de ISA, que están específicamente reservados."
+  },
+  "general": {
+    "title": "General",
+    "paragraph1": "ISA se reserva su derecho exclusivo a su sola discreción para alterar, limitar o descontinuar el Sitio o cualquier Material en cualquier aspecto. ISA no tendrá obligación de tomar en consideración las necesidades de ningún Usuario en relación con ello.",
+    "paragraph2": "ISA se reserva el derecho de denegar a su sola discreción el acceso de cualquier usuario a este Sitio o cualquier parte del mismo sin previo aviso. Ninguna renuncia por parte de ISA a cualquier disposición de estos Términos y Condiciones será vinculante excepto según lo establecido por escrito y firmado por su representante debidamente autorizado."
+  },
+  "amendments": {
+    "title": "Notificación de Enmiendas",
+    "paragraph1": "ISA se reserva el derecho de modificar esta política a su propia discreción. Si no está de acuerdo con dichas modificaciones, debe interrumpir inmediatamente el uso del Sitio."
+  }
+},
+
+"marineProtection": {
   "hero": {
-    "title": "El Código de Minería",
-    "subtitle": "Un conjunto completo de normas, reglamentos y procedimientos para la exploración y explotación sostenible de minerales marinos."
+    "title": "Protección del Medio Ambiente Marino",
+    "subtitle": "Preservando los ecosistemas oceánicos para un futuro sostenible."
   },
   "about": {
-    "title": "Acerca del Código de Minería",
-    "description": "El \"Código de Minería\" se refiere al marco completo emitido por la Autoridad Internacional de los Fondos Marinos para regular la prospección, exploración y explotación de minerales marinos en la Zona internacional de los fondos marinos. Abarca reglamentos, recomendaciones y procedimientos diseñados para garantizar que las actividades de los fondos marinos se realicen de manera responsable y beneficien a toda la humanidad."
+    "title": "Nuestro Compromiso con la Conservación Marina",
+    "description": "La Autoridad Internacional de los Fondos Marinos está dedicada a garantizar que todas las actividades en los fondos marinos profundos se lleven a cabo con el máximo respeto por el medio ambiente marino. Nuestras políticas y prácticas están diseñadas para proteger ecosistemas sensibles, preservar la biodiversidad y promover el uso sostenible de los recursos marinos.",
+    "imageAlt": "Medio Ambiente Marino"
   },
   "features": {
+    "conservation": {
+      "title": "Medidas de Conservación",
+      "description": "Implementación de medidas robustas para salvaguardar los hábitats marinos."
+    },
+    "monitoring": {
+      "title": "Monitoreo Ambiental",
+      "description": "Utilización de tecnología avanzada para monitorear la salud del océano en tiempo real."
+    },
+    "research": {
+      "title": "Investigación Científica",
+      "description": "Apoyo a iniciativas de investigación para comprender y mitigar los impactos en los ecosistemas marinos."
+    }
+  },
+  "cta": {
+    "title": "Únase a Nuestros Esfuerzos de Conservación",
+    "description": "Descubra cómo las iniciativas de la ISA protegen el medio ambiente marino y aprenda cómo puede contribuir a un futuro sostenible para nuestros océanos.",
+    "button": "Contáctenos"
+  }
+},
+
+"explorationContracts": {
+  "hero": {
+    "title": "Contratos de Exploración",
+    "subtitle": "Permitiendo la exploración sostenible y transparente de los fondos marinos para el beneficio de toda la humanidad",
+    "browseButton": "Explorar Contratos",
+    "learnMoreButton": "Más Información"
+  },
+  "stats": {
+    "activeContracts": "Contratos Activos",
+    "sponsoringStates": "Estados Patrocinadores",
+    "area": "km² de Área"
+  },
+  "about": {
+    "title": "Acerca de los Contratos de Exploración",
+    "description": "La Autoridad Internacional de los Fondos Marinos otorga contratos para la exploración de recursos minerales en la Zona internacional de los fondos marinos. Estos acuerdos legalmente vinculantes describen los derechos y obligaciones de los contratistas, asegurando que las actividades de exploración cumplan con las salvaguardias ambientales, los requisitos de informes y el principio general del patrimonio común de la humanidad.",
+    "imageAlt": "Barco de exploración en el océano",
+    "features": {
+      "legal": {
+        "title": "Marco Legal",
+        "description": "Cada contrato opera bajo reglas estrictas para mantener la transparencia y la responsabilidad."
+      },
+      "environmental": {
+        "title": "Salvaguardias Ambientales",
+        "description": "Los contratistas deben seguir las mejores prácticas para proteger los ecosistemas marinos."
+      },
+      "research": {
+        "title": "Investigación y Compartir Datos",
+        "description": "Promover la investigación científica y el intercambio de conocimientos para avanzar en la exploración de los fondos marinos."
+      }
+    }
+  },
+  "typesSection": {
+    "title": "Tipos de Contratos de Exploración",
+    "viewDetails": "Ver Detalles"
+  },
+  "types": {
     "polymetallic": {
       "title": "Nódulos Polimetálicos",
-      "description": "Regulaciones para la exploración de nódulos ricos en níquel, cobre, cobalto y manganeso."
+      "description": "Contratos para la exploración de nódulos polimetálicos en los fondos marinos"
     },
     "sulphides": {
       "title": "Sulfuros Polimetálicos",
-      "description": "Orientación sobre la exploración sostenible de sulfuros masivos del fondo marino."
+      "description": "Contratos para la exploración de sulfuros polimetálicos en fuentes hidrotermales"
     },
     "cobalt": {
-      "title": "Cortezas Ricas en Cobalto",
-      "description": "Regulaciones para cortezas que contienen cobalto, hierro y otros metales."
+      "title": "Costras Ricas en Cobalto",
+      "description": "Contratos para la exploración de costras de ferromanganeso ricas en cobalto en montañas submarinas"
     }
   },
   "details": {
-    "title": "Marco Regulatorio",
-    "description1": "El Código de Minería evoluciona continuamente para abordar nuevas tecnologías y consideraciones ambientales. Está complementado por recomendaciones de la Comisión Jurídica y Técnica, asegurando que la mejor información científica y técnica disponible se integre en las regulaciones.",
-    "description2": "La ISA también trabaja en <strong>proyectos de reglamentos de explotación</strong>, comúnmente conocidos como el \"Código de Minería\", que describen las responsabilidades de los contratistas y los Estados que los patrocinan, las medidas de protección ambiental y las estructuras de pago financiero."
+    "title": "Contratistas y Estados Patrocinadores",
+    "paragraph1": "Los contratos de exploración se otorgan típicamente a entidades patrocinadas por un Estado Parte de la Convención de las Naciones Unidas sobre el Derecho del Mar. Estos Estados patrocinadores tienen la responsabilidad de garantizar que los contratistas cumplan con las regulaciones y mantengan las obligaciones ambientales y financieras.",
+    "paragraph2": "La ISA revisa regularmente el desempeño de los contratistas, requiriendo informes anuales detallados sobre las actividades de exploración, estudios de referencia ambiental y cualquier impacto potencial en el medio ambiente marino.",
+    "requirements": {
+      "title": "Requisitos Clave para Contratistas:",
+      "item1": "Informes anuales de actividad",
+      "item2": "Monitoreo ambiental",
+      "item3": "Garantías financieras",
+      "item4": "Compromisos de transferencia de tecnología",
+      "item5": "Cumplimiento con las regulaciones de la ISA"
+    }
+  },
+  "map": {
+    "title": "Áreas de Exploración",
+    "description": "Vea la distribución geográfica de los contratos de exploración actuales alrededor del mundo.",
+    "placeholder": "Mapa Interactivo de Áreas de Exploración",
+    "viewFullMapButton": "Ver Mapa Completo"
   },
   "cta": {
-    "title": "Explore el Código Más a Fondo",
-    "description": "Conozca cómo el Código de Minería fomenta la gestión sostenible de los recursos de los fondos marinos, promueve la cooperación internacional y equilibra el desarrollo económico con la protección del medio ambiente marino.",
+    "title": "Aprenda Más Sobre los Contratos de Exploración",
+    "description": "Descubra el marco, las obligaciones y las oportunidades asociadas con los contratos de exploración, y descubra cómo la ISA trabaja para equilibrar el desarrollo de recursos con la protección ambiental.",
+    "contactButton": "Contáctenos",
+    "resourcesButton": "Descargar Recursos"
+  }
+},
+
+"workshops": {
+  "hero": {
+    "title": "Talleres y Webinars",
+    "subtitle": "Expandiendo el conocimiento y fomentando la colaboración a través de eventos interactivos."
+  },
+  "about": {
+    "title": "Participar, Aprender e Innovar",
+    "description": "Los Talleres y Webinars de la ISA reúnen a expertos, investigadores y responsables políticos para discutir los últimos avances en la exploración de los fondos marinos profundos y la protección del medio ambiente marino. Estos eventos tienen como objetivo promover el desarrollo de capacidades, el intercambio de conocimientos y soluciones innovadoras para la gestión sostenible de los recursos oceánicos.",
+    "imageAlt": "Talleres de la ISA",
+    "features": {
+      "capacity": {
+        "title": "Desarrollo de Capacidades",
+        "description": "Sesiones de formación práctica para mejorar habilidades y experiencia."
+      },
+      "knowledge": {
+        "title": "Compartir Conocimientos",
+        "description": "Intercambiar ideas y mejores prácticas con partes interesadas globales."
+      },
+      "networking": {
+        "title": "Networking",
+        "description": "Conectar con profesionales, investigadores y líderes de la industria."
+      }
+    }
+  },
+  "details": {
+    "title": "Eventos Próximos y Pasados",
+    "description": "Manténgase informado sobre próximos talleres y webinars sobre temas que van desde avances en tecnología marina hasta actualizaciones regulatorias. Nuestra biblioteca de eventos pasados ofrece sesiones grabadas y materiales para el aprendizaje continuo y referencia.",
+    "featuredTopics": {
+      "label": "Temas Destacados:",
+      "topics": "Investigación de ecosistemas de aguas profundas, evaluaciones de impacto ambiental, métodos de evaluación de recursos, y más."
+    }
+  },
+  "cta": {
+    "title": "Únase a la Conversación",
+    "description": "Inscríbase en nuestro próximo taller o webinar para aprender de expertos líderes y contribuir a dar forma al futuro de la gobernanza oceánica.",
     "button": "Contáctenos"
   }
 }
 
-  }
+
+
+
+
+
+}

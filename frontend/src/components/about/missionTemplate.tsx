@@ -1,6 +1,10 @@
 import React from "react";
 
-export default function MissionTemplate() {
+interface MissionTemplateProps {
+  t: (key: string) => string;
+}
+
+export default function MissionTemplate({ t }: MissionTemplateProps) {
   return (
     <>
       {/* Hero Section med bakgrunnsbilde og gradient overlay */}
@@ -11,9 +15,9 @@ export default function MissionTemplate() {
         }}
       >
         <div className="container position-relative" style={{ zIndex: 2 }}>
-          <h1 className="display-4 fw-bold mb-3">Our Mission</h1>
+          <h1 className="display-4 fw-bold mb-3">{t('mission.title')}</h1>
           <p className="lead fs-5">
-            At ISA DeepData, we harness the power of deep-sea data to drive sustainable marine innovation.
+            {t('mission.subtitle')}
           </p>
         </div>
         <div
@@ -27,9 +31,9 @@ export default function MissionTemplate() {
         <div className="container">
           <div className="row text-center mb-5">
             <div className="col">
-              <h2 className="fw-bold">Key Pillars of Our Mission</h2>
+              <h2 className="fw-bold">{t('mission.keyObjectives.title')}</h2>
               <p className="text-muted">
-                Discover the core elements that drive our commitment to sustainable and innovative marine data management.
+                {t('mission.description')}
               </p>
             </div>
           </div>
@@ -42,9 +46,9 @@ export default function MissionTemplate() {
               >
                 <div className="card-body text-center">
                   <i className="bi bi-water display-4 text-primary mb-3"></i>
-                  <h5 className="card-title">Sustainability</h5>
+                  <h5 className="card-title">{t('mission.keyObjectives.objective1.title')}</h5>
                   <p className="card-text">
-                    Promote responsible and sustainable management of seabed resources.
+                    {t('mission.keyObjectives.objective1.description')}
                   </p>
                 </div>
               </div>
@@ -57,9 +61,9 @@ export default function MissionTemplate() {
               >
                 <div className="card-body text-center">
                   <i className="bi bi-shield-lock-fill display-4 text-primary mb-3"></i>
-                  <h5 className="card-title">Marine Protection</h5>
+                  <h5 className="card-title">{t('mission.keyObjectives.objective2.title')}</h5>
                   <p className="card-text">
-                    Support initiatives that safeguard and preserve marine ecosystems.
+                    {t('mission.keyObjectives.objective2.description')}
                   </p>
                 </div>
               </div>
@@ -72,9 +76,9 @@ export default function MissionTemplate() {
               >
                 <div className="card-body text-center">
                   <i className="bi bi-bar-chart-line display-4 text-primary mb-3"></i>
-                  <h5 className="card-title">Open Data Access</h5>
+                  <h5 className="card-title">{t('mission.keyObjectives.objective3.title')}</h5>
                   <p className="card-text">
-                    Provide transparent, high-quality deep-sea research data for informed decision-making.
+                    {t('mission.keyObjectives.objective3.description')}
                   </p>
                 </div>
               </div>
@@ -87,9 +91,9 @@ export default function MissionTemplate() {
               >
                 <div className="card-body text-center">
                   <i className="bi bi-globe display-4 text-primary mb-3"></i>
-                  <h5 className="card-title">Global Collaboration</h5>
+                  <h5 className="card-title">{t('mission.keyObjectives.objective4.title')}</h5>
                   <p className="card-text">
-                    Foster cooperation among member states and research institutions worldwide.
+                    {t('mission.keyObjectives.objective4.description')}
                   </p>
                 </div>
               </div>
@@ -110,14 +114,12 @@ export default function MissionTemplate() {
               />
             </div>
             <div className="col-md-6">
-              <h3 className="fw-bold mb-3">Driving Innovation & Impact</h3>
+              <h3 className="fw-bold mb-3">{t('mission.impact.title')}</h3>
               <p className="text-muted">
-                Our platform not only deciphers complex marine data but also sparks innovative solutions
-                that transform the marine industry. By integrating advanced analytics with sustainable practices,
-                ISA DeepData enables groundbreaking discoveries and empowers informed decision-making.
+                {t('mission.impact.description1')}
               </p>
               <p className="text-muted">
-                We partner with global experts to ensure that every insight contributes to a healthier and more sustainable ocean ecosystem.
+                {t('mission.impact.description2')}
               </p>
             </div>
           </div>
