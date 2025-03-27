@@ -351,12 +351,21 @@
     "description": "Sign up for our next workshop or webinar to learn from leading experts and contribute to shaping the future of ocean governance.",
     "button": "Contact Us"
   }
+},
+
+"documents": {
+  "title": "User Manual",
+  "userManual": {
+    "description": "The ISA DeepData User Manual provides detailed instructions and guidance on how to effectively use all features of the platform. It includes step-by-step tutorials, explanations of data visualization tools, and best practices for data exploration and analysis.",
+    "openManual": "Open User Manual (PDF)",
+    "contents": {
+      "title": "In this manual you'll find:",
+      "item1": "Platform navigation and interface overview",
+      "item2": "Data search and filtering techniques",
+      "item3": "Interactive map tools and features",
+      "item4": "Downloading and exporting data",
+      "item5": "Advanced analysis and visualization options"
+    }
+  }
 }
-
-
-
-
-
-
-
 }
