@@ -26,33 +26,36 @@ export default function Documents() {
                     </ul>
                 </div>
                 
-                {/* Knapp med dokument-ikon */}
-                <div className="flex justify-center mt-4">
-                
-                    <a
-                    
-                        href="https://www.isa.org.jm/wp-content/uploads/2022/04/UserManual_v1.1_20181119.pdf"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center bg-blue-50 hover:bg-blue-100 text-black py-1 px-2.5 rounded text-sm transition-colors duration-300 no-underline"
-                    >
-                        Open User Manual
-                        <svg 
-                            xmlns="http://www.w3.org/2000/svg" 
-                            className="h-4 w-4 mr-1.5" 
-                            fill="none" 
-                            viewBox="0 0 24 24" 
-                            stroke="currentColor"
+                {/* Document link with text above icon, aligned left */}
+                <div className="flex justify-start mt-4">
+                    <div className="inline-block text-left">
+                        <a
+                            href="https://www.isa.org.jm/wp-content/uploads/2022/04/UserManual_v1.1_20181119.pdf"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-block bg-blue-50 hover:bg-blue-100 text-black py-2 px-4 rounded text-sm transition-colors duration-300 no-underline"
                         >
-                            <path 
-                                strokeLinecap="round" 
-                                strokeLinejoin="round" 
-                                strokeWidth={2} 
-                                d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" 
-                            />
-                        </svg>
-                        
-                    </a>
+                            <div className="block text-left mb-1">Open User Manual</div>
+                            <div className="flex justify-start">
+                                <svg 
+                                    width="500" 
+                                    height="500" 
+                                    viewBox="0 0 24 24" 
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    style={{ minWidth: '10px', minHeight: '10px' }}
+                                >
+                                    <path 
+                                        d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" 
+                                        fill="none"
+                                        stroke="currentColor"
+                                        strokeLinecap="round" 
+                                        strokeLinejoin="round" 
+                                        strokeWidth="2"
+                                    />
+                                </svg>
+                            </div>
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
