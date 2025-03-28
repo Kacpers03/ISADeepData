@@ -7,136 +7,222 @@
     backdrop-filter: blur(10px);
     border-radius: 12px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-    overflow: hidden;
-    padding: 20px;
+    overflow: visible;
+    position: relative; /* Important for z-index layering */
+    padding: 32px;
     margin: 0; /* REMOVE auto-centering */
     margin-bottom: 50px;
 }
 
+
+/* NEW */ 
+
+.fileTableContainer {
+    width: 110%;
+    max-width: none;
+    margin: 0;
+    padding: 20px;
+    overflow: visible;       /* ✅ allow tooltip overflow */
+    position: relative;
+  } 
+
+.pageTitle {
+    font-size: 24px;
+    color: #1e293b;
+    margin-bottom: 25px;
+    text-align: center;
+    font-weight: 600;
+}
+
+.tableContainer {
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+}
+
 .table {
     width: 100%;
-    border-collapse: collapse; /* Fix spacing issues */
+    border-collapse: separate;
+    border-spacing: 0;
 }
 
-.tableHead th {
-    background: #374151;
-    color: white;
-    text-align: left;
-    padding: 12px 15px;
-    border-bottom: 2px solid #4b5563;
+.tableRow {
+    transition: background 0.3s ease;
 }
 
-.tableRow td {
-    padding: 12px 15px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+.tableRow:nth-child(even) {
+    background-color: #f8fafc;
 }
 
 .tableRow:hover {
-    background: rgba(255, 255, 255, 0.2);
+    background-color: #f1f5f9;
 }
 
-/* Align Checkboxes Properly */
-.checkboxWrapper {
+.tableRow td {
+    padding: 15px 20px;
+    border-bottom: 1px solid #e2e8f0;
+    font-size: 14px;
+}
+
+.fileLinkContainer {
     display: flex;
     align-items: center;
+    gap: 10px;
 }
 
-/* Fix File Link Visibility */
 .fileLink {
-    font-weight: bold;
-    color: #000000; 
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #2563eb;
     text-decoration: none;
-    transition: color 0.2s ease-in-out;
+    font-weight: 500;
+    transition: color 0.3s ease;
 }
 
 .fileLink:hover {
-    color: #2e4ac7;
+    color: #1d4ed8;
+    text-decoration: underline;
 }
 
-/* Improve Disabled Button */
-.downloadButton {
-    margin-top: 20px;
-    padding: 12px 24px;
-    background: #2563eb;
-    color: white;
-    font-size: 16px;
-    font-weight: bold;
-    border-radius: 8px;
-    border: none;
-    cursor: pointer;
-    transition: all 0.3s ease-in-out;
+.downloadIcon {
+    color: #2563eb;
 }
 
-.downloadButton:hover {
-    background: #3b82f6;
-}
-
-.downloadButton:disabled {
-    background: rgba(255, 255, 255, 0.2); /* Lighter to match the design */
-    color: rgba(255, 255, 255, 0.6);
-    cursor: not-allowed;
-    border: 1px solid rgba(255, 255, 255, 0.3);
+.tooltipContainer {
+    position: relative;
+    display: inline-block;
 }
 
 .infoIcon {
-    position: relative;
-    display: inline-block;
+    color: #2563eb;
     cursor: pointer;
-    font-size: 18px;
-    border-radius: 50%;
-    width: 20px;
-    height: 20px;
-    text-align: center;
-    line-height: 20px;
-    background-color: #007bff;
+    transition: color 0.3s ease;
+}
+
+.infoIcon:hover {
+    color: #1d4ed8;
+}
+
+.tooltip {
+    position: absolute;
+    z-index: 1000;
+    bottom: 100%;
+    transform: translateX(-100%);
+    background-color: #1e293b;
     color: white;
-    font-weight: bold;
-  }
-  
-  .tooltip {
-    visibility: hidden;
-    width: 300px; /* Make it a larger square */
-    background-color: rgba(0, 0, 0, 0.85);
-    color: #fff;
     text-align: left;
-    padding: 15px;
+    padding: 10px;
     border-radius: 8px;
-    position: fixed; /* This allows it to float outside the table */
-    z-index: 1000; /* Ensures it's above everything */
+    width: 250px;
     opacity: 0;
-    transition: opacity 0.3s ease-in-out;
-    pointer-events: none; /* Prevents interfering with other elements */
-  }
-  
-  .infoIcon:hover .tooltip {
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.tooltipContainer:hover .tooltip {
     visibility: visible;
     opacity: 1;
-    top: 50px; /* Adjusts position relative to viewport */
-    left: 50%; /* Centers it horizontally */
-    transform: translateX(-50%);
-  }
+}
 
-  .AllComponents {
+.actionButton {
+    background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 6px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.3s ease;
     display: flex;
-    flex-direction: row;
-    align-items: flex-start;
-    width: 100%;
-    max-width: 100%;
-    overflow-x: hidden; /* ✨ This is the real blocker */
-    box-sizing: border-box;
+    align-items: center;
+    gap: 5px;
+}
+
+.actionButton:hover {
+    background: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(37, 99, 235, 0.3);
+}
+
+.pagination {
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.paginationControls {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.paginationButton {
+    background-color: #2563eb;
+    color: white;
+    border: none;
+    padding: 8px;
+    border-radius: 6px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    transition: background-color 0.3s ease;
+}
+
+.paginationButton:disabled {
+    background-color: #93c5fd;
+    cursor: not-allowed;
+}
+
+.pageInfo {
+    font-size: 14px;
+    color: #475569;
+    margin: 0 10px;
+}
+
+.pageSizeSelect {
+    padding: 8px;
+    border-radius: 6px;
+    border: 1px solid #cbd5e1;
+    background-color: white;
+    font-size: 14px;
+}
+
+.pageWrapper {
+    padding: 20px;
   }
   
-
-.table tr:nth-child(even) {
-    background-color: #f3f4f6; /* Light gray */
-}
-
-.table tr:nth-child(odd) {
-    background-color: #ffffff; /* White */
-}
-
-
-
-
-   
+  .mainContentRow {
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
   
+  /* Optional, override the default tableContainer style when used in layout */
+  .tableColumn {
+    flex: 3;
+    min-width: 0;
+  }
+  
+  .headerSection {
+    margin-bottom: 30px;
+    text-align: center;
+  }
+  
+  .pageTitle {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #1e293b;
+    margin-bottom: 10px;
+  }
+  
+  .pageDescription {
+    font-size: 1rem;
+    color: #475569;
+    max-width: 700px;
+    margin: 0 auto;
+  }

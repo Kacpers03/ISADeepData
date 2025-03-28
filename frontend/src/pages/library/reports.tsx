@@ -87,24 +87,32 @@ export default function FilesPage() {
   };
 
   return (
-    <div className={stylestable.AllComponents}>
-      {/* Filter Sidebar */}
-      <div className={stylesfilter.filterContainer}>
-        <FileFilter
-          filters={filters}
-          onFilterChange={handleFilterChange}
-          onResetFilters={handleResetFilters}
-          contractors={contractors}
-          countries={countries}
-          years={years}
-          themes={themes}
-          currentFilteredItems={filteredItems}
-        />
-      </div>
-
-      {/* File Table */}
-      <div className={stylestable.tableContainer}>
-        <FileTable filters={filters} setFilteredItems={setFilteredItems} />
+    <div className={stylestable.pageWrapper}>
+      <div className={stylestable.headerSection}>
+            <h1 className={stylestable.pageTitle}>File Management Library</h1>
+            <p className={stylestable.pageDescription}>
+              Browse and download official documents from contractors. Use filters to narrow down files by country, contractor, theme, or year.
+            </p>
+          </div>
+      <div className={stylestable.mainContentRow}>
+        {/* Filter Sidebar */}
+        <div className={stylesfilter.filterContainer}>
+          <FileFilter
+            filters={filters}
+            onFilterChange={handleFilterChange}
+            onResetFilters={handleResetFilters}
+            contractors={contractors}
+            countries={countries}
+            years={years}
+            themes={themes}
+            currentFilteredItems={filteredItems}
+          />
+        </div>
+  
+        {/* File Table */}
+        <div className={stylestable.tableColumn}>
+          <FileTable filters={filters} setFilteredItems={setFilteredItems} />
+        </div>
       </div>
     </div>
   );
