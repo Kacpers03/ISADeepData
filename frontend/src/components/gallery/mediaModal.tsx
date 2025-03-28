@@ -202,7 +202,7 @@ const MediaModal: React.FC<MediaModalProps> = ({ media, onClose }) => {
                   rel="noopener noreferrer"
                   onClick={(e) => e.stopPropagation()}
                 >
-                  View on Map
+                  Show Map
                 </a>
               )}
             </div>

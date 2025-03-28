@@ -508,7 +508,7 @@ const ImprovedGalleryFilter: React.FC<GalleryFilterProps> = ({
           >
             {isDownloading
               ? "Preparing Download..."
-              : `Download All (${currentFilteredItems.length})`}
+              : `Download CSV (${currentFilteredItems.length})`}
           </button>
         </div>
       </div>
