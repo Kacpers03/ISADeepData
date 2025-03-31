@@ -5,7 +5,7 @@ import { useLanguage } from "../contexts/languageContext";
 
 export default function Footer() {
   const { t } = useLanguage();
-  
+
   return (
     <footer
       className="text-white"
@@ -24,16 +24,33 @@ export default function Footer() {
                 paddingBottom: "5px",
               }}
             >
-              {t('footer.contact')}
+              {t("footer.contact")}
             </h6>
             <p className="mt-3">
-              <i className="fas fa-home mr-3"></i> {t('footer.address')}
+              <a
+                href="https://maps.google.com/?q={'4+-+20+Port+Royal+Street,+Kingston,+Jamaica'}"
+                className="text-white text-decoration-none"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <i className="fas fa-home mr-3"></i> {t("footer.address")}
+              </a>
             </p>
             <p>
-              <i className="fas fa-envelope mr-3"></i> {t('footer.email')}
+              <a
+                href={`mailto:${t("footer.email")}`}
+                className="text-white text-decoration-none"
+              >
+                <i className="fas fa-envelope mr-3"></i> {t("footer.email")}
+              </a>
             </p>
             <p>
-              <i className="fas fa-phone mr-3"></i> {t('footer.phone')}
+              <a
+                href={`tel:${t("footer.phone")}`}
+                className="text-white text-decoration-none"
+              >
+                <i className="fas fa-phone mr-3"></i> {t("footer.phone")}
+              </a>
             </p>
           </div>
 
@@ -47,14 +64,14 @@ export default function Footer() {
                 paddingBottom: "5px",
               }}
             >
-              {t('footer.topics')}
+              {t("footer.topics")}
             </h6>
             <p className="mt-3">
               <Link
                 href="/topics/StrategicPlan"
                 className="text-white text-decoration-none"
               >
-                {t('footer.strategicPlan')}
+                {t("footer.strategicPlan")}
               </Link>
             </p>
             <p>
@@ -62,7 +79,7 @@ export default function Footer() {
                 href="/topics/MiningCode"
                 className="text-white text-decoration-none"
               >
-                {t('footer.miningCode')}
+                {t("footer.miningCode")}
               </Link>
             </p>
             <p>
@@ -70,7 +87,7 @@ export default function Footer() {
                 href="/topics/MarineProtection"
                 className="text-white text-decoration-none"
               >
-                {t('footer.marineProtection')}
+                {t("footer.marineProtection")}
               </Link>
             </p>
             <p>
@@ -78,7 +95,7 @@ export default function Footer() {
                 href="/topics/ExplorationContracts"
                 className="text-white text-decoration-none"
               >
-                {t('footer.explorationContracts')}
+                {t("footer.explorationContracts")}
               </Link>
             </p>
 
@@ -87,7 +104,7 @@ export default function Footer() {
                 href="/topics/Workshops"
                 className="text-white text-decoration-none"
               >
-                {t('footer.workshops')}
+                {t("footer.workshops")}
               </Link>
             </p>
           </div>
@@ -102,14 +119,14 @@ export default function Footer() {
                 paddingBottom: "5px",
               }}
             >
-              {t('footer.information')}
+              {t("footer.information")}
             </h6>
             <p className="mt-3">
               <Link
                 href="/information/terms"
                 className="text-white text-decoration-none"
               >
-                {t('footer.termsOfUse')}
+                {t("footer.termsOfUse")}
               </Link>
             </p>
           </div>
@@ -151,7 +168,7 @@ export default function Footer() {
         <div className="row d-flex align-items-center">
           {/* Left side */}
           <div className="col-md-7 col-lg-8 text-center text-md-start">
-            <div className="p-3">{t('footer.copyright')}</div>
+            <div className="p-3">{t("footer.copyright")}</div>
           </div>
           {/* Right side: Social icons */}
           <div className="col-md-5 col-lg-4 ml-lg-0 text-center text-md-end">

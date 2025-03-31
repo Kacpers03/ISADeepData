@@ -15,7 +15,6 @@ export default function Navigation() {
               title={t('nav.about')}
               items={[
                 { text: t('nav.aboutSubItems.about'), link: "/about/about" },
-                { text: t('nav.aboutSubItems.purpose'), link: "/purpose" },
                 { text: t('nav.aboutSubItems.missions'), link: "/about/mission" },
               ]}
             />
@@ -24,7 +23,6 @@ export default function Navigation() {
               title={t('nav.library')}
               items={[
                 { text: t('nav.librarySubItems.reports'), link: "/library/reports" },
-                { text: t('nav.librarySubItems.publications'), link: "/library/publications" },
                 { text: t('nav.librarySubItems.samples'), link: "/library/samples" },
               ]}
             />
