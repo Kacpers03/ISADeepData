@@ -7,7 +7,7 @@ import { ImprovedFilterPanel } from "../../components/map/filters/filterPanel";
 
 // Dynamically import MapComponent without SSR
 const EnhancedMapComponent = dynamic(
-  () => import("../../components/map/enhancedMapComponent"),
+  () => import("../../components/map/mapComponent"),
   { ssr: false }
 );
 

@@ -32,6 +32,7 @@ import SummaryPanel from "./ui/summaryPanel";
 import CoordinateDisplay from "./ui/coordinateDisplay";
 import ToastNotification from "./ui/toastNotification";
 import LoadingOverlay from "./ui/loadingOverlay";
+import ZoomOutButton from "./ui/zoomOutButton";
 
 const styles = {
   ...baseStyles,
@@ -720,6 +721,10 @@ window.showBlockAnalytics = async (blockId) => {
           popupInfo={popupInfo}
           setPopupInfo={setPopupInfo}
         />
+          <ZoomOutButton 
+    mapRef={mapRef} 
+    resetToDefaultView={true}
+  />
 
         {/* Loading overlay */}
         {(loading || localLoading) && <LoadingOverlay />}

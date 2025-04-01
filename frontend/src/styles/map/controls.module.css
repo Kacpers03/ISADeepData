@@ -366,3 +366,51 @@
     background-color: #cbd5e1;
     cursor: not-allowed;
   }
+  /* Add these to your frontend/src/styles/map/controls.module.css file */
+
+.zoomOutButtonContainer {
+  position: absolute;
+  bottom: 60px;
+  left: 20px;
+  z-index: 10;
+}
+
+.zoomOutButton {
+  background-color: white;
+  border: none;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #334155;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.zoomOutButton:hover {
+  background-color: #f8fafc;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.zoomOutButton:active {
+  transform: translateY(0);
+}
+
+.zoomOutButton svg {
+  flex-shrink: 0;
+}
+
+@media (max-width: 768px) {
+  .zoomOutButton span {
+    display: none;
+  }
+  
+  .zoomOutButton {
+    padding: 10px;
+  }
+}
