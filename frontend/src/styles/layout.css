@@ -105,11 +105,29 @@
 
 /* Footer styling */
 footer {
-  background-color: #4f6d92;
+  background-color: #45526e;
   color: #ffffff;
   padding: 20px;
   text-align: center;
   margin-top: auto;
+}
+
+/* Footer link hover effects - matching navigation style */
+footer a {
+  position: relative;
+  transition: color 0.3s ease;
+}
+
+footer a:hover {
+  color: #6c757d !important;
+}
+
+/* Footer social links hover effect */
+footer .btn-outline-light:hover {
+  background-color: white;
+  color: #45526e;
+  transform: translateY(-3px);
+  transition: all 0.3s ease;
 }
 
 /* HOME PAGE STYLES (i home.module.css) */
@@ -159,7 +177,6 @@ footer {
   font-size: 1.25rem;
   margin-bottom: 2rem;
 }
-
 
 .dropdown-item {
   cursor: pointer;

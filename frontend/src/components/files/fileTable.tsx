@@ -5,12 +5,40 @@ import {
   getSortedRowModel,
   getPaginationRowModel,
   flexRender,
+  ColumnDef,
 } from "@tanstack/react-table";
+import { 
+  Download, 
+  Info, 
+  ChevronLeft, 
+  ChevronRight, 
+  ChevronsLeft, 
+  ChevronsRight 
+} from "lucide-react";
 import styles from "../../styles/files/reports.module.css";
 import { useRouter } from "next/router";
 
-const FileTable = ({ filters, setFilteredItems }) => {
-  const [tableData, setTableData] = useState([]);
+interface FileData {
+  fileName: string;
+  contractor: string;
+  country: string;
+  year: number;
+  theme: string;
+  description: string;
+}
+
+const FileTable: React.FC<{ 
+  filters: {
+    country: string;
+    contractor: string;
+    year: string;
+    theme: string;
+    searchQuery: string;
+  };
+  setFilteredItems?: (items: FileData[]) => void;
+}> = ({ filters, setFilteredItems }) => {
+  const [tableData, setTableData] = useState<FileData[]>([]);
+  const router = useRouter();
 
   useEffect(() => {
     const fetchFiles = async () => {
@@ -19,7 +47,6 @@ const FileTable = ({ filters, setFilteredItems }) => {
         if (!response.ok) throw new Error("Network response was not ok");
 
         const data = await response.json();
-        console.log("Library files response:", data);
         setTableData(data);
       } catch (error) {
         console.error("Error fetching files:", error);
@@ -32,16 +59,19 @@ const FileTable = ({ filters, setFilteredItems }) => {
   const filteredData = useMemo(() => {
     const filtered = tableData.filter((item) => {
       const matchCountry =
-        filters.country === "all" || item.country?.toLowerCase() === filters.country.toLowerCase();
+        filters.country === "all" || 
+        item.country?.toLowerCase() === filters.country.toLowerCase();
 
       const matchContractor =
-        filters.contractor === "all" || item.contractor?.toLowerCase() === filters.contractor.toLowerCase();
+        filters.contractor === "all" || 
+        item.contractor?.toLowerCase() === filters.contractor.toLowerCase();
 
       const matchYear =
         filters.year === "all" || item.year?.toString() === filters.year;
 
       const matchTheme =
-        filters.theme === "all" || item.theme?.toLowerCase() === filters.theme.toLowerCase();
+        filters.theme === "all" || 
+        item.theme?.toLowerCase() === filters.theme.toLowerCase();
 
       const matchSearch =
         !filters.searchQuery ||
@@ -58,32 +88,35 @@ const FileTable = ({ filters, setFilteredItems }) => {
     return filtered;
   }, [filters, tableData]);
 
-  const columns = useMemo(
+  const columns: ColumnDef<FileData>[] = useMemo(
     () => [
       {
         accessorKey: "fileName",
-        header: "File-name",
+        header: "File Name",
         cell: (info) => {
-          const fileUrl = info.getValue();
-          const fileName = fileUrl?.split("/").pop();
+          const fileUrl = info.getValue<string>();
+          const fileName = fileUrl?.split("/").pop() || "Unknown File";
           return (
-            <a
-              href={fileUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              download
-              className={styles.fileLink}
-            >
-              {fileName}
-            </a>
+            <div className={styles.fileLinkContainer}>
+              <a
+                href={fileUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                download
+                className={styles.fileLink}
+              >
+                <Download className={styles.downloadIcon} size={16} />
+                {fileName}
+              </a>
+            </div>
           );
         },
       },
       {
         accessorKey: "contractor",
         header: "Contractor",
-        cell: (info) => <span>{info.getValue() || "Unknown"}</span>,
-      },      
+        cell: (info) => <span>{info.getValue<string>() || "Unknown"}</span>,
+      },
       {
         accessorKey: "country",
         header: "Country",
@@ -97,43 +130,29 @@ const FileTable = ({ filters, setFilteredItems }) => {
         header: "Theme",
       },
       {
-        id: "info",
+        id: "description",
         header: "Description",
         cell: ({ row }) => (
-          <div className={styles.infoIcon}>
-            ⓘ
-            <span className={styles.tooltip}>{row.original.description}</span>
+          <div className={styles.tooltipContainer}>
+            <Info 
+              className={styles.infoIcon} 
+              size={20} 
+            />
+            <span className={styles.tooltip}>
+              {row.original.description || "No description available"}
+            </span>
           </div>
         ),
-      },
-      {
-        id: "moreInfo",
-        header: "",
-        cell: ({ row }) => {
-          const router = useRouter();
-          const handleClick = () => {
-            router.push({
-              pathname: "/library/moreinfo",
-              query: { data: JSON.stringify(row.original) },
-            });
-          };
-
-          return (
-            <button
-              onClick={handleClick}
-              className="border border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white px-2 py-1 rounded"
-            >
-              More Info
-            </button>
-          );
-        },
       },
     ],
     []
   );
 
   const [sorting, setSorting] = useState([]);
-  const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 10 });
+  const [pagination, setPagination] = useState({ 
+    pageIndex: 0, 
+    pageSize: 10 
+  });
 
   const table = useReactTable({
     data: filteredData,
@@ -147,65 +166,99 @@ const FileTable = ({ filters, setFilteredItems }) => {
   });
 
   return (
-    <div className={styles.homeWrapper}>
-      <h1 className={styles.title}>File Management</h1>
-      <div className={styles.tableContainer}>
-        <table className={styles.table}>
-          <thead>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <tr key={headerGroup.id}>
-                {headerGroup.headers.map((column) => (
-                  <th key={column.id} onClick={column.column.getToggleSortingHandler()}>
-                    {flexRender(column.column.columnDef.header, column.getContext())}
-                    {column.column.getIsSorted()
-                      ? column.column.getIsSorted() === "desc"
-                        ? " 🔽"
-                        : " 🔼"
-                      : ""}
-                  </th>
-                ))}
-              </tr>
-            ))}
-          </thead>
-          <tbody>
-            {table.getRowModel().rows.map((row) => (
-              <tr key={row.id}>
-                {row.getVisibleCells().map((cell) => (
-                  <td key={cell.id}>
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </td>
-                ))}
-              </tr>
-            ))}
-          </tbody>
-        </table>
+    <div className={styles.fileTableContainer}>
+        <div className={styles.tableContainer}>
+          <table className={styles.table}>
+            <thead className={styles.tableHead}>
+              {table.getHeaderGroups().map((headerGroup) => (
+                <tr key={headerGroup.id}>
+                  {headerGroup.headers.map((column) => (
+                    <th 
+                      key={column.id} 
+                      onClick={column.column.getToggleSortingHandler()}
+                      className={styles.sortableHeader}
+                    >
+                      {flexRender(column.column.columnDef.header, column.getContext())}
+                      {column.column.getIsSorted() && (
+                        <span className={styles.sortIndicator}>
+                          {column.column.getIsSorted() === "desc" ? " ▼" : " ▲"}
+                        </span>
+                      )}
+                    </th>
+                  ))}
+                </tr>
+              ))}
+            </thead>
+            <tbody>
+                {table.getRowModel().rows.map((row) => (
+                  <tr
+                    key={row.id}
+                    className={styles.tableRow}
+                    onClick={() =>
+                      router.push({
+                        pathname: "/library/moreinfo",
+                        query: { data: JSON.stringify(row.original) },
+                      })
+                    }
+                    style={{ cursor: "pointer" }}
+                  > {row.getVisibleCells().map((cell) => (
+                    <td key={cell.id}>
+                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                    </td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
 
         <div className={styles.pagination}>
-          <button onClick={() => table.firstPage()} disabled={!table.getCanPreviousPage()}>
-            {"<<"}
-          </button>
-          <button onClick={() => table.previousPage()} disabled={!table.getCanPreviousPage()}>
-            {"<"}
-          </button>
-          <button onClick={() => table.nextPage()} disabled={!table.getCanNextPage()}>
-            {">"}
-          </button>
-          <button onClick={() => table.lastPage()} disabled={!table.getCanNextPage()}>
-            {">>"}
-          </button>
-          <select
-            value={table.getState().pagination.pageSize}
-            onChange={(e) => table.setPageSize(Number(e.target.value))}
-          >
-            {[10, 20, 30, 40, 50].map((pageSize) => (
-              <option key={pageSize} value={pageSize}>
-                {pageSize}
-              </option>
-            ))}
-          </select>
+          <div className={styles.paginationControls}>
+            <button 
+              onClick={() => table.setPageIndex(0)} 
+              disabled={!table.getCanPreviousPage()}
+              className={styles.paginationButton}
+            >
+              <ChevronsLeft size={16} />
+            </button>
+            <button 
+              onClick={() => table.previousPage()} 
+              disabled={!table.getCanPreviousPage()}
+              className={styles.paginationButton}
+            >
+              <ChevronLeft size={16} />
+            </button>
+            <span className={styles.pageInfo}>
+              Page {table.getState().pagination.pageIndex + 1} of {table.getPageCount()}
+            </span>
+            <button 
+              onClick={() => table.nextPage()} 
+              disabled={!table.getCanNextPage()}
+              className={styles.paginationButton}
+            >
+              <ChevronRight size={16} />
+            </button>
+            <button 
+              onClick={() => table.setPageIndex(table.getPageCount() - 1)} 
+              disabled={!table.getCanNextPage()}
+              className={styles.paginationButton}
+            >
+              <ChevronsRight size={16} />
+            </button>
+            <select
+              value={table.getState().pagination.pageSize}
+              onChange={(e) => table.setPageSize(Number(e.target.value))}
+              className={styles.pageSizeSelect}
+            >
+              {[5, 10, 20, 30, 50].map((pageSize) => (
+                <option key={pageSize} value={pageSize}>
+                  Show {pageSize}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
       </div>
-    </div>
   );
 };
 

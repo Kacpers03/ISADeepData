@@ -24,21 +24,30 @@ export default function SamplesPage() {
   };
 
   return (
-    <div className={stylesTable.AllComponents}>
-      {/* Sidebar Filter */}
-      <div className={stylesFilter.filterContainer}>
-        <SampleFilter
-          filters={filters}
-          setFilters={applyFilters}
-          visibleColumns={visibleColumns}
-          setVisibleColumns={setVisibleColumns}
-        />
+    <div className={stylesTable.pageWrapper}>
+      <div className={stylesTable.headerSection}>
+        <h1 className={stylesTable.pageTitle}>Sample Management</h1>
+        <p className={stylesTable.pageDescription}>
+          Explore all collected samples and their metadata. Filter by sample type, habitat, matrix, or analysis type.
+        </p>
       </div>
-
-      {/* Table */}
-      <div className={stylesTable.tableContainer}>
-        <SampleTable filters={filters} visibleColumns={visibleColumns} />
+  
+      <div className={stylesTable.mainContentRow}>
+        {/* Sidebar Filter */}
+        <div className={stylesFilter.filterContainer}>
+          <SampleFilter
+            filters={filters}
+            setFilters={applyFilters}
+            visibleColumns={visibleColumns}
+            setVisibleColumns={setVisibleColumns}
+          />
+        </div>
+  
+        {/* Table */}
+        <div className={stylesTable.tableColumn}>
+          <SampleTable filters={filters} visibleColumns={visibleColumns} />
+        </div>
       </div>
     </div>
   );
-}
+};
