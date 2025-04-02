@@ -11,12 +11,23 @@ export default function NavItem({
   const router = useRouter();
 
   const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    // Stopp hendelsen fra å propagere til kart-komponentene
+    e.stopPropagation();
+    
     // Hvis vi er på samme side, tving reload
     if (router.pathname === link) {
       e.preventDefault();
       router.reload();
       return;
+    } else {
+      // Hvis vi er på kartsiden, bruk router
+      if (router.pathname.includes('/map')) {
+        e.preventDefault();
+        router.push(link);
+        return;
+      }
     }
+    
     // Lukker burgermenyen hvis den er åpen (mobil)
     const navbarCollapse = document.getElementById("navbarNav");
     if (navbarCollapse && navbarCollapse.classList.contains("show")) {

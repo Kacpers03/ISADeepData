@@ -191,3 +191,12 @@ footer .btn-outline-light:hover {
 .dropdown-item.fw-bold {
   background-color: #f1f8ff;
 }
+.navbar .dropdown-menu.show {
+  display: block !important;
+  z-index: 10000 !important;
+}
+
+
+.navbar {
+  z-index: 9999 !important;
+}

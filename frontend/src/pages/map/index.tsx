@@ -1,9 +1,11 @@
-import React from "react";
+// frontend/src/pages/map/index.tsx
+import React, { useEffect } from "react";
 import dynamic from "next/dynamic";
 import Head from "next/head";
 import { FilterProvider } from "../../components/map/context/filterContext";
 import styles from "../../styles/map/mapPage.module.css";
 import { ImprovedFilterPanel } from "../../components/map/filters/filterPanel";
+import { useRouter } from "next/router";
 
 // Dynamically import MapComponent without SSR
 const EnhancedMapComponent = dynamic(
@@ -12,6 +14,73 @@ const EnhancedMapComponent = dynamic(
 );
 
 export default function MapPage() {
+  const router = useRouter();
+
+  // Hook for å fikse navigasjonsklikk på kartsiden
+  useEffect(() => {
+    // Legg til global event listener som stopper kartets fangst av klikk på nav-elementer
+    const handleNavbarClicks = (e) => {
+      // Sjekk om klikk er på navbar eller dropdown
+      const isNavbarClick = e.target.closest('.navbar') !== null || 
+                           e.target.classList.contains('dropdown-item') ||
+                           e.target.classList.contains('nav-link');
+      
+      if (isNavbarClick) {
+        // Stopp hendelsespropagering før den når kartkomponenten
+        e.stopPropagation();
+      }
+    };
+
+    // Legg til event listener i capturing-fasen (true)
+    document.addEventListener('click', handleNavbarClicks, true);
+    
+    // Sørg for at Bootstrap JS er lastet og initialisert (dropdown og navbar)
+    if (typeof window !== 'undefined') {
+      // Hent inn Bootstrap JS
+      require('bootstrap/dist/js/bootstrap.bundle.min.js');
+      
+      // Initialiser dropdowns på nytt
+      document.querySelectorAll('.dropdown-toggle').forEach(dropdownToggle => {
+        const dropdownMenu = dropdownToggle.nextElementSibling;
+        
+        // Legg til manuell toggle-funksjonalitet (backup)
+        dropdownToggle.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          
+          if (dropdownMenu && dropdownMenu.classList.contains('show')) {
+            dropdownMenu.classList.remove('show');
+          } else if (dropdownMenu) {
+            // Lukk alle andre åpne dropdowns først
+            document.querySelectorAll('.dropdown-menu.show').forEach(menu => {
+              if (menu !== dropdownMenu) menu.classList.remove('show');
+            });
+            
+            dropdownMenu.classList.add('show');
+          }
+        });
+      });
+    }
+    
+    // Rens opp event listeners når komponenten unmounts
+    return () => {
+      document.removeEventListener('click', handleNavbarClicks, true);
+    };
+  }, []);
+
+  // Tilfør ytterligere Bootstrap JS-initialiseringer ved behov
+  useEffect(() => {
+    // Sørg for at navbar-kollapsen fungerer riktig på mobilvisning
+    const navbarToggler = document.querySelector('.navbar-toggler');
+    const navbarCollapse = document.getElementById('navbarNav');
+    
+    if (navbarToggler && navbarCollapse) {
+      navbarToggler.addEventListener('click', () => {
+        navbarCollapse.classList.toggle('show');
+      });
+    }
+  }, []);
+
   return (
     <FilterProvider>
       <Head>

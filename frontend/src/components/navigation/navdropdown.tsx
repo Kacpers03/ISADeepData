@@ -30,11 +30,27 @@ export default function NavDropdown({
     e: React.MouseEvent<HTMLAnchorElement>,
     link: string
   ) => {
+    // Stopp hendelsen fra å propagere videre (viktig for kartsiden)
+    e.stopPropagation();
+    
     if (router.pathname === link) {
       e.preventDefault();
+      // Tving omlasting hvis vi allerede er på siden
       router.reload();
+    } else {
+      // Ellers naviger direkte med router for å unngå kartproblemer
+      e.preventDefault();
+      router.push(link);
     }
+    
     handleItemClick();
+  };
+
+  // Når dropdown-knappen klikkes
+  const handleToggleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
+    e.stopPropagation(); // Stopp hendelsen fra å propagerere
+    setOpen(!open);
   };
 
   return (
@@ -48,11 +64,14 @@ export default function NavDropdown({
         href="#"
         role="button"
         aria-expanded={open ? "true" : "false"}
-        onClick={(e) => e.preventDefault()}
+        onClick={handleToggleClick}
       >
         {title}
       </a>
-      <ul className={`dropdown-menu ${open ? "show" : ""}`}>
+      <ul
+        className={`dropdown-menu ${open ? "show" : ""}`}
+        style={{ display: open ? 'block' : 'none' }}
+      >
         {items.map((item, index) => (
           <li key={index}>
             <Link href={item.link} legacyBehavior>
