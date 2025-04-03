@@ -95,7 +95,7 @@ export default function Header() {
               </button>
               
               {langMenuOpen && (
-                <div className="position-absolute top-100 mt-1 end-0 bg-white shadow-sm rounded py-1" style={{ zIndex: 1100, minWidth: '120px' }}>
+                <div className="position-absolute top-100 mt-1 end-0 bg-white shadow-sm rounded py-1" style={{ zIndex: 11000, minWidth: '120px' }}>
                   <button 
                     className={`dropdown-item px-3 py-2 ${language === 'en' ? 'fw-bold text-primary' : ''}`}
                     onClick={() => handleLanguageChange('en')}
