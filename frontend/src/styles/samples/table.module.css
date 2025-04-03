@@ -1,16 +1,16 @@
 
 
 .tableContainer {
-    width: 100%; /* Use full width within parent */
+    width: 100%; 
     flex-grow: 1;
     background: rgba(255, 255, 255, 0.1); /* Glass effect */
     backdrop-filter: blur(10px);
     border-radius: 12px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
     overflow: visible;
-    position: relative; /* Important for z-index layering */
+    position: relative; 
     padding: 32px;
-    margin: 0; /* REMOVE auto-centering */
+    margin: 0; 
     margin-bottom: 50px;
 }
 
@@ -22,7 +22,7 @@
     max-width: none;
     margin: 0;
     padding: 20px;
-    overflow: visible;       /* ✅ allow tooltip overflow */
+    overflow: visible;       /* allow tooltip overflow */
     position: relative;
   } 
 
@@ -225,4 +225,21 @@
     color: #475569;
     max-width: 700px;
     margin: 0 auto;
+  }
+
+  /* CSV BUTTON */
+
+  .csvbutton {
+    background-color: #2563eb; 
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    font-weight: 500;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+  }
+
+  .csvbutton:hover {
+    background-color: #1e40af; /* Tailwind's blue-800 */
   }
