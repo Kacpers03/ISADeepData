@@ -26,11 +26,12 @@ export default function Documents() {
                     </ul>
                 </div>
                 
+            
                 {/* Document link with text above icon, aligned left */}
                 <div className="flex justify-start mt-4">
                     <div className="inline-block text-left">
                         <a
-                            href="https://www.isa.org.jm/wp-content/uploads/2022/04/UserManual_v1.1_20181119.pdf"
+                            href="/docs/UserManualISA.pdf"
                             target="_blank"
                             rel="noopener noreferrer"
                             className="inline-block bg-blue-50 hover:bg-blue-100 text-black py-2 px-4 rounded text-sm transition-colors duration-300 no-underline"
