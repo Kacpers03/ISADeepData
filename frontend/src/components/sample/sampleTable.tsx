@@ -7,6 +7,8 @@ import {
   flexRender,
 } from "@tanstack/react-table";
 import styles from "../../styles/files/reports.module.css";
+import CsvExportButton from "./CSVButton"; // adjust path if needed
+
 
 const SampleTable = ({ filters, visibleColumns }) => {
   const [tableData, setTableData] = useState([]);
@@ -102,6 +104,7 @@ const SampleTable = ({ filters, visibleColumns }) => {
 
   return (
     <div className={styles.fileTableContainer}>
+      <CsvExportButton data={filteredData} filename="filtered-files.csv" />
       <div className={styles.tableWrapper}>
         <div className={styles.tableContainer}>
           <table className={styles.table}>
