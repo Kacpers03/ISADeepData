@@ -79,15 +79,6 @@ const StrategicPlan: React.FC = () => {
           />
         </div>
       </section>
-
-      {/* DOWNLOAD SECTION */}
-      <section className={styles.downloadSection}>
-        <h2>{t("strategicPlan.download.title")}</h2>
-        <p>{t("strategicPlan.download.description")}</p>
-        <button className={styles.downloadButton} onClick={handleDownloadClick}>
-          {t("strategicPlan.download.button")}
-        </button>
-      </section>
     </div>
   );
 };

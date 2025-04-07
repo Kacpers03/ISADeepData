@@ -56,15 +56,6 @@ const MiningCode: React.FC = () => {
           }}
         />
       </section>
-
-      {/* CTA SECTION */}
-      <section className={styles.cta}>
-        <h2>{t("miningCode.cta.title")}</h2>
-        <p>{t("miningCode.cta.description")}</p>
-        <a href="/contact" className={styles.ctaButton}>
-          {t("miningCode.cta.button")}
-        </a>
-      </section>
     </div>
   );
 };
