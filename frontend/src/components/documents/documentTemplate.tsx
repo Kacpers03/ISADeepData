@@ -1,5 +1,6 @@
 // frontend/src/components/documents/documentTemplate.tsx
 import React, { ReactNode } from "react";
+import { useLanguage } from "../../contexts/languageContext";
 import styles from "../../styles/document/document.module.css";
 
 interface DocumentTemplateProps {
@@ -7,23 +8,25 @@ interface DocumentTemplateProps {
 }
 
 export default function DocumentTemplate({ children }: DocumentTemplateProps) {
+  const { t } = useLanguage();
+  
   return (
     <div className={styles.documentPage}>
       <div className={styles.documentContainer}>
-        <h1 className={styles.documentTitle}>User Manual</h1>
+        <h1 className={styles.documentTitle}>{t('documents.title')}</h1>
         
         <p className={styles.documentDescription}>
-          The ISA DeepData User Manual provides detailed instructions and guidance on how to effectively use all features of the platform. It includes step-by-step tutorials, explanations of data visualization tools, and best practices for data exploration and analysis.
+          {t('documents.userManual.description')}
         </p>
         
         <div className={styles.contentsSection}>
-          <h2 className={styles.contentsTitle}>In this manual you'll find:</h2>
+          <h2 className={styles.contentsTitle}>{t('documents.userManual.contents.title')}</h2>
           <ul className={styles.contentsList}>
-            <li>Platform navigation and interface overview</li>
-            <li>Data search and filtering techniques</li>
-            <li>Interactive map tools and features</li>
-            <li>Downloading and exporting data</li>
-            <li>Advanced analysis and visualization options</li>
+            <li>{t('documents.userManual.contents.item1')}</li>
+            <li>{t('documents.userManual.contents.item2')}</li>
+            <li>{t('documents.userManual.contents.item3')}</li>
+            <li>{t('documents.userManual.contents.item4')}</li>
+            <li>{t('documents.userManual.contents.item5')}</li>
           </ul>
         </div>
         
@@ -34,7 +37,7 @@ export default function DocumentTemplate({ children }: DocumentTemplateProps) {
             rel="noopener noreferrer"
             className={styles.documentButton}
           >
-            <span>Open User Manual</span>
+            <span>{t('documents.userManual.openManual')}</span>
             <svg 
               className={styles.buttonIcon}
               viewBox="0 0 24 24" 
