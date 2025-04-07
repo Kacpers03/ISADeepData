@@ -27,8 +27,7 @@ export default function Navigation() {
               ]}
             />
             <NavItem text={t('nav.gallery')} link="/gallery" />
-            <NavItem text={t('nav.documents')} link="/documents" />
-          </ul>
+            <NavItem text={t('nav.documents')} link="/document/documents" />          </ul>
         </div>
       </div>
     </nav>
