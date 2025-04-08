@@ -1,4 +1,5 @@
 import React, { useEffect, useRef } from 'react';
+import { useRouter } from 'next/router';
 import styles from '../../styles/gallery/gallery.module.css';
 
 interface MediaItem {
@@ -30,6 +31,7 @@ interface MediaModalProps {
 const MediaModal: React.FC<MediaModalProps> = ({ media, onClose }) => {
   const modalRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
+  const router = useRouter();
   
   // Determine if media is video
   const isVideo = media.mediaType?.toLowerCase().includes('video') || 
@@ -83,6 +85,63 @@ const MediaModal: React.FC<MediaModalProps> = ({ media, onClose }) => {
       pauseVideo();
     };
   }, [onClose]);
+  
+  // Function to show on map
+  const handleShowOnMap = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    console.log("Show on Map clicked for station ID:", media.stationId);
+    
+    // Store ALL necessary info with very explicit names to avoid confusion
+    if (media.stationId && media.latitude && media.longitude) {
+      try {
+        // Save station ID
+        sessionStorage.setItem('mapShowStationId', media.stationId.toString());
+        
+        // Save coordinates as both object and individual values for redundancy
+        const coordinates = {
+          latitude: media.latitude,
+          longitude: media.longitude
+        };
+        sessionStorage.setItem('mapShowCoordinates', JSON.stringify(coordinates));
+        sessionStorage.setItem('mapShowLatitude', media.latitude.toString());
+        sessionStorage.setItem('mapShowLongitude', media.longitude.toString());
+        
+        // Save station name
+        sessionStorage.setItem('mapShowStationName', media.stationCode || `Station #${media.stationId}`);
+        
+        // Save zoom level explicitly
+        sessionStorage.setItem('mapShowZoomLevel', '16');
+        
+        // Save cruise and contractor IDs if available
+        if (media.cruiseId) {
+          sessionStorage.setItem('mapShowCruiseId', media.cruiseId.toString());
+        }
+        if (media.contractorId) {
+          sessionStorage.setItem('mapShowContractorId', media.contractorId.toString());
+        }
+        
+        console.log("Successfully saved station data to sessionStorage:", {
+          stationId: media.stationId,
+          lat: media.latitude,
+          lon: media.longitude,
+          name: media.stationCode || `Station #${media.stationId}`
+        });
+      } catch (e) {
+        console.error("Error saving to sessionStorage:", e);
+      }
+    } else {
+      console.warn("Missing required station data:", {
+        id: media.stationId,
+        lat: media.latitude,
+        lon: media.longitude
+      });
+    }
+    
+    // Navigate to map page
+    router.push('/map');
+  };
   
   return (
     <div className={styles.modalOverlay} onClick={handleOutsideClick}>
@@ -195,15 +254,12 @@ const MediaModal: React.FC<MediaModalProps> = ({ media, onClose }) => {
               </a>
               
               {(media.latitude && media.longitude) && (
-                <a 
-                  href={`/map?lat=${media.latitude}&lon=${media.longitude}`}
+                <button 
+                  onClick={handleShowOnMap}
                   className={styles.viewOnMapButton}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  onClick={(e) => e.stopPropagation()}
                 >
-                  Show Map
-                </a>
+                  Show on Map
+                </button>
               )}
             </div>
           </div>
