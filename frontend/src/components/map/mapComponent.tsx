@@ -536,29 +536,82 @@ window.showBlockAnalytics = async (blockId) => {
         console.warn(`Cruise with ID ${cruiseId} not found`);
       }
     };
-      // Function to show station information
-      window.showStationDetails = (stationId) => {
-        // Find the station first
-        const station = getAllStations().find(s => s.stationId === stationId);
-        if (station) {
-          setSelectedStation(station);
-          setDetailPanelType('station');
-          setShowDetailPanel(true);
+    window.showStationDetails = (stationId) => {
+      console.log(`Looking for station with ID: ${stationId}`);
+      
+      // First make sure stations and cruises are visible
+      setShowStations(true);
+      setShowCruises(true);
+      
+      // Find the station in the full list of stations
+      const station = getAllStations().find(s => s.stationId === stationId);
+      
+      if (station) {
+        console.log(`Found station: ${station.stationCode || station.stationName || `Station #${station.stationId}`}`);
+        
+        // Set selected station state
+        setSelectedStation(station);
+        setDetailPanelType('station');
+        setShowDetailPanel(true);
+        
+        // If the station is part of a cruise, select that cruise too for context
+        if (station.cruiseId) {
+          setSelectedCruiseId(station.cruiseId);
           
-          // Zoom to the station's position
-          if (mapRef.current && station.latitude && station.longitude) {
-            setTimeout(() => {
+          // Find the parent cruise
+          const parentCruise = mapData?.cruises?.find(c => c.cruiseId === station.cruiseId);
+          if (parentCruise && parentCruise.contractorId) {
+            // Set the parent contractor too for complete context
+            setSelectedContractorId(parentCruise.contractorId);
+          }
+        }
+        
+        // Zoom to the station's position with a small delay to ensure the map has updated
+        if (mapRef.current && station.latitude && station.longitude) {
+          setTimeout(() => {
+            mapRef.current.flyTo({
+              center: [station.longitude, station.latitude],
+              zoom: 12,
+              duration: 800,
+              essential: true
+            });
+            
+            // Display a toast confirmation
+            setToastMessage(`Showing station: ${station.stationCode || station.stationName || `#${station.stationId}`}`);
+            setShowToast(true);
+          }, 100);
+        }
+      } else {
+        console.warn(`Station with ID ${stationId} not found in map data`);
+        
+        // Check if we have coordinates in sessionStorage as fallback
+        if (typeof window !== 'undefined') {
+          const coordinatesStr = sessionStorage.getItem('showStationCoordinates');
+          if (coordinatesStr) {
+            try {
+              const coordinates = JSON.parse(coordinatesStr);
               mapRef.current.flyTo({
-                center: [station.longitude, station.latitude],
+                center: [coordinates.longitude, coordinates.latitude],
                 zoom: 12,
                 duration: 800,
                 essential: true
               });
-            }, 50);
+              
+              // Display a toast noting we're showing the location but couldn't find details
+              const stationName = sessionStorage.getItem('showStationName') || `Station #${stationId}`;
+              setToastMessage(`Showing location of ${stationName} (limited details available)`);
+              setShowToast(true);
+            } catch (e) {
+              console.error("Error parsing station coordinates:", e);
+            }
+          } else {
+            setToastMessage(`Station with ID ${stationId} not found`);
+            setShowToast(true);
           }
         }
-      };
-    }
+      }
+    };
+  }
     
     return () => {
       // Clean up global objects
@@ -682,11 +735,106 @@ window.showBlockAnalytics = async (blockId) => {
           area.blocks?.map(block => `block-fill-${block.blockId}`) || []
         )}
         onLoad={() => {
+          console.log("Map onLoad triggered");
           window.mapInstance = mapRef.current?.getMap();
           
           // Initial view on first load - only once
           if (!initialLoadComplete && mapRef.current) {
             setInitialLoadComplete(true);
+            
+            // Check if we need to show a station from gallery
+            if (typeof window !== 'undefined') {
+              console.log("Checking for station data in sessionStorage");
+              
+              // Check for our special map prefix to avoid conflicts
+              const stationId = sessionStorage.getItem('mapShowStationId');
+              const coordinatesStr = sessionStorage.getItem('mapShowCoordinates');
+              const lat = sessionStorage.getItem('mapShowLatitude');
+              const lon = sessionStorage.getItem('mapShowLongitude');
+              
+              if ((stationId && lat && lon) || coordinatesStr) {
+                console.log("Found station data to show on map load");
+                
+                // First make sure stations are visible
+                setShowStations(true);
+                setShowCruises(true);
+                
+                // Get zoom level
+                const zoomLevel = parseInt(sessionStorage.getItem('mapShowZoomLevel') || '16');
+                
+                // Parse coordinates in multiple ways for redundancy
+                let latitude, longitude;
+                
+                if (lat && lon) {
+                  // Direct values
+                  latitude = parseFloat(lat);
+                  longitude = parseFloat(lon);
+                } else if (coordinatesStr) {
+                  // JSON object
+                  try {
+                    const coords = JSON.parse(coordinatesStr);
+                    latitude = coords.latitude;
+                    longitude = coords.longitude;
+                  } catch (e) {
+                    console.error("Error parsing coordinates:", e);
+                  }
+                }
+                
+                if (latitude && longitude) {
+                  console.log(`Will zoom to: ${longitude}, ${latitude} at zoom ${zoomLevel}`);
+                  
+                  // Use a long delay to ensure map is fully loaded and ready
+                  setTimeout(() => {
+                    console.log("Executing zoom now");
+                    
+                    // Use direct map instance method for most reliable zooming
+                    const map = mapRef.current.getMap();
+                    if (map) {
+                      // First jump to the rough location immediately
+                      map.jumpTo({
+                        center: [longitude, latitude]
+                      });
+                      
+                      // Then smoothly zoom to the final view
+                      map.easeTo({
+                        center: [longitude, latitude],
+                        zoom: zoomLevel,
+                        duration: 1200,
+                        essential: true
+                      });
+                      
+                      // Display a toast notification
+                      const stationName = sessionStorage.getItem('mapShowStationName') || `Location`;
+                      setToastMessage(`Showing ${stationName}`);
+                      setShowToast(true);
+                      
+                      // If we have a station ID, try to select it after zooming
+                      if (stationId && window.showStationDetails) {
+                        setTimeout(() => {
+                          window.showStationDetails(parseInt(stationId));
+                        }, 1500);
+                      }
+                    } else {
+                      console.error("Map instance not available for zooming");
+                    }
+                  }, 1000); // Long delay to ensure map is ready
+                  
+                  // Clean up all sessionStorage values
+                  sessionStorage.removeItem('mapShowStationId');
+                  sessionStorage.removeItem('mapShowCoordinates');
+                  sessionStorage.removeItem('mapShowLatitude');
+                  sessionStorage.removeItem('mapShowLongitude');
+                  sessionStorage.removeItem('mapShowStationName');
+                  sessionStorage.removeItem('mapShowZoomLevel');
+                  sessionStorage.removeItem('mapShowCruiseId');
+                  sessionStorage.removeItem('mapShowContractorId');
+                  
+                  return; // Skip smart zoom
+                }
+              }
+            }
+            
+            // Default behavior if no station to show
             smartZoom();
           }
         }}
