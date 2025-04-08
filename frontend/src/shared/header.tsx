@@ -8,7 +8,8 @@ import { useLanguage } from "../contexts/languageContext";
 
 export default function Header() {
   const router = useRouter();
-  const [showHeader, setShowHeader] = useState(true);
+  // Ikke lenger nødvendig å spore header-synlighet
+  // const [showHeader, setShowHeader] = useState(true);
   const [isNavOpen, setIsNavOpen] = useState(false);
   const [langMenuOpen, setLangMenuOpen] = useState(false);
   const lastScrollY = useRef(0);
@@ -17,29 +18,12 @@ export default function Header() {
 
   useEffect(() => {
     console.log("Route changed to: ", router.asPath);
-    setShowHeader(true);
-    lastScrollY.current = 0;
+    // Bare ruller tilbake til toppen ved ruteendring, ingen header-endring nødvendig
     window.scrollTo(0, 0);
   }, [router.asPath]);
 
-  useEffect(() => {
-    const handleScroll = () => {
-      if (isNavOpen) {
-        setShowHeader(true);
-        lastScrollY.current = window.scrollY;
-        return;
-      }
-      if (window.scrollY > lastScrollY.current && window.scrollY > 100) {
-        setShowHeader(false);
-      } else {
-        setShowHeader(true);
-      }
-      lastScrollY.current = window.scrollY;
-    };
-
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, [isNavOpen]);
+  // Fjernet scroll-håndtering siden vi ikke lenger trenger å vise/skjule headeren basert på scrolling
+  // Header vil nå oppføre seg som et normalt element som forsvinner når man scroller ned
 
   // Close language menu when clicking outside
   useEffect(() => {
@@ -55,7 +39,7 @@ export default function Header() {
 
   const handleNavToggle = () => {
     setIsNavOpen((prev) => !prev);
-    setShowHeader(true);
+    // Ingen header-oppdatering nødvendig
   };
 
   const handleLanguageChange = (lang: 'en' | 'es' | 'fr') => {
@@ -65,19 +49,17 @@ export default function Header() {
 
   return (
     <header
-      className={`sticky-header ${
-        showHeader ? "header-visible" : "header-hidden"
-      }`}
+      className="sticky-header"
     >
       <div className="container">
         {/* Top row with logo, language selector, and burger button */}
-        <div className="d-flex align-items-center justify-content-between py-3">
+        <div className="d-flex align-items-center justify-content-between py-2">
           <Link href="/" passHref legacyBehavior>
             <a className="home-link d-flex align-items-center text-decoration-none">
-              <Image src="/image/image.png" alt="Logo" width={80} height={80} />
+              <Image src="/image/image.png" alt="Logo" width={70} height={70} />
               <div className="ms-3">
                 <h1 className="h4 mb-0">{t('header.home')}</h1>
-                <p className="text-primary">{t('header.subtitle')}</p>
+                <p className="text-primary mb-0">{t('header.subtitle')}</p>
               </div>
             </a>
           </Link>

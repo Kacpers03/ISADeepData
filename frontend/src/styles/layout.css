@@ -20,33 +20,33 @@
   position: relative;
 }
 
-/* Sticky header: holder headeren fast øverst med høy z-index */
+/* Normal header: vises bare øverst på siden */
 .sticky-header {
-  position: sticky;
-  top: 0;
+  position: static;
   z-index: 1000;
   background-color: white;
-  transition: transform 0.3s ease-in-out;
+  width: 100%;
 }
 
-/* Dynamiske header-klasser for å vise/skjule headeren */
+/* Dynamiske header-klasser er ikke lenger nødvendige, men beholdes for kompatibilitet */
 .header-visible {
-  transform: translateY(0);
+  /* Ingen transform er nødvendig */
 }
 
 .header-hidden {
-  transform: translateY(-100%);
+  /* Ingen transform er nødvendig */
 }
 
 .home-link {
   color: black !important; /* Hindrer at lenken blir blå */
 }
 
-/* Navbar styling */
+/* Navbar styling - mer kompakt versjon */
 .navbar {
   background: none !important;
   box-shadow: none;
-  padding-top: 10px;
+  padding-top: 0; /* Fjernet padding-top for å gjøre navigasjonsmenyen nærmere overskriften */
+  margin-top: -10px; /* Flytter navigasjonen oppover */
 }
 
 /* Burgerknapp – posisjoneringen er fjernet for å plassere den naturlig i flex-beholderen */
@@ -101,6 +101,16 @@
 /* Dropdown-menyen */
 .dropdown-menu {
   background-color: white !important;
+}
+
+/* Ingen ekstra padding er nødvendig med en normal header */
+body {
+  padding-top: 0;
+}
+
+/* Ingen spesiell behandling av hjemmesiden er nødvendig */
+body.home-page {
+  padding-top: 0;
 }
 
 /* Footer styling */
@@ -191,11 +201,11 @@ footer .btn-outline-light:hover {
 .dropdown-item.fw-bold {
   background-color: #f1f8ff;
 }
+
 .navbar .dropdown-menu.show {
   display: block !important;
   z-index: 10000 !important;
 }
-
 
 .navbar {
   z-index: 9999 !important;
