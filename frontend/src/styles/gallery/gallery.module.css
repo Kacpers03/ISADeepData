@@ -605,15 +605,15 @@
 
 .mediaActions {
   display: flex;
-  gap: 12px;
+  gap: 30px;
   margin-top: 24px;
 }
 
 .viewOnMapButton {
   background-color: #f3f4f6;
   color: #1f2937;
-  padding: 10px 16px;
-  border-radius: 6px;
+  padding: 8px 14px;
+  border-radius: 10px;
   text-decoration: none;
   font-weight: 500;
   font-size: 14px;
