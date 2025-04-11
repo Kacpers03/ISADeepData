@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from "react";
-import { CustomDropdown } from "../map/filters/CustomDropdown";
+import { CustomDropdown } from "./customDropdown";
 import styles from "../../styles/files/filefilter.module.css"; // Using the new CSS module
 
 interface FileFilterProps {

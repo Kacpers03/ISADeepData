@@ -136,7 +136,7 @@
     background-color: white;
     border-radius: 12px;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-    width: 100%;
+    max-width: 300px;
     height: 100%;
     display: flex;
     flex-direction: column;
@@ -380,6 +380,7 @@
   /* FILTERS GROUP */
   .filtersGroup {
     margin-bottom: 20px;
+    max-width: 100%;
   }
   
   .filtersGroup h3 {
@@ -516,3 +517,5 @@
     border-top: 1px solid #e2e8f0;
     background-color: white;
   }
+
+  
