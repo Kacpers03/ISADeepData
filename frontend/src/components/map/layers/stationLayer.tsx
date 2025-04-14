@@ -29,6 +29,22 @@ const StationLayer: React.FC<StationLayerProps> = ({
         const clusterId = isCluster ? `cluster-${cluster.properties.cluster_id}` : `station-${cluster.properties.stationId}`;
         
         if (isCluster) {
+          // Get the cluster points if possible
+          const clusterPoints = (() => {
+            try {
+              if (clusterIndex) {
+                // Get the points in this cluster (limit to 10 for performance)
+                return clusterIndex.getLeaves(
+                  cluster.properties.cluster_id,
+                  Math.min(cluster.properties.point_count, 10)
+                );
+              }
+            } catch (err) {
+              console.warn('Could not get cluster leaves:', err.message);
+            }
+            return [];
+          })();
+          
           return (
             <ClusterMarker
               key={clusterId}
@@ -47,6 +63,8 @@ const StationLayer: React.FC<StationLayerProps> = ({
                   }
                 })()
               }}
+              clusterIndex={clusterIndex}
+              points={clusterPoints}
               onClick={() => {
                 // Zoom in when cluster is clicked
                 try {
