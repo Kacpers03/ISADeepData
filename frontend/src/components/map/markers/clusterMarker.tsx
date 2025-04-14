@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Marker } from 'react-map-gl';
 import styles from '../../../styles/map/markers.module.css';
+
 interface ClusterMarkerProps {
   cluster: {
     id: string;
@@ -9,10 +10,19 @@ interface ClusterMarkerProps {
     count: number;
     expansionZoom: number;
   };
+  clusterIndex: any; // Supercluster instance
   onClick: () => void;
+  points?: any[]; // The actual points in this cluster
 }
 
-const ClusterMarker: React.FC<ClusterMarkerProps> = ({ cluster, onClick }) => {
+const ClusterMarker: React.FC<ClusterMarkerProps> = ({ 
+  cluster, 
+  clusterIndex,
+  onClick,
+  points 
+}) => {
+  const [isHovered, setIsHovered] = useState(false);
+  
   // Determine size based on point count
   const getSize = () => {
     const count = cluster.count;
@@ -23,6 +33,32 @@ const ClusterMarker: React.FC<ClusterMarkerProps> = ({ cluster, onClick }) => {
   };
   
   const size = getSize();
+  
+  // Get stations in this cluster
+  const getClusterStations = () => {
+    if (!points || !points.length) {
+      // If points aren't provided directly, try to get them from clusterIndex
+      try {
+        if (clusterIndex) {
+          // Get the cluster leaves (stations in this cluster)
+          const leaves = clusterIndex.getLeaves(
+            parseInt(cluster.id.replace('cluster-', '')), 
+            Math.min(cluster.count, 10) // Limit to 10 stations to avoid oversized tooltip
+          );
+          
+          return leaves.map(leaf => leaf.properties.stationData);
+        }
+      } catch (err) {
+        console.warn('Could not get cluster stations:', err.message);
+      }
+      return [];
+    }
+    
+    // If points are directly provided, use them
+    return points.map(p => p.properties?.stationData).filter(Boolean);
+  };
+  
+  const stations = getClusterStations();
   
   return (
     <Marker
@@ -39,10 +75,37 @@ const ClusterMarker: React.FC<ClusterMarkerProps> = ({ cluster, onClick }) => {
           width: `${size}px`,
           height: `${size}px`,
         }}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
       >
         <div className={styles.clusterCount}>
           {cluster.count}
         </div>
+        
+        {/* Tooltip that shows when hovering */}
+        {isHovered && stations.length > 0 && (
+          <div className={styles.clusterTooltip}>
+            <div className={styles.clusterTooltipHeader}>
+              <strong>{cluster.count} stations in this area</strong>
+              <span className={styles.clusterTooltipSubtext}>
+                Click to zoom in
+              </span>
+            </div>
+            <div className={styles.clusterTooltipContent}>
+              {stations.slice(0, 6).map((station, index) => (
+                <div key={station?.stationId || index} className={styles.clusterStationItem}>
+                  <span className={styles.stationCode}>{station?.stationCode || `Station #${station?.stationId}`}</span>
+                  <span className={styles.stationType}>{station?.stationType || 'Unknown'}</span>
+                </div>
+              ))}
+              {cluster.count > 6 && (
+                <div className={styles.clusterMoreStations}>
+                  + {cluster.count - 6} more stations...
+                </div>
+              )}
+            </div>
+          </div>
+        )}
       </div>
     </Marker>
   );
