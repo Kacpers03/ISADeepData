@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Marker } from 'react-map-gl';
 import styles from '../../../styles/map/markers.module.css';
 
@@ -8,6 +8,8 @@ import styles from '../../../styles/map/markers.module.css';
  * @param {Function} onClick - Function to handle when the marker is clicked
  */
 const CruiseMarker = ({ cruise, onClick }) => {
+  const [isHovered, setIsHovered] = useState(false);
+  
   // Calculate cruise position with improved fallbacks
   const calculatePosition = () => {
     // First try: Use cruise's centerLatitude and centerLongitude if available
@@ -49,10 +51,6 @@ const CruiseMarker = ({ cruise, onClick }) => {
       // This is just a placeholder. In a real implementation, you might 
       // need to access global map data to find areas for this contractor
       console.log("Using fallback positioning for cruise:", cruise.cruiseName);
-      
-      // If we have a parent contractor, we could try to use its center
-      // This part would require accessing the global mapData, which
-      // isn't directly available here
     }
     
     // Last resort: If we have no usable coordinates, don't render the cruise
@@ -77,15 +75,19 @@ const CruiseMarker = ({ cruise, onClick }) => {
         onClick(cruise);
       }}
     >
-      <div className={styles.cruiseMarker}>
-        {/* Cruise name appears above the icon */}
-        <div 
-          className={`${styles.cruiseLabel} ${cruise.isSelected ? styles.selectedCruiseLabel : ''}`}
-        >
-          {cruise.cruiseName}
-        </div>
+      <div 
+        className={styles.cruiseMarker}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+      >
+        {/* Cruise tooltip appears on hover */}
+        {isHovered && (
+          <div className={styles.cruiseTooltip}>
+            {cruise.cruiseName}
+          </div>
+        )}
         
-        {/* Use SVG anchor instead of emoji for color control */}
+        {/* Cruise icon only - no label */}
         <div 
           className={`${styles.cruiseIcon} ${cruise.isSelected ? styles.selectedCruise : ''}`}
         >
