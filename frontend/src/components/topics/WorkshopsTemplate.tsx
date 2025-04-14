@@ -69,16 +69,6 @@ const WorkshopsTemplate: React.FC = () => {
               className={styles.workshopCard}
               onClick={redirectToISA}
             >
-              <div className={styles.workshopImageContainer}>
-                <img
-                  src={workshop.thumbnail}
-                  alt={workshop.title}
-                  className={styles.workshopImage}
-                  onError={(e) => {
-                    e.currentTarget.src = "/image/default-workshop.jpg";
-                  }}
-                />
-              </div>
               <div className={styles.workshopContent}>
                 <div className={styles.workshopDate}>{workshop.date}</div>
                 <h3 className={styles.workshopTitle}>{workshop.title}</h3>
