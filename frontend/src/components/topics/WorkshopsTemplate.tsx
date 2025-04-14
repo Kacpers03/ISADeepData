@@ -1,14 +1,58 @@
 import React from "react";
 import styles from "../../styles/topics/Workshops.module.css";
+import { useLanguage } from "../../contexts/languageContext";
 
-interface WorkshopsProps {
-  t: (key: string) => string;
-}
+const WorkshopsTemplate: React.FC = () => {
+  const { t } = useLanguage();
 
-const Workshops: React.FC<WorkshopsProps> = ({ t }) => {
+  // Workshop data matches the format of the ISA website
+  const workshops = [
+    {
+      id: 1,
+      title: "Deep Seabed Mineral Exploration Technologies Workshop",
+      date: "March 15-16, 2025",
+      thumbnail: "/image/workshop1.jpg",
+    },
+    {
+      id: 2,
+      title: "Environmental Impact Assessment Workshop",
+      date: "February 10-12, 2025",
+      thumbnail: "/image/workshop2.jpg",
+    },
+    {
+      id: 3,
+      title: "Legal Framework for Deep Seabed Mining",
+      date: "January 22-24, 2025",
+      thumbnail: "/image/workshop3.jpg",
+    },
+    {
+      id: 4,
+      title: "Marine Scientific Research Data Management",
+      date: "December 5-7, 2024",
+      thumbnail: "/image/workshop4.jpg",
+    },
+    {
+      id: 5,
+      title: "Capacity Building for Developing States",
+      date: "November 18-20, 2024",
+      thumbnail: "/image/workshop5.jpg",
+    },
+    {
+      id: 6,
+      title: "Standardization of Taxonomic Identifications Workshop",
+      date: "October 8-10, 2024",
+      thumbnail: "/image/workshop6.jpg",
+    },
+  ];
+
+  // Redirect to the ISA website
+  const redirectToISA = () => {
+    window.open("https://www.isa.org.jm/workshops-and-webinars/", "_blank");
+  };
+
   return (
     <div className={styles.container}>
-      {/* HERO SECTION */}
+      {/* Hero Section */}
       <section className={styles.hero}>
         <div className={styles.heroText}>
           <h1 className={styles.heroTitle}>{t("workshops.hero.title")}</h1>
@@ -16,48 +60,50 @@ const Workshops: React.FC<WorkshopsProps> = ({ t }) => {
         </div>
       </section>
 
-      {/* ABOUT SECTION */}
-      <section className={styles.about}>
-        <div className={styles.textBlock}>
-          <h2>{t("workshops.about.title")}</h2>
-          <p>{t("workshops.about.description")}</p>
-
-          <div className={styles.features}>
-            <div className={styles.feature}>
-              <h3>{t("workshops.about.features.capacity.title")}</h3>
-              <p>{t("workshops.about.features.capacity.description")}</p>
+      {/* Workshop Grid - Similar to ISA site */}
+      <section className={styles.workshopsList}>
+        <div className={styles.workshopsGrid}>
+          {workshops.map((workshop) => (
+            <div
+              key={workshop.id}
+              className={styles.workshopCard}
+              onClick={redirectToISA}
+            >
+              <div className={styles.workshopImageContainer}>
+                <img
+                  src={workshop.thumbnail}
+                  alt={workshop.title}
+                  className={styles.workshopImage}
+                  onError={(e) => {
+                    e.currentTarget.src = "/image/default-workshop.jpg";
+                  }}
+                />
+              </div>
+              <div className={styles.workshopContent}>
+                <div className={styles.workshopDate}>{workshop.date}</div>
+                <h3 className={styles.workshopTitle}>{workshop.title}</h3>
+                <div className={styles.workshopLink}>
+                  View Workshop Details →
+                </div>
+              </div>
             </div>
-            <div className={styles.feature}>
-              <h3>{t("workshops.about.features.knowledge.title")}</h3>
-              <p>{t("workshops.about.features.knowledge.description")}</p>
-            </div>
-            <div className={styles.feature}>
-              <h3>{t("workshops.about.features.networking.title")}</h3>
-              <p>{t("workshops.about.features.networking.description")}</p>
-            </div>
-          </div>
-        </div>
-
-        <div className={styles.imageBlock}>
-          <img
-            src="/images/workshops-webinars.jpg"
-            alt={t("workshops.about.imageAlt")}
-            className={styles.image}
-          />
+          ))}
         </div>
       </section>
 
-      {/* DETAILS SECTION */}
-      <section className={styles.details}>
-        <h2 className={styles.sectionTitle}>{t("workshops.details.title")}</h2>
-        <p>{t("workshops.details.description")}</p>
-        <p>
-          <strong>{t("workshops.details.featuredTopics.label")}</strong>{" "}
-          {t("workshops.details.featuredTopics.topics")}
-        </p>
+      {/* Link to ISA site */}
+      <section className={styles.viewMoreSection}>
+        <a
+          href="https://www.isa.org.jm/workshops-and-webinars/"
+          target="_blank"
+          rel="noopener noreferrer"
+          className={styles.viewMoreButton}
+        >
+          View All Workshops on the ISA Website
+        </a>
       </section>
     </div>
   );
 };
 
-export default Workshops;
+export default WorkshopsTemplate;
