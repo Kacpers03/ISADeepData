@@ -23,7 +23,9 @@ export default function MapPage() {
       // Sjekk om klikk er på navbar eller dropdown
       const isNavbarClick = e.target.closest('.navbar') !== null || 
                            e.target.classList.contains('dropdown-item') ||
-                           e.target.classList.contains('nav-link');
+                           e.target.classList.contains('nav-link') ||
+                           e.target.closest('.navbar-brand') !== null || // Fanger opp klikk på logo/home-link
+                           e.target.classList.contains('home-link');
       
       if (isNavbarClick) {
         // Stopp hendelsespropagering før den når kartkomponenten
@@ -31,8 +33,26 @@ export default function MapPage() {
       }
     };
 
+    // Legg til en spesifikk handler for logo/home-link
+    const handleHomeClick = () => {
+      const homeLinks = document.querySelectorAll('.navbar-brand, .home-link');
+      
+      homeLinks.forEach(link => {
+        link.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          
+          // Naviger til hjemmesiden
+          window.location.href = '/';
+        });
+      });
+    };
+
     // Legg til event listener i capturing-fasen (true)
     document.addEventListener('click', handleNavbarClicks, true);
+    
+    // Legg til home-link handler
+    handleHomeClick();
     
     // Sørg for at Bootstrap JS er lastet og initialisert (dropdown og navbar)
     if (typeof window !== 'undefined') {
@@ -65,6 +85,7 @@ export default function MapPage() {
     // Rens opp event listeners når komponenten unmounts
     return () => {
       document.removeEventListener('click', handleNavbarClicks, true);
+      // Vi trenger ikke å fjerne homeLinks event listeners siden siden lastes på nytt uansett
     };
   }, []);
 
