@@ -1,11 +1,33 @@
 import React from "react";
 import styles from "../../styles/topics/ExplorationContracts.module.css";
+import { FaFileContract, FaFlask, FaHandshake } from "react-icons/fa";
+import { useLanguage } from "../../contexts/languageContext";
 
-interface ExplorationContractsProps {
-  t: (key: string) => string;
-}
+const ExplorationContracts: React.FC = () => {
+  const { t } = useLanguage();
 
-const ExplorationContracts: React.FC<ExplorationContractsProps> = ({ t }) => {
+  // Contract types booths data
+  const contractBooths = [
+    {
+      id: 1,
+      title: "Polymetallic Nodules",
+      image: "../image/nodules.jpg",
+      url: "/exploration-contracts/polymetallic-nodules",
+    },
+    {
+      id: 2,
+      title: "Polymetallic Sulphides",
+      image: "../image/sulphides.jpg",
+      url: "/exploration-contracts/polymetallic-sulphides",
+    },
+    {
+      id: 3,
+      title: "Cobalt-rich Ferromanganese Crusts",
+      image: "../image/crust.jpg",
+      url: "/exploration-contracts/cobalt-crusts",
+    },
+  ];
+
   return (
     <div className={styles.container}>
       {/* HERO SECTION */}
@@ -28,12 +50,14 @@ const ExplorationContracts: React.FC<ExplorationContractsProps> = ({ t }) => {
 
           <div className={styles.features}>
             <div className={styles.feature}>
+              <FaFileContract className={styles.icon} />
               <h3>{t("explorationContracts.about.features.legal.title")}</h3>
               <p>
                 {t("explorationContracts.about.features.legal.description")}
               </p>
             </div>
             <div className={styles.feature}>
+              <FaHandshake className={styles.icon} />
               <h3>
                 {t("explorationContracts.about.features.environmental.title")}
               </h3>
@@ -44,6 +68,7 @@ const ExplorationContracts: React.FC<ExplorationContractsProps> = ({ t }) => {
               </p>
             </div>
             <div className={styles.feature}>
+              <FaFlask className={styles.icon} />
               <h3>{t("explorationContracts.about.features.research.title")}</h3>
               <p>
                 {t("explorationContracts.about.features.research.description")}
@@ -61,51 +86,21 @@ const ExplorationContracts: React.FC<ExplorationContractsProps> = ({ t }) => {
         </div>
       </section>
 
-      {/* CONTRACT TYPES SECTION */}
+      {/* CONTRACT TYPES BOOTHS SECTION */}
       <section className={styles.contractTypesSection}>
         <h2 className={styles.sectionTitle}>
           {t("explorationContracts.typesSection.title")}
         </h2>
 
-        <div className={styles.contractTypeLinks}>
-          <a
-            href="/exploration-contracts/polymetallic-nodules"
-            className={styles.contractTypeItem}
-          >
-            <div className={styles.contractImage}>
-              <img src="../image/nodules.jpg" alt="Polymetallic Nodules" />
-            </div>
-            <h3 className={styles.contractTypeTitle}>
-              {t("explorationContracts.types.polymetallic.title")}
-            </h3>
-          </a>
-
-          <a
-            href="/exploration-contracts/polymetallic-sulphides"
-            className={styles.contractTypeItem}
-          >
-            <div className={styles.contractImage}>
-              <img src="../image/sulphides.jpg" alt="Polymetallic Sulphides" />
-            </div>
-            <h3 className={styles.contractTypeTitle}>
-              {t("explorationContracts.types.sulphides.title")}
-            </h3>
-          </a>
-
-          <a
-            href="/exploration-contracts/cobalt-crusts"
-            className={styles.contractTypeItem}
-          >
-            <div className={styles.contractImage}>
-              <img
-                src="../image/crust.jpg"
-                alt="Cobalt-rich Ferromanganese Crusts"
-              />
-            </div>
-            <h3 className={styles.contractTypeTitle}>
-              {t("explorationContracts.types.cobalt.title")}
-            </h3>
-          </a>
+        <div className={styles.contractTypeBooths}>
+          {contractBooths.map((booth) => (
+            <a key={booth.id} href={booth.url} className={styles.boothItem}>
+              <div className={styles.boothImage}>
+                <img src={booth.image} alt={booth.title} />
+              </div>
+              <h3 className={styles.boothTitle}>{booth.title}</h3>
+            </a>
+          ))}
         </div>
       </section>
 

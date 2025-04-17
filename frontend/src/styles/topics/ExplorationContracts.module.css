@@ -40,7 +40,7 @@
 .about {
   display: flex;
   flex-wrap: wrap;
-  gap: 20px;
+  gap: 40px;
   margin: 40px 0;
   align-items: center;
 }
@@ -50,17 +50,33 @@
   min-width: 300px;
 }
 
+.textBlock h2 {
+  color: #003366;
+  margin-top: 0;
+}
+
 .features {
   display: flex;
   flex-wrap: wrap;
   gap: 20px;
-  margin-top: 20px;
+  margin-top: 30px;
 }
 
 .feature {
   flex: 1;
-  min-width: 150px;
+  min-width: 200px;
   text-align: center;
+  background-color: #f9f9f9;
+  padding: 20px;
+  border-radius: 6px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.icon {
+  width: 30px;
+  height: 30px;
+  margin-bottom: 15px;
+  color: #0077b6;
 }
 
 .imageBlock {
@@ -72,7 +88,7 @@
   width: 100%;
   height: auto;
   border: 2px solid #eaeaea;
-  border-radius: 4px;
+  border-radius: 6px;
 }
 
 /* CONTRACT TYPES SECTION */
@@ -86,16 +102,10 @@
   border-bottom: 2px solid #45526e;
   display: inline-block;
   padding-bottom: 5px;
+  color: #003366;
 }
 
-.sectionDescription {
-  margin-bottom: 20px;
-  font-size: 1.1rem;
-  color: #555;
-  line-height: 1.5;
-}
-
-.contractTypeLinks {
+.contractTypeBooths {
   display: flex;
   flex-wrap: wrap;
   gap: 30px;
@@ -103,7 +113,7 @@
   justify-content: center;
 }
 
-.contractTypeItem {
+.boothItem {
   width: 300px;
   height: 250px;
   position: relative;
@@ -114,12 +124,12 @@
   text-decoration: none;
 }
 
-.contractTypeItem:hover {
+.boothItem:hover {
   transform: translateY(-5px);
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
 }
 
-.contractImage {
+.boothImage {
   width: 100%;
   height: 100%;
   position: absolute;
@@ -127,13 +137,13 @@
   left: 0;
 }
 
-.contractImage img {
+.boothImage img {
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
 
-.contractTypeTitle {
+.boothTitle {
   position: absolute;
   bottom: 0;
   left: 0;
@@ -145,42 +155,6 @@
   font-size: 1.2rem;
   font-weight: 500;
   text-align: center;
-}
-
-.contractTypeInfo {
-  display: none;
-}
-
-.typeLink {
-  display: none;
-}
-
-.contractIcon {
-  display: none;
-}
-
-.contractTypeInfo h3 {
-  margin: 0 0 10px 0;
-  color: #003366;
-  font-size: 1.2rem;
-}
-
-.contractTypeInfo p {
-  margin: 0 0 15px 0;
-  color: #555;
-}
-
-.typeLink {
-  display: inline-block;
-  color: #003366;
-  text-decoration: none;
-  font-weight: 500;
-  transition: color 0.3s ease;
-}
-
-.typeLink:hover {
-  color: #0077b6;
-  text-decoration: underline;
 }
 
 /* DETAILS SECTION */
@@ -207,36 +181,11 @@
   margin-bottom: 8px;
 }
 
-/* CTA SECTION */
-.cta {
-  text-align: center;
-  margin: 60px 0;
-}
-
-.ctaButton {
-  background-color: #45526e;
-  color: white;
-  padding: 10px 20px;
-  text-decoration: none;
-  border: 2px solid #45526e;
-  transition: background-color 0.3s ease, color 0.3s ease;
-  font-weight: bold;
-}
-
-.ctaButton:hover {
-  background-color: white;
-  color: #45526e;
-}
-
 /* RESPONSIVE STYLES */
 @media (max-width: 768px) {
-  .contractTypeItem {
+  .contractTypeBooths {
     flex-direction: column;
-    gap: 15px;
-  }
-
-  .contractIcon {
-    margin: 0 auto;
+    align-items: center;
   }
 
   .about {
@@ -245,5 +194,9 @@
 
   .imageBlock {
     width: 100%;
+  }
+
+  .heroTitle {
+    font-size: 2rem;
   }
 }
