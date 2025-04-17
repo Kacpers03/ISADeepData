@@ -104,12 +104,8 @@ const WorkshopsTemplate: React.FC = () => {
       {/* Hero Section */}
       <section className={styles.hero}>
         <div className={styles.heroText}>
-          <h1 className={styles.heroTitle}>Workshops and Webinars</h1>
-          <p className={styles.heroSubtitle}>
-            Explore our upcoming and past workshops focused on deep-sea
-            research, environmental management, and sustainable ocean
-            governance.
-          </p>
+          <h1 className={styles.heroTitle}>{t("workshops.hero.title")}</h1>
+          <p className={styles.heroSubtitle}>{t("workshops.hero.subtitle")}</p>
         </div>
       </section>
 
@@ -156,7 +152,7 @@ const WorkshopsTemplate: React.FC = () => {
 
           <div className={styles.viewAllSection}>
             <a
-              href="https://www.isa.org.jm/workshops-and-webinars/archived-events"
+              href="https://www.isa.org.jm/events-archive/"
               target="_blank"
               rel="noopener noreferrer"
               className={styles.viewAllButton}

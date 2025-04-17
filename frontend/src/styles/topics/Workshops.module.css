@@ -8,33 +8,32 @@
 
 /* HERO SECTION */
 .hero {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
   background-color: #f7f9fb;
-  padding: 40px 20px;
   margin-bottom: 40px;
   border-radius: 8px;
-  text-align: center;
-  background-image: linear-gradient(
-      rgba(0, 51, 102, 0.8),
-      rgba(0, 51, 102, 0.8)
-    ),
-    url("/images/ocean-bg.jpg");
-  background-size: cover;
-  background-position: center;
-  color: white;
+  overflow: hidden;
+}
+
+.heroText {
+  flex: 1 1 50%;
+  padding: 40px;
 }
 
 .heroTitle {
   font-size: 2.5rem;
-  margin: 0 0 15px 0;
-  color: white;
+  margin: 0;
+  color: #003366;
 }
 
 .heroSubtitle {
   font-size: 1.2rem;
-  margin: 0 auto;
-  color: rgba(255, 255, 255, 0.9);
-  max-width: 800px;
-  line-height: 1.6;
+  margin-top: 10px;
+  color: #555;
+  max-width: 500px;
 }
 
 /* WORKSHOPS LIST - ISA style */
