@@ -13,120 +13,136 @@
   margin-bottom: 40px;
   border-radius: 8px;
   text-align: center;
+  background-image: linear-gradient(
+      rgba(0, 51, 102, 0.8),
+      rgba(0, 51, 102, 0.8)
+    ),
+    url("/images/ocean-bg.jpg");
+  background-size: cover;
+  background-position: center;
+  color: white;
 }
 
 .heroTitle {
   font-size: 2.5rem;
   margin: 0 0 15px 0;
-  color: #003366;
+  color: white;
 }
 
 .heroSubtitle {
   font-size: 1.2rem;
   margin: 0 auto;
-  color: #555;
+  color: rgba(255, 255, 255, 0.9);
   max-width: 800px;
   line-height: 1.6;
 }
 
-/* WORKSHOPS GRID - similar to ISA site */
+/* WORKSHOPS LIST - ISA style */
 .workshopsList {
+  display: flex;
+  gap: 30px;
   margin-bottom: 40px;
 }
 
-.workshopsGrid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 30px;
+.mainContent {
+  flex: 1;
 }
 
-.workshopCard {
+.sidebar {
+  width: 300px;
+}
+
+.workshopItem {
   background: #fff;
-  border-radius: 8px;
-  overflow: hidden;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  transition: transform 0.3s ease;
-  cursor: pointer;
-}
-
-.workshopCard:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
-}
-
-.workshopImageContainer {
-  position: relative;
-  width: 100%;
-  height: 0;
-  padding-bottom: 60%; /* 5:3 aspect ratio */
-  overflow: hidden;
-}
-
-.workshopImage {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transition: transform 0.3s ease;
-}
-
-.workshopCard:hover .workshopImage {
-  transform: scale(1.05);
-}
-
-.workshopContent {
+  border-radius: 0;
+  margin-bottom: 15px;
   padding: 20px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.workshopItem:hover {
+  background-color: #f7f9fb;
 }
 
 .workshopDate {
   font-size: 0.9rem;
   color: #666;
-  margin-bottom: 10px;
+  margin-bottom: 8px;
 }
 
 .workshopTitle {
-  margin: 0 0 15px 0;
-  font-size: 1.25rem;
+  margin: 0;
+  font-size: 1.1rem;
   color: #003366;
   line-height: 1.4;
 }
 
-.workshopLink {
-  color: #0077b6;
-  font-weight: 500;
-  font-size: 0.95rem;
+/* SIDEBAR SECTIONS */
+.archiveSection {
+  background-color: #f7f9fb;
+  padding: 15px;
+  margin-bottom: 20px;
 }
 
-/* VIEW MORE SECTION */
-.viewMoreSection {
+.archiveTitle {
+  color: #003366;
+  font-size: 1.1rem;
+  margin: 0 0 15px 0;
+  font-weight: 600;
+}
+
+.archiveList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.archiveItem {
+  margin-bottom: 10px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.archiveYear {
+  color: #003366;
+  font-weight: 500;
+}
+
+.archiveCount {
+  color: #666;
+}
+
+.viewAllSection {
   text-align: center;
-  margin-bottom: 40px;
 }
 
-.viewMoreButton {
+.viewAllButton {
   display: inline-block;
-  background-color: #0077b6;
-  color: white;
-  padding: 12px 25px;
-  border-radius: 4px;
-  font-weight: 500;
+  background-color: #f7c948;
+  color: #333;
+  padding: 10px 20px;
   text-decoration: none;
+  font-weight: 500;
   transition: background-color 0.2s ease;
 }
 
-.viewMoreButton:hover {
-  background-color: #005f8f;
+.viewAllButton:hover {
+  background-color: #e5b73b;
 }
 
 /* RESPONSIVE STYLES */
 @media (max-width: 768px) {
-  .heroTitle {
-    font-size: 2rem;
+  .workshopsList {
+    flex-direction: column;
   }
 
-  .workshopsGrid {
-    grid-template-columns: 1fr;
+  .sidebar {
+    width: 100%;
+  }
+
+  .heroTitle {
+    font-size: 2rem;
   }
 }
