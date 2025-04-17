@@ -12,19 +12,19 @@ const ExplorationContracts: React.FC = () => {
       id: 1,
       title: "Polymetallic Nodules",
       image: "../image/nodules.jpg",
-      url: "/exploration-contracts/polymetallic-nodules",
+      url: "https://www.isa.org.jm/exploration-contracts/polymetallic-nodules/",
     },
     {
       id: 2,
       title: "Polymetallic Sulphides",
       image: "../image/sulphides.jpg",
-      url: "/exploration-contracts/polymetallic-sulphides",
+      url: "https://www.isa.org.jm/exploration-contracts/polymetallic-sulphides/",
     },
     {
       id: 3,
       title: "Cobalt-rich Ferromanganese Crusts",
       image: "../image/crust.jpg",
-      url: "/exploration-contracts/cobalt-crusts",
+      url: "https://www.isa.org.jm/exploration-contracts/cobalt-rich-ferromanganese-crusts/",
     },
   ];
 
