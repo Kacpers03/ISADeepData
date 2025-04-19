@@ -16,24 +16,36 @@ const EnhancedMapComponent = dynamic(
 export default function MapPage() {
   const router = useRouter();
 
-  // Hook for å fikse navigasjonsklikk på kartsiden
+  // Main interaction handler - fixes navigation and footer clicks
   useEffect(() => {
-    // Legg til global event listener som stopper kartets fangst av klikk på nav-elementer
-    const handleNavbarClicks = (e) => {
-      // Sjekk om klikk er på navbar eller dropdown
+    // Universal click handler for map interactions
+    const handleNonMapClicks = (e) => {
+      // Check if click is on navbar, dropdown, or footer
       const isNavbarClick = e.target.closest('.navbar') !== null || 
-                           e.target.classList.contains('dropdown-item') ||
-                           e.target.classList.contains('nav-link') ||
-                           e.target.closest('.navbar-brand') !== null || // Fanger opp klikk på logo/home-link
-                           e.target.classList.contains('home-link');
+                          e.target.classList.contains('dropdown-item') ||
+                          e.target.classList.contains('nav-link') ||
+                          e.target.closest('.navbar-brand') !== null || 
+                          e.target.classList.contains('home-link');
       
-      if (isNavbarClick) {
-        // Stopp hendelsespropagering før den når kartkomponenten
+      // Add specific check for footer elements
+      const isFooterClick = e.target.closest('footer') !== null || 
+                           e.target.closest('footer a') !== null ||
+                           (e.target.tagName === 'A' && 
+                            e.target.closest('footer') !== null);
+      
+      if (isNavbarClick || isFooterClick) {
+        // Stop event propagation before it reaches the map component
         e.stopPropagation();
+        
+        // For footer links, if they have href, use normal behavior
+        if (isFooterClick && e.target.tagName === 'A' && e.target.href) {
+          // Allow natural link behavior
+          return;
+        }
       }
     };
 
-    // Legg til en spesifikk handler for logo/home-link
+    // Special handler for home/brand links
     const handleHomeClick = () => {
       const homeLinks = document.querySelectorAll('.navbar-brand, .home-link');
       
@@ -42,28 +54,42 @@ export default function MapPage() {
           e.preventDefault();
           e.stopPropagation();
           
-          // Naviger til hjemmesiden
+          // Navigate to homepage
           window.location.href = '/';
         });
       });
     };
 
-    // Legg til event listener i capturing-fasen (true)
-    document.addEventListener('click', handleNavbarClicks, true);
+    // Add event listener in the capturing phase (true) - this is crucial
+    document.addEventListener('click', handleNonMapClicks, true);
     
-    // Legg til home-link handler
+    // Add home link handler
     handleHomeClick();
     
-    // Sørg for at Bootstrap JS er lastet og initialisert (dropdown og navbar)
+    // Apply z-index to footer to ensure it's above the map
+    const footer = document.querySelector('footer');
+    if (footer) {
+      footer.style.position = 'relative';
+      footer.style.zIndex = '10000';
+      
+      // Make all footer links have high z-index too
+      const footerLinks = footer.querySelectorAll('a');
+      footerLinks.forEach(link => {
+        link.style.position = 'relative';
+        link.style.zIndex = '10001';
+      });
+    }
+    
+    // Initialize Bootstrap components
     if (typeof window !== 'undefined') {
-      // Hent inn Bootstrap JS
+      // Load Bootstrap JS
       require('bootstrap/dist/js/bootstrap.bundle.min.js');
       
-      // Initialiser dropdowns på nytt
+      // Initialize dropdowns
       document.querySelectorAll('.dropdown-toggle').forEach(dropdownToggle => {
         const dropdownMenu = dropdownToggle.nextElementSibling;
         
-        // Legg til manuell toggle-funksjonalitet (backup)
+        // Add manual toggle functionality
         dropdownToggle.addEventListener('click', (e) => {
           e.preventDefault();
           e.stopPropagation();
@@ -71,7 +97,7 @@ export default function MapPage() {
           if (dropdownMenu && dropdownMenu.classList.contains('show')) {
             dropdownMenu.classList.remove('show');
           } else if (dropdownMenu) {
-            // Lukk alle andre åpne dropdowns først
+            // Close all other open dropdowns first
             document.querySelectorAll('.dropdown-menu.show').forEach(menu => {
               if (menu !== dropdownMenu) menu.classList.remove('show');
             });
@@ -82,16 +108,15 @@ export default function MapPage() {
       });
     }
     
-    // Rens opp event listeners når komponenten unmounts
+    // Clean up event listeners when component unmounts
     return () => {
-      document.removeEventListener('click', handleNavbarClicks, true);
-      // Vi trenger ikke å fjerne homeLinks event listeners siden siden lastes på nytt uansett
+      document.removeEventListener('click', handleNonMapClicks, true);
     };
   }, []);
 
-  // Tilfør ytterligere Bootstrap JS-initialiseringer ved behov
+  // Mobile navigation support
   useEffect(() => {
-    // Sørg for at navbar-kollapsen fungerer riktig på mobilvisning
+    // Ensure navbar-collapse works properly on mobile
     const navbarToggler = document.querySelector('.navbar-toggler');
     const navbarCollapse = document.getElementById('navbarNav');
     
@@ -121,7 +146,7 @@ export default function MapPage() {
           </p>
         </header>
         
-        {/* New layout with side-by-side filter panel and map */}
+        {/* Map layout with filter panel and map side by side */}
         <div className={styles.mapLayout}>
           {/* Side filter panel with integrated search */}
           <div className={styles.sideFilterPanel}>
