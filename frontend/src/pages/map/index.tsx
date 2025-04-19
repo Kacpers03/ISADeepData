@@ -113,9 +113,11 @@ export default function MapPage() {
         <header className={styles.mapHeader}>
           <h1>ISA Exploration Areas</h1>
           <p className={styles.mapDescription}>
-            Interactive map of deep seabed exploration contracts and areas regulated by the
-            International Seabed Authority. Use the filters to explore by mineral type,
-            contract status, location, and sponsoring state.
+          Interactive map of deep seabed exploration contracts and areas regulated by the International Seabed Authority.
+            Use the filters on the left to explore by mineral type, contract status, location, and sponsoring state. 
+            Click the map controls button (bottom right) to toggle visibility of areas, blocks, stations, and cruises. 
+            View the Info tab in map controls for a complete legend. Use the Display tab to show the summary panel
+            with statistics about visible data. Click on any map element for detailed information and use the zoom controls to navigate the map
           </p>
         </header>
         
