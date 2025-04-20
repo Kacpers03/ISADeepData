@@ -102,9 +102,40 @@ const SampleTable = ({ filters, visibleColumns }) => {
     onPaginationChange: setPagination,
   });
 
+  const exportColumns = useMemo(() => {
+    if (!filteredData.length) return [];
+  
+    const formatters: Record<string, (val: any) => string> = {
+      result: (val) => val ?? "-",
+      depthLower: (val) => typeof val === "number" ? val.toFixed(2) : val ?? "-",
+      depthUpper: (val) => typeof val === "number" ? val.toFixed(2) : val ?? "-",
+    };
+  
+    return Object.keys(filteredData[0]).map((key) => ({
+      label: key, // You could prettify it later (e.g., capitalize words)
+      key,
+      format: formatters[key],
+    }));
+  }, [filteredData]);
+  
+  
+
   return (
     <div className={styles.fileTableContainer}>
-      <CsvExportButton data={filteredData} filename="filtered-files.csv" />
+      <CsvExportButton
+  data={filteredData}
+  columns={exportColumns}
+  filename="filtered-files.csv"
+  meta={{
+    title: "Samples",
+    filters: {
+      "Sample Type": filters.sampleType,
+      "Matrix Type": filters.matrixType,
+      "Habitat Type": filters.habitatType,
+      "Analysis": filters.analysis,
+    }
+  }}
+/>
       <div className={styles.tableWrapper}>
         <div className={styles.tableContainer}>
           <table className={styles.table}>
