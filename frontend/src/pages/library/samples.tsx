@@ -5,16 +5,18 @@ import stylesTable from "../../styles/samples/table.module.css";
 import stylesFilter from "../../styles/samples/filter.module.css";
 
 export default function SamplesPage() {
-  const [filters, setFilters] = useState({
+  const defaultFilters = {
     sampleType: "all",
     matrixType: "all",
     habitatType: "all",
     analysis: "all",
-    searchQuery: "",
     station: "all",
     cruise: "all",
     contractor: "all",
-  });
+    searchQuery: ""
+  };
+
+  const [filters, setFilters] = useState(defaultFilters);
   
 
   const [visibleColumns, setVisibleColumns] = useState([
@@ -24,9 +26,6 @@ export default function SamplesPage() {
     "sampleDescription"
   ]);
 
-  const applyFilters = (newFilters) => {
-    setFilters(newFilters);
-  };
 
 
   return (
@@ -44,6 +43,7 @@ export default function SamplesPage() {
         <SampleFilter
         filters={filters}
         setFilters={setFilters}
+        defaultFilters={defaultFilters}
         visibleColumns={visibleColumns}
         setVisibleColumns={setVisibleColumns}
       />

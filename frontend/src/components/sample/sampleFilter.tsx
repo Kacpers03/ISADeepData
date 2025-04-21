@@ -4,6 +4,7 @@ import styles from "../../styles/samples/filter.module.css"; // Updated to use n
 const SampleFilter = ({
   filters,
   setFilters,
+  defaultFilters,
   visibleColumns,
   setVisibleColumns,
 }) => {
@@ -14,7 +15,6 @@ const SampleFilter = ({
   const [stationOptions, setStationOptions] = useState([]);
   const [cruiseOptions, setCruiseOptions] = useState([]);
   const [contractorOptions, setContractorOptions] = useState([]);
-
 
   const allColumnOptions = [
     { key: "sampleCode", label: "Sample Code" },
@@ -85,18 +85,9 @@ const SampleFilter = ({
   };
 
   const handleClearFilters = () => {
-    setFilters({
-      sampleType: "all",
-      matrixType: "all",
-      habitatType: "all",
-      analysis: "all",
-      searchQuery: "",
-      station: "all",
-      cruise: "all",
-      contractor: "all",
-    });    
-    setVisibleColumns(allColumnOptions.map(col => col.key)); // reset to all columns
+    setFilters(defaultFilters);
   };
+  
 
   const handleColumnToggle = (e) => {
     const { value, checked } = e.target;
@@ -195,7 +186,7 @@ const SampleFilter = ({
             name="searchQuery"
             value={filters.searchQuery || ""}
             onChange={handleFilterChange}
-            placeholder="Search sample code or description..."
+            placeholder="Search sample code..."
             className={styles.searchInput}
           />
         </div>

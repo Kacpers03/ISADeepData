@@ -47,14 +47,15 @@ const matchSearch =
   item.sampleCode?.toLowerCase().includes(filters.searchQuery.toLowerCase()) ||
   item.description?.toLowerCase().includes(filters.searchQuery.toLowerCase());
 
-const matchStation =
-  filters.station === "all" || item.Station?.StationCode === filters.station;
+  const matchStation =
+  filters.station === "all" || item.stationCode === filters.station;
 
 const matchCruise =
-  filters.cruise === "all" || item.Station?.Cruise?.CruiseName === filters.cruise;
+  filters.cruise === "all" || item.cruiseName === filters.cruise;
 
 const matchContractor =
-  filters.contractor === "all" || item.Station?.Cruise?.Contractor?.ContractorName === filters.contractor;
+  filters.contractor === "all" || item.contractorName === filters.contractor;
+
 
 return (
   matchSampleType &&
@@ -76,18 +77,17 @@ return (
       header: "Sample Code",
     },
     station: {
-      accessorKey: "station",
-      header: "Station",
-      cell: (info) => info.row.original?.Station?.StationCode ?? "-",
+      accessorKey: "stationCode",
+      header: "StationCode",
     },
     cruise: {
-      accessorKey: "cruise1",
+      accessorKey: "cruiseName",
       header: "Cruise",
-      cell: (info) => info.row.original?.Station?.Cruise?.CruiseName ?? "-",
+      
     },
     contractor: {
+      accessorKey: "contractorName",
       header: "Contractor",
-      cell: (info) => info.row.original?.Station?.Cruise?.Contractor?.ContractorName ?? "-",
     },    
     sampleType: {
       accessorKey: "sampleType",

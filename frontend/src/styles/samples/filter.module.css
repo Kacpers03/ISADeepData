@@ -267,6 +267,7 @@
     background-color: #fff;
     color: #37474f;
     box-sizing: border-box;
+    max-width: 100%;
   }
   
   .customSelect:hover {
@@ -513,7 +514,7 @@
   /* Adjust container width (optional) */
   
   .improvedFilterPanel {
-    max-width: 105% !important;
+    max-width: 100% !important;
     box-sizing: border-box !important;
   }
 
@@ -522,7 +523,7 @@
     width: 100%; /* or width: auto; */
     padding: 16px;
     box-sizing: border-box;
-    margin-left: -35px;
+    margin-left: -45px;
     flex-shrink: 0;
   }
   
