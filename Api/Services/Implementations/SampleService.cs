@@ -91,5 +91,43 @@ namespace Api.Services.Implementations
                 .OrderBy(a => a)
                 .ToList();
         }
+
+        public async Task<List<string>> GetDistinctStationCodesAsync()
+        {
+            var samples = await _sampleRepository.GetAllSamplesAsync();
+
+            return samples
+                .Where(s => s.Station != null && !string.IsNullOrEmpty(s.Station.StationCode))
+                .Select(s => s.Station.StationCode)
+                .Distinct()
+                .OrderBy(code => code)
+                .ToList();
+        }
+
+        public async Task<List<string>> GetDistinctCruiseNamesAsync()
+        {
+            var samples = await _sampleRepository.GetAllSamplesAsync();
+
+            return samples
+                .Where(s => s.Station?.Cruise != null && !string.IsNullOrEmpty(s.Station.Cruise.CruiseName))
+                .Select(s => s.Station.Cruise.CruiseName)
+                .Distinct()
+                .OrderBy(name => name)
+                .ToList();
+        }
+
+        public async Task<List<string>> GetDistinctContractorNamesAsync()
+        {
+            var samples = await _sampleRepository.GetAllSamplesAsync();
+
+            return samples
+                .Where(s => s.Station?.Cruise?.Contractor != null && !string.IsNullOrEmpty(s.Station.Cruise.Contractor.ContractorName))
+                .Select(s => s.Station.Cruise.Contractor.ContractorName)
+                .Distinct()
+                .OrderBy(name => name)
+                .ToList();
+        }
+
+
     }
 }

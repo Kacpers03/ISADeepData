@@ -28,22 +28,56 @@ const SampleTable = ({ filters, visibleColumns }) => {
     fetchSamples();
   }, []);
 
+  const stationOptions = useMemo(() => {
+    return [...new Set(tableData.map(item => item.Station?.StationCode).filter(Boolean))];
+  }, [tableData]);
+  
+  const cruiseOptions = useMemo(() => {
+    return [...new Set(tableData.map(item => item.Station?.Cruise?.CruiseName).filter(Boolean))];
+  }, [tableData]);
+  
+  const contractorOptions = useMemo(() => {
+    return [...new Set(tableData.map(item => item.Station?.Cruise?.Contractor?.ContractorName).filter(Boolean))];
+  }, [tableData]);
+
   const filteredData = useMemo(() => {
     return tableData.filter((item) => {
       const matchSampleType =
-        filters.sampleType === "all" || item.sampleType?.toLowerCase() === filters.sampleType?.toLowerCase();
-      const matchMatrixType =
-        filters.matrixType === "all" || item.matrixType?.toLowerCase() === filters.matrixType?.toLowerCase();
-      const matchHabitatType =
-        filters.habitatType === "all" || item.habitatType?.toLowerCase() === filters.habitatType?.toLowerCase();
-      const matchAnalysis =
-        filters.analysis === "all" || item.analysis?.toLowerCase() === filters.analysis?.toLowerCase();
-      const matchSearch =
-        !filters.searchQuery ||
-        item.sampleCode?.toLowerCase().includes(filters.searchQuery.toLowerCase()) ||
-        item.description?.toLowerCase().includes(filters.searchQuery.toLowerCase());
+  filters.sampleType === "all" || item.sampleType?.toLowerCase() === filters.sampleType?.toLowerCase();
 
-      return matchSampleType && matchMatrixType && matchHabitatType && matchAnalysis && matchSearch;
+const matchMatrixType =
+  filters.matrixType === "all" || item.matrixType?.toLowerCase() === filters.matrixType?.toLowerCase();
+
+const matchHabitatType =
+  filters.habitatType === "all" || item.habitatType?.toLowerCase() === filters.habitatType?.toLowerCase();
+
+const matchAnalysis =
+  filters.analysis === "all" || item.analysis?.toLowerCase() === filters.analysis?.toLowerCase();
+
+const matchSearch =
+  !filters.searchQuery ||
+  item.sampleCode?.toLowerCase().includes(filters.searchQuery.toLowerCase()) ||
+  item.description?.toLowerCase().includes(filters.searchQuery.toLowerCase());
+
+const matchStation =
+  filters.station === "all" || item.Station?.StationCode === filters.station;
+
+const matchCruise =
+  filters.cruise === "all" || item.Station?.Cruise?.CruiseName === filters.cruise;
+
+const matchContractor =
+  filters.contractor === "all" || item.Station?.Cruise?.Contractor?.ContractorName === filters.contractor;
+
+return (
+  matchSampleType &&
+  matchMatrixType &&
+  matchHabitatType &&
+  matchAnalysis &&
+  matchSearch &&
+  matchStation &&
+  matchCruise &&
+  matchContractor
+  );
     });
   }, [filters, tableData]);
 
@@ -53,6 +87,21 @@ const SampleTable = ({ filters, visibleColumns }) => {
       accessorKey: "sampleCode",
       header: "Sample Code",
     },
+    station: {
+      accessorKey: "station",
+      header: "Station",
+      cell: (info) => info.row.original?.Station?.StationCode ?? "-",
+    },
+    cruise: {
+      accessorKey: "cruise",
+      header: "Cruise",
+      cell: (info) => info.row.original?.Station?.Cruise?.CruiseName ?? "-",
+    },
+    contractor: {
+      accessorKey: "contractor",
+      header: "Contractor",
+      cell: (info) => info.row.original?.Station?.Cruise?.Contractor?.ContractorName ?? "-",
+    },    
     sampleType: {
       accessorKey: "sampleType",
       header: "Sample Type",
@@ -133,6 +182,9 @@ const SampleTable = ({ filters, visibleColumns }) => {
       "Matrix Type": filters.matrixType,
       "Habitat Type": filters.habitatType,
       "Analysis": filters.analysis,
+      "Station": filters.station,
+      "Cruise": filters.cruise,
+      "Contractor": filters.contractor,
     }
   }}
 />

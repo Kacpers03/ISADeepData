@@ -1,11 +1,20 @@
 import React, { useEffect, useState } from "react";
 import styles from "../../styles/samples/filter.module.css"; // Updated to use new stylesheet
 
-const SampleFilter = ({ filters, setFilters, visibleColumns, setVisibleColumns }) => {
+const SampleFilter = ({
+  filters,
+  setFilters,
+  visibleColumns,
+  setVisibleColumns,
+}) => {
   const [sampleTypes, setSampleTypes] = useState([]);
   const [matrixTypes, setMatrixTypes] = useState([]);
   const [habitatTypes, setHabitatTypes] = useState([]);
   const [analyses, setAnalyses] = useState([]);
+  const [stationOptions, setStationOptions] = useState([]);
+  const [cruiseOptions, setCruiseOptions] = useState([]);
+  const [contractorOptions, setContractorOptions] = useState([]);
+
 
   const allColumnOptions = [
     { key: "sampleCode", label: "Sample Code" },
@@ -20,29 +29,49 @@ const SampleFilter = ({ filters, setFilters, visibleColumns, setVisibleColumns }
   useEffect(() => {
     const fetchFilterOptions = async () => {
       try {
-        const [sampleTypeRes, matrixTypeRes, habitatTypeRes, analysisRes] = await Promise.all([
+        const [
+          sampleTypeRes,
+          matrixTypeRes,
+          habitatTypeRes,
+          analysisRes,
+          stationRes,
+          cruiseRes,
+          contractorRes
+        ] = await Promise.all([
           fetch("http://localhost:5062/api/sample/sampletypes"),
           fetch("http://localhost:5062/api/sample/matrixtypes"),
           fetch("http://localhost:5062/api/sample/habitattypes"),
           fetch("http://localhost:5062/api/sample/analyses"),
+          fetch("http://localhost:5062/api/sample/stations"),       
+          fetch("http://localhost:5062/api/sample/cruises"),        
+          fetch("http://localhost:5062/api/sample/contractors"),    
         ]);
-
+  
         const sampleTypeData = await sampleTypeRes.json();
         const matrixTypeData = await matrixTypeRes.json();
         const habitatTypeData = await habitatTypeRes.json();
         const analysisData = await analysisRes.json();
-
+        const stationData = await stationRes.json();
+        const cruiseData = await cruiseRes.json();
+        const contractorData = await contractorRes.json();
+  
         setSampleTypes(sampleTypeData.result || []);
         setMatrixTypes(matrixTypeData.result || []);
         setHabitatTypes(habitatTypeData.result || []);
         setAnalyses(analysisData.result || []);
+  
+        setStationOptions(stationData.result || []);
+        setCruiseOptions(cruiseData.result || []);
+        setContractorOptions(contractorData.result || []);
+  
       } catch (error) {
         console.error("Error fetching filter options:", error);
       }
     };
-
+  
     fetchFilterOptions();
   }, []);
+  
 
   const handleFilterChange = (e) => {
     const { name, value } = e.target;
@@ -59,7 +88,10 @@ const SampleFilter = ({ filters, setFilters, visibleColumns, setVisibleColumns }
       habitatType: "all",
       analysis: "all",
       searchQuery: "",
-    });
+      station: "all",
+      cruise: "all",
+      contractor: "all",
+    });    
     setVisibleColumns(allColumnOptions.map(col => col.key)); // reset to all columns
   };
 
@@ -84,7 +116,44 @@ const SampleFilter = ({ filters, setFilters, visibleColumns, setVisibleColumns }
 
         <div className={styles.filtersGroup}>
           <h3>Filter By</h3>
+              <label className={styles.filterLabel} htmlFor="station">Station</label>
+                <select
+                  name="station"
+                  value={filters.station}
+                  onChange={handleFilterChange}
+                  className={styles.customSelect}
+                >
+                  <option value="all">All Stations</option>
+                  {stationOptions.map((station, index) => (
+                    <option key={index} value={station}>{station}</option>
+                  ))}
+                </select>
 
+                <label className={styles.filterLabel} htmlFor="cruise">Cruise</label>
+                <select
+                  name="cruise"
+                  value={filters.cruise}
+                  onChange={handleFilterChange}
+                  className={styles.customSelect}
+                >
+                  <option value="all">All Cruises</option>
+                  {cruiseOptions.map((cruise, index) => (
+                    <option key={index} value={cruise}>{cruise}</option>
+                  ))}
+                </select>
+
+                <label className={styles.filterLabel} htmlFor="contractor">Contractor</label>
+                <select
+                  name="contractor"
+                  value={filters.contractor}
+                  onChange={handleFilterChange}
+                  className={styles.customSelect}
+                >
+                  <option value="all">All Contractors</option>
+                  {contractorOptions.map((contractor, index) => (
+                    <option key={index} value={contractor}>{contractor}</option>
+                  ))}
+                </select>
           <label className={styles.filterLabel} htmlFor="sampleType">Sample Type</label>
           <select name="sampleType" value={filters.sampleType} onChange={handleFilterChange} className={styles.customSelect}>
             <option value="all">All Sample Types</option>

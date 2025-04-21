@@ -11,7 +11,11 @@ export default function SamplesPage() {
     habitatType: "all",
     analysis: "all",
     searchQuery: "",
+    station: "all",
+    cruise: "all",
+    contractor: "all",
   });
+  
 
   const [visibleColumns, setVisibleColumns] = useState([
     "sampleType",
@@ -22,6 +26,7 @@ export default function SamplesPage() {
   const applyFilters = (newFilters) => {
     setFilters(newFilters);
   };
+
 
   return (
     <div className={stylesTable.pageWrapper}>
@@ -35,12 +40,12 @@ export default function SamplesPage() {
       <div className={stylesTable.mainContentRow}>
         {/* Sidebar Filter */}
         <div className={stylesFilter.filterContainer}>
-          <SampleFilter
-            filters={filters}
-            setFilters={applyFilters}
-            visibleColumns={visibleColumns}
-            setVisibleColumns={setVisibleColumns}
-          />
+        <SampleFilter
+        filters={filters}
+        setFilters={setFilters}
+        visibleColumns={visibleColumns}
+        setVisibleColumns={setVisibleColumns}
+      />
         </div>
   
         {/* Table */}

@@ -51,5 +51,27 @@ namespace Api.Controllers
             var types = await _sampleService.GetDistinctAnalysesAsync();
             return Ok(new { result = types });
         }
+
+        [HttpGet("stations")]
+        public async Task<IActionResult> GetStations()
+        {
+            var stations = await _sampleService.GetDistinctStationCodesAsync();
+            return Ok(new { result = stations });
+        }
+
+        [HttpGet("cruises")]
+        public async Task<IActionResult> GetCruises()
+        {
+            var cruises = await _sampleService.GetDistinctCruiseNamesAsync();
+            return Ok(new { result = cruises });
+        }
+
+        [HttpGet("contractors")]
+        public async Task<IActionResult> GetContractors()
+        {
+            var contractors = await _sampleService.GetDistinctContractorNamesAsync();
+            return Ok(new { result = contractors });
+        }
+
     }
 }
