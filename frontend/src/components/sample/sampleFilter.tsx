@@ -23,6 +23,9 @@ const SampleFilter = ({
     { key: "habitatType", label: "Habitat Type" },
     { key: "analysis", label: "Analysis" },
     { key: "result", label: "Result" },
+    { key: "contractor", label: "Contractor" },
+    { key: "station", label: "Station" },
+    { key: "cruise", label: "Cruise" },
     { key: "sampleDescription", label: "Description" },
   ];
 

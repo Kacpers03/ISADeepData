@@ -19,7 +19,7 @@ const SampleTable = ({ filters, visibleColumns }) => {
         const response = await fetch("http://localhost:5062/api/sample/list");
         if (!response.ok) throw new Error("Network response was not ok");
         const data = await response.json();
-        setTableData(data);
+        setTableData(data.result); // Just save the array part
       } catch (error) {
         console.error("Error fetching samples:", error);
       }
@@ -27,18 +27,6 @@ const SampleTable = ({ filters, visibleColumns }) => {
 
     fetchSamples();
   }, []);
-
-  const stationOptions = useMemo(() => {
-    return [...new Set(tableData.map(item => item.Station?.StationCode).filter(Boolean))];
-  }, [tableData]);
-  
-  const cruiseOptions = useMemo(() => {
-    return [...new Set(tableData.map(item => item.Station?.Cruise?.CruiseName).filter(Boolean))];
-  }, [tableData]);
-  
-  const contractorOptions = useMemo(() => {
-    return [...new Set(tableData.map(item => item.Station?.Cruise?.Contractor?.ContractorName).filter(Boolean))];
-  }, [tableData]);
 
   const filteredData = useMemo(() => {
     return tableData.filter((item) => {
@@ -81,7 +69,7 @@ return (
     });
   }, [filters, tableData]);
 
-  // 👇 Define all possible columns
+  // Define all possible columns
   const allColumns = {
     sampleCode: {
       accessorKey: "sampleCode",
@@ -93,12 +81,11 @@ return (
       cell: (info) => info.row.original?.Station?.StationCode ?? "-",
     },
     cruise: {
-      accessorKey: "cruise",
+      accessorKey: "cruise1",
       header: "Cruise",
       cell: (info) => info.row.original?.Station?.Cruise?.CruiseName ?? "-",
     },
     contractor: {
-      accessorKey: "contractor",
       header: "Contractor",
       cell: (info) => info.row.original?.Station?.Cruise?.Contractor?.ContractorName ?? "-",
     },    

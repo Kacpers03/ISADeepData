@@ -16,7 +16,11 @@ namespace Api.Repositories.Implementations
 
         public async Task<List<Sample>> GetAllSamplesAsync()
         {
-            return await _context.Samples.ToListAsync();
+            return await _context.Samples
+                .Include(s => s.Station)
+                    .ThenInclude(st => st.Cruise)
+                        .ThenInclude(c => c.Contractor)
+                .ToListAsync();
         }
     }
 }

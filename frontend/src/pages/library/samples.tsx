@@ -18,6 +18,7 @@ export default function SamplesPage() {
   
 
   const [visibleColumns, setVisibleColumns] = useState([
+    "sampleCode",
     "sampleType",
     "matrixType",
     "sampleDescription"
