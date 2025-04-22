@@ -1,3 +1,5 @@
+// frontend/src/utils/csvExportTable.ts
+
 type ExportColumn = {
   label: string;
   key: string;
@@ -10,12 +12,34 @@ type CSVMeta = {
 };
 
 const escapeCSV = (value: string) => {
-  const clean = value?.toString().replace(/"/g, '""').replace(/\r?\n|\r/g, ' ');
+  if (value === null || value === undefined) return '""';
+  const clean = value.toString().replace(/"/g, '""').replace(/\r?\n|\r/g, ' ');
   return `"${clean}"`;
 };
 
 const padForExcel = (value: string, width: number = 10) => {
   return value?.toString().padEnd(width, " ");
+};
+
+// Check if a value might be interpreted as a date in Excel
+const mightBeDate = (value: string): boolean => {
+  // Check for patterns like "1.23", "01.23", "1-23", "01-23" which Excel might convert to dates
+  return /^\d{1,2}[.,]\d{1,2}$/.test(value) || /^\d{1,2}[-/]\d{1,2}$/.test(value);
+};
+
+// Format value to prevent Excel from interpreting numbers as dates
+const formatForExcel = (value: any): string => {
+  if (value === null || value === undefined) return '';
+  
+  const stringValue = String(value);
+  
+  // If it's a decimal number that Excel might interpret as a date
+  if (mightBeDate(stringValue)) {
+    // Prefix with = and wrap in quotes to force Excel to treat it as text/formula
+    return `="=${stringValue}"`;
+  }
+  
+  return stringValue;
 };
 
 export const convertToCSV = (
@@ -48,7 +72,10 @@ export const convertToCSV = (
     columnDefs
       .map(col => {
         const raw = row[col.key];
-        const formatted = col.format ? col.format(raw) : raw ?? "";
+        // Use custom formatter if provided, otherwise do default Excel-safe formatting
+        const formatted = col.format 
+          ? col.format(raw) 
+          : formatForExcel(raw);
         return escapeCSV(padForExcel(formatted));
       })
       .join(delimiter)
@@ -66,7 +93,9 @@ export const convertToCSV = (
 };
 
 export const downloadCSV = (csvString: string, filename: string) => {
-  const blob = new Blob([csvString], { type: "text/csv;charset=utf-8;" });
+  // Add UTF-8 BOM for better Excel compatibility with special characters
+  const bomPrefix = "\uFEFF";
+  const blob = new Blob([bomPrefix + csvString], { type: "text/csv;charset=utf-8;" });
   const url = URL.createObjectURL(blob);
   const link = document.createElement("a");
   link.href = url;

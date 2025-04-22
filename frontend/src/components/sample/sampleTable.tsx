@@ -8,6 +8,7 @@ import {
 } from "@tanstack/react-table";
 import styles from "../../styles/files/reports.module.css";
 import CsvExportButton from "./CSVButton"; // adjust path if needed
+import { formatNumericValue } from "../../utils/dataUtilities"; // Import the formatNumericValue function
 
 
 const SampleTable = ({ filters, visibleColumns }) => {
@@ -138,43 +139,46 @@ return (
     onPaginationChange: setPagination,
   });
 
+  // Updated exportColumns to prevent Excel date conversion issues
   const exportColumns = useMemo(() => {
     if (!filteredData.length) return [];
   
-    const formatters: Record<string, (val: any) => string> = {
-      result: (val) => val ?? "-",
-      depthLower: (val) => typeof val === "number" ? val.toFixed(2) : val ?? "-",
-      depthUpper: (val) => typeof val === "number" ? val.toFixed(2) : val ?? "-",
+    // Define formatters for specific fields to prevent Excel date conversion
+    const formatters = {
+      // For all numeric fields that might be misinterpreted as dates
+      result: (val) => formatNumericValue(val),
+      depthLower: (val) => formatNumericValue(val),
+      depthUpper: (val) => formatNumericValue(val),
+      // Add any other numeric fields that need protection
     };
   
     return Object.keys(filteredData[0]).map((key) => ({
-      label: key, // You could prettify it later (e.g., capitalize words)
+      label: key,
       key,
-      format: formatters[key],
+      format: formatters[key] || ((val) => val !== null && val !== undefined ? String(val) : ""),
     }));
   }, [filteredData]);
-  
   
 
   return (
     <div className={styles.fileTableContainer}>
       <CsvExportButton
-  data={filteredData}
-  columns={exportColumns}
-  filename="filtered-files.csv"
-  meta={{
-    title: "Samples",
-    filters: {
-      "Sample Type": filters.sampleType,
-      "Matrix Type": filters.matrixType,
-      "Habitat Type": filters.habitatType,
-      "Analysis": filters.analysis,
-      "Station": filters.station,
-      "Cruise": filters.cruise,
-      "Contractor": filters.contractor,
-    }
-  }}
-/>
+        data={filteredData}
+        columns={exportColumns}
+        filename="filtered-samples.csv"
+        meta={{
+          title: "Samples",
+          filters: {
+            "Sample Type": filters.sampleType,
+            "Matrix Type": filters.matrixType,
+            "Habitat Type": filters.habitatType,
+            "Analysis": filters.analysis,
+            "Station": filters.station,
+            "Cruise": filters.cruise,
+            "Contractor": filters.contractor,
+          }
+        }}
+      />
       <div className={styles.tableWrapper}>
         <div className={styles.tableContainer}>
           <table className={styles.table}>
