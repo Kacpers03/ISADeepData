@@ -183,7 +183,55 @@ const ImprovedGalleryFilter: React.FC<GalleryFilterProps> = ({
     }
   };
 
-  // Function to download all filtered images
+  // Helper function to properly escape CSV values for Excel
+  const escapeCSVValue = (value: any): string => {
+    if (value === null || value === undefined) return '""';
+    
+    // Convert to string and escape double quotes by doubling them
+    const stringValue = String(value);
+    const escaped = stringValue.replace(/"/g, '""');
+    
+    // Replace line breaks with spaces for better readability
+    const noLineBreaks = escaped.replace(/\r?\n|\r/g, ' ');
+    
+    // Always wrap in quotes to handle special characters and preserve formatting
+    return `"${noLineBreaks}"`;
+  };
+
+  // Format date consistently for Excel
+  const formatDate = (dateString?: string): string => {
+    if (!dateString) return "N/A";
+    
+    try {
+      const date = new Date(dateString);
+      
+      // Check if date is valid
+      if (isNaN(date.getTime())) return "N/A";
+      
+      // Format as YYYY-MM-DD for consistent Excel handling
+      return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+    } catch (error) {
+      return "N/A";
+    }
+  };
+
+  // Extract year from a date string
+  const getCruiseYear = (dateString?: string): string => {
+    if (!dateString) return "";
+    
+    try {
+      const date = new Date(dateString);
+      
+      // Check if date is valid
+      if (isNaN(date.getTime())) return "";
+      
+      return date.getFullYear().toString();
+    } catch (error) {
+      return "";
+    }
+  };
+
+  // Function to download all filtered images - UPDATED TO MATCH MAP CSV EXPORT FORMAT
   const handleDownloadAllImages = async () => {
     if (currentFilteredItems.length === 0) {
       alert("No items to download.");
@@ -235,41 +283,193 @@ const ImprovedGalleryFilter: React.FC<GalleryFilterProps> = ({
         filterDescription += ` - ${filters.year}`;
       }
 
-      // Create CSV with download links
-      const csvContent = [
-        [
-          "File Name",
-          "Media Type",
-          "URL",
-          "Station",
-          "Contractor",
-          "Date",
-        ].join(","),
-        ...itemsToDownload.map((item) =>
-          [
-            item.fileName,
-            item.mediaType,
-            item.fileUrl,
-            item.stationCode || "N/A",
-            item.contractorName || "N/A",
-            item.captureDate
-              ? new Date(item.captureDate).toLocaleDateString()
-              : "N/A",
-          ].join(",")
-        ),
-      ].join("\n");
+      // Store all CSV rows here
+      const allRows: string[] = [];
+      const delimiter = ";";
 
-      const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+      // Add report title section
+      allRows.push(`"ISA DeepData Gallery Export - ${filterDescription}"`);
+      allRows.push(`"Generated on: ${new Date().toISOString().split('T')[0]}"`);
+      allRows.push(""); // Empty row for better readability
+      
+      // 1. MEDIA SECTION
+      // Add section title with empty cells for proper alignment
+      allRows.push(["MEDIA", "", "", "", "", "", ""].join(delimiter));
+      
+      // Add proper headers
+      allRows.push([
+        "MediaId",
+        "FileName", 
+        "MediaType", 
+        "URL", 
+        "StationCode", 
+        "ContractorName", 
+        "CaptureDate", 
+        "Description"
+      ].map(h => escapeCSVValue(h)).join(delimiter));
+      
+      // Add media data rows
+      itemsToDownload.forEach((item, index) => {
+        const row = [
+          index + 1, // Use sequential numbering as MediaId
+          escapeCSVValue(item.fileName || ""),
+          escapeCSVValue(item.mediaType || ""),
+          escapeCSVValue(item.fileUrl || ""),
+          escapeCSVValue(item.stationCode || "N/A"),
+          escapeCSVValue(item.contractorName || "N/A"),
+          escapeCSVValue(formatDate(item.captureDate)),
+          escapeCSVValue(item.description || "")
+        ].join(delimiter);
+        
+        allRows.push(row);
+      });
+      
+      // Add empty rows as separator
+      allRows.push(""); 
+      allRows.push("");
+      
+      // 2. STATION REFERENCE SECTION
+      // Get unique stations from the media items
+      const uniqueStations = Array.from(
+        new Set(itemsToDownload.map(item => item.stationCode).filter(Boolean))
+      );
+      
+      if (uniqueStations.length > 0) {
+        // Add section title
+        allRows.push(["STATIONS", "", "", "", "", ""].join(delimiter));
+        
+        // Add headers
+        allRows.push([
+          "StationId",
+          "StationCode", 
+          "CruiseId", 
+          "Latitude", 
+          "Longitude", 
+          "ContractorName"
+        ].map(h => escapeCSVValue(h)).join(delimiter));
+        
+        // Add station data rows
+        uniqueStations.forEach((stationCode, index) => {
+          // Find first media item with this station to extract data
+          const stationItem = itemsToDownload.find(item => item.stationCode === stationCode);
+          
+          if (stationItem) {
+            const row = [
+              index + 1, // Use sequential numbering as StationId
+              escapeCSVValue(stationCode),
+              escapeCSVValue(stationItem.cruiseId?.toString() || "N/A"),
+              escapeCSVValue(stationItem.latitude?.toString() || "N/A"),
+              escapeCSVValue(stationItem.longitude?.toString() || "N/A"),
+              escapeCSVValue(stationItem.contractorName || "N/A")
+            ].join(delimiter);
+            
+            allRows.push(row);
+          }
+        });
+        
+        // Add empty rows as separator
+        allRows.push(""); 
+        allRows.push("");
+      }
+      
+      // 3. CRUISE REFERENCE SECTION
+      // Get unique cruises from the media items
+      const uniqueCruises = Array.from(
+        new Set(itemsToDownload.map(item => item.cruiseName).filter(Boolean))
+      );
+      
+      if (uniqueCruises.length > 0) {
+        // Add section title
+        allRows.push(["CRUISES", "", "", "", ""].join(delimiter));
+        
+        // Add headers
+        allRows.push([
+          "CruiseId",
+          "CruiseName", 
+          "ContractorId", 
+          "ContractorName", 
+          "Year"
+        ].map(h => escapeCSVValue(h)).join(delimiter));
+        
+        // Add cruise data rows
+        uniqueCruises.forEach((cruiseName, index) => {
+          // Find first media item with this cruise to extract data
+          const cruiseItem = itemsToDownload.find(item => item.cruiseName === cruiseName);
+          
+          if (cruiseItem) {
+            const row = [
+              index + 1, // Use sequential numbering as CruiseId
+              escapeCSVValue(cruiseName),
+              escapeCSVValue(cruiseItem.contractorId?.toString() || "N/A"),
+              escapeCSVValue(cruiseItem.contractorName || "N/A"),
+              escapeCSVValue(getCruiseYear(cruiseItem.captureDate) || "N/A")
+            ].join(delimiter);
+            
+            allRows.push(row);
+          }
+        });
+        
+        // Add empty rows as separator
+        allRows.push(""); 
+        allRows.push("");
+      }
+      
+      // 4. CONTRACTOR REFERENCE SECTION
+      // Get unique contractors from the media items
+      const uniqueContractors = Array.from(
+        new Set(itemsToDownload.map(item => item.contractorName).filter(Boolean))
+      );
+      
+      if (uniqueContractors.length > 0) {
+        // Add section title
+        allRows.push(["CONTRACTORS", "", "", "", ""].join(delimiter));
+        
+        // Add headers
+        allRows.push([
+          "ContractorId",
+          "ContractorName", 
+          "MediaCount"
+        ].map(h => escapeCSVValue(h)).join(delimiter));
+        
+        // Add contractor data rows
+        uniqueContractors.forEach((contractorName, index) => {
+          // Count media items for this contractor
+          const contractorItems = itemsToDownload.filter(item => item.contractorName === contractorName);
+          
+          const row = [
+            index + 1, // Use sequential numbering as ContractorId
+            escapeCSVValue(contractorName),
+            escapeCSVValue(contractorItems.length.toString())
+          ].join(delimiter);
+          
+          allRows.push(row);
+        });
+      }
+
+      // Join all rows with Windows-style line endings for Excel compatibility
+      const csvContent = allRows.join("\r\n");
+
+      // Add UTF-8 BOM for Excel compatibility with special characters
+      const bomPrefix = "\uFEFF";
+      const blob = new Blob([bomPrefix + csvContent], { type: "text/csv;charset=utf-8;" });
+      
+      // Create a download URL
       const url = URL.createObjectURL(blob);
+      
+      // Get current date for the filename
+      const date = new Date().toISOString().split('T')[0];
+      const filename = `ISA_DeepData_${filterDescription.replace(/ /g, "_")}_${date}.csv`;
+      
+      // Create download link and trigger download
       const link = document.createElement("a");
       link.href = url;
-      link.setAttribute(
-        "download",
-        `ISA_DeepData_${filterDescription.replace(/ /g, "_")}.csv`
-      );
+      link.setAttribute("download", filename);
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
+      
+      // Revoke the URL object to free up memory
+      URL.revokeObjectURL(url);
     } catch (error) {
       console.error("Error downloading files:", error);
       alert("There was an error preparing your download. Please try again.");
