@@ -85,6 +85,8 @@ const MediaInfoTemplate: React.FC<FileInfoProps> = ({ fileInfo }) => {
                 <a 
                   href={fileInfo.fileName} 
                   download 
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className={styles.downloadButton}
                   aria-label="Download file"
                 >

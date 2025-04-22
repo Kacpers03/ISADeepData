@@ -87,13 +87,14 @@ const FileTable: React.FC<{
     }
 
     return filtered;
-  }, [filters, tableData]);
+  }, [filters, tableData, setFilteredItems]);
 
   const columns: ColumnDef<FileData>[] = useMemo(
     () => [
       {
         accessorKey: "fileName",
         header: "File Name",
+        minWidth: 200,
         cell: (info) => {
           const fileUrl = info.getValue<string>();
           const fileName = fileUrl?.split("/").pop() || "Unknown File";
@@ -105,6 +106,7 @@ const FileTable: React.FC<{
                 rel="noopener noreferrer"
                 download
                 className={styles.fileLink}
+                onClick={(e) => e.stopPropagation()} // Stop event propagation to prevent navigation
               >
                 <Download className={styles.downloadIcon} size={16} />
                 {fileName}
@@ -116,34 +118,45 @@ const FileTable: React.FC<{
       {
         accessorKey: "contractor",
         header: "Contractor",
+        minWidth: 120,
         cell: (info) => <span>{info.getValue<string>() || "Unknown"}</span>,
       },
       {
         accessorKey: "country",
         header: "Country",
+        minWidth: 120,
+        cell: (info) => <span>{info.getValue<string>() || "N/A"}</span>,
       },
       {
         accessorKey: "year",
         header: "Year",
+        minWidth: 80,
+        cell: (info) => <span>{info.getValue<string | number>() || "N/A"}</span>,
       },
       {
         accessorKey: "theme",
         header: "Theme",
+        minWidth: 120,
+        cell: (info) => <span>{info.getValue<string>() || "N/A"}</span>,
       },
       {
         id: "description",
         header: "Description",
-        cell: ({ row }) => (
-          <div className={styles.tooltipContainer}>
-            <Info 
-              className={styles.infoIcon} 
-              size={20} 
-            />
-            <span className={styles.tooltip}>
-              {row.original.description || "No description available"}
-            </span>
-          </div>
-        ),
+        minWidth: 100,
+        cell: ({ row }) => {
+          const description = row.original.description || "No description available";
+          return (
+            <div className={styles.tooltipContainer} onClick={(e) => e.stopPropagation()}>
+              <Info 
+                className={styles.infoIcon} 
+                size={20} 
+              />
+              <div className={styles.tooltip}>
+                {description}
+              </div>
+            </div>
+          );
+        },
       },
     ],
     []
@@ -168,7 +181,7 @@ const FileTable: React.FC<{
 
   return (
     <div className={styles.fileTableContainer}>
-        <div className={styles.tableContainer}>
+        <div className={styles.tableScrollContainer}>
           <table className={styles.table}>
             <thead className={styles.tableHead}>
               {table.getHeaderGroups().map((headerGroup) => (
@@ -178,6 +191,7 @@ const FileTable: React.FC<{
                       key={column.id} 
                       onClick={column.column.getToggleSortingHandler()}
                       className={styles.sortableHeader}
+                      style={{ minWidth: (column.column.columnDef as any).minWidth }}
                     >
                       {flexRender(column.column.columnDef.header, column.getContext())}
                       {column.column.getIsSorted() && (
@@ -191,19 +205,23 @@ const FileTable: React.FC<{
               ))}
             </thead>
             <tbody>
-                {table.getRowModel().rows.map((row) => (
-                  <tr
-                    key={row.id}
-                    className={styles.tableRow}
-                    onClick={() =>
-                      router.push({
-                        pathname: "/library/moreinfo",
-                        query: { data: JSON.stringify(row.original) },
-                      })
-                    }
-                    style={{ cursor: "pointer" }}
-                  > {row.getVisibleCells().map((cell) => (
-                    <td key={cell.id}>
+              {table.getRowModel().rows.map((row) => (
+                <tr
+                  key={row.id}
+                  className={styles.tableRow}
+                  onClick={() =>
+                    router.push({
+                      pathname: "/library/moreinfo",
+                      query: { data: JSON.stringify(row.original) },
+                    })
+                  }
+                  style={{ cursor: "pointer" }}
+                > 
+                  {row.getVisibleCells().map((cell) => (
+                    <td 
+                      key={cell.id}
+                      style={{ minWidth: (cell.column.columnDef as any).minWidth }}
+                    >
                       {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </td>
                   ))}
