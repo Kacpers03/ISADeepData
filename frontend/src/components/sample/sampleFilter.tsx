@@ -110,46 +110,53 @@ const SampleFilter = ({
 
         <div className={styles.filtersGroup}>
           <h3>Filter By</h3>
-              <label className={styles.filterLabel} htmlFor="station">Station</label>
-                <select
-                  name="station"
-                  value={filters.station}
-                  onChange={handleFilterChange}
-                  className={styles.customSelect}
-                >
-                  <option value="all">All Stations</option>
-                  {stationOptions.map((station, index) => (
-                    <option key={index} value={station}>{station}</option>
-                  ))}
-                </select>
+          
+          <label className={styles.filterLabel} htmlFor="station">Station</label>
+          <select
+            name="station"
+            value={filters.station}
+            onChange={handleFilterChange}
+            className={styles.customSelect}
+          >
+            <option value="all">All Stations</option>
+            {stationOptions.map((station, index) => (
+              <option key={index} value={station}>{station}</option>
+            ))}
+          </select>
 
-                <label className={styles.filterLabel} htmlFor="cruise">Cruise</label>
-                <select
-                  name="cruise"
-                  value={filters.cruise}
-                  onChange={handleFilterChange}
-                  className={styles.customSelect}
-                >
-                  <option value="all">All Cruises</option>
-                  {cruiseOptions.map((cruise, index) => (
-                    <option key={index} value={cruise}>{cruise}</option>
-                  ))}
-                </select>
+          <label className={styles.filterLabel} htmlFor="cruise">Cruise</label>
+          <select
+            name="cruise"
+            value={filters.cruise}
+            onChange={handleFilterChange}
+            className={styles.customSelect}
+          >
+            <option value="all">All Cruises</option>
+            {cruiseOptions.map((cruise, index) => (
+              <option key={index} value={cruise}>{cruise}</option>
+            ))}
+          </select>
 
-                <label className={styles.filterLabel} htmlFor="contractor">Contractor</label>
-                <select
-                  name="contractor"
-                  value={filters.contractor}
-                  onChange={handleFilterChange}
-                  className={styles.customSelect}
-                >
-                  <option value="all">All Contractors</option>
-                  {contractorOptions.map((contractor, index) => (
-                    <option key={index} value={contractor}>{contractor}</option>
-                  ))}
-                </select>
+          <label className={styles.filterLabel} htmlFor="contractor">Contractor</label>
+          <select
+            name="contractor"
+            value={filters.contractor}
+            onChange={handleFilterChange}
+            className={styles.customSelect}
+          >
+            <option value="all">All Contractors</option>
+            {contractorOptions.map((contractor, index) => (
+              <option key={index} value={contractor}>{contractor}</option>
+            ))}
+          </select>
+          
           <label className={styles.filterLabel} htmlFor="sampleType">Sample Type</label>
-          <select name="sampleType" value={filters.sampleType} onChange={handleFilterChange} className={styles.customSelect}>
+          <select 
+            name="sampleType" 
+            value={filters.sampleType} 
+            onChange={handleFilterChange} 
+            className={styles.customSelect}
+          >
             <option value="all">All Sample Types</option>
             {sampleTypes.map((type, index) => (
               <option key={index} value={type}>{type}</option>
@@ -157,7 +164,12 @@ const SampleFilter = ({
           </select>
 
           <label className={styles.filterLabel} htmlFor="matrixType">Matrix Type</label>
-          <select name="matrixType" value={filters.matrixType} onChange={handleFilterChange} className={styles.customSelect}>
+          <select 
+            name="matrixType" 
+            value={filters.matrixType} 
+            onChange={handleFilterChange} 
+            className={styles.customSelect}
+          >
             <option value="all">All Matrix Types</option>
             {matrixTypes.map((type, index) => (
               <option key={index} value={type}>{type}</option>
@@ -165,7 +177,12 @@ const SampleFilter = ({
           </select>
 
           <label className={styles.filterLabel} htmlFor="habitatType">Habitat Type</label>
-          <select name="habitatType" value={filters.habitatType} onChange={handleFilterChange} className={styles.customSelect}>
+          <select 
+            name="habitatType" 
+            value={filters.habitatType} 
+            onChange={handleFilterChange} 
+            className={styles.customSelect}
+          >
             <option value="all">All Habitat Types</option>
             {habitatTypes.map((type, index) => (
               <option key={index} value={type}>{type}</option>
@@ -173,7 +190,12 @@ const SampleFilter = ({
           </select>
 
           <label className={styles.filterLabel} htmlFor="analysis">Analysis</label>
-          <select name="analysis" value={filters.analysis} onChange={handleFilterChange} className={styles.customSelect}>
+          <select 
+            name="analysis" 
+            value={filters.analysis} 
+            onChange={handleFilterChange} 
+            className={styles.customSelect}
+          >
             <option value="all">All Analyses</option>
             {analyses.map((type, index) => (
               <option key={index} value={type}>{type}</option>
@@ -201,11 +223,12 @@ const SampleFilter = ({
             <div key={col.key}>
               <input
                 type="checkbox"
+                id={`col-${col.key}`}
                 value={col.key}
                 checked={visibleColumns.includes(col.key)}
                 onChange={handleColumnToggle}
               />
-              <label>{col.label}</label>
+              <label htmlFor={`col-${col.key}`}>{col.label}</label>
             </div>
           ))}
         </div>
