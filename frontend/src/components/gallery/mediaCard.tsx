@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import styles from "../../styles/gallery/gallery.module.css";
+import { useLanguage } from "../../contexts/languageContext"; // Import language context
 
 interface MediaItem {
   mediaId: number;
@@ -28,6 +29,7 @@ interface MediaCardProps {
 }
 
 const MediaCard: React.FC<MediaCardProps> = ({ media, onClick }) => {
+  const { t } = useLanguage(); // Use the language context
   const [imageError, setImageError] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -39,7 +41,7 @@ const MediaCard: React.FC<MediaCardProps> = ({ media, onClick }) => {
   // Format date for display
   const formattedDate = media.captureDate
     ? new Date(media.captureDate).toLocaleDateString()
-    : "Date unknown";
+    : t("gallery.card.dateUnknown") || "Date unknown";
 
   // Handle thumbnail load error
   const handleImageError = () => {
@@ -120,7 +122,7 @@ const MediaCard: React.FC<MediaCardProps> = ({ media, onClick }) => {
 
         {/* Media type badge */}
         <div className={styles.mediaTypeBadge}>
-          {isVideo ? "Video" : "Image"}
+          {isVideo ? t("gallery.card.video") || "Video" : t("gallery.card.image") || "Image"}
         </div>
       </div>
 
@@ -132,21 +134,21 @@ const MediaCard: React.FC<MediaCardProps> = ({ media, onClick }) => {
         <div className={styles.mediaDetails}>
           {media.stationCode && (
             <div className={styles.detailItem}>
-              <span className={styles.detailLabel}>Station:</span>
+              <span className={styles.detailLabel}>{t("gallery.card.station") || "Station"}:</span>
               <span className={styles.detailValue}>{media.stationCode}</span>
             </div>
           )}
 
           {media.captureDate && (
             <div className={styles.detailItem}>
-              <span className={styles.detailLabel}>Date:</span>
+              <span className={styles.detailLabel}>{t("gallery.card.date") || "Date"}:</span>
               <span className={styles.detailValue}>{formattedDate}</span>
             </div>
           )}
 
           {media.contractorName && (
             <div className={styles.detailItem}>
-              <span className={styles.detailLabel}>Contractor:</span>
+              <span className={styles.detailLabel}>{t("gallery.card.contractor") || "Contractor"}:</span>
               <span className={styles.detailValue} title={media.contractorName}>
                 {media.contractorName.length > 15
                   ? `${media.contractorName.substring(0, 15)}...`
@@ -160,7 +162,7 @@ const MediaCard: React.FC<MediaCardProps> = ({ media, onClick }) => {
       {/* Card actions */}
       <div className={styles.cardActions}>
         <button className={styles.viewButton} onClick={onClick}>
-          View Details
+          {t("gallery.card.viewDetails") || "View Details"}
         </button>
         <a
           href={media.fileUrl}
@@ -169,7 +171,7 @@ const MediaCard: React.FC<MediaCardProps> = ({ media, onClick }) => {
           className={styles.downloadButton}
           onClick={handleDownloadClick}
         >
-          Download
+          {t("gallery.card.download") || "Download"}
         </a>
       </div>
     </div>

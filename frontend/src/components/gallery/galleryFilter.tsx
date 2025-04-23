@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect, useCallback } from "react";
 import { CustomDropdown } from "../map/filters/CustomDropdown";
 import styles from "../../styles/gallery/gallery.module.css";
 import mapStyles from "../../styles/map/filter.module.css";
+import { useLanguage } from "../../contexts/languageContext"; // Import language context
 
 interface GalleryFilterProps {
   filters: {
@@ -44,6 +45,7 @@ const ImprovedGalleryFilter: React.FC<GalleryFilterProps> = ({
   years,
   currentFilteredItems,
 }) => {
+  const { t } = useLanguage(); // Use the language context
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isDownloading, setIsDownloading] = useState(false);
   const [searchQuery, setSearchQuery] = useState(filters.searchQuery);
@@ -234,7 +236,7 @@ const ImprovedGalleryFilter: React.FC<GalleryFilterProps> = ({
   // Function to download all filtered images - UPDATED TO MATCH MAP CSV EXPORT FORMAT
   const handleDownloadAllImages = async () => {
     if (currentFilteredItems.length === 0) {
-      alert("No items to download.");
+      alert(t("gallery.filter.noItemsToDownload") || "No items to download.");
       return;
     }
 
@@ -258,26 +260,26 @@ const ImprovedGalleryFilter: React.FC<GalleryFilterProps> = ({
           : currentFilteredItems;
 
       if (itemsToDownload.length === 0) {
-        alert("No items match the current filter for download.");
+        alert(t("gallery.filter.noMatchingItems") || "No items match the current filter for download.");
         setIsDownloading(false);
         return;
       }
 
       // Create download description
-      let filterDescription = "All Media";
+      let filterDescription = t("gallery.filter.allMedia") || "All Media";
       if (filters.mediaType !== "all")
-        filterDescription = filters.mediaType === "image" ? "Images" : "Videos";
+        filterDescription = filters.mediaType === "image" ? (t("gallery.filter.images") || "Images") : (t("gallery.filter.videos") || "Videos");
       if (filters.contractorId !== "all") {
         const contractor = contractors.find(
           (c) => c.id.toString() === filters.contractorId
         );
-        filterDescription += ` - ${contractor?.name || "Selected Contractor"}`;
+        filterDescription += ` - ${contractor?.name || (t("gallery.filter.selectedContractor") || "Selected Contractor")}`;
       }
       if (filters.stationId !== "all") {
         const station = stations.find(
           (s) => s.id.toString() === filters.stationId
         );
-        filterDescription += ` - Station ${station?.code || "Selected"}`;
+        filterDescription += ` - ${t("gallery.filter.station") || "Station"} ${station?.code || (t("gallery.filter.selected") || "Selected")}`;
       }
       if (filters.year !== "all") {
         filterDescription += ` - ${filters.year}`;
@@ -288,24 +290,24 @@ const ImprovedGalleryFilter: React.FC<GalleryFilterProps> = ({
       const delimiter = ";";
 
       // Add report title section
-      allRows.push(`"ISA DeepData Gallery Export - ${filterDescription}"`);
-      allRows.push(`"Generated on: ${new Date().toISOString().split('T')[0]}"`);
+      allRows.push(`"${t("gallery.export.title") || "ISA DeepData Gallery Export"} - ${filterDescription}"`);
+      allRows.push(`"${t("gallery.export.generated") || "Generated on"}: ${new Date().toISOString().split('T')[0]}"`);
       allRows.push(""); // Empty row for better readability
       
       // 1. MEDIA SECTION
       // Add section title with empty cells for proper alignment
-      allRows.push(["MEDIA", "", "", "", "", "", ""].join(delimiter));
+      allRows.push([(t("gallery.export.media") || "MEDIA"), "", "", "", "", "", ""].join(delimiter));
       
       // Add proper headers
       allRows.push([
-        "MediaId",
-        "FileName", 
-        "MediaType", 
-        "URL", 
-        "StationCode", 
-        "ContractorName", 
-        "CaptureDate", 
-        "Description"
+        t("gallery.export.headers.mediaId") || "MediaId",
+        t("gallery.export.headers.fileName") || "FileName", 
+        t("gallery.export.headers.mediaType") || "MediaType", 
+        t("gallery.export.headers.url") || "URL", 
+        t("gallery.export.headers.stationCode") || "StationCode", 
+        t("gallery.export.headers.contractorName") || "ContractorName", 
+        t("gallery.export.headers.captureDate") || "CaptureDate", 
+        t("gallery.export.headers.description") || "Description"
       ].map(h => escapeCSVValue(h)).join(delimiter));
       
       // Add media data rows
@@ -336,16 +338,16 @@ const ImprovedGalleryFilter: React.FC<GalleryFilterProps> = ({
       
       if (uniqueStations.length > 0) {
         // Add section title
-        allRows.push(["STATIONS", "", "", "", "", ""].join(delimiter));
+        allRows.push([(t("gallery.export.stations") || "STATIONS"), "", "", "", "", ""].join(delimiter));
         
         // Add headers
         allRows.push([
-          "StationId",
-          "StationCode", 
-          "CruiseId", 
-          "Latitude", 
-          "Longitude", 
-          "ContractorName"
+          t("gallery.export.headers.stationId") || "StationId",
+          t("gallery.export.headers.stationCode") || "StationCode", 
+          t("gallery.export.headers.cruiseId") || "CruiseId", 
+          t("gallery.export.headers.latitude") || "Latitude", 
+          t("gallery.export.headers.longitude") || "Longitude", 
+          t("gallery.export.headers.contractorName") || "ContractorName"
         ].map(h => escapeCSVValue(h)).join(delimiter));
         
         // Add station data rows
@@ -380,15 +382,15 @@ const ImprovedGalleryFilter: React.FC<GalleryFilterProps> = ({
       
       if (uniqueCruises.length > 0) {
         // Add section title
-        allRows.push(["CRUISES", "", "", "", ""].join(delimiter));
+        allRows.push([(t("gallery.export.cruises") || "CRUISES"), "", "", "", ""].join(delimiter));
         
         // Add headers
         allRows.push([
-          "CruiseId",
-          "CruiseName", 
-          "ContractorId", 
-          "ContractorName", 
-          "Year"
+          t("gallery.export.headers.cruiseId") || "CruiseId",
+          t("gallery.export.headers.cruiseName") || "CruiseName", 
+          t("gallery.export.headers.contractorId") || "ContractorId", 
+          t("gallery.export.headers.contractorName") || "ContractorName", 
+          t("gallery.export.headers.year") || "Year"
         ].map(h => escapeCSVValue(h)).join(delimiter));
         
         // Add cruise data rows
@@ -422,13 +424,13 @@ const ImprovedGalleryFilter: React.FC<GalleryFilterProps> = ({
       
       if (uniqueContractors.length > 0) {
         // Add section title
-        allRows.push(["CONTRACTORS", "", "", "", ""].join(delimiter));
+        allRows.push([(t("gallery.export.contractors") || "CONTRACTORS"), "", "", "", ""].join(delimiter));
         
         // Add headers
         allRows.push([
-          "ContractorId",
-          "ContractorName", 
-          "MediaCount"
+          t("gallery.export.headers.contractorId") || "ContractorId",
+          t("gallery.export.headers.contractorName") || "ContractorName", 
+          t("gallery.export.headers.mediaCount") || "MediaCount"
         ].map(h => escapeCSVValue(h)).join(delimiter));
         
         // Add contractor data rows
@@ -472,7 +474,7 @@ const ImprovedGalleryFilter: React.FC<GalleryFilterProps> = ({
       URL.revokeObjectURL(url);
     } catch (error) {
       console.error("Error downloading files:", error);
-      alert("There was an error preparing your download. Please try again.");
+      alert(t("gallery.export.error") || "There was an error preparing your download. Please try again.");
     } finally {
       setIsDownloading(false);
     }
@@ -485,7 +487,7 @@ const ImprovedGalleryFilter: React.FC<GalleryFilterProps> = ({
     labelKey: string
   ) => {
     return [
-      { value: "all", label: "All" },
+      { value: "all", label: t("gallery.filter.all") || "All" },
       ...items.map((item) => ({
         value: item[valueKey].toString(),
         label: item[labelKey],
@@ -495,16 +497,16 @@ const ImprovedGalleryFilter: React.FC<GalleryFilterProps> = ({
 
   // Create dropdown options
   const mediaTypeOptions = [
-    { value: "all", label: "All Media Types" },
-    { value: "image", label: "Images only" },
-    { value: "video", label: "Videos only" },
+    { value: "all", label: t("gallery.filter.allMediaTypes") || "All Media Types" },
+    { value: "image", label: t("gallery.filter.imagesOnly") || "Images only" },
+    { value: "video", label: t("gallery.filter.videosOnly") || "Videos only" },
   ];
 
   const contractorOptions = prepareDropdownOptions(contractors, "id", "name");
   const cruiseOptions = prepareDropdownOptions(cruises, "id", "name");
   const stationOptions = prepareDropdownOptions(stations, "id", "code");
   const yearOptions = [
-    { value: "all", label: "All Years" },
+    { value: "all", label: t("gallery.filter.allYears") || "All Years" },
     ...years.map((year) => ({ value: year, label: year })),
   ];
 
@@ -516,10 +518,10 @@ const ImprovedGalleryFilter: React.FC<GalleryFilterProps> = ({
     >
       <div className={mapStyles.filterContent}>
         <div className={mapStyles.filterHeader}>
-          <h2>Media Filters</h2>
+          <h2>{t("gallery.filter.title") || "Media Filters"}</h2>
           {activeFiltersCount > 0 && (
             <button className={mapStyles.resetButton} onClick={onResetFilters}>
-              Reset ({activeFiltersCount})
+              {t("gallery.filter.reset") || "Reset"} ({activeFiltersCount})
             </button>
           )}
         </div>
@@ -532,17 +534,17 @@ const ImprovedGalleryFilter: React.FC<GalleryFilterProps> = ({
               type="text"
               id="mediaSearch" // Added ID attribute
               name="mediaSearch" // Added name attribute
-              placeholder="Search media..."
+              placeholder={t("gallery.filter.searchPlaceholder") || "Search media..."}
               value={searchQuery}
               onChange={handleSearchChange}
               onKeyPress={handleKeyPress}
               className={mapStyles.searchInput}
-              aria-label="Search media" // Added aria-label
+              aria-label={t("gallery.filter.searchAriaLabel") || "Search media"} // Added aria-label
             />
             <button
               onClick={() => performSearch(searchQuery)}
               className={mapStyles.searchButton}
-              aria-label="Search"
+              aria-label={t("gallery.filter.search") || "Search"}
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -565,7 +567,7 @@ const ImprovedGalleryFilter: React.FC<GalleryFilterProps> = ({
           {showResults && (
             <div ref={resultsRef} className={mapStyles.searchResultsList}>
               <div className={mapStyles.searchResultsHeader}>
-                <span>Search Results ({searchResults.length})</span>
+                <span>{t("gallery.filter.searchResults") || "Search Results"} ({searchResults.length})</span>
                 <button
                   className={mapStyles.closeResultsButton}
                   onClick={() => setShowResults(false)}
@@ -577,7 +579,7 @@ const ImprovedGalleryFilter: React.FC<GalleryFilterProps> = ({
               <div className={mapStyles.searchResultsContent}>
                 {searchResults.length === 0 ? (
                   <div className={mapStyles.noResults}>
-                    No results found for "{searchQuery}"
+                    {t("gallery.filter.noResultsFound") || "No results found for"} "{searchQuery}"
                   </div>
                 ) : (
                   <ul>
@@ -605,7 +607,7 @@ const ImprovedGalleryFilter: React.FC<GalleryFilterProps> = ({
                               >
                                 <polygon points="5 3 19 12 5 21 5 3"></polygon>
                               </svg>
-                              Video
+                              {t("gallery.filter.video") || "Video"}
                             </>
                           ) : (
                             <>
@@ -631,7 +633,7 @@ const ImprovedGalleryFilter: React.FC<GalleryFilterProps> = ({
                                 <circle cx="8.5" cy="8.5" r="1.5"></circle>
                                 <polyline points="21 15 16 10 5 21"></polyline>
                               </svg>
-                              Image
+                              {t("gallery.filter.image") || "Image"}
                             </>
                           )}
                         </div>
@@ -640,7 +642,7 @@ const ImprovedGalleryFilter: React.FC<GalleryFilterProps> = ({
                         </div>
                         {result.stationCode && (
                           <div className={mapStyles.resultParent}>
-                            Station: {result.stationCode}
+                            {t("gallery.filter.station") || "Station"}: {result.stationCode}
                           </div>
                         )}
                       </li>
@@ -653,11 +655,11 @@ const ImprovedGalleryFilter: React.FC<GalleryFilterProps> = ({
         </div>
 
         <div className={mapStyles.filtersGroup}>
-          <h3>Filter By</h3>
+          <h3>{t("gallery.filter.filterBy") || "Filter By"}</h3>
 
           <CustomDropdown
             id="mediaType"
-            label="Media Type"
+            label={t("gallery.filter.mediaType") || "Media Type"}
             options={mediaTypeOptions}
             value={filters.mediaType}
             onChange={(e) => handleSelectChange("mediaType", e.target.value)}
@@ -666,7 +668,7 @@ const ImprovedGalleryFilter: React.FC<GalleryFilterProps> = ({
 
           <CustomDropdown
             id="contractorId"
-            label="Contractor"
+            label={t("gallery.filter.contractor") || "Contractor"}
             options={contractorOptions}
             value={filters.contractorId}
             onChange={(e) => handleSelectChange("contractorId", e.target.value)}
@@ -675,7 +677,7 @@ const ImprovedGalleryFilter: React.FC<GalleryFilterProps> = ({
 
           <CustomDropdown
             id="cruiseId"
-            label="Cruise"
+            label={t("gallery.filter.cruise") || "Cruise"}
             options={cruiseOptions}
             value={filters.cruiseId}
             onChange={(e) => handleSelectChange("cruiseId", e.target.value)}
@@ -684,7 +686,7 @@ const ImprovedGalleryFilter: React.FC<GalleryFilterProps> = ({
 
           <CustomDropdown
             id="stationId"
-            label="Station"
+            label={t("gallery.filter.station") || "Station"}
             options={stationOptions}
             value={filters.stationId}
             onChange={(e) => handleSelectChange("stationId", e.target.value)}
@@ -693,7 +695,7 @@ const ImprovedGalleryFilter: React.FC<GalleryFilterProps> = ({
 
           <CustomDropdown
             id="year"
-            label="Year"
+            label={t("gallery.filter.year") || "Year"}
             options={yearOptions}
             value={filters.year}
             onChange={(e) => handleSelectChange("year", e.target.value)}
@@ -707,14 +709,14 @@ const ImprovedGalleryFilter: React.FC<GalleryFilterProps> = ({
             disabled={isDownloading || currentFilteredItems.length === 0}
           >
             {isDownloading
-              ? "Preparing Download..."
-              : `Download CSV (${currentFilteredItems.length})`}
+              ? (t("gallery.filter.preparingDownload") || "Preparing Download...")
+              : `${t("gallery.filter.downloadCSV") || "Download CSV"} (${currentFilteredItems.length})`}
           </button>
         </div>
       </div>
 
       <div className={mapStyles.resultsInfo}>
-        <span>{currentFilteredItems.length} items match your filters</span>
+        <span>{currentFilteredItems.length} {t("gallery.filter.itemsMatchFilters") || "items match your filters"}</span>
       </div>
     </div>
   );

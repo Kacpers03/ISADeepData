@@ -342,5 +342,131 @@
         "item5": "Advanced analysis and visualization options"
       }
     }
+  },
+
+  
+  
+
+"gallery": {
+  "pageTitle": "Gallery",
+  "pageDescription": "Browse deep-sea images and videos from the ISA DeepData gallery",
+  "title": "Deep-Sea Media Gallery",
+  "description": "Explore a collection of deep-sea images and videos from various exploration missions and research activities.",
+  "loading": "Loading media...",
+  "retry": "Retry Connection",
+  "checkConnectivity": "Check API Connectivity",
+  "checkingConnectivity": "Checking API connectivity...",
+  "connectivityResults": "API Connectivity Check Results",
+  "matchPortMessage": "Try to match one of these ports in your code, or check your API's launchSettings.json file.",
+  "noResults": "No media found matching your filters.",
+  "resetFilters": "Reset Filters",
+  "showing": "Showing {{from}} - {{to}} of {{total}} items",
+  
+  "errors": {
+    "timeout": "Request timed out. Please check your connection and try again.",
+    "network": "Network error: Unable to connect to the API server. We tried ports 5802 and 5062. Please ensure your backend API is running and accessible.",
+    "connection": "Connection refused: The server rejected the connection. Make sure your API is running and CORS is properly configured.",
+    "unknown": "An unknown error occurred while fetching data",
+    "bothPorts": "Connection failed on both ports (5802, 5062). Please check if your API server is running and accessible."
+  },
+  
+  "pagination": {
+    "previous": "Previous",
+    "next": "Next"
+  },
+  
+  "filter": {
+    "title": "Media Filters",
+    "reset": "Reset",
+    "searchPlaceholder": "Search media...",
+    "searchAriaLabel": "Search media",
+    "search": "Search",
+    "searchResults": "Search Results",
+    "noResultsFound": "No results found for",
+    "video": "Video",
+    "image": "Image",
+    "station": "Station",
+    "filterBy": "Filter By",
+    "mediaType": "Media Type",
+    "contractor": "Contractor",
+    "cruise": "Cruise",
+    "year": "Year",
+    "preparingDownload": "Preparing Download...",
+    "downloadCSV": "Download CSV",
+    "itemsMatchFilters": "items match your filters",
+    "all": "All",
+    "allMediaTypes": "All Media Types",
+    "imagesOnly": "Images only",
+    "videosOnly": "Videos only",
+    "allYears": "All Years",
+    "noItemsToDownload": "No items to download.",
+    "noMatchingItems": "No items match the current filter for download.",
+    "allMedia": "All Media",
+    "images": "Images",
+    "videos": "Videos",
+    "selectedContractor": "Selected Contractor",
+    "selected": "Selected"
+  },
+  
+  "export": {
+    "title": "ISA DeepData Gallery Export",
+    "generated": "Generated on",
+    "media": "MEDIA",
+    "stations": "STATIONS",
+    "cruises": "CRUISES",
+    "contractors": "CONTRACTORS",
+    "error": "There was an error preparing your download. Please try again.",
+    
+    "headers": {
+      "mediaId": "MediaId",
+      "fileName": "FileName",
+      "mediaType": "MediaType",
+      "url": "URL",
+      "stationCode": "StationCode",
+      "contractorName": "ContractorName",
+      "captureDate": "CaptureDate",
+      "description": "Description",
+      "stationId": "StationId",
+      "cruiseId": "CruiseId",
+      "latitude": "Latitude",
+      "longitude": "Longitude",
+      "cruiseName": "CruiseName",
+      "contractorId": "ContractorId",
+      "year": "Year",
+      "mediaCount": "MediaCount"
+    }
+  },
+  
+  "card": {
+    "video": "Video",
+    "image": "Image",
+    "dateUnknown": "Date unknown",
+    "station": "Station",
+    "date": "Date",
+    "contractor": "Contractor",
+    "viewDetails": "View Details",
+    "download": "Download"
+  },
+  
+  "modal": {
+    "dateUnknown": "Date unknown",
+    "notAvailable": "Not available",
+    "mediaType": "Media Type",
+    "video": "Video",
+    "image": "Image",
+    "captureDate": "Capture Date",
+    "station": "Station",
+    "cruise": "Cruise",
+    "contractor": "Contractor",
+    "sample": "Sample",
+    "coordinates": "Coordinates",
+    "cameraSpecs": "Camera Specs",
+    "download": "Download",
+    "showOnMap": "Show on Map"
   }
 }
+  
+}
+
+  
+

@@ -367,7 +367,129 @@
 
 
 
+},
+
+
+
+
+"gallery": {
+  "pageTitle": "Galería",
+  "pageDescription": "Explore imágenes y videos de aguas profundas de la galería ISA DeepData",
+  "title": "Galería de Medios de Aguas Profundas",
+  "description": "Explore una colección de imágenes y videos de aguas profundas de varias misiones de exploración y actividades de investigación.",
+  "loading": "Cargando medios...",
+  "retry": "Reintentar Conexión",
+  "checkConnectivity": "Verificar Conectividad API",
+  "checkingConnectivity": "Verificando conectividad API...",
+  "connectivityResults": "Resultados de Verificación de Conectividad API",
+  "matchPortMessage": "Intente hacer coincidir uno de estos puertos en su código, o verifique el archivo launchSettings.json de su API.",
+  "noResults": "No se encontraron medios que coincidan con sus filtros.",
+  "resetFilters": "Restablecer Filtros",
+  "showing": "Mostrando {{from}} - {{to}} de {{total}} elementos",
+  
+  "errors": {
+    "timeout": "La solicitud ha excedido el tiempo de espera. Por favor, compruebe su conexión e inténtelo de nuevo.",
+    "network": "Error de red: No se puede conectar al servidor API. Probamos los puertos 5802 y 5062. Asegúrese de que su API backend esté funcionando y sea accesible.",
+    "connection": "Conexión rechazada: El servidor rechazó la conexión. Asegúrese de que su API esté funcionando y que CORS esté configurado correctamente.",
+    "unknown": "Ocurrió un error desconocido al obtener datos",
+    "bothPorts": "La conexión falló en ambos puertos (5802, 5062). Compruebe si su servidor API está funcionando y es accesible."
+  },
+  
+  "pagination": {
+    "previous": "Anterior",
+    "next": "Siguiente"
+  },
+  
+  "filter": {
+    "title": "Filtros de Medios",
+    "reset": "Restablecer",
+    "searchPlaceholder": "Buscar medios...",
+    "searchAriaLabel": "Buscar medios",
+    "search": "Buscar",
+    "searchResults": "Resultados de Búsqueda",
+    "noResultsFound": "No se encontraron resultados para",
+    "video": "Video",
+    "image": "Imagen",
+    "station": "Estación",
+    "filterBy": "Filtrar Por",
+    "mediaType": "Tipo de Medio",
+    "contractor": "Contratista",
+    "cruise": "Crucero",
+    "year": "Año",
+    "preparingDownload": "Preparando Descarga...",
+    "downloadCSV": "Descargar CSV",
+    "itemsMatchFilters": "elementos coinciden con sus filtros",
+    "all": "Todos",
+    "allMediaTypes": "Todos los Tipos de Medios",
+    "imagesOnly": "Solo Imágenes",
+    "videosOnly": "Solo Videos",
+    "allYears": "Todos los Años",
+    "noItemsToDownload": "No hay elementos para descargar.",
+    "noMatchingItems": "Ningún elemento coincide con el filtro actual para descargar.",
+    "allMedia": "Todos los Medios",
+    "images": "Imágenes",
+    "videos": "Videos",
+    "selectedContractor": "Contratista Seleccionado",
+    "selected": "Seleccionado"
+  },
+  
+  "export": {
+    "title": "Exportación de Galería ISA DeepData",
+    "generated": "Generado el",
+    "media": "MEDIOS",
+    "stations": "ESTACIONES",
+    "cruises": "CRUCEROS",
+    "contractors": "CONTRATISTAS",
+    "error": "Hubo un error al preparar su descarga. Por favor, inténtelo de nuevo.",
+    
+    "headers": {
+      "mediaId": "ID de Medio",
+      "fileName": "Nombre de Archivo",
+      "mediaType": "Tipo de Medio",
+      "url": "URL",
+      "stationCode": "Código de Estación",
+      "contractorName": "Nombre de Contratista",
+      "captureDate": "Fecha de Captura",
+      "description": "Descripción",
+      "stationId": "ID de Estación",
+      "cruiseId": "ID de Crucero",
+      "latitude": "Latitud",
+      "longitude": "Longitud",
+      "cruiseName": "Nombre de Crucero",
+      "contractorId": "ID de Contratista",
+      "year": "Año",
+      "mediaCount": "Cantidad de Medios"
+    }
+  },
+  
+  "card": {
+    "video": "Video",
+    "image": "Imagen",
+    "dateUnknown": "Fecha desconocida",
+    "station": "Estación",
+    "date": "Fecha",
+    "contractor": "Contratista",
+    "viewDetails": "Ver Detalles",
+    "download": "Descargar"
+  },
+  
+  "modal": {
+    "dateUnknown": "Fecha desconocida",
+    "notAvailable": "No disponible",
+    "mediaType": "Tipo de Medio",
+    "video": "Video",
+    "image": "Imagen",
+    "captureDate": "Fecha de Captura",
+    "station": "Estación",
+    "cruise": "Crucero",
+    "contractor": "Contratista",
+    "sample": "Muestra",
+    "coordinates": "Coordenadas",
+    "cameraSpecs": "Especificaciones de Cámara",
+    "download": "Descargar",
+    "showOnMap": "Mostrar en Mapa"
+  }
+}
 }
 
 
-}

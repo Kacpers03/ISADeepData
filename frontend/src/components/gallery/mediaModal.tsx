@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { useRouter } from 'next/router';
 import styles from '../../styles/gallery/gallery.module.css';
+import { useLanguage } from "../../contexts/languageContext"; // Import language context
 
 interface MediaItem {
   mediaId: number;
@@ -29,6 +30,7 @@ interface MediaModalProps {
 }
 
 const MediaModal: React.FC<MediaModalProps> = ({ media, onClose }) => {
+  const { t } = useLanguage(); // Use the language context
   const modalRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const router = useRouter();
@@ -40,11 +42,11 @@ const MediaModal: React.FC<MediaModalProps> = ({ media, onClose }) => {
   // Format date for display
   const formattedDate = media.captureDate 
     ? new Date(media.captureDate).toLocaleDateString()
-    : 'Date unknown';
+    : t('gallery.modal.dateUnknown') || 'Date unknown';
   
   // Format coordinates for display
   const formatCoordinates = () => {
-    if (!media.latitude || !media.longitude) return 'Not available';
+    if (!media.latitude || !media.longitude) return t('gallery.modal.notAvailable') || 'Not available';
     
     const lat = Math.abs(media.latitude).toFixed(4) + (media.latitude >= 0 ? '°N' : '°S');
     const lon = Math.abs(media.longitude).toFixed(4) + (media.longitude >= 0 ? '°E' : '°W');
@@ -109,7 +111,7 @@ const MediaModal: React.FC<MediaModalProps> = ({ media, onClose }) => {
         sessionStorage.setItem('mapShowLongitude', media.longitude.toString());
         
         // Save station name
-        sessionStorage.setItem('mapShowStationName', media.stationCode || `Station #${media.stationId}`);
+        sessionStorage.setItem('mapShowStationName', media.stationCode || `${t('gallery.modal.station') || 'Station'} #${media.stationId}`);
         
         // Save zoom level explicitly
         sessionStorage.setItem('mapShowZoomLevel', '16');
@@ -126,7 +128,7 @@ const MediaModal: React.FC<MediaModalProps> = ({ media, onClose }) => {
           stationId: media.stationId,
           lat: media.latitude,
           lon: media.longitude,
-          name: media.stationCode || `Station #${media.stationId}`
+          name: media.stationCode || `${t('gallery.modal.station') || 'Station'} #${media.stationId}`
         });
       } catch (e) {
         console.error("Error saving to sessionStorage:", e);
@@ -185,57 +187,57 @@ const MediaModal: React.FC<MediaModalProps> = ({ media, onClose }) => {
             
             <div className={styles.mediaDetailsList}>
               <div className={styles.mediaDetailItem}>
-                <span className={styles.mediaDetailLabel}>Media Type:</span>
+                <span className={styles.mediaDetailLabel}>{t('gallery.modal.mediaType') || 'Media Type'}:</span>
                 <span className={styles.mediaDetailValue}>
-                  {isVideo ? 'Video' : 'Image'}
+                  {isVideo ? (t('gallery.modal.video') || 'Video') : (t('gallery.modal.image') || 'Image')}
                 </span>
               </div>
               
               {media.captureDate && (
                 <div className={styles.mediaDetailItem}>
-                  <span className={styles.mediaDetailLabel}>Capture Date:</span>
+                  <span className={styles.mediaDetailLabel}>{t('gallery.modal.captureDate') || 'Capture Date'}:</span>
                   <span className={styles.mediaDetailValue}>{formattedDate}</span>
                 </div>
               )}
               
               {media.stationCode && (
                 <div className={styles.mediaDetailItem}>
-                  <span className={styles.mediaDetailLabel}>Station:</span>
+                  <span className={styles.mediaDetailLabel}>{t('gallery.modal.station') || 'Station'}:</span>
                   <span className={styles.mediaDetailValue}>{media.stationCode}</span>
                 </div>
               )}
               
               {media.cruiseName && (
                 <div className={styles.mediaDetailItem}>
-                  <span className={styles.mediaDetailLabel}>Cruise:</span>
+                  <span className={styles.mediaDetailLabel}>{t('gallery.modal.cruise') || 'Cruise'}:</span>
                   <span className={styles.mediaDetailValue}>{media.cruiseName}</span>
                 </div>
               )}
               
               {media.contractorName && (
                 <div className={styles.mediaDetailItem}>
-                  <span className={styles.mediaDetailLabel}>Contractor:</span>
+                  <span className={styles.mediaDetailLabel}>{t('gallery.modal.contractor') || 'Contractor'}:</span>
                   <span className={styles.mediaDetailValue}>{media.contractorName}</span>
                 </div>
               )}
               
               {media.sampleCode && (
                 <div className={styles.mediaDetailItem}>
-                  <span className={styles.mediaDetailLabel}>Sample:</span>
+                  <span className={styles.mediaDetailLabel}>{t('gallery.modal.sample') || 'Sample'}:</span>
                   <span className={styles.mediaDetailValue}>{media.sampleCode}</span>
                 </div>
               )}
               
               {(media.latitude && media.longitude) && (
                 <div className={styles.mediaDetailItem}>
-                  <span className={styles.mediaDetailLabel}>Coordinates:</span>
+                  <span className={styles.mediaDetailLabel}>{t('gallery.modal.coordinates') || 'Coordinates'}:</span>
                   <span className={styles.mediaDetailValue}>{formatCoordinates()}</span>
                 </div>
               )}
               
               {media.cameraSpecs && (
                 <div className={styles.mediaDetailItem}>
-                  <span className={styles.mediaDetailLabel}>Camera Specs:</span>
+                  <span className={styles.mediaDetailLabel}>{t('gallery.modal.cameraSpecs') || 'Camera Specs'}:</span>
                   <span className={styles.mediaDetailValue}>{media.cameraSpecs}</span>
                 </div>
               )}
@@ -250,7 +252,7 @@ const MediaModal: React.FC<MediaModalProps> = ({ media, onClose }) => {
                 rel="noopener noreferrer"
                 onClick={(e) => e.stopPropagation()}
               >
-                Download
+                {t('gallery.modal.download') || 'Download'}
               </a>
               
               {(media.latitude && media.longitude) && (
@@ -258,7 +260,7 @@ const MediaModal: React.FC<MediaModalProps> = ({ media, onClose }) => {
                   onClick={handleShowOnMap}
                   className={styles.viewOnMapButton}
                 >
-                  Show on Map
+                  {t('gallery.modal.showOnMap') || 'Show on Map'}
                 </button>
               )}
             </div>

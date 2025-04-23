@@ -1,8 +1,10 @@
+// Updated GalleryTemplate.tsx with translation support
 import React, { useState, useEffect } from "react";
 import styles from "../../styles/gallery/gallery.module.css";
 import ImprovedGalleryFilter from "./galleryFilter";
 import MediaCard from "./mediaCard";
 import MediaModal from "./mediaModal";
+import { useLanguage } from "../../contexts/languageContext"; // Import language context
 
 // Media item interface
 interface MediaItem {
@@ -37,6 +39,8 @@ interface FilterState {
 }
 
 const GalleryTemplate: React.FC = () => {
+  const { t } = useLanguage(); // Use the language context
+  
   // State for media items and loading
   const [mediaItems, setMediaItems] = useState<MediaItem[]>([]);
   const [filteredItems, setFilteredItems] = useState<MediaItem[]>([]);
@@ -186,24 +190,30 @@ const GalleryTemplate: React.FC = () => {
         if (err instanceof Error) {
           if (err.name === "AbortError") {
             setError(
-              "Request timed out. Please check your connection and try again."
+              t("gallery.errors.timeout") || "Request timed out. Please check your connection and try again."
             );
           } else if (
             err.message.includes("NetworkError") ||
             err.message.includes("Failed to fetch")
           ) {
-            setError(`Network error: Unable to connect to the API server. 
+            setError(
+              t("gallery.errors.network") || 
+              `Network error: Unable to connect to the API server. 
               We tried ports 5802 and 5062. Please ensure your backend API is running and accessible.
-              Check your API project's launchSettings.json for the correct port.`);
+              Check your API project's launchSettings.json for the correct port.`
+            );
           } else if (err.message.includes("CONNECTION_REFUSED")) {
-            setError(`Connection refused: The server rejected the connection. 
+            setError(
+              t("gallery.errors.connection") || 
+              `Connection refused: The server rejected the connection. 
               Make sure your API is running at http://localhost:5802 
-              and that CORS is properly configured to allow requests from this origin.`);
+              and that CORS is properly configured to allow requests from this origin.`
+            );
           } else {
             setError(err.message);
           }
         } else {
-          setError("An unknown error occurred while fetching data");
+          setError(t("gallery.errors.unknown") || "An unknown error occurred while fetching data");
         }
       } finally {
         setLoading(false);
@@ -211,7 +221,7 @@ const GalleryTemplate: React.FC = () => {
     };
 
     fetchMediaItems();
-  }, []);
+  }, [t]);
 
   // Apply filters whenever filters state changes
   useEffect(() => {
@@ -525,6 +535,7 @@ const GalleryTemplate: React.FC = () => {
         } catch (secondErr) {
           console.error("Both retry attempts failed:", secondErr);
           setError(
+            t("gallery.errors.bothPorts") ||
             "Connection failed on both ports (5802, 5062). Please check if your API server is running and accessible."
           );
           setLoading(false);
@@ -538,10 +549,9 @@ const GalleryTemplate: React.FC = () => {
   return (
     <div className={styles.galleryContainer}>
       <div className={styles.galleryHeader}>
-        <h1 className={styles.galleryTitle}>Deep-Sea Media Gallery</h1>
+        <h1 className={styles.galleryTitle}>{t('gallery.title') || "Deep-Sea Media Gallery"}</h1>
         <p className={styles.galleryDescription}>
-          Explore a collection of deep-sea images and videos from various
-          exploration missions and research activities.
+          {t('gallery.description') || "Explore a collection of deep-sea images and videos from various exploration missions and research activities."}
         </p>
       </div>
 
@@ -565,20 +575,20 @@ const GalleryTemplate: React.FC = () => {
           {loading ? (
             <div className={styles.loadingContainer}>
               <div className={styles.spinner}></div>
-              <p>Loading media...</p>
+              <p>{t('gallery.loading') || "Loading media..."}</p>
             </div>
           ) : error ? (
             <div className={styles.errorContainer}>
               <p className={styles.errorMessage}>{error}</p>
               <div className={styles.errorActions}>
                 <button onClick={handleRetry} className={styles.retryButton}>
-                  Retry Connection
+                  {t('gallery.retry') || "Retry Connection"}
                 </button>
                 <button
                   onClick={() => {
                     // Check API connectivity
                     const checkPorts = async () => {
-                      setError("Checking API connectivity...");
+                      setError(t('gallery.checkingConnectivity') || "Checking API connectivity...");
                       const ports = [5802, 5062, 7171, 5000, 5001];
                       let results = "";
 
@@ -619,7 +629,7 @@ const GalleryTemplate: React.FC = () => {
                       }
 
                       setError(
-                        `API Connectivity Check Results:\n${results}\n\nTry to match one of these ports in your code, or check your API's launchSettings.json file.`
+                        `${t('gallery.connectivityResults') || "API Connectivity Check Results"}:\n${results}\n\n${t('gallery.matchPortMessage') || "Try to match one of these ports in your code, or check your API's launchSettings.json file."}`
                       );
                     };
 
@@ -627,27 +637,30 @@ const GalleryTemplate: React.FC = () => {
                   }}
                   className={styles.diagnosticButton}
                 >
-                  Check API Connectivity
+                  {t('gallery.checkConnectivity') || "Check API Connectivity"}
                 </button>
               </div>
             </div>
           ) : currentItems.length === 0 ? (
             <div className={styles.noResults}>
-              <p>No media found matching your filters.</p>
+              <p>{t('gallery.noResults') || "No media found matching your filters."}</p>
               <button
                 onClick={handleResetFilters}
                 className={styles.resetButton}
               >
-                Reset Filters
+                {t('gallery.resetFilters') || "Reset Filters"}
               </button>
             </div>
           ) : (
             <>
               <div className={styles.resultsInfo}>
                 <p>
-                  Showing {indexOfFirstItem + 1} -{" "}
-                  {Math.min(indexOfLastItem, filteredItems.length)} of{" "}
-                  {filteredItems.length} items
+                  {t('gallery.showing', { 
+                    from: indexOfFirstItem + 1, 
+                    to: Math.min(indexOfLastItem, filteredItems.length), 
+                    total: filteredItems.length 
+                  }) || 
+                  `Showing ${indexOfFirstItem + 1} - ${Math.min(indexOfLastItem, filteredItems.length)} of ${filteredItems.length} items`}
                 </p>
               </div>
 
@@ -670,7 +683,7 @@ const GalleryTemplate: React.FC = () => {
                     onClick={() => handlePageChange(currentPage - 1)}
                     disabled={currentPage === 1}
                   >
-                    &laquo; Previous
+                    &laquo; {t('gallery.pagination.previous') || "Previous"}
                   </button>
 
                   <div className={styles.pageNumbers}>
@@ -682,7 +695,7 @@ const GalleryTemplate: React.FC = () => {
                     onClick={() => handlePageChange(currentPage + 1)}
                     disabled={currentPage === totalPages}
                   >
-                    Next &raquo;
+                    {t('gallery.pagination.next') || "Next"} &raquo;
                   </button>
                 </div>
               )}
