@@ -1,57 +1,237 @@
-/* Fixed reports.module.css - improved scrolling and consistent background */
+/* reports.module.css - komplett løsning */
+
+/* Page wrapper */
+.pageWrapper {
+  padding: 20px;
+  background-color: white;
+}
+
+/* Header section styling */
+.headerSection {
+  margin-bottom: 24px;
+}
+
+.pageTitle {
+  font-size: 24px;
+  font-weight: 600;
+  color: #1e293b;
+  margin-bottom: 8px;
+}
+
+.pageDescription {
+  color: #64748b;
+  font-size: 14px;
+  max-width: 800px;
+}
+
+/* Main content layout */
+.mainContentRow {
+  display: flex;
+  gap: 20px; 
+  background-color: white;
+}
+
+/* Filter container styling */
+.filterContainer {
+  width: 300px; /* Fast bredde på desktop */
+  background-color: white;
+  padding: 0;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+}
+
+.improvedFilterPanel {
+  background-color: white;
+  border-radius: 12px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.filterContent {
+  flex: 1;
+  overflow-y: auto;
+  padding: 24px;
+  padding-bottom: 16px;
+}
+
+.filterHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.filterHeader h2 {
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: #1e293b;
+  margin: 0;
+}
+
+.resetButton {
+  background-color: #f1f5f9;
+  border: none;
+  border-radius: 6px;
+  padding: 6px 12px;
+  font-size: 0.875rem;
+  color: #334155;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.resetButton:hover {
+  background-color: #e2e8f0;
+}
+
+.searchContainer {
+  margin-bottom: 20px;
+  width: 100%;
+}
+
+.searchInputWrapper {
+  position: relative;
+  width: 100%;
+}
+
+.searchInput {
+  width: 100%;
+  padding: 12px 16px;
+  padding-right: 44px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  color: #334155;
+  background-color: #f8fafc;
+  transition: all 0.2s ease;
+  outline: none;
+}
+
+.searchButton {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: transparent;
+  border: none;
+  color: #64748b;
+  cursor: pointer;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+}
+
+.filtersGroup {
+  margin-bottom: 20px;
+}
+
+.filtersGroup h3 {
+  font-size: 1rem;
+  font-weight: 500;
+  color: #334155;
+  margin: 0 0 16px 0;
+}
+
+.customSelectWrapper {
+  position: relative;
+  width: 100%;
+  margin-bottom: 16px;
+}
+
+.filterLabel {
+  font-size: 0.85rem;
+  color: #546e7a;
+  margin-bottom: 6px;
+  font-weight: 500;
+  display: block;
+}
+
+.customSelect {
+  padding: 10px 12px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  background-color: white;
+  color: #37474f;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.customSelect.activeFilter {
+  border-color: #0277bd;
+  background-color: #e1f5fe;
+}
+
+.selectInput {
+  width: 100%;
+  background: transparent;
+  border: none;
+  outline: none;
+  font-size: 0.95rem;
+  color: #37474f;
+  cursor: pointer;
+  appearance: none;
+  padding-right: 20px;
+}
+
+.selectInput option {
+  background-color: white;
+  color: #333;
+}
+
+.resultsInfo {
+  font-size: 0.875rem;
+  color: #64748b;
+  padding: 16px 24px;
+  border-top: 1px solid #e2e8f0;
+  background-color: white;
+}
+
+/* Table column and container styling */
+.tableColumn {
+  flex: 1;
+  background-color: white;
+}
 
 .fileTableContainer {
   width: 100%;
-  max-width: 1200px;
-  margin: 0 auto;
-  position: relative;
-  padding: 0;
   background-color: white;
-  overflow: hidden; /* Prevent overflow outside container */
+  overflow: hidden;
   border-radius: 12px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
-/* Fixed scrollable container - scroll behavior improvements */
 .tableScrollContainer {
   width: 100%;
-  overflow-x: auto; /* Enable horizontal scrolling */
-  overflow-y: hidden; /* Prevent vertical scrolling */
-  -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
   background-color: white;
-  scrollbar-width: thin; /* For Firefox */
-  scrollbar-color: #cbd5e1 #f1f5f9; /* For Firefox */
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 #f1f5f9;
 }
 
-/* Scrollbar styling for webkit browsers */
-.tableScrollContainer::-webkit-scrollbar {
-  height: 8px;
-}
-
-.tableScrollContainer::-webkit-scrollbar-track {
-  background: #f1f5f9;
-  border-radius: 4px;
-}
-
-.tableScrollContainer::-webkit-scrollbar-thumb {
-  background-color: #cbd5e1;
-  border-radius: 4px;
-}
-
-.tableScrollContainer::-webkit-scrollbar-thumb:hover {
-  background-color: #94a3b8;
-}
-
+/* Table styling */
 .table {
   width: 100%;
   border-collapse: separate;
   border-spacing: 0;
-  min-width: 900px; /* Ensure table has minimum width for all devices */
+  min-width: 900px;
   background-color: white;
-  margin-bottom: 0; /* Remove any margin that might cause scrolling issues */
+  margin-bottom: 0;
 }
 
-/* Enhanced header styling */
 .tableHead {
   background-color: white;
   position: sticky;
@@ -66,26 +246,10 @@
   color: #475569;
   text-align: left;
   border-bottom: 2px solid #e2e8f0;
-  white-space: nowrap; /* Prevent header text from wrapping */
-  background-color: white; /* Ensure headers have background */
+  white-space: nowrap;
+  background-color: white;
 }
 
-.sortableHeader {
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-  user-select: none;
-}
-
-.sortableHeader:hover {
-  background-color: #f8fafc;
-}
-
-.sortIndicator {
-  margin-left: 6px;
-  color: #2563eb;
-}
-
-/* Enhanced row styling */
 .tableRow {
   transition: all 0.2s ease;
   background-color: white;
@@ -106,20 +270,18 @@
   overflow-wrap: anywhere;
 }
 
-/* Last row without bottom border */
 .tableRow:last-child td {
   border-bottom: none;
 }
 
-/* Enhanced pagination styling - now inside the fileTableContainer */
+/* Pagination styling */
 .pagination {
-  margin-top: 0; /* Remove top margin */
   display: flex;
   justify-content: center;
   align-items: center;
   padding: 16px;
   background-color: white;
-  border-top: 1px solid #f1f5f9; /* Add subtle separator */
+  border-top: 1px solid #f1f5f9;
 }
 
 .paginationControls {
@@ -134,7 +296,6 @@
   justify-content: center;
 }
 
-/* Rest of CSS remains the same */
 .paginationButton {
   background-color: #fff;
   color: #475569;
@@ -150,27 +311,6 @@
   min-height: 36px;
 }
 
-.paginationButton:hover:not(:disabled) {
-  background-color: #2563eb;
-  color: white;
-  border-color: #2563eb;
-}
-
-.paginationButton:disabled {
-  background-color: #f8fafc;
-  color: #94a3b8;
-  cursor: not-allowed;
-  border-color: #e2e8f0;
-}
-
-.pageInfo {
-  font-size: 14px;
-  color: #475569;
-  margin: 0 12px;
-  font-weight: 500;
-  text-align: center;
-}
-
 .pageSizeSelect {
   padding: 8px 12px;
   border-radius: 6px;
@@ -184,76 +324,24 @@
   min-width: 110px;
 }
 
-.pageSizeSelect:focus {
-  border-color: #2563eb;
-  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.1);
-}
-
-/* Page specific styling */
-.pageWrapper {
-  padding: 20px;
-  background-color: #f8fafc; /* Set a consistent background */
-}
-
-.mainContentRow {
-  display: flex;
-  gap: 20px;
-  align-items: flex-start;
-  flex-wrap: wrap;
-  background-color: transparent; /* Make transparent to inherit from parent */
-}
-
-.tableColumn {
-  flex: 3;
-  min-width: 0;
-  background-color: transparent; /* Make transparent */
-}
-
-/* Mobile-friendly adjustments */
+/* Responsive layout for different screen sizes */
 @media (max-width: 1024px) {
   .mainContentRow {
     flex-direction: column;
   }
 
-  .filterContainer, .tableColumn {
+  /* Gjør filter og tabell like brede på mindre skjermer */
+  .filterContainer {
     width: 100%;
     max-width: 100%;
-    margin-left: 0;
   }
   
-  .fileTableContainer {
-    margin-top: 20px;
-    padding: 0;
-    border-radius: 8px; /* Smaller radius on mobile */
-  }
-}
-
-/* Smaller mobile device adjustments */
-@media (max-width: 640px) {
-  .paginationControls {
-    padding: 6px;
-    gap: 4px;
-  }
-  
-  .pageInfo {
+  .tableColumn {
     width: 100%;
-    margin: 8px 0;
-    order: -1;
   }
   
-  .paginationButton {
-    padding: 6px;
-    min-width: 30px;
-    min-height: 30px;
-  }
-  
-  .pageSizeSelect {
-    width: 100%;
-    margin: 8px 0 0 0;
-    order: 1;
-  }
-  
-  .tableRow td, .tableHead th {
-    padding: 12px 16px;
+  /* Fjern mellomrom mellom filter og tabell på mobil */
+  .mainContentRow {
+    gap: 20px;
   }
 }

@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { CustomDropdown } from "./customDropdown";
-import styles from "../../styles/files/filefilter.module.css"; // Using the new CSS module
+import styles from "../../styles/files/reports.module.css"; // Using the same styles file
 
 interface FileFilterProps {
   filters: {
@@ -83,79 +83,145 @@ const FileFilter: React.FC<FileFilterProps> = ({
   ];
 
   return (
-    <div className={`${styles.improvedFilterPanel}`}>
-      <div className={styles.filterContent}>
-        <div className={styles.filterHeader}>
-          <h2>File Filters</h2>
-          {countActiveFilters() > 0 && (
-            <button className={styles.resetButton} onClick={onResetFilters}>
-              Reset ({countActiveFilters()})
-            </button>
-          )}
-        </div>
+    <div className={styles.filterContainer}>
+      <div className={styles.improvedFilterPanel}>
+        <div className={styles.filterContent}>
+          <div className={styles.filterHeader}>
+            <h2>File Filters</h2>
+            {countActiveFilters() > 0 && (
+              <button className={styles.resetButton} onClick={onResetFilters}>
+                Reset ({countActiveFilters()})
+              </button>
+            )}
+          </div>
 
-        <div className={styles.searchContainer}>
-          <div className={styles.searchInputWrapper}>
-            <input
-              type="text"
-              placeholder="Search files..."
-              value={searchQuery}
-              onChange={handleSearchChange}
-              className={styles.searchInput}
-            />
-            <button
-              onClick={() => onFilterChange("searchQuery", searchQuery)}
-              className={styles.searchButton}
-              aria-label="Search"
-            >
-              🔍
-            </button>
+          <div className={styles.searchContainer}>
+            <div className={styles.searchInputWrapper}>
+              <input
+                type="text"
+                placeholder="Search files..."
+                value={searchQuery}
+                onChange={handleSearchChange}
+                className={styles.searchInput}
+              />
+              <button
+                onClick={() => onFilterChange("searchQuery", searchQuery)}
+                className={styles.searchButton}
+                aria-label="Search"
+              >
+                🔍
+              </button>
+            </div>
+          </div>
+
+          <div className={styles.filtersGroup}>
+            <h3>Filter By</h3>
+
+            <div className={styles.customSelectWrapper}>
+              <label className={styles.filterLabel}>Contractor</label>
+              <div 
+                className={`${styles.customSelect} ${filters.contractor !== "all" ? styles.activeFilter : ""}`}
+                style={{
+                  cursor: "pointer",
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                }}
+              >
+                <select
+                  value={filters.contractor}
+                  onChange={(e) => onFilterChange("contractor", e.target.value)}
+                  className={styles.selectInput}
+                >
+                  {contractorOptions.map(option => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            <div className={styles.customSelectWrapper}>
+              <label className={styles.filterLabel}>Country</label>
+              <div 
+                className={`${styles.customSelect} ${filters.country !== "all" ? styles.activeFilter : ""}`}
+                style={{
+                  cursor: "pointer",
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                }}
+              >
+                <select
+                  value={filters.country}
+                  onChange={(e) => onFilterChange("country", e.target.value)}
+                  className={styles.selectInput}
+                >
+                  {countryOptions.map(option => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            <div className={styles.customSelectWrapper}>
+              <label className={styles.filterLabel}>Year</label>
+              <div 
+                className={`${styles.customSelect} ${filters.year !== "all" ? styles.activeFilter : ""}`}
+                style={{
+                  cursor: "pointer",
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                }}
+              >
+                <select
+                  value={filters.year}
+                  onChange={(e) => onFilterChange("year", e.target.value)}
+                  className={styles.selectInput}
+                >
+                  {yearOptions.map(option => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            <div className={styles.customSelectWrapper}>
+              <label className={styles.filterLabel}>Theme</label>
+              <div 
+                className={`${styles.customSelect} ${filters.theme !== "all" ? styles.activeFilter : ""}`}
+                style={{
+                  cursor: "pointer",
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                }}
+              >
+                <select
+                  value={filters.theme}
+                  onChange={(e) => onFilterChange("theme", e.target.value)}
+                  className={styles.selectInput}
+                >
+                  {themeOptions.map(option => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
           </div>
         </div>
 
-        <div className={styles.filtersGroup}>
-          <h3>Filter By</h3>
-
-          <CustomDropdown
-            id="contractor"
-            label="Contractor"
-            options={contractorOptions}
-            value={filters.contractor}
-            onChange={(e) => onFilterChange("contractor", e.target.value)}
-            isActive={filters.contractor !== "all"}
-          />
-
-          <CustomDropdown
-            id="country"
-            label="Country"
-            options={countryOptions}
-            value={filters.country}
-            onChange={(e) => onFilterChange("country", e.target.value)}
-            isActive={filters.country !== "all"}
-          />
-
-          <CustomDropdown
-            id="year"
-            label="Year"
-            options={yearOptions}
-            value={filters.year}
-            onChange={(e) => onFilterChange("year", e.target.value)}
-            isActive={filters.year !== "all"}
-          />
-
-          <CustomDropdown
-            id="theme"
-            label="Theme"
-            options={themeOptions}
-            value={filters.theme}
-            onChange={(e) => onFilterChange("theme", e.target.value)}
-            isActive={filters.theme !== "all"}
-          />
+        <div className={styles.resultsInfo}>
+          <span>{currentFilteredItems.length} items match your filters</span>
         </div>
-      </div>
-
-      <div className={styles.resultsInfo}>
-        <span>{currentFilteredItems.length} items match your filters</span>
       </div>
     </div>
   );
