@@ -1,4 +1,4 @@
-/* Fixed reports.module.css - no gray background, consistent white background */
+/* Fixed reports.module.css - improved scrolling and consistent background */
 
 .fileTableContainer {
   width: 100%;
@@ -6,17 +6,40 @@
   margin: 0 auto;
   position: relative;
   padding: 0;
-  background-color: white; /* Make sure container is white */
+  background-color: white;
+  overflow: hidden; /* Prevent overflow outside container */
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
-/* Fixed scrollable container */
+/* Fixed scrollable container - scroll behavior improvements */
 .tableScrollContainer {
   width: 100%;
   overflow-x: auto; /* Enable horizontal scrolling */
+  overflow-y: hidden; /* Prevent vertical scrolling */
   -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
   background-color: white;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  scrollbar-width: thin; /* For Firefox */
+  scrollbar-color: #cbd5e1 #f1f5f9; /* For Firefox */
+}
+
+/* Scrollbar styling for webkit browsers */
+.tableScrollContainer::-webkit-scrollbar {
+  height: 8px;
+}
+
+.tableScrollContainer::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 4px;
+}
+
+.tableScrollContainer::-webkit-scrollbar-thumb {
+  background-color: #cbd5e1;
+  border-radius: 4px;
+}
+
+.tableScrollContainer::-webkit-scrollbar-thumb:hover {
+  background-color: #94a3b8;
 }
 
 .table {
@@ -25,11 +48,15 @@
   border-spacing: 0;
   min-width: 900px; /* Ensure table has minimum width for all devices */
   background-color: white;
+  margin-bottom: 0; /* Remove any margin that might cause scrolling issues */
 }
 
 /* Enhanced header styling */
 .tableHead {
-  background-color: white; /* Changed from f8fafc to white */
+  background-color: white;
+  position: sticky;
+  top: 0;
+  z-index: 10;
 }
 
 .tableHead th {
@@ -40,6 +67,7 @@
   text-align: left;
   border-bottom: 2px solid #e2e8f0;
   white-space: nowrap; /* Prevent header text from wrapping */
+  background-color: white; /* Ensure headers have background */
 }
 
 .sortableHeader {
@@ -83,111 +111,22 @@
   border-bottom: none;
 }
 
-/* Enhanced file link styling */
-.fileLinkContainer {
-  display: flex;
-  align-items: center;
-}
-
-.fileLink {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  color: #2563eb;
-  text-decoration: none;
-  font-weight: 500;
-  transition: all 0.2s ease;
-  padding: 6px 12px;
-  border-radius: 6px;
-}
-
-.fileLink:hover {
-  color: #1d4ed8;
-  background-color: rgba(37, 99, 235, 0.08);
-}
-
-.downloadIcon {
-  color: #2563eb;
-  flex-shrink: 0;
-}
-
-/* Fixed tooltip styling - no scrollbar */
-.tooltipContainer {
-  position: relative;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100%;
-  width: 100%;
-}
-
-.infoIcon {
-  color: #64748b;
-  cursor: pointer;
-  transition: color 0.2s ease, transform 0.2s ease;
-}
-
-.infoIcon:hover {
-  color: #2563eb;
-  transform: scale(1.1);
-}
-
-.tooltip {
-  visibility: hidden;
-  position: absolute;
-  z-index: 100;
-  bottom: 125%;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 280px;
-  padding: 12px 16px;
-  background-color: #1e293b;
-  color: white;
-  text-align: left;
-  font-size: 13px;
-  line-height: 1.5;
-  border-radius: 8px;
-  opacity: 0;
-  transition: opacity 0.3s, visibility 0.3s, bottom 0.3s;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-  pointer-events: none;
-  word-wrap: break-word;
-  overflow: visible; /* Remove scrollbar */
-}
-
-/* Arrow at the bottom of the tooltip */
-.tooltip::after {
-  content: "";
-  position: absolute;
-  top: 100%;
-  left: 50%;
-  margin-left: -8px;
-  border-width: 8px;
-  border-style: solid;
-  border-color: #1e293b transparent transparent transparent;
-}
-
-.tooltipContainer:hover .tooltip {
-  visibility: visible;
-  opacity: 1;
-  bottom: 135%;
-}
-
-/* Enhanced pagination styling */
+/* Enhanced pagination styling - now inside the fileTableContainer */
 .pagination {
-  margin-top: 20px;
+  margin-top: 0; /* Remove top margin */
   display: flex;
   justify-content: center;
   align-items: center;
   padding: 16px;
   background-color: white;
+  border-top: 1px solid #f1f5f9; /* Add subtle separator */
 }
 
 .paginationControls {
   display: flex;
   align-items: center;
   gap: 8px;
-  background-color: white; /* Changed from f8fafc to white */
+  background-color: white;
   padding: 8px 12px;
   border-radius: 8px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
@@ -195,6 +134,7 @@
   justify-content: center;
 }
 
+/* Rest of CSS remains the same */
 .paginationButton {
   background-color: #fff;
   color: #475569;
@@ -249,9 +189,10 @@
   box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.1);
 }
 
+/* Page specific styling */
 .pageWrapper {
   padding: 20px;
-  background-color: white; /* Changed from f8fafc to white */
+  background-color: #f8fafc; /* Set a consistent background */
 }
 
 .mainContentRow {
@@ -259,53 +200,13 @@
   gap: 20px;
   align-items: flex-start;
   flex-wrap: wrap;
-  background-color: white;
+  background-color: transparent; /* Make transparent to inherit from parent */
 }
 
 .tableColumn {
   flex: 3;
   min-width: 0;
-  background-color: white;
-}
-
-.headerSection {
-  margin-bottom: 30px;
-  text-align: center;
-  background-color: white;
-}
-
-.pageTitle {
-  font-size: 2rem;
-  font-weight: 700;
-  color: #1e293b;
-  margin-bottom: 10px;
-}
-
-.pageDescription {
-  font-size: 1rem;
-  color: #475569;
-  max-width: 700px;
-  margin: 0 auto;
-}
-
-.actionButton {
-  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
-  color: white;
-  border: none;
-  padding: 8px 15px;
-  border-radius: 6px;
-  font-size: 14px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  display: flex;
-  align-items: center;
-  gap: 5px;
-}
-
-.actionButton:hover {
-  background: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%);
-  transform: translateY(-2px);
-  box-shadow: 0 4px 10px rgba(37, 99, 235, 0.3);
+  background-color: transparent; /* Make transparent */
 }
 
 /* Mobile-friendly adjustments */
@@ -322,15 +223,8 @@
   
   .fileTableContainer {
     margin-top: 20px;
-    padding: 0 10px;
-  }
-  
-  .pageTitle {
-    font-size: 1.5rem;
-  }
-  
-  .pageDescription {
-    font-size: 0.9rem;
+    padding: 0;
+    border-radius: 8px; /* Smaller radius on mobile */
   }
 }
 
@@ -361,16 +255,5 @@
   
   .tableRow td, .tableHead th {
     padding: 12px 16px;
-  }
-  
-  /* Make tooltip work better on small screens */
-  .tooltip {
-    width: 220px;
-    left: 0;
-    transform: translateX(0);
-  }
-  
-  .tooltip::after {
-    left: 10%;
   }
 }

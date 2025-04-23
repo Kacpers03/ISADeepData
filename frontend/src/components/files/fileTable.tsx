@@ -181,31 +181,32 @@ const FileTable: React.FC<{
 
   return (
     <div className={styles.fileTableContainer}>
-        <div className={styles.tableScrollContainer}>
-          <table className={styles.table}>
-            <thead className={styles.tableHead}>
-              {table.getHeaderGroups().map((headerGroup) => (
-                <tr key={headerGroup.id}>
-                  {headerGroup.headers.map((column) => (
-                    <th 
-                      key={column.id} 
-                      onClick={column.column.getToggleSortingHandler()}
-                      className={styles.sortableHeader}
-                      style={{ minWidth: (column.column.columnDef as any).minWidth }}
-                    >
-                      {flexRender(column.column.columnDef.header, column.getContext())}
-                      {column.column.getIsSorted() && (
-                        <span className={styles.sortIndicator}>
-                          {column.column.getIsSorted() === "desc" ? " ▼" : " ▲"}
-                        </span>
-                      )}
-                    </th>
-                  ))}
-                </tr>
-              ))}
-            </thead>
-            <tbody>
-              {table.getRowModel().rows.map((row) => (
+      <div className={styles.tableScrollContainer}>
+        <table className={styles.table}>
+          <thead className={styles.tableHead}>
+            {table.getHeaderGroups().map((headerGroup) => (
+              <tr key={headerGroup.id}>
+                {headerGroup.headers.map((column) => (
+                  <th 
+                    key={column.id} 
+                    onClick={column.column.getToggleSortingHandler()}
+                    className={styles.sortableHeader}
+                    style={{ minWidth: (column.column.columnDef as any).minWidth }}
+                  >
+                    {flexRender(column.column.columnDef.header, column.getContext())}
+                    {column.column.getIsSorted() && (
+                      <span className={styles.sortIndicator}>
+                        {column.column.getIsSorted() === "desc" ? " ▼" : " ▲"}
+                      </span>
+                    )}
+                  </th>
+                ))}
+              </tr>
+            ))}
+          </thead>
+          <tbody>
+            {table.getRowModel().rows.length > 0 ? (
+              table.getRowModel().rows.map((row) => (
                 <tr
                   key={row.id}
                   className={styles.tableRow}
@@ -226,58 +227,65 @@ const FileTable: React.FC<{
                     </td>
                   ))}
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              ))
+            ) : (
+              <tr>
+                <td colSpan={columns.length} style={{ textAlign: 'center', padding: '32px 20px' }}>
+                  No results match your current filters
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
 
-        <div className={styles.pagination}>
-          <div className={styles.paginationControls}>
-            <button 
-              onClick={() => table.setPageIndex(0)} 
-              disabled={!table.getCanPreviousPage()}
-              className={styles.paginationButton}
-            >
-              <ChevronsLeft size={16} />
-            </button>
-            <button 
-              onClick={() => table.previousPage()} 
-              disabled={!table.getCanPreviousPage()}
-              className={styles.paginationButton}
-            >
-              <ChevronLeft size={16} />
-            </button>
-            <span className={styles.pageInfo}>
-              Page {table.getState().pagination.pageIndex + 1} of {table.getPageCount()}
-            </span>
-            <button 
-              onClick={() => table.nextPage()} 
-              disabled={!table.getCanNextPage()}
-              className={styles.paginationButton}
-            >
-              <ChevronRight size={16} />
-            </button>
-            <button 
-              onClick={() => table.setPageIndex(table.getPageCount() - 1)} 
-              disabled={!table.getCanNextPage()}
-              className={styles.paginationButton}
-            >
-              <ChevronsRight size={16} />
-            </button>
-            <select
-              value={table.getState().pagination.pageSize}
-              onChange={(e) => table.setPageSize(Number(e.target.value))}
-              className={styles.pageSizeSelect}
-            >
-              {[5, 10, 20, 30, 50].map((pageSize) => (
-                <option key={pageSize} value={pageSize}>
-                  Show {pageSize}
-                </option>
-              ))}
-            </select>
-          </div>
+      <div className={styles.pagination}>
+        <div className={styles.paginationControls}>
+          <button 
+            onClick={() => table.setPageIndex(0)} 
+            disabled={!table.getCanPreviousPage()}
+            className={styles.paginationButton}
+          >
+            <ChevronsLeft size={16} />
+          </button>
+          <button 
+            onClick={() => table.previousPage()} 
+            disabled={!table.getCanPreviousPage()}
+            className={styles.paginationButton}
+          >
+            <ChevronLeft size={16} />
+          </button>
+          <span className={styles.pageInfo}>
+            Page {table.getState().pagination.pageIndex + 1} of {Math.max(1, table.getPageCount())}
+          </span>
+          <button 
+            onClick={() => table.nextPage()} 
+            disabled={!table.getCanNextPage()}
+            className={styles.paginationButton}
+          >
+            <ChevronRight size={16} />
+          </button>
+          <button 
+            onClick={() => table.setPageIndex(table.getPageCount() - 1)} 
+            disabled={!table.getCanNextPage()}
+            className={styles.paginationButton}
+          >
+            <ChevronsRight size={16} />
+          </button>
+          <select
+            value={table.getState().pagination.pageSize}
+            onChange={(e) => table.setPageSize(Number(e.target.value))}
+            className={styles.pageSizeSelect}
+          >
+            {[5, 10, 20, 30, 50].map((pageSize) => (
+              <option key={pageSize} value={pageSize}>
+                Show {pageSize}
+              </option>
+            ))}
+          </select>
         </div>
       </div>
+    </div>
   );
 };
 
