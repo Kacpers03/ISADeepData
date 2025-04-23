@@ -63,12 +63,11 @@ export const CustomDropdown: React.FC<CustomDropdownProps> = ({
 
   return (
     <div className={styles.customSelectWrapper} ref={dropdownRef}>
-      {/* Fix: Add the 'for' attribute that correctly references the select ID */}
       <label htmlFor={selectId} className={styles.filterLabel}>
         {label}
       </label>
 
-      {/* Add a hidden real select element for accessibility and form association */}
+      {/* Hidden select element for accessibility */}
       <select
         id={selectId}
         name={id}
@@ -94,35 +93,19 @@ export const CustomDropdown: React.FC<CustomDropdownProps> = ({
         className={`${styles.customSelect} ${isActive ? styles.activeFilter : ""}`}
         onClick={handleToggle}
         style={{
-            opacity: disabled ? 0.6 : 1,
-            cursor: disabled ? "not-allowed" : "pointer",
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            width: "100%",           
-            maxWidth: "100%",        
-            overflow: "hidden",      
-            }}
-        >   
-
-        <span
-  style={{
-    overflow: "hidden",
-    textOverflow: "ellipsis",
-    whiteSpace: "nowrap",
-    flexGrow: 1,
-    minWidth: 0, 
-  }}
-  title={selectedOption?.label} // Tooltip to show full value
->
-  {selectedOption?.label || "Select..."}
-</span>
-
+          opacity: disabled ? 0.6 : 1,
+          cursor: disabled ? "not-allowed" : "pointer",
+        }}
+      >
+        <span title={selectedOption?.label}>
+          {selectedOption?.label || "Select..."}
+        </span>
         <span className={`${styles.selectArrow} ${isOpen ? styles.up : ""}`}>
           ▼
         </span>
       </div>
 
+      {/* Dropdown options list - only shown when open */}
       {isOpen && !disabled && (
         <div
           className={styles.optionsList}
@@ -140,8 +123,6 @@ export const CustomDropdown: React.FC<CustomDropdownProps> = ({
               role="option"
               aria-selected={option.value === value}
               aria-disabled={option.disabled}
-              // Add pointer style only to enabled options
-              style={{ cursor: option.disabled ? "not-allowed" : "pointer" }}
             >
               {option.label}
               {option.value === value && (

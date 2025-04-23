@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { CustomDropdown } from "./customDropdown";
-import styles from "../../styles/files/reports.module.css"; // Using the same styles file
+import styles from "../../styles/files/reports.module.css";
+import dropdownStyles from "../../styles/files/dropdown.module.css";
 
 interface FileFilterProps {
   filters: {
@@ -38,6 +39,22 @@ const FileFilter: React.FC<FileFilterProps> = ({
   currentFilteredItems,
 }) => {
   const [searchQuery, setSearchQuery] = useState(filters.searchQuery);
+  const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
+
+  // Close dropdowns when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const targetElement = event.target as Element;
+      if (!targetElement.closest(`.${dropdownStyles.customSelectWrapper}`)) {
+        setActiveDropdown(null);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const query = e.target.value;
@@ -82,31 +99,40 @@ const FileFilter: React.FC<FileFilterProps> = ({
     ...themes.map((theme) => ({ value: theme, label: theme })),
   ];
 
+  const handleDropdownChange = (filterName: string) => (e: { target: { value: string } }) => {
+    onFilterChange(filterName, e.target.value);
+  };
+
+  // Custom handler for dropdown toggling
+  const handleDropdownToggle = (id: string) => {
+    setActiveDropdown(activeDropdown === id ? null : id);
+  };
+
   return (
-    <div className={styles.filterContainer}>
-      <div className={styles.improvedFilterPanel}>
-        <div className={styles.filterContent}>
-          <div className={styles.filterHeader}>
+    <div className={styles.filterContainer} style={{ overflow: "visible" }}>
+      <div className={dropdownStyles.improvedFilterPanel}>
+        <div className={dropdownStyles.filterContent}>
+          <div className={dropdownStyles.filterHeader}>
             <h2>File Filters</h2>
             {countActiveFilters() > 0 && (
-              <button className={styles.resetButton} onClick={onResetFilters}>
+              <button className={dropdownStyles.resetButton} onClick={onResetFilters}>
                 Reset ({countActiveFilters()})
               </button>
             )}
           </div>
 
-          <div className={styles.searchContainer}>
-            <div className={styles.searchInputWrapper}>
+          <div className={dropdownStyles.searchContainer}>
+            <div className={dropdownStyles.searchInputWrapper}>
               <input
                 type="text"
                 placeholder="Search files..."
                 value={searchQuery}
                 onChange={handleSearchChange}
-                className={styles.searchInput}
+                className={dropdownStyles.searchInput}
               />
               <button
                 onClick={() => onFilterChange("searchQuery", searchQuery)}
-                className={styles.searchButton}
+                className={dropdownStyles.searchButton}
                 aria-label="Search"
               >
                 🔍
@@ -114,112 +140,160 @@ const FileFilter: React.FC<FileFilterProps> = ({
             </div>
           </div>
 
-          <div className={styles.filtersGroup}>
+          <div className={dropdownStyles.filtersGroup}>
             <h3>Filter By</h3>
 
-            <div className={styles.customSelectWrapper}>
-              <label className={styles.filterLabel}>Contractor</label>
+            <div className={dropdownStyles.customSelectWrapper}>
+              <label className={dropdownStyles.filterLabel}>Contractor</label>
               <div 
-                className={`${styles.customSelect} ${filters.contractor !== "all" ? styles.activeFilter : ""}`}
-                style={{
-                  cursor: "pointer",
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                }}
+                className={`${dropdownStyles.customSelect} ${filters.contractor !== "all" ? dropdownStyles.activeFilter : ""}`}
+                onClick={() => handleDropdownToggle("contractor")}
               >
-                <select
-                  value={filters.contractor}
-                  onChange={(e) => onFilterChange("contractor", e.target.value)}
-                  className={styles.selectInput}
-                >
-                  {contractorOptions.map(option => (
-                    <option key={option.value} value={option.value}>
-                      {option.label}
-                    </option>
-                  ))}
-                </select>
+                <span title={contractorOptions.find(option => option.value === filters.contractor)?.label}>
+                  {contractorOptions.find(option => option.value === filters.contractor)?.label || "All Contractors"}
+                </span>
+                <span className={`${dropdownStyles.selectArrow} ${activeDropdown === "contractor" ? dropdownStyles.up : ""}`}>
+                  ▼
+                </span>
               </div>
+              
+              {activeDropdown === "contractor" && (
+                <div className={dropdownStyles.optionsList}>
+                  {contractorOptions.map((option) => (
+                    <div
+                      key={option.value}
+                      className={`${dropdownStyles.optionItem} ${
+                        option.value === filters.contractor ? dropdownStyles.selected : ""
+                      }`}
+                      onClick={() => {
+                        onFilterChange("contractor", option.value);
+                        setActiveDropdown(null);
+                      }}
+                    >
+                      {option.label}
+                      {option.value === filters.contractor && (
+                        <span className={dropdownStyles.selectedCheck}>✓</span>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
 
-            <div className={styles.customSelectWrapper}>
-              <label className={styles.filterLabel}>Country</label>
+            <div className={dropdownStyles.customSelectWrapper}>
+              <label className={dropdownStyles.filterLabel}>Country</label>
               <div 
-                className={`${styles.customSelect} ${filters.country !== "all" ? styles.activeFilter : ""}`}
-                style={{
-                  cursor: "pointer",
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                }}
+                className={`${dropdownStyles.customSelect} ${filters.country !== "all" ? dropdownStyles.activeFilter : ""}`}
+                onClick={() => handleDropdownToggle("country")}
               >
-                <select
-                  value={filters.country}
-                  onChange={(e) => onFilterChange("country", e.target.value)}
-                  className={styles.selectInput}
-                >
-                  {countryOptions.map(option => (
-                    <option key={option.value} value={option.value}>
-                      {option.label}
-                    </option>
-                  ))}
-                </select>
+                <span title={countryOptions.find(option => option.value === filters.country)?.label}>
+                  {countryOptions.find(option => option.value === filters.country)?.label || "All Countries"}
+                </span>
+                <span className={`${dropdownStyles.selectArrow} ${activeDropdown === "country" ? dropdownStyles.up : ""}`}>
+                  ▼
+                </span>
               </div>
+              
+              {activeDropdown === "country" && (
+                <div className={dropdownStyles.optionsList}>
+                  {countryOptions.map((option) => (
+                    <div
+                      key={option.value}
+                      className={`${dropdownStyles.optionItem} ${
+                        option.value === filters.country ? dropdownStyles.selected : ""
+                      }`}
+                      onClick={() => {
+                        onFilterChange("country", option.value);
+                        setActiveDropdown(null);
+                      }}
+                    >
+                      {option.label}
+                      {option.value === filters.country && (
+                        <span className={dropdownStyles.selectedCheck}>✓</span>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
 
-            <div className={styles.customSelectWrapper}>
-              <label className={styles.filterLabel}>Year</label>
+            <div className={dropdownStyles.customSelectWrapper}>
+              <label className={dropdownStyles.filterLabel}>Year</label>
               <div 
-                className={`${styles.customSelect} ${filters.year !== "all" ? styles.activeFilter : ""}`}
-                style={{
-                  cursor: "pointer",
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                }}
+                className={`${dropdownStyles.customSelect} ${filters.year !== "all" ? dropdownStyles.activeFilter : ""}`}
+                onClick={() => handleDropdownToggle("year")}
               >
-                <select
-                  value={filters.year}
-                  onChange={(e) => onFilterChange("year", e.target.value)}
-                  className={styles.selectInput}
-                >
-                  {yearOptions.map(option => (
-                    <option key={option.value} value={option.value}>
-                      {option.label}
-                    </option>
-                  ))}
-                </select>
+                <span title={yearOptions.find(option => option.value === filters.year)?.label}>
+                  {yearOptions.find(option => option.value === filters.year)?.label || "All Years"}
+                </span>
+                <span className={`${dropdownStyles.selectArrow} ${activeDropdown === "year" ? dropdownStyles.up : ""}`}>
+                  ▼
+                </span>
               </div>
+              
+              {activeDropdown === "year" && (
+                <div className={dropdownStyles.optionsList}>
+                  {yearOptions.map((option) => (
+                    <div
+                      key={option.value}
+                      className={`${dropdownStyles.optionItem} ${
+                        option.value === filters.year ? dropdownStyles.selected : ""
+                      }`}
+                      onClick={() => {
+                        onFilterChange("year", option.value);
+                        setActiveDropdown(null);
+                      }}
+                    >
+                      {option.label}
+                      {option.value === filters.year && (
+                        <span className={dropdownStyles.selectedCheck}>✓</span>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
 
-            <div className={styles.customSelectWrapper}>
-              <label className={styles.filterLabel}>Theme</label>
+            <div className={dropdownStyles.customSelectWrapper}>
+              <label className={dropdownStyles.filterLabel}>Theme</label>
               <div 
-                className={`${styles.customSelect} ${filters.theme !== "all" ? styles.activeFilter : ""}`}
-                style={{
-                  cursor: "pointer",
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                }}
+                className={`${dropdownStyles.customSelect} ${filters.theme !== "all" ? dropdownStyles.activeFilter : ""}`}
+                onClick={() => handleDropdownToggle("theme")}
               >
-                <select
-                  value={filters.theme}
-                  onChange={(e) => onFilterChange("theme", e.target.value)}
-                  className={styles.selectInput}
-                >
-                  {themeOptions.map(option => (
-                    <option key={option.value} value={option.value}>
-                      {option.label}
-                    </option>
-                  ))}
-                </select>
+                <span title={themeOptions.find(option => option.value === filters.theme)?.label}>
+                  {themeOptions.find(option => option.value === filters.theme)?.label || "All Themes"}
+                </span>
+                <span className={`${dropdownStyles.selectArrow} ${activeDropdown === "theme" ? dropdownStyles.up : ""}`}>
+                  ▼
+                </span>
               </div>
+              
+              {activeDropdown === "theme" && (
+                <div className={dropdownStyles.optionsList}>
+                  {themeOptions.map((option) => (
+                    <div
+                      key={option.value}
+                      className={`${dropdownStyles.optionItem} ${
+                        option.value === filters.theme ? dropdownStyles.selected : ""
+                      }`}
+                      onClick={() => {
+                        onFilterChange("theme", option.value);
+                        setActiveDropdown(null);
+                      }}
+                    >
+                      {option.label}
+                      {option.value === filters.theme && (
+                        <span className={dropdownStyles.selectedCheck}>✓</span>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
         </div>
 
-        <div className={styles.resultsInfo}>
+        <div className={dropdownStyles.resultsInfo}>
           <span>{currentFilteredItems.length} items match your filters</span>
         </div>
       </div>
