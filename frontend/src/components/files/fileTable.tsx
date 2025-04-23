@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState, useRef } from "react";
 import {
   useReactTable,
   getCoreRowModel,
@@ -40,6 +40,12 @@ const FileTable: React.FC<{
 }> = ({ filters, setFilteredItems }) => {
   const [tableData, setTableData] = useState<FileData[]>([]);
   const router = useRouter();
+  const tableScrollRef = useRef<HTMLDivElement>(null);
+  const [scrollPosition, setScrollPosition] = useState(0);
+  const [initialLoad, setInitialLoad] = useState(true);
+  
+  // Track previous filter values to detect changes
+  const prevFiltersRef = useRef(filters);
 
   useEffect(() => {
     const fetchFiles = async () => {
@@ -49,12 +55,31 @@ const FileTable: React.FC<{
 
         const data = await response.json();
         setTableData(data);
+        setInitialLoad(false);
       } catch (error) {
         console.error("Error fetching files:", error);
+        setInitialLoad(false);
       }
     };
 
     fetchFiles();
+  }, []);
+
+  // Save scroll position when user scrolls
+  useEffect(() => {
+    const handleScroll = () => {
+      if (tableScrollRef.current) {
+        setScrollPosition(tableScrollRef.current.scrollTop);
+      }
+    };
+
+    const scrollContainer = tableScrollRef.current;
+    if (scrollContainer) {
+      scrollContainer.addEventListener('scroll', handleScroll);
+      return () => {
+        scrollContainer.removeEventListener('scroll', handleScroll);
+      };
+    }
   }, []);
 
   const filteredData = useMemo(() => {
@@ -88,6 +113,28 @@ const FileTable: React.FC<{
 
     return filtered;
   }, [filters, tableData, setFilteredItems]);
+
+  // Restore scroll position when filtered data changes
+  useEffect(() => {
+    // Only restore scroll if it's not the initial load and filters have changed
+    if (!initialLoad && tableScrollRef.current && 
+        (filters.country !== prevFiltersRef.current.country ||
+         filters.contractor !== prevFiltersRef.current.contractor ||
+         filters.year !== prevFiltersRef.current.year ||
+         filters.theme !== prevFiltersRef.current.theme ||
+         filters.searchQuery !== prevFiltersRef.current.searchQuery)) {
+      
+      // Small delay to ensure the DOM has updated
+      setTimeout(() => {
+        if (tableScrollRef.current) {
+          tableScrollRef.current.scrollTop = scrollPosition;
+        }
+      }, 0);
+    }
+    
+    // Update the previous filters reference
+    prevFiltersRef.current = filters;
+  }, [filteredData, initialLoad, scrollPosition, filters]);
 
   const columns: ColumnDef<FileData>[] = useMemo(
     () => [
@@ -181,7 +228,10 @@ const FileTable: React.FC<{
 
   return (
     <div className={styles.fileTableContainer}>
-      <div className={styles.tableScrollContainer}>
+      <div 
+        className={styles.tableScrollContainer} 
+        ref={tableScrollRef}
+      >
         <table className={styles.table}>
           <thead className={styles.tableHead}>
             {table.getHeaderGroups().map((headerGroup) => (
