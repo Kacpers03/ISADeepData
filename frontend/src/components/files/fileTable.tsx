@@ -9,7 +9,6 @@ import {
 } from "@tanstack/react-table";
 import { 
   Download, 
-  Info, 
   ChevronLeft, 
   ChevronRight, 
   ChevronsLeft, 
@@ -194,10 +193,6 @@ const FileTable: React.FC<{
           const description = row.original.description || "No description available";
           return (
             <div className={styles.tooltipContainer} onClick={(e) => e.stopPropagation()}>
-              <Info 
-                className={styles.infoIcon} 
-                size={20} 
-              />
               <div className={styles.tooltip}>
                 {description}
               </div>
