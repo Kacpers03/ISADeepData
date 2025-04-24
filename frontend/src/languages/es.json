@@ -489,6 +489,26 @@
     "download": "Descargar",
     "showOnMap": "Mostrar en Mapa"
   }
+},
+
+
+"map": {
+  "title": "Áreas de Exploración de la ISA",
+  "description": "Mapa interactivo de contratos y áreas de exploración de los fondos marinos regulados por la Autoridad Internacional de los Fondos Marinos. Utilice los filtros a la izquierda para explorar por tipo de mineral, estado del contrato, ubicación y estado patrocinador. Haga clic en el botón de controles del mapa (abajo a la derecha) para alternar la visibilidad de áreas, bloques, estaciones y cruceros. Vea la pestaña Info en los controles del mapa para una leyenda completa. Utilice la pestaña Display para mostrar el panel de resumen con estadísticas sobre los datos visibles. Haga clic en cualquier elemento del mapa para obtener información detallada y use los controles de zoom para navegar por el mapa",
+  "infoCards": {
+    "explore": {
+      "title": "Explorar Áreas de Contrato",
+      "description": "Utilice la función de búsqueda para encontrar rápidamente contratistas, áreas, bloques y estaciones. Haga clic en los marcadores para obtener información detallada."
+    },
+    "resources": {
+      "title": "Recursos de los Fondos Marinos",
+      "description": "La ISA regula la exploración de minerales en el área internacional de los fondos marinos, que cubre aproximadamente el 54% de los océanos del mundo."
+    },
+    "transparency": {
+      "title": "Transparencia de Datos",
+      "description": "Toda la información sobre contratos está disponible como parte del compromiso de la ISA con la transparencia en las actividades de los fondos marinos y la protección del medio ambiente."
+    }
+  }
 }
 }
 

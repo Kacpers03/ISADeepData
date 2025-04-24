@@ -485,6 +485,25 @@
     "download": "Télécharger",
     "showOnMap": "Afficher sur la Carte"
   }
+},
+
+"map": {
+  "title": "Zones d'Exploration de l'ISA",
+  "description": "Carte interactive des contrats d'exploration des fonds marins et des zones réglementées par l'Autorité Internationale des Fonds Marins. Utilisez les filtres à gauche pour explorer par type de minéral, statut du contrat, emplacement et État parrain. Cliquez sur le bouton des contrôles de la carte (en bas à droite) pour basculer la visibilité des zones, des blocs, des stations et des croisières. Consultez l'onglet Info dans les contrôles de la carte pour une légende complète. Utilisez l'onglet Display pour afficher le panneau de résumé avec des statistiques sur les données visibles. Cliquez sur n'importe quel élément de la carte pour des informations détaillées et utilisez les contrôles de zoom pour naviguer sur la carte",
+  "infoCards": {
+    "explore": {
+      "title": "Explorer les Zones de Contrat",
+      "description": "Utilisez la fonction de recherche pour trouver rapidement des contractants, des zones, des blocs et des stations. Cliquez sur les marqueurs pour des informations détaillées."
+    },
+    "resources": {
+      "title": "Ressources des Fonds Marins",
+      "description": "L'ISA réglemente l'exploration des minéraux dans la zone internationale des fonds marins, qui couvre environ 54% des océans du monde."
+    },
+    "transparency": {
+      "title": "Transparence des Données",
+      "description": "Toutes les informations contractuelles sont disponibles dans le cadre de l'engagement de l'ISA en faveur de la transparence dans les activités des fonds marins et la protection de l'environnement."
+    }
+  }
 }
 
 

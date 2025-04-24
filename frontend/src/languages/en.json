@@ -464,6 +464,25 @@
     "download": "Download",
     "showOnMap": "Show on Map"
   }
+},
+
+"map": {
+  "title": "ISA Exploration Areas",
+  "description": "Interactive map of deep seabed exploration contracts and areas regulated by the International Seabed Authority. Use the filters on the left to explore by mineral type, contract status, location, and sponsoring state. Click the map controls button (bottom right) to toggle visibility of areas, blocks, stations, and cruises. View the Info tab in map controls for a complete legend. Use the Display tab to show the summary panel with statistics about visible data. Click on any map element for detailed information and use the zoom controls to navigate the map",
+  "infoCards": {
+    "explore": {
+      "title": "Explore Contract Areas",
+      "description": "Use the search function to quickly find contractors, areas, blocks, and stations. Click on markers for detailed information."
+    },
+    "resources": {
+      "title": "Deep Seabed Resources",
+      "description": "The ISA regulates exploration of minerals in the international seabed area, which covers approximately 54% of the world's oceans."
+    },
+    "transparency": {
+      "title": "Data Transparency",
+      "description": "All contract information is available as part of ISA's commitment to transparency in deep seabed activities and environmental protection."
+    }
+  }
 }
   
 }
