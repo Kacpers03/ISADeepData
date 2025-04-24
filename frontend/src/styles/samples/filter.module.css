@@ -1,6 +1,5 @@
-/* Fix for text overflow in dropdowns */
+/* filter.module.css - With enhanced selection visibility */
 
-/* Main filter container */
 .filterContainer {
   width: 280px;
   background-color: white;
@@ -13,7 +12,6 @@
   z-index: 20;
 }
 
-/* Filter header */
 .filterHeader {
   display: flex;
   justify-content: space-between;
@@ -43,12 +41,10 @@
   background-color: #e2e8f0;
 }
 
-/* Filter content area */
 .filterContent {
   padding: 16px;
 }
 
-/* Filter group */
 .filtersGroup {
   margin-bottom: 12px;
 }
@@ -60,7 +56,6 @@
   margin: 0 0 8px 0;
 }
 
-/* Label styling */
 .filterLabel {
   display: block;
   font-size: 0.75rem;
@@ -69,7 +64,7 @@
   margin-bottom: 3px;
 }
 
-/* FIXED: Custom select with text overflow handling */
+/* Custom select with improved selection visibility */
 .customSelect {
   width: 100%;
   padding: 6px 10px;
@@ -83,16 +78,25 @@
   background-repeat: no-repeat;
   background-position: right 8px center;
   background-size: 10px;
-  padding-right: 25px; /* Make room for the dropdown arrow */
+  padding-right: 25px;
   cursor: pointer;
   position: relative;
   margin-bottom: 8px;
   height: 32px;
-  /* FIXED: Text overflow handling */
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   text-align: left;
+  transition: all 0.2s ease;
+}
+
+/* Highlight selected dropdown buttons */
+.customSelect[data-has-selection="true"] {
+  background-color: #ebf5ff;
+  border-color: #3b82f6;
+  color: #2563eb;
+  font-weight: 500;
+  box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.15);
 }
 
 .customSelect:focus {
@@ -100,14 +104,12 @@
   border-color: #3b82f6;
 }
 
-/* Dropdown container */
 .dropdownContainer {
   position: relative;
   width: 100%;
   margin-bottom: 8px;
 }
 
-/* Dropdown content */
 .dropdownContent {
   position: absolute;
   top: 100%;
@@ -122,28 +124,29 @@
   z-index: 30;
 }
 
-/* FIXED: Dropdown option with proper text wrapping */
 .dropdownOption {
   padding: 6px 10px;
   font-size: 0.85rem;
   color: #1e293b;
   cursor: pointer;
-  /* FIXED: Allow text wrapping in dropdown options */
   white-space: normal;
   overflow-wrap: break-word;
   word-wrap: break-word;
   word-break: break-word;
-  line-height: 1.3;
+  line-height: it;
 }
 
 .dropdownOption:hover {
   background-color: #f1f5f9;
 }
 
-/* Selected option styling */
+/* Enhanced selected option styling with better visibility */
 .selectedOption {
-  background-color: #e6f0fd;
+  background-color: #dbeafe !important;
+  border-left: 3px solid #2563eb;
   font-weight: 500;
+  color: #1e40af;
+  padding-left: 7px; /* Adjust padding to account for left border */
 }
 
 /* Search input */
@@ -158,12 +161,17 @@
   height: 32px;
 }
 
+/* Highlight search input when it has a value */
+.searchInput.hasValue {
+  border-color: #3b82f6;
+  background-color: #ebf5ff;
+}
+
 .searchInput:focus {
   outline: none;
   border-color: #3b82f6;
 }
 
-/* Results info for column visibility */
 .resultsInfo {
   padding: 12px 16px;
   border-top: 1px solid #eaecef;
@@ -177,7 +185,6 @@
   margin-bottom: 8px;
 }
 
-/* Checkbox styling */
 .filtersGroup > div {
   display: flex;
   align-items: center;
@@ -196,7 +203,6 @@
   color: #475569;
 }
 
-/* Responsive styles */
 @media (max-width: 768px) {
   .filterContainer {
     width: 100%;

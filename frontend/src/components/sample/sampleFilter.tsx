@@ -190,6 +190,7 @@ const SampleFilter = ({
               className={styles.customSelect}
               onClick={() => toggleDropdown('contractor')}
               title={filters.contractor !== 'all' ? filters.contractor : 'All Contractors'}
+              data-has-selection={filters.contractor !== 'all' ? "true" : "false"}
             >
               {getDisplayValue('contractor', filters.contractor)}
             </button>
@@ -221,6 +222,7 @@ const SampleFilter = ({
               className={styles.customSelect}
               onClick={() => toggleDropdown('station')}
               title={filters.station !== 'all' ? filters.station : 'All Stations'}
+              data-has-selection={filters.station !== 'all' ? "true" : "false"}
             >
               {getDisplayValue('station', filters.station)}
             </button>
@@ -252,6 +254,7 @@ const SampleFilter = ({
               className={styles.customSelect}
               onClick={() => toggleDropdown('cruise')}
               title={filters.cruise !== 'all' ? filters.cruise : 'All Cruises'}
+              data-has-selection={filters.cruise !== 'all' ? "true" : "false"}
             >
               {getDisplayValue('cruise', filters.cruise)}
             </button>
@@ -283,6 +286,7 @@ const SampleFilter = ({
               className={styles.customSelect}
               onClick={() => toggleDropdown('sampleType')}
               title={filters.sampleType !== 'all' ? filters.sampleType : 'All Sample Types'}
+              data-has-selection={filters.sampleType !== 'all' ? "true" : "false"}
             >
               {getDisplayValue('sampleType', filters.sampleType)}
             </button>
@@ -314,6 +318,7 @@ const SampleFilter = ({
               className={styles.customSelect}
               onClick={() => toggleDropdown('matrixType')}
               title={filters.matrixType !== 'all' ? filters.matrixType : 'All Matrix Types'}
+              data-has-selection={filters.matrixType !== 'all' ? "true" : "false"}
             >
               {getDisplayValue('matrixType', filters.matrixType)}
             </button>
@@ -345,6 +350,7 @@ const SampleFilter = ({
               className={styles.customSelect}
               onClick={() => toggleDropdown('habitatType')}
               title={filters.habitatType !== 'all' ? filters.habitatType : 'All Habitat Types'}
+              data-has-selection={filters.habitatType !== 'all' ? "true" : "false"}
             >
               {getDisplayValue('habitatType', filters.habitatType)}
             </button>
@@ -376,6 +382,7 @@ const SampleFilter = ({
               className={styles.customSelect}
               onClick={() => toggleDropdown('analysis')}
               title={filters.analysis !== 'all' ? filters.analysis : 'All Analyses'}
+              data-has-selection={filters.analysis !== 'all' ? "true" : "false"}
             >
               {getDisplayValue('analysis', filters.analysis)}
             </button>
@@ -408,7 +415,7 @@ const SampleFilter = ({
             value={filters.searchQuery || ""}
             onChange={handleFilterChange}
             placeholder="Search sample code..."
-            className={styles.searchInput}
+            className={filters.searchQuery ? `${styles.searchInput} ${styles.hasValue}` : styles.searchInput}
           />
         </div>
       </div>
