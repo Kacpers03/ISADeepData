@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Filter } from "lucide-react";
 import SampleFilter from "../../components/sample/sampleFilter";
 import SampleTable from "../../components/sample/sampleTable";
 import styles from "../../styles/samples/table.module.css";
@@ -29,6 +30,9 @@ export default function SamplesPage() {
     "station",
     "sampleDescription"
   ]);
+  
+  // State for mobile filter visibility
+  const [mobileFilterVisible, setMobileFilterVisible] = useState(false);
 
   return (
     <div className={styles.pageWrapper}>
@@ -38,18 +42,22 @@ export default function SamplesPage() {
           Explore all collected samples and their metadata. Filter by sample type, habitat, matrix, or analysis type.
         </p>
       </div>
+      
+      
   
       <div className={styles.mainContentRow}>
-        {/* Sidebar Filter - Fixed visibility and dropdown issues */}
-        <SampleFilter
-          filters={filters}
-          setFilters={setFilters}
-          defaultFilters={defaultFilters}
-          visibleColumns={visibleColumns}
-          setVisibleColumns={setVisibleColumns}
-        />
+        {/* Sidebar Filter - Only visible on mobile when toggled */}
+        <div className={`${styles.filterColumn} ${mobileFilterVisible ? styles.filterVisible : styles.filterHidden}`}>
+          <SampleFilter
+            filters={filters}
+            setFilters={setFilters}
+            defaultFilters={defaultFilters}
+            visibleColumns={visibleColumns}
+            setVisibleColumns={setVisibleColumns}
+          />
+        </div>
   
-        {/* Table Column - Improved responsiveness */}
+        {/* Table Column */}
         <div className={styles.tableColumn}>
           <SampleTable 
             filters={filters} 

@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
+import { ChevronDown, X, Filter } from "lucide-react";
 import styles from "../../styles/samples/filter.module.css";
 
 const SampleFilter = ({
@@ -132,7 +133,7 @@ const SampleFilter = ({
     setOpenDropdown(null);
   };
 
-  // Get display value for dropdown - truncate if needed
+  // Get display value for dropdown
   const getDisplayValue = (name, value) => {
     if (value === 'all') {
       switch(name) {
@@ -146,21 +147,14 @@ const SampleFilter = ({
         default: return 'All';
       }
     }
-    // No need to manually truncate as we're using CSS text-overflow now
     return value;
   };
 
   if (loading) {
     return (
       <div className={styles.filterContainer}>
-        <div style={{ 
-          display: 'flex', 
-          justifyContent: 'center', 
-          alignItems: 'center', 
-          height: '100%',
-          padding: '20px'
-        }}>
-          Loading filters...
+        <div className={styles.loadingContainer}>
+          <span className={styles.loadingText}>Loading filters...</span>
         </div>
       </div>
     );
@@ -169,7 +163,10 @@ const SampleFilter = ({
   return (
     <div className={styles.filterContainer}>
       <div className={styles.filterHeader}>
-        <h2>Sample Filters</h2>
+        <h2>
+          <Filter size={16} className={styles.filterIcon} />
+          Sample Filters
+        </h2>
         <button 
           className={styles.resetButton} 
           onClick={handleClearFilters}
@@ -181,19 +178,41 @@ const SampleFilter = ({
 
       <div className={styles.filterContent}>
         <div className={styles.filtersGroup}>
-          <h3>Filter By</h3>
+          {/* Search Filter */}
+          <label className={styles.filterLabel}>Search</label>
+          <div className={styles.searchInputContainer}>
+            <input
+              type="text"
+              name="searchQuery"
+              value={filters.searchQuery || ""}
+              onChange={handleFilterChange}
+              placeholder="Search sample code..."
+              className={filters.searchQuery ? `${styles.searchInput} ${styles.hasValue}` : styles.searchInput}
+            />
+            {filters.searchQuery && (
+              <button 
+                className={styles.clearSearchButton}
+                onClick={() => setFilters(prev => ({ ...prev, searchQuery: '' }))}
+                type="button"
+                aria-label="Clear search"
+              >
+                <X size={14} />
+              </button>
+            )}
+          </div>
           
           {/* Contractor Dropdown */}
           <label className={styles.filterLabel}>Contractor</label>
           <div className={styles.dropdownContainer} ref={el => dropdownRefs.current['contractor'] = el}>
             <button 
-              className={styles.customSelect}
+              className={filters.contractor !== 'all' ? `${styles.customSelect} ${styles.hasSelection}` : styles.customSelect}
               onClick={() => toggleDropdown('contractor')}
-              title={filters.contractor !== 'all' ? filters.contractor : 'All Contractors'}
-              data-has-selection={filters.contractor !== 'all' ? "true" : "false"}
+              type="button"
             >
-              {getDisplayValue('contractor', filters.contractor)}
+              <span className={styles.selectText}>{getDisplayValue('contractor', filters.contractor)}</span>
+              <ChevronDown size={16} className={`${styles.selectIcon} ${openDropdown === 'contractor' ? styles.selectIconOpen : ''}`} />
             </button>
+            
             {openDropdown === 'contractor' && (
               <div className={styles.dropdownContent}>
                 <div 
@@ -219,13 +238,14 @@ const SampleFilter = ({
           <label className={styles.filterLabel}>Station</label>
           <div className={styles.dropdownContainer} ref={el => dropdownRefs.current['station'] = el}>
             <button 
-              className={styles.customSelect}
+              className={filters.station !== 'all' ? `${styles.customSelect} ${styles.hasSelection}` : styles.customSelect}
               onClick={() => toggleDropdown('station')}
-              title={filters.station !== 'all' ? filters.station : 'All Stations'}
-              data-has-selection={filters.station !== 'all' ? "true" : "false"}
+              type="button"
             >
-              {getDisplayValue('station', filters.station)}
+              <span className={styles.selectText}>{getDisplayValue('station', filters.station)}</span>
+              <ChevronDown size={16} className={`${styles.selectIcon} ${openDropdown === 'station' ? styles.selectIconOpen : ''}`} />
             </button>
+            
             {openDropdown === 'station' && (
               <div className={styles.dropdownContent}>
                 <div 
@@ -251,13 +271,14 @@ const SampleFilter = ({
           <label className={styles.filterLabel}>Cruise</label>
           <div className={styles.dropdownContainer} ref={el => dropdownRefs.current['cruise'] = el}>
             <button 
-              className={styles.customSelect}
+              className={filters.cruise !== 'all' ? `${styles.customSelect} ${styles.hasSelection}` : styles.customSelect}
               onClick={() => toggleDropdown('cruise')}
-              title={filters.cruise !== 'all' ? filters.cruise : 'All Cruises'}
-              data-has-selection={filters.cruise !== 'all' ? "true" : "false"}
+              type="button"
             >
-              {getDisplayValue('cruise', filters.cruise)}
+              <span className={styles.selectText}>{getDisplayValue('cruise', filters.cruise)}</span>
+              <ChevronDown size={16} className={`${styles.selectIcon} ${openDropdown === 'cruise' ? styles.selectIconOpen : ''}`} />
             </button>
+            
             {openDropdown === 'cruise' && (
               <div className={styles.dropdownContent}>
                 <div 
@@ -283,13 +304,14 @@ const SampleFilter = ({
           <label className={styles.filterLabel}>Sample Type</label>
           <div className={styles.dropdownContainer} ref={el => dropdownRefs.current['sampleType'] = el}>
             <button 
-              className={styles.customSelect}
+              className={filters.sampleType !== 'all' ? `${styles.customSelect} ${styles.hasSelection}` : styles.customSelect}
               onClick={() => toggleDropdown('sampleType')}
-              title={filters.sampleType !== 'all' ? filters.sampleType : 'All Sample Types'}
-              data-has-selection={filters.sampleType !== 'all' ? "true" : "false"}
+              type="button"
             >
-              {getDisplayValue('sampleType', filters.sampleType)}
+              <span className={styles.selectText}>{getDisplayValue('sampleType', filters.sampleType)}</span>
+              <ChevronDown size={16} className={`${styles.selectIcon} ${openDropdown === 'sampleType' ? styles.selectIconOpen : ''}`} />
             </button>
+            
             {openDropdown === 'sampleType' && (
               <div className={styles.dropdownContent}>
                 <div 
@@ -315,13 +337,14 @@ const SampleFilter = ({
           <label className={styles.filterLabel}>Matrix Type</label>
           <div className={styles.dropdownContainer} ref={el => dropdownRefs.current['matrixType'] = el}>
             <button 
-              className={styles.customSelect}
+              className={filters.matrixType !== 'all' ? `${styles.customSelect} ${styles.hasSelection}` : styles.customSelect}
               onClick={() => toggleDropdown('matrixType')}
-              title={filters.matrixType !== 'all' ? filters.matrixType : 'All Matrix Types'}
-              data-has-selection={filters.matrixType !== 'all' ? "true" : "false"}
+              type="button"
             >
-              {getDisplayValue('matrixType', filters.matrixType)}
+              <span className={styles.selectText}>{getDisplayValue('matrixType', filters.matrixType)}</span>
+              <ChevronDown size={16} className={`${styles.selectIcon} ${openDropdown === 'matrixType' ? styles.selectIconOpen : ''}`} />
             </button>
+            
             {openDropdown === 'matrixType' && (
               <div className={styles.dropdownContent}>
                 <div 
@@ -347,13 +370,14 @@ const SampleFilter = ({
           <label className={styles.filterLabel}>Habitat Type</label>
           <div className={styles.dropdownContainer} ref={el => dropdownRefs.current['habitatType'] = el}>
             <button 
-              className={styles.customSelect}
+              className={filters.habitatType !== 'all' ? `${styles.customSelect} ${styles.hasSelection}` : styles.customSelect}
               onClick={() => toggleDropdown('habitatType')}
-              title={filters.habitatType !== 'all' ? filters.habitatType : 'All Habitat Types'}
-              data-has-selection={filters.habitatType !== 'all' ? "true" : "false"}
+              type="button"
             >
-              {getDisplayValue('habitatType', filters.habitatType)}
+              <span className={styles.selectText}>{getDisplayValue('habitatType', filters.habitatType)}</span>
+              <ChevronDown size={16} className={`${styles.selectIcon} ${openDropdown === 'habitatType' ? styles.selectIconOpen : ''}`} />
             </button>
+            
             {openDropdown === 'habitatType' && (
               <div className={styles.dropdownContent}>
                 <div 
@@ -379,13 +403,14 @@ const SampleFilter = ({
           <label className={styles.filterLabel}>Analysis</label>
           <div className={styles.dropdownContainer} ref={el => dropdownRefs.current['analysis'] = el}>
             <button 
-              className={styles.customSelect}
+              className={filters.analysis !== 'all' ? `${styles.customSelect} ${styles.hasSelection}` : styles.customSelect}
               onClick={() => toggleDropdown('analysis')}
-              title={filters.analysis !== 'all' ? filters.analysis : 'All Analyses'}
-              data-has-selection={filters.analysis !== 'all' ? "true" : "false"}
+              type="button"
             >
-              {getDisplayValue('analysis', filters.analysis)}
+              <span className={styles.selectText}>{getDisplayValue('analysis', filters.analysis)}</span>
+              <ChevronDown size={16} className={`${styles.selectIcon} ${openDropdown === 'analysis' ? styles.selectIconOpen : ''}`} />
             </button>
+            
             {openDropdown === 'analysis' && (
               <div className={styles.dropdownContent}>
                 <div 
@@ -406,36 +431,26 @@ const SampleFilter = ({
               </div>
             )}
           </div>
-
-          {/* Search Filter */}
-          <label className={styles.filterLabel}>Search</label>
-          <input
-            type="text"
-            name="searchQuery"
-            value={filters.searchQuery || ""}
-            onChange={handleFilterChange}
-            placeholder="Search sample code..."
-            className={filters.searchQuery ? `${styles.searchInput} ${styles.hasValue}` : styles.searchInput}
-          />
         </div>
       </div>
 
       {/* Column Visibility Section */}
-      <div className={styles.resultsInfo}>
-        <div className={styles.resultsInfoWrapper}>
+      <div className={styles.visibilitySection}>
+        <div className={styles.visibilityHeader}>
           <span>Visible Columns</span>
         </div>
-        <div className={styles.filtersGroup}>
+        <div className={styles.columnsGrid}>
           {allColumnOptions.map((col) => (
-            <div key={col.key}>
+            <div key={col.key} className={styles.columnToggle}>
               <input
                 type="checkbox"
                 id={`col-${col.key}`}
                 value={col.key}
                 checked={visibleColumns.includes(col.key)}
                 onChange={handleColumnToggle}
+                className={styles.columnCheckbox}
               />
-              <label htmlFor={`col-${col.key}`}>{col.label}</label>
+              <label htmlFor={`col-${col.key}`} className={styles.columnLabel}>{col.label}</label>
             </div>
           ))}
         </div>
