@@ -6,24 +6,54 @@ import Link from "next/link";
 import Navigation from "../components/navigation/navigation";
 import { useLanguage } from "../contexts/languageContext";
 
+// Add custom styles to ensure the language dropdown works properly
+const headerStyles = {
+  languageSelector: {
+    position: 'relative' as const, // Create new stacking context
+    zIndex: 99999, // Extremely high z-index
+    marginRight: '20px' // Add more space between language selector and burger menu
+  },
+  languageDropdown: {
+    position: 'absolute' as const,
+    top: '100%',
+    right: 0,
+    marginTop: '4px',
+    backgroundColor: 'white',
+    boxShadow: '0 4px 15px rgba(0, 0, 0, 0.2)',
+    borderRadius: '4px',
+    padding: '4px 0',
+    zIndex: 99999, // Extremely high z-index
+    minWidth: '120px',
+    pointerEvents: 'auto' as const // Ensure interactions work
+  },
+  dropdownItem: {
+    display: 'block',
+    width: '100%',
+    padding: '8px 16px',
+    textAlign: 'left' as const,
+    border: 'none',
+    backgroundColor: 'transparent',
+    cursor: 'pointer',
+    fontSize: '0.9rem',
+    transition: 'background-color 0.2s'
+  },
+  dropdownItemHover: {
+    backgroundColor: '#f8f9fa'
+  },
+  dropdownItemActive: {
+    fontWeight: 'bold',
+    backgroundColor: '#f1f8ff',
+    color: '#0d6efd' 
+  }
+};
+
 export default function Header() {
   const router = useRouter();
-  // Ikke lenger nødvendig å spore header-synlighet
-  // const [showHeader, setShowHeader] = useState(true);
   const [isNavOpen, setIsNavOpen] = useState(false);
   const [langMenuOpen, setLangMenuOpen] = useState(false);
-  const lastScrollY = useRef(0);
+  const [hoveredItem, setHoveredItem] = useState<string | null>(null);
   const langMenuRef = useRef<HTMLDivElement>(null);
   const { language, setLanguage, t } = useLanguage();
-
-  useEffect(() => {
-    console.log("Route changed to: ", router.asPath);
-    // Bare ruller tilbake til toppen ved ruteendring, ingen header-endring nødvendig
-    window.scrollTo(0, 0);
-  }, [router.asPath]);
-
-  // Fjernet scroll-håndtering siden vi ikke lenger trenger å vise/skjule headeren basert på scrolling
-  // Header vil nå oppføre seg som et normalt element som forsvinner når man scroller ned
 
   // Close language menu when clicking outside
   useEffect(() => {
@@ -37,9 +67,16 @@ export default function Header() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  // Explicitly close menu on route change
+  useEffect(() => {
+    console.log("Route changed to: ", router.asPath);
+    // Bare ruller tilbake til toppen ved ruteendring, ingen header-endring nødvendig
+    window.scrollTo(0, 0);
+    setLangMenuOpen(false);
+  }, [router.asPath]);
+
   const handleNavToggle = () => {
     setIsNavOpen((prev) => !prev);
-    // Ingen header-oppdatering nødvendig
   };
 
   const handleLanguageChange = (lang: 'en' | 'es' | 'fr') => {
@@ -48,9 +85,7 @@ export default function Header() {
   };
 
   return (
-    <header
-      className="sticky-header"
-    >
+    <header className="sticky-header">
       <div className="container">
         {/* Top row with logo, language selector, and burger button */}
         <div className="d-flex align-items-center justify-content-between py-2">
@@ -66,33 +101,54 @@ export default function Header() {
           
           {/* Language selector and burger menu container */}
           <div className="d-flex align-items-center">
-            <div className="position-relative mx-3" ref={langMenuRef}>
+            {/* Completely rewritten language selector with inline styles */}
+            <div ref={langMenuRef} style={headerStyles.languageSelector}>
               <button 
                 className="btn btn-sm btn-outline-secondary d-flex align-items-center" 
                 onClick={() => setLangMenuOpen(!langMenuOpen)}
                 aria-label="Select language"
+                style={{ position: 'relative', zIndex: 99999 }} // Ensure button is clickable
               >
                 <span className="me-1">{language.toUpperCase()}</span>
                 <i className={`fas fa-chevron-${langMenuOpen ? 'up' : 'down'} small`}></i>
               </button>
               
+              {/* Dropdown with inline styles to ensure proper layering */}
               {langMenuOpen && (
-                <div className="position-absolute top-100 mt-1 end-0 bg-white shadow-sm rounded py-1" style={{ zIndex: 11000, minWidth: '120px' }}>
+                <div style={headerStyles.languageDropdown}>
                   <button 
-                    className={`dropdown-item px-3 py-2 ${language === 'en' ? 'fw-bold text-primary' : ''}`}
+                    style={{
+                      ...headerStyles.dropdownItem,
+                      ...(hoveredItem === 'en' ? headerStyles.dropdownItemHover : {}),
+                      ...(language === 'en' ? headerStyles.dropdownItemActive : {})
+                    }}
                     onClick={() => handleLanguageChange('en')}
+                    onMouseEnter={() => setHoveredItem('en')}
+                    onMouseLeave={() => setHoveredItem(null)}
                   >
                     {t('languages.en')}
                   </button>
                   <button 
-                    className={`dropdown-item px-3 py-2 ${language === 'es' ? 'fw-bold text-primary' : ''}`}
+                    style={{
+                      ...headerStyles.dropdownItem,
+                      ...(hoveredItem === 'es' ? headerStyles.dropdownItemHover : {}),
+                      ...(language === 'es' ? headerStyles.dropdownItemActive : {})
+                    }}
                     onClick={() => handleLanguageChange('es')}
+                    onMouseEnter={() => setHoveredItem('es')}
+                    onMouseLeave={() => setHoveredItem(null)}
                   >
                     {t('languages.es')}
                   </button>
                   <button 
-                    className={`dropdown-item px-3 py-2 ${language === 'fr' ? 'fw-bold text-primary' : ''}`}
+                    style={{
+                      ...headerStyles.dropdownItem,
+                      ...(hoveredItem === 'fr' ? headerStyles.dropdownItemHover : {}),
+                      ...(language === 'fr' ? headerStyles.dropdownItemActive : {})
+                    }}
                     onClick={() => handleLanguageChange('fr')}
+                    onMouseEnter={() => setHoveredItem('fr')}
+                    onMouseLeave={() => setHoveredItem(null)}
                   >
                     {t('languages.fr')}
                   </button>
