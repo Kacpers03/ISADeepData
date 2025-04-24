@@ -226,6 +226,7 @@ const FileTable: React.FC<{
       <div 
         className={styles.tableScrollContainer} 
         ref={tableScrollRef}
+        style={{ height: 'auto' }} // Ensure height is based on content
       >
         <table className={styles.table}>
           <thead className={styles.tableHead}>

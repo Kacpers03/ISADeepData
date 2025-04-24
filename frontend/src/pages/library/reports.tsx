@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import FileFilter from "../../components/files/fileFilter";
 import FileTable from "../../components/files/fileTable";
-import styles from "../../styles/files/reports.module.css"; // Using a single CSS file for simplicity
+import styles from "../../styles/files/reports.module.css"; 
 
 export default function FilesPage() {
   const [filters, setFilters] = useState({
@@ -82,10 +82,14 @@ export default function FilesPage() {
 
   return (
     <div className={styles.pageWrapper}>
-      <div className={styles.headerSection}>
-        <h1 className={styles.pageTitle}>File Management Library</h1>
-        <p className={styles.pageDescription}>
+      <div className={styles.centeredHeaderSection}>
+        <h1 className={styles.centeredPageTitle}>File Management Library</h1>
+        <p className={styles.centeredPageDescription}>
           Browse and download official documents from contractors. Use filters to narrow down files by country, contractor, theme, or year.
+        </p>
+        <p className={styles.centeredPageDescription}>
+          Click on any column header to sort the data. Click on a row to view detailed information about the file. 
+          The table displays essential metadata for each document, allowing for quick scanning and comparison of available resources.
         </p>
       </div>
       <div className={styles.mainContentRow}>

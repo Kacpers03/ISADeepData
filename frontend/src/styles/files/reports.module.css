@@ -1,4 +1,4 @@
-/* reports.module.css - fixed version */
+/* reports.module.css - with added centered header styles */
 
 /* Page wrapper */
 .pageWrapper {
@@ -6,11 +6,22 @@
   background-color: white;
 }
 
-/* Header section styling */
+/* Original header section styling */
 .headerSection {
   margin-bottom: 24px;
 }
 
+/* New centered header section styling */
+.centeredHeaderSection {
+  margin-bottom: 40px;
+  text-align: center;
+  max-width: 1000px;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 0 20px;
+}
+
+/* Original page title */
 .pageTitle {
   font-size: 24px;
   font-weight: 600;
@@ -18,10 +29,32 @@
   margin-bottom: 8px;
 }
 
+/* New centered page title - matches the Sample Management style */
+.centeredPageTitle {
+  font-size: 36px;
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 16px;
+  text-align: center;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+}
+
+/* Original page description */
 .pageDescription {
   color: #64748b;
   font-size: 14px;
   max-width: 800px;
+}
+
+/* New centered page description */
+.centeredPageDescription {
+  color: #64748b;
+  font-size: 16px;
+  line-height: 1.6;
+  max-width: 800px;
+  margin: 0 auto 8px auto;
+  text-align: center;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
 }
 
 /* Main content layout */
@@ -29,9 +62,12 @@
   display: flex;
   gap: 20px; 
   background-color: white;
+  align-items: flex-start; /* Ensure items align at the top */
+  max-width: 1400px;
+  margin: 0 auto;
 }
 
-/* Filter container styling - IMPORTANT FIXES HERE */
+/* Filter container styling */
 .filterContainer {
   width: 300px; /* Fixed width on desktop */
   min-width: 300px; /* Prevent shrinking */
@@ -48,6 +84,8 @@
 .tableColumn {
   flex: 1;
   background-color: white;
+  display: flex;
+  flex-direction: column;
 }
 
 .fileTableContainer {
@@ -56,16 +94,28 @@
   overflow: hidden;
   border-radius: 12px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  display: flex;
+  flex-direction: column;
 }
 
 .tableScrollContainer {
   width: 100%;
   overflow-x: auto;
-  overflow-y: hidden;
+  overflow-y: auto; /* Changed from hidden to auto */
   -webkit-overflow-scrolling: touch;
   background-color: white;
   scrollbar-width: thin;
   scrollbar-color: #cbd5e1 #f1f5f9;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Add a height constraint for tables with many rows */
+@media (min-height: 800px) {
+  .tableScrollContainer {
+    max-height: calc(100vh - 300px); /* Adapt to viewport height */
+  }
 }
 
 /* Table styling */
@@ -76,6 +126,7 @@
   min-width: 900px;
   background-color: white;
   margin-bottom: 0;
+  flex: 0 0 auto; /* Prevent the table from stretching */
 }
 
 .tableHead {
@@ -118,6 +169,13 @@
 
 .tableRow:last-child td {
   border-bottom: none;
+  padding-bottom: 16px; /* Consistent padding */
+}
+
+/* Fix empty space issue for sparse tables */
+.table tbody {
+  min-height: auto;
+  height: auto;
 }
 
 /* Pagination styling */
@@ -128,6 +186,8 @@
   padding: 16px;
   background-color: white;
   border-top: 1px solid #f1f5f9;
+  flex-shrink: 0; /* Prevent the pagination from shrinking */
+  max-height: 70px;
 }
 
 .paginationControls {
@@ -157,6 +217,22 @@
   min-height: 36px;
 }
 
+.paginationButton:hover {
+  background-color: #f8fafc;
+  border-color: #cbd5e1;
+}
+
+.paginationButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.pageInfo {
+  font-size: 14px;
+  color: #475569;
+  margin: 0 4px;
+}
+
 .pageSizeSelect {
   padding: 8px 12px;
   border-radius: 6px;
@@ -168,6 +244,68 @@
   outline: none;
   transition: all 0.2s ease;
   min-width: 110px;
+}
+
+.pageSizeSelect:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
+}
+
+/* File link styling */
+.fileLinkContainer {
+  display: flex;
+  align-items: center;
+}
+
+.fileLink {
+  color: #0284c7;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: color 0.2s ease;
+}
+
+.fileLink:hover {
+  color: #0369a1;
+  text-decoration: underline;
+}
+
+.downloadIcon {
+  color: #475569;
+  flex-shrink: 0;
+}
+
+/* Tooltip styling */
+.tooltipContainer {
+  position: relative;
+  max-width: 100%;
+}
+
+.tooltip {
+  line-height: 1.5;
+  max-height: 3em; /* Show about 2 lines of text */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+/* Sortable header styling */
+.sortableHeader {
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.sortableHeader:hover {
+  background-color: #f8fafc;
+}
+
+.sortIndicator {
+  display: inline-block;
+  margin-left: 4px;
+  color: #3b82f6;
 }
 
 /* Responsive layout for different screen sizes */
