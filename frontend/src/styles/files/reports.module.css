@@ -1,4 +1,4 @@
-/* reports.module.css - with added centered header styles */
+/* reports.module.css - with added filter summary styling */
 
 /* Page wrapper */
 .pageWrapper {
@@ -96,6 +96,18 @@
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   display: flex;
   flex-direction: column;
+}
+
+/* Filter summary styling - added to match the sample styles */
+.filterSummary {
+  margin-bottom: 16px;
+  padding: 10px 16px;
+  background-color: #f1f5f9;
+  border-radius: 6px;
+  color: #334155;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
 }
 
 .tableScrollContainer {

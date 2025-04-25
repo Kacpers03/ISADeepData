@@ -1,5 +1,4 @@
-import React, { useEffect, useState, useCallback } from "react";
-import { CustomDropdown } from "./customDropdown";
+import React, { useEffect, useState, useCallback, useMemo } from "react";
 import styles from "../../styles/files/reports.module.css";
 import dropdownStyles from "../../styles/files/dropdown.module.css";
 
@@ -56,6 +55,42 @@ const FileFilter: React.FC<FileFilterProps> = ({
     };
   }, []);
 
+  // Calculate available options based on the filtered items
+  const availableOptions = useMemo(() => {
+    if (!currentFilteredItems.length) {
+      return {
+        contractors: contractors.map(c => c.name),
+        countries: countries,
+        years: years,
+        themes: themes
+      };
+    }
+
+    // Extract unique values from filtered items
+    const uniqueContractors = [...new Set(currentFilteredItems.map(item => item.contractor).filter(Boolean))];
+    const uniqueCountries = [...new Set(currentFilteredItems.map(item => item.country).filter(Boolean))];
+    const uniqueYears = [...new Set(currentFilteredItems.map(item => item.year?.toString()).filter(Boolean))];
+    const uniqueThemes = [...new Set(currentFilteredItems.map(item => item.theme).filter(Boolean))];
+
+    // Only show filtered options for filters that aren't currently active
+    return {
+      contractors: filters.contractor !== 'all' ? contractors.map(c => c.name) : uniqueContractors,
+      countries: filters.country !== 'all' ? countries : uniqueCountries,
+      years: filters.year !== 'all' ? years : uniqueYears,
+      themes: filters.theme !== 'all' ? themes : uniqueThemes
+    };
+  }, [
+    currentFilteredItems, 
+    filters.contractor, 
+    filters.country, 
+    filters.year, 
+    filters.theme, 
+    contractors, 
+    countries, 
+    years, 
+    themes
+  ]);
+
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const query = e.target.value;
     setSearchQuery(query);
@@ -79,33 +114,23 @@ const FileFilter: React.FC<FileFilterProps> = ({
     return count;
   };
 
-  const contractorOptions = [
-    { value: "all", label: "All Contractors" },
-    ...contractors.map((c) => ({ value: c.name, label: c.name })),
-  ];
-
-  const countryOptions = [
-    { value: "all", label: "All Countries" },
-    ...countries.map((country) => ({ value: country, label: country })),
-  ];
-
-  const yearOptions = [
-    { value: "all", label: "All Years" },
-    ...years.map((year) => ({ value: year, label: year })),
-  ];
-
-  const themeOptions = [
-    { value: "all", label: "All Themes" },
-    ...themes.map((theme) => ({ value: theme, label: theme })),
-  ];
-
-  const handleDropdownChange = (filterName: string) => (e: { target: { value: string } }) => {
-    onFilterChange(filterName, e.target.value);
-  };
-
   // Custom handler for dropdown toggling
   const handleDropdownToggle = (id: string) => {
     setActiveDropdown(activeDropdown === id ? null : id);
+  };
+
+  // Get display value for dropdown
+  const getDisplayValue = (name: string, value: string) => {
+    if (value === 'all') {
+      switch(name) {
+        case 'contractor': return 'All Contractors';
+        case 'country': return 'All Countries';
+        case 'year': return 'All Years';
+        case 'theme': return 'All Themes';
+        default: return 'All';
+      }
+    }
+    return value;
   };
 
   return (
@@ -149,8 +174,8 @@ const FileFilter: React.FC<FileFilterProps> = ({
                 className={`${dropdownStyles.customSelect} ${filters.contractor !== "all" ? dropdownStyles.activeFilter : ""}`}
                 onClick={() => handleDropdownToggle("contractor")}
               >
-                <span title={contractorOptions.find(option => option.value === filters.contractor)?.label}>
-                  {contractorOptions.find(option => option.value === filters.contractor)?.label || "All Contractors"}
+                <span title={getDisplayValue('contractor', filters.contractor)}>
+                  {getDisplayValue('contractor', filters.contractor)}
                 </span>
                 <span className={`${dropdownStyles.selectArrow} ${activeDropdown === "contractor" ? dropdownStyles.up : ""}`}>
                   ▼
@@ -159,19 +184,33 @@ const FileFilter: React.FC<FileFilterProps> = ({
               
               {activeDropdown === "contractor" && (
                 <div className={dropdownStyles.optionsList}>
-                  {contractorOptions.map((option) => (
+                  <div
+                    className={`${dropdownStyles.optionItem} ${
+                      filters.contractor === "all" ? dropdownStyles.selected : ""
+                    }`}
+                    onClick={() => {
+                      onFilterChange("contractor", "all");
+                      setActiveDropdown(null);
+                    }}
+                  >
+                    All Contractors
+                    {filters.contractor === "all" && (
+                      <span className={dropdownStyles.selectedCheck}>✓</span>
+                    )}
+                  </div>
+                  {availableOptions.contractors.map((option) => (
                     <div
-                      key={option.value}
+                      key={option}
                       className={`${dropdownStyles.optionItem} ${
-                        option.value === filters.contractor ? dropdownStyles.selected : ""
+                        option === filters.contractor ? dropdownStyles.selected : ""
                       }`}
                       onClick={() => {
-                        onFilterChange("contractor", option.value);
+                        onFilterChange("contractor", option);
                         setActiveDropdown(null);
                       }}
                     >
-                      {option.label}
-                      {option.value === filters.contractor && (
+                      {option}
+                      {option === filters.contractor && (
                         <span className={dropdownStyles.selectedCheck}>✓</span>
                       )}
                     </div>
@@ -186,8 +225,8 @@ const FileFilter: React.FC<FileFilterProps> = ({
                 className={`${dropdownStyles.customSelect} ${filters.country !== "all" ? dropdownStyles.activeFilter : ""}`}
                 onClick={() => handleDropdownToggle("country")}
               >
-                <span title={countryOptions.find(option => option.value === filters.country)?.label}>
-                  {countryOptions.find(option => option.value === filters.country)?.label || "All Countries"}
+                <span title={getDisplayValue('country', filters.country)}>
+                  {getDisplayValue('country', filters.country)}
                 </span>
                 <span className={`${dropdownStyles.selectArrow} ${activeDropdown === "country" ? dropdownStyles.up : ""}`}>
                   ▼
@@ -196,19 +235,33 @@ const FileFilter: React.FC<FileFilterProps> = ({
               
               {activeDropdown === "country" && (
                 <div className={dropdownStyles.optionsList}>
-                  {countryOptions.map((option) => (
+                  <div
+                    className={`${dropdownStyles.optionItem} ${
+                      filters.country === "all" ? dropdownStyles.selected : ""
+                    }`}
+                    onClick={() => {
+                      onFilterChange("country", "all");
+                      setActiveDropdown(null);
+                    }}
+                  >
+                    All Countries
+                    {filters.country === "all" && (
+                      <span className={dropdownStyles.selectedCheck}>✓</span>
+                    )}
+                  </div>
+                  {availableOptions.countries.map((option) => (
                     <div
-                      key={option.value}
+                      key={option}
                       className={`${dropdownStyles.optionItem} ${
-                        option.value === filters.country ? dropdownStyles.selected : ""
+                        option === filters.country ? dropdownStyles.selected : ""
                       }`}
                       onClick={() => {
-                        onFilterChange("country", option.value);
+                        onFilterChange("country", option);
                         setActiveDropdown(null);
                       }}
                     >
-                      {option.label}
-                      {option.value === filters.country && (
+                      {option}
+                      {option === filters.country && (
                         <span className={dropdownStyles.selectedCheck}>✓</span>
                       )}
                     </div>
@@ -223,8 +276,8 @@ const FileFilter: React.FC<FileFilterProps> = ({
                 className={`${dropdownStyles.customSelect} ${filters.year !== "all" ? dropdownStyles.activeFilter : ""}`}
                 onClick={() => handleDropdownToggle("year")}
               >
-                <span title={yearOptions.find(option => option.value === filters.year)?.label}>
-                  {yearOptions.find(option => option.value === filters.year)?.label || "All Years"}
+                <span title={getDisplayValue('year', filters.year)}>
+                  {getDisplayValue('year', filters.year)}
                 </span>
                 <span className={`${dropdownStyles.selectArrow} ${activeDropdown === "year" ? dropdownStyles.up : ""}`}>
                   ▼
@@ -233,19 +286,33 @@ const FileFilter: React.FC<FileFilterProps> = ({
               
               {activeDropdown === "year" && (
                 <div className={dropdownStyles.optionsList}>
-                  {yearOptions.map((option) => (
+                  <div
+                    className={`${dropdownStyles.optionItem} ${
+                      filters.year === "all" ? dropdownStyles.selected : ""
+                    }`}
+                    onClick={() => {
+                      onFilterChange("year", "all");
+                      setActiveDropdown(null);
+                    }}
+                  >
+                    All Years
+                    {filters.year === "all" && (
+                      <span className={dropdownStyles.selectedCheck}>✓</span>
+                    )}
+                  </div>
+                  {availableOptions.years.map((option) => (
                     <div
-                      key={option.value}
+                      key={option}
                       className={`${dropdownStyles.optionItem} ${
-                        option.value === filters.year ? dropdownStyles.selected : ""
+                        option === filters.year ? dropdownStyles.selected : ""
                       }`}
                       onClick={() => {
-                        onFilterChange("year", option.value);
+                        onFilterChange("year", option);
                         setActiveDropdown(null);
                       }}
                     >
-                      {option.label}
-                      {option.value === filters.year && (
+                      {option}
+                      {option === filters.year && (
                         <span className={dropdownStyles.selectedCheck}>✓</span>
                       )}
                     </div>
@@ -260,8 +327,8 @@ const FileFilter: React.FC<FileFilterProps> = ({
                 className={`${dropdownStyles.customSelect} ${filters.theme !== "all" ? dropdownStyles.activeFilter : ""}`}
                 onClick={() => handleDropdownToggle("theme")}
               >
-                <span title={themeOptions.find(option => option.value === filters.theme)?.label}>
-                  {themeOptions.find(option => option.value === filters.theme)?.label || "All Themes"}
+                <span title={getDisplayValue('theme', filters.theme)}>
+                  {getDisplayValue('theme', filters.theme)}
                 </span>
                 <span className={`${dropdownStyles.selectArrow} ${activeDropdown === "theme" ? dropdownStyles.up : ""}`}>
                   ▼
@@ -270,19 +337,33 @@ const FileFilter: React.FC<FileFilterProps> = ({
               
               {activeDropdown === "theme" && (
                 <div className={dropdownStyles.optionsList}>
-                  {themeOptions.map((option) => (
+                  <div
+                    className={`${dropdownStyles.optionItem} ${
+                      filters.theme === "all" ? dropdownStyles.selected : ""
+                    }`}
+                    onClick={() => {
+                      onFilterChange("theme", "all");
+                      setActiveDropdown(null);
+                    }}
+                  >
+                    All Themes
+                    {filters.theme === "all" && (
+                      <span className={dropdownStyles.selectedCheck}>✓</span>
+                    )}
+                  </div>
+                  {availableOptions.themes.map((option) => (
                     <div
-                      key={option.value}
+                      key={option}
                       className={`${dropdownStyles.optionItem} ${
-                        option.value === filters.theme ? dropdownStyles.selected : ""
+                        option === filters.theme ? dropdownStyles.selected : ""
                       }`}
                       onClick={() => {
-                        onFilterChange("theme", option.value);
+                        onFilterChange("theme", option);
                         setActiveDropdown(null);
                       }}
                     >
-                      {option.label}
-                      {option.value === filters.theme && (
+                      {option}
+                      {option === filters.theme && (
                         <span className={dropdownStyles.selectedCheck}>✓</span>
                       )}
                     </div>

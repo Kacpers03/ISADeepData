@@ -113,6 +113,21 @@ const FileTable: React.FC<{
     return filtered;
   }, [filters, tableData, setFilteredItems]);
 
+  // Get summary statistics for the filter bar
+  const filterSummary = useMemo(() => {
+    if (!filteredData.length) return null;
+    
+    const uniqueContractors = new Set(filteredData.map(item => item.contractor).filter(Boolean));
+    const uniqueCountries = new Set(filteredData.map(item => item.country).filter(Boolean));
+    const uniqueThemes = new Set(filteredData.map(item => item.theme).filter(Boolean));
+    
+    return {
+      contractorCount: uniqueContractors.size,
+      countryCount: uniqueCountries.size,
+      themeCount: uniqueThemes.size
+    };
+  }, [filteredData]);
+
   // Restore scroll position when filtered data changes
   useEffect(() => {
     // Only restore scroll if it's not the initial load and filters have changed
@@ -223,6 +238,15 @@ const FileTable: React.FC<{
 
   return (
     <div className={styles.fileTableContainer}>
+      {/* Filter Summary */}
+      {filterSummary && (
+        <div className={styles.filterSummary}>
+          Showing {filterSummary.contractorCount} contractor{filterSummary.contractorCount !== 1 ? 's' : ''}, 
+          {' '}{filterSummary.countryCount} countr{filterSummary.countryCount !== 1 ? 'ies' : 'y'}, 
+          and {filterSummary.themeCount} theme{filterSummary.themeCount !== 1 ? 's' : ''}
+        </div>
+      )}
+      
       <div 
         className={styles.tableScrollContainer} 
         ref={tableScrollRef}
