@@ -1,4 +1,4 @@
-/* table.module.css - Fixed version */
+/* table.module.css - with filter summary */
 
 .pageWrapper {
     padding: 20px;
@@ -33,6 +33,12 @@
     width: 100%;
   }
   
+  /* Filter column */
+  .filterColumn {
+    flex-shrink: 0;
+    width: 280px;
+  }
+  
   /* Table column */
   .tableColumn {
     flex: 1;
@@ -54,6 +60,19 @@
   
   .csvbutton:hover {
     background-color: #1d4ed8;
+  }
+  
+  /* Filter summary styling */
+  .filterSummary {
+    margin-bottom: 16px;
+    padding: 10px 16px;
+    background-color: #f1f5f9;
+    border-radius: 6px;
+    color: #334155;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    border-left: 3px solid #0284c7;
   }
   
   /* File table container */
@@ -141,7 +160,7 @@
     word-wrap: break-word;
   }
   
-  /* FIXED: Pagination container with proper positioning */
+  /* Pagination container with proper positioning */
   .pagination {
     margin-top: 16px;
     display: flex;
@@ -149,7 +168,7 @@
     flex-wrap: wrap;
   }
   
-  /* FIXED: Pagination controls with better spacing */
+  /* Pagination controls with better spacing */
   .paginationControls {
     display: flex;
     align-items: center;
@@ -199,14 +218,45 @@
     font-size: 14px;
   }
   
-  /* FIXED: Responsive styles for better layout at smaller screens */
+  /* Responsive mobile filter toggle */
+  .filterToggleButton {
+    display: none;
+    background-color: #2563eb;
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 4px;
+    margin-bottom: 16px;
+    font-weight: 500;
+    align-items: center;
+    gap: 8px;
+  }
+  
+  /* Responsive styles for better layout at smaller screens */
   @media (max-width: 1024px) {
     .mainContentRow {
       flex-direction: column;
     }
     
+    .filterColumn {
+      width: 100%;
+      margin-bottom: 20px;
+    }
+    
     .tableColumn {
       width: 100%;
+    }
+    
+    .filterToggleButton {
+      display: flex;
+    }
+    
+    .filterHidden {
+      display: none;
+    }
+    
+    .filterVisible {
+      display: block;
     }
   }
   

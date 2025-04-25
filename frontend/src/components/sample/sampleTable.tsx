@@ -10,7 +10,7 @@ import styles from "../../styles/samples/table.module.css";
 import CsvExportButton from "./CSVButton";
 import { formatNumericValue } from "../../utils/dataUtilities";
 
-const SampleTable = ({ filters, visibleColumns }) => {
+const SampleTable = ({ filters, visibleColumns, setFilteredData }) => {
   const [tableData, setTableData] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -33,7 +33,7 @@ const SampleTable = ({ filters, visibleColumns }) => {
   }, []);
 
   const filteredData = useMemo(() => {
-    return tableData.filter((item) => {
+    const filtered = tableData.filter((item) => {
       const matchSampleType =
         filters.sampleType === "all" || 
         item.sampleType?.toLowerCase() === filters.sampleType?.toLowerCase();
@@ -78,7 +78,27 @@ const SampleTable = ({ filters, visibleColumns }) => {
         matchContractor
       );
     });
-  }, [filters, tableData]);
+    
+    // Update the filtered data in the parent component
+    setFilteredData(filtered);
+    
+    return filtered;
+  }, [filters, tableData, setFilteredData]);
+
+  // Get summary statistics for the filter bar
+  const filterSummary = useMemo(() => {
+    if (!filteredData.length) return null;
+    
+    const uniqueContractors = new Set(filteredData.map(item => item.contractorName).filter(Boolean));
+    const uniqueCruises = new Set(filteredData.map(item => item.cruiseName).filter(Boolean));
+    const uniqueStations = new Set(filteredData.map(item => item.stationCode).filter(Boolean));
+    
+    return {
+      contractorCount: uniqueContractors.size,
+      cruiseCount: uniqueCruises.size,
+      stationCount: uniqueStations.size
+    };
+  }, [filteredData]);
 
   // Define all possible columns with improved cell rendering
   const allColumns = {
@@ -196,6 +216,15 @@ const SampleTable = ({ filters, visibleColumns }) => {
 
   return (
     <div className={styles.fileTableContainer}>
+      {/* Filter Summary */}
+      {filterSummary && (
+        <div className={styles.filterSummary}>
+          Showing {filterSummary.contractorCount} contractor{filterSummary.contractorCount !== 1 ? 's' : ''}, 
+          {' '}{filterSummary.cruiseCount} cruise{filterSummary.cruiseCount !== 1 ? 's' : ''}, 
+          and {filterSummary.stationCount} station{filterSummary.stationCount !== 1 ? 's' : ''}
+        </div>
+      )}
+
       <CsvExportButton
         data={filteredData}
         columns={exportColumns}

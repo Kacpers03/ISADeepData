@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, useMemo } from "react";
 import { ChevronDown, X, Filter } from "lucide-react";
 import styles from "../../styles/samples/filter.module.css";
 
@@ -8,6 +8,7 @@ const SampleFilter = ({
   defaultFilters,
   visibleColumns,
   setVisibleColumns,
+  filteredData = []
 }) => {
   const [sampleTypes, setSampleTypes] = useState([]);
   const [matrixTypes, setMatrixTypes] = useState([]);
@@ -34,6 +35,57 @@ const SampleFilter = ({
     { key: "cruise", label: "Cruise" },
     { key: "sampleDescription", label: "Description" },
   ];
+
+  // Calculate available options based on the filtered data
+  const availableOptions = useMemo(() => {
+    if (!filteredData.length) {
+      return {
+        sampleTypes: sampleTypes,
+        matrixTypes: matrixTypes,
+        habitatTypes: habitatTypes,
+        analyses: analyses,
+        stations: stationOptions,
+        cruises: cruiseOptions,
+        contractors: contractorOptions
+      };
+    }
+
+    // Extract unique values from filtered data
+    const uniqueSampleTypes = [...new Set(filteredData.map(item => item.sampleType).filter(Boolean))];
+    const uniqueMatrixTypes = [...new Set(filteredData.map(item => item.matrixType).filter(Boolean))];
+    const uniqueHabitatTypes = [...new Set(filteredData.map(item => item.habitatType).filter(Boolean))];
+    const uniqueAnalyses = [...new Set(filteredData.map(item => item.analysis).filter(Boolean))];
+    const uniqueStations = [...new Set(filteredData.map(item => item.stationCode).filter(Boolean))];
+    const uniqueCruises = [...new Set(filteredData.map(item => item.cruiseName).filter(Boolean))];
+    const uniqueContractors = [...new Set(filteredData.map(item => item.contractorName).filter(Boolean))];
+
+    // Only show filtered options for filters that aren't current active
+    return {
+      sampleTypes: filters.sampleType !== 'all' ? sampleTypes : uniqueSampleTypes,
+      matrixTypes: filters.matrixType !== 'all' ? matrixTypes : uniqueMatrixTypes,
+      habitatTypes: filters.habitatType !== 'all' ? habitatTypes : uniqueHabitatTypes,
+      analyses: filters.analysis !== 'all' ? analyses : uniqueAnalyses,
+      stations: filters.station !== 'all' ? stationOptions : uniqueStations,
+      cruises: filters.cruise !== 'all' ? cruiseOptions : uniqueCruises,
+      contractors: filters.contractor !== 'all' ? contractorOptions : uniqueContractors
+    };
+  }, [
+    filteredData, 
+    filters.sampleType, 
+    filters.matrixType, 
+    filters.habitatType, 
+    filters.analysis, 
+    filters.station, 
+    filters.cruise, 
+    filters.contractor, 
+    sampleTypes, 
+    matrixTypes, 
+    habitatTypes, 
+    analyses, 
+    stationOptions, 
+    cruiseOptions, 
+    contractorOptions
+  ]);
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -221,7 +273,7 @@ const SampleFilter = ({
                 >
                   All Contractors
                 </div>
-                {contractorOptions.map((option, index) => (
+                {availableOptions.contractors.map((option, index) => (
                   <div 
                     key={index} 
                     className={`${styles.dropdownOption} ${filters.contractor === option ? styles.selectedOption : ''}`}
@@ -254,7 +306,7 @@ const SampleFilter = ({
                 >
                   All Stations
                 </div>
-                {stationOptions.map((option, index) => (
+                {availableOptions.stations.map((option, index) => (
                   <div 
                     key={index} 
                     className={`${styles.dropdownOption} ${filters.station === option ? styles.selectedOption : ''}`}
@@ -287,7 +339,7 @@ const SampleFilter = ({
                 >
                   All Cruises
                 </div>
-                {cruiseOptions.map((option, index) => (
+                {availableOptions.cruises.map((option, index) => (
                   <div 
                     key={index} 
                     className={`${styles.dropdownOption} ${filters.cruise === option ? styles.selectedOption : ''}`}
@@ -320,7 +372,7 @@ const SampleFilter = ({
                 >
                   All Sample Types
                 </div>
-                {sampleTypes.map((option, index) => (
+                {availableOptions.sampleTypes.map((option, index) => (
                   <div 
                     key={index} 
                     className={`${styles.dropdownOption} ${filters.sampleType === option ? styles.selectedOption : ''}`}
@@ -353,7 +405,7 @@ const SampleFilter = ({
                 >
                   All Matrix Types
                 </div>
-                {matrixTypes.map((option, index) => (
+                {availableOptions.matrixTypes.map((option, index) => (
                   <div 
                     key={index} 
                     className={`${styles.dropdownOption} ${filters.matrixType === option ? styles.selectedOption : ''}`}
@@ -386,7 +438,7 @@ const SampleFilter = ({
                 >
                   All Habitat Types
                 </div>
-                {habitatTypes.map((option, index) => (
+                {availableOptions.habitatTypes.map((option, index) => (
                   <div 
                     key={index} 
                     className={`${styles.dropdownOption} ${filters.habitatType === option ? styles.selectedOption : ''}`}
@@ -419,7 +471,7 @@ const SampleFilter = ({
                 >
                   All Analyses
                 </div>
-                {analyses.map((option, index) => (
+                {availableOptions.analyses.map((option, index) => (
                   <div 
                     key={index} 
                     className={`${styles.dropdownOption} ${filters.analysis === option ? styles.selectedOption : ''}`}

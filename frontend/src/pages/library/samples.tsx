@@ -33,6 +33,9 @@ export default function SamplesPage() {
   
   // State for mobile filter visibility
   const [mobileFilterVisible, setMobileFilterVisible] = useState(false);
+  
+  // State to store filtered data for filter options
+  const [filteredData, setFilteredData] = useState([]);
 
   return (
     <div className={styles.pageWrapper}>
@@ -43,8 +46,6 @@ export default function SamplesPage() {
         </p>
       </div>
       
-      
-  
       <div className={styles.mainContentRow}>
         {/* Sidebar Filter - Only visible on mobile when toggled */}
         <div className={`${styles.filterColumn} ${mobileFilterVisible ? styles.filterVisible : styles.filterHidden}`}>
@@ -54,6 +55,7 @@ export default function SamplesPage() {
             defaultFilters={defaultFilters}
             visibleColumns={visibleColumns}
             setVisibleColumns={setVisibleColumns}
+            filteredData={filteredData}
           />
         </div>
   
@@ -61,7 +63,8 @@ export default function SamplesPage() {
         <div className={styles.tableColumn}>
           <SampleTable 
             filters={filters} 
-            visibleColumns={visibleColumns} 
+            visibleColumns={visibleColumns}
+            setFilteredData={setFilteredData} 
           />
         </div>
       </div>
