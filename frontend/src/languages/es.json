@@ -538,10 +538,57 @@
     "showing": "Mostrando {{contractors}} contratistas, {{cruises}} cruceros y {{stations}} estaciones",
     "downloadCSV": "Descargar CSV",
     "exporting": "Exportando..."
+  },
+
+  
+  "controls": {
+    "zoomOut": "Alejar",
+    "zoomOutTitle": "Alejar a vista mundial",
+    "mapControls": "Controles del Mapa",
+    "toggleMapControls": "Alternar controles del mapa",
+    "tabs": {
+      "layers": "Capas",
+      "style": "Estilo",
+      "display": "Visualización",
+      "info": "Info"
+    },
+    "layers": {
+      "areas": "Áreas",
+      "blocks": "Bloques",
+      "stations": "Estaciones",
+      "cruises": "Cruceros"
+    },
+    "style": {
+      "mapStyle": "Estilo de Mapa",
+      "streets": "Calles",
+      "outdoors": "Exteriores",
+      "satellite": "Satélite",
+      "light": "Claro",
+      "dark": "Oscuro"
+    },
+    "display": {
+      "showSummary": "Mostrar Panel de Resumen",
+      "hideSummary": "Ocultar Panel de Resumen",
+      "summaryDescription": "El panel de resumen muestra estadísticas sobre los datos de exploración actualmente visibles.",
+      "tip": "Cuando selecciona un contratista, el mapa automáticamente hará zoom a sus áreas."
+    },
+    "info": {
+      "stations": "Estaciones",
+      "stationsDesc": "Sitios de exploración o investigación con datos recopilados",
+      "blocks": "Bloques",
+      "blocksDesc": "Áreas de exploración designadas por contratista",
+      "areas": "Áreas",
+      "areasDesc": "Zonas más grandes que contienen múltiples bloques",
+      "cruises": "Cruceros",
+      "cruisesDesc": "Viajes de investigación con estaciones conectadas",
+      "filterTip": "Use los filtros a la izquierda para buscar por contratista o región"
+    }
   }
 }
 
-
 }
+
+
+
 
 

@@ -513,11 +513,59 @@
     "showing": "Showing {{contractors}} contractors, {{cruises}} cruises, and {{stations}} stations",
     "downloadCSV": "Download CSV",
     "exporting": "Exporting..."
+  },
+
+  "controls": {
+    "zoomOut": "Zoom Out",
+    "zoomOutTitle": "Zoom out to world view",
+    "mapControls": "Map Controls",
+    "toggleMapControls": "Toggle map controls",
+    "tabs": {
+      "layers": "Layers",
+      "style": "Style",
+      "display": "Display",
+      "info": "Info"
+    },
+    "layers": {
+      "areas": "Areas",
+      "blocks": "Blocks",
+      "stations": "Stations",
+      "cruises": "Cruises"
+    },
+    "style": {
+      "mapStyle": "Map Style",
+      "streets": "Streets",
+      "outdoors": "Outdoors",
+      "satellite": "Satellite",
+      "light": "Light",
+      "dark": "Dark"
+    },
+    "display": {
+      "showSummary": "Show Summary Panel",
+      "hideSummary": "Hide Summary Panel",
+      "summaryDescription": "The summary panel displays statistics about currently visible exploration data.",
+      "tip": "When you select a contractor, the map will automatically zoom to its areas."
+    },
+    "info": {
+      "stations": "Stations",
+      "stationsDesc": "Exploration or research sites with collected data",
+      "blocks": "Blocks",
+      "blocksDesc": "Designated exploration areas by contractor",
+      "areas": "Areas",
+      "areasDesc": "Larger zones containing multiple blocks",
+      "cruises": "Cruises",
+      "cruisesDesc": "Research voyages with connected stations",
+      "filterTip": "Use filters on the left to search by contractor or region"
+    }
   }
 }
 
 
+
 }
+
+
+
 
 
   
