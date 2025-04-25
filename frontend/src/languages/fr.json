@@ -534,10 +534,55 @@
     "showing": "Affichage de {{contractors}} contractants, {{cruises}} croisières et {{stations}} stations",
     "downloadCSV": "Télécharger CSV",
     "exporting": "Exportation en cours..."
+  },
+
+  "controls": {
+    "zoomOut": "Zoom Arrière",
+    "zoomOutTitle": "Zoom arrière vers vue mondiale",
+    "mapControls": "Contrôles de Carte",
+    "toggleMapControls": "Basculer les contrôles de carte",
+    "tabs": {
+      "layers": "Couches",
+      "style": "Style",
+      "display": "Affichage",
+      "info": "Info"
+    },
+    "layers": {
+      "areas": "Zones",
+      "blocks": "Blocs",
+      "stations": "Stations",
+      "cruises": "Croisières"
+    },
+    "style": {
+      "mapStyle": "Style de Carte",
+      "streets": "Rues",
+      "outdoors": "Extérieur",
+      "satellite": "Satellite",
+      "light": "Clair",
+      "dark": "Sombre"
+    },
+    "display": {
+      "showSummary": "Afficher le Panneau de Résumé",
+      "hideSummary": "Masquer le Panneau de Résumé",
+      "summaryDescription": "Le panneau de résumé affiche des statistiques sur les données d'exploration actuellement visibles.",
+      "tip": "Lorsque vous sélectionnez un contractant, la carte zoome automatiquement sur ses zones."
+    },
+    "info": {
+      "stations": "Stations",
+      "stationsDesc": "Sites d'exploration ou de recherche avec données collectées",
+      "blocks": "Blocs",
+      "blocksDesc": "Zones d'exploration désignées par contractant",
+      "areas": "Zones",
+      "areasDesc": "Grandes zones contenant plusieurs blocs",
+      "cruises": "Croisières",
+      "cruisesDesc": "Voyages de recherche avec stations connectées",
+      "filterTip": "Utilisez les filtres à gauche pour rechercher par contractant ou région"
+    }
   }
 }
 
-
-
-
 }
+
+
+
+
