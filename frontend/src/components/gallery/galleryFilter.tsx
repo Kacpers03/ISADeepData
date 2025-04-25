@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useCallback } from "react";
+import React, { useState, useRef, useEffect, useCallback, useMemo } from "react";
 import { CustomDropdown } from "../map/filters/CustomDropdown";
 import styles from "../../styles/gallery/gallery.module.css";
 import mapStyles from "../../styles/map/filter.module.css";
@@ -35,7 +35,7 @@ const debounce = (func: Function, wait: number) => {
   };
 };
 
-const ImprovedGalleryFilter: React.FC<GalleryFilterProps> = ({
+const GalleryFilter: React.FC<GalleryFilterProps> = ({
   filters,
   onFilterChange,
   onResetFilters,
@@ -54,6 +54,93 @@ const ImprovedGalleryFilter: React.FC<GalleryFilterProps> = ({
 
   const searchInputRef = useRef<HTMLInputElement>(null);
   const resultsRef = useRef<HTMLDivElement>(null);
+
+  // Calculate available options based on the current filtered items
+  const availableOptions = useMemo(() => {
+    if (!currentFilteredItems.length) {
+      return {
+        mediaTypes: ['image', 'video'],
+        contractors: contractors,
+        cruises: cruises,
+        stations: stations,
+        years: years,
+      };
+    }
+
+    // Check for media types
+    const hasImages = currentFilteredItems.some(item => 
+      (!item.mediaType?.toLowerCase().includes('video') && 
+       !item.fileName.match(/\.(mp4|webm|avi|mov|wmv|flv)$/i))
+    );
+    
+    const hasVideos = currentFilteredItems.some(item => 
+      (item.mediaType?.toLowerCase().includes('video') || 
+       item.fileName.match(/\.(mp4|webm|avi|mov|wmv|flv)$/i))
+    );
+    
+    // Available media types based on filtered data
+    const availableMediaTypes = [];
+    if (hasImages) availableMediaTypes.push('image');
+    if (hasVideos) availableMediaTypes.push('video');
+
+    // Extract unique values from filtered items
+    const uniqueContractorIds = new Set(
+      currentFilteredItems
+        .map(item => item.contractorId)
+        .filter(id => id !== null && id !== undefined)
+    );
+
+    const uniqueCruiseIds = new Set(
+      currentFilteredItems
+        .map(item => item.cruiseId)
+        .filter(id => id !== null && id !== undefined)
+    );
+
+    const uniqueStationIds = new Set(
+      currentFilteredItems
+        .map(item => item.stationId)
+        .filter(id => id !== null && id !== undefined)
+    );
+
+    const uniqueYears = new Set(
+      currentFilteredItems
+        .map(item => {
+          if (item.captureDate) {
+            return new Date(item.captureDate).getFullYear().toString();
+          }
+          return null;
+        })
+        .filter(year => year !== null)
+    );
+
+    // Only show options that are in the filtered data
+    return {
+      mediaTypes: filters.mediaType !== "all" ? ['image', 'video'] : availableMediaTypes,
+      
+      contractors: filters.contractorId !== "all" ? contractors : 
+        contractors.filter(c => uniqueContractorIds.has(c.id)),
+      
+      cruises: filters.cruiseId !== "all" ? cruises :
+        cruises.filter(c => uniqueCruiseIds.has(c.id)),
+      
+      stations: filters.stationId !== "all" ? stations :
+        stations.filter(s => uniqueStationIds.has(s.id)),
+      
+      years: filters.year !== "all" ? years :
+        years.filter(y => uniqueYears.has(y))
+    };
+  }, [
+    filters.mediaType,
+    filters.contractorId,
+    filters.cruiseId,
+    filters.stationId,
+    filters.year,
+    currentFilteredItems,
+    contractors,
+    cruises,
+    stations,
+    years
+  ]);
 
   // Handle click outside search results
   useEffect(() => {
@@ -495,19 +582,20 @@ const ImprovedGalleryFilter: React.FC<GalleryFilterProps> = ({
     ];
   };
 
-  // Create dropdown options
+  // Create dropdown options with dynamic filtering
   const mediaTypeOptions = [
     { value: "all", label: t("gallery.filter.allMediaTypes") || "All Media Types" },
-    { value: "image", label: t("gallery.filter.imagesOnly") || "Images only" },
-    { value: "video", label: t("gallery.filter.videosOnly") || "Videos only" },
+    ...(availableOptions.mediaTypes.includes('image') ? [{ value: "image", label: t("gallery.filter.imagesOnly") || "Images only" }] : []),
+    ...(availableOptions.mediaTypes.includes('video') ? [{ value: "video", label: t("gallery.filter.videosOnly") || "Videos only" }] : []),
   ];
 
-  const contractorOptions = prepareDropdownOptions(contractors, "id", "name");
-  const cruiseOptions = prepareDropdownOptions(cruises, "id", "name");
-  const stationOptions = prepareDropdownOptions(stations, "id", "code");
+  // Use filtered options
+  const contractorOptions = prepareDropdownOptions(availableOptions.contractors, "id", "name");
+  const cruiseOptions = prepareDropdownOptions(availableOptions.cruises, "id", "name");
+  const stationOptions = prepareDropdownOptions(availableOptions.stations, "id", "code");
   const yearOptions = [
     { value: "all", label: t("gallery.filter.allYears") || "All Years" },
-    ...years.map((year) => ({ value: year, label: year })),
+    ...availableOptions.years.map((year) => ({ value: year, label: year })),
   ];
 
   return (
@@ -722,4 +810,4 @@ const ImprovedGalleryFilter: React.FC<GalleryFilterProps> = ({
   );
 };
 
-export default ImprovedGalleryFilter;
+export default GalleryFilter;
