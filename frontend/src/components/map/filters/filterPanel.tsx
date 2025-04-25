@@ -8,6 +8,7 @@ import SearchPanel from './searchPanel';
 import FilterOptions from './filterOptions';
 import ResultsInfo from './resultInfo';
 import { downloadCSV } from '../../../utils/csvExport';
+import { useLanguage } from '../../../contexts/languageContext';
 
 // Create a simple debounce function instead of importing from lodash
 const debounce = (func, wait) => {
@@ -42,6 +43,8 @@ export const ImprovedFilterPanel = () => {
     setDetailPanelType,
     setShowDetailPanel
   } = useFilter();
+
+  const { t } = useLanguage(); // Legg til denne
   
   // State for filtered dropdown options
   const [filteredContractors, setFilteredContractors] = useState([]);
@@ -307,32 +310,32 @@ export const ImprovedFilterPanel = () => {
   
   // Format options for custom dropdowns with "All" option first
   const contractorOptions = [
-    { value: 'all', label: 'All Contractors' },
+    { value: 'all', label: t('map.filter.allContractors') || 'All Contractors' },
     ...filteredContractors
   ];
   
   const mineralTypeOptions = [
-    { value: 'all', label: 'All Mineral Types' },
+    { value: 'all', label: t('map.filter.allMineralTypes') || 'All Mineral Types' },
     ...filteredMineralTypes
   ];
   
   const contractStatusOptions = [
-    { value: 'all', label: 'All Statuses' },
+    { value: 'all', label: t('map.filter.allStatuses') || 'All Statuses' },
     ...filteredContractStatuses
   ];
   
   const sponsoringStateOptions = [
-    { value: 'all', label: 'All States' },
+    { value: 'all', label: t('map.filter.allStates') || 'All States' },
     ...filteredSponsoringStates
   ];
   
   const yearOptions = [
-    { value: 'all', label: 'All Years' },
+    { value: 'all', label: t('map.filter.allYears') || 'All Years' },
     ...filteredYears
   ];
 
   const locationOptions = [
-    { value: 'all', label: 'All Locations' },
+    { value: 'all', label: t('map.filter.allLocations') || 'All Locations' },
     ...locationBoundaries.map(location => ({
       value: location.id,
       label: location.name
@@ -342,18 +345,18 @@ export const ImprovedFilterPanel = () => {
   return (
     <div className={styles.improvedFilterPanel}>
       <div className={styles.filterContent}>
-        <div className={styles.filterHeader}>
-          <h2>Exploration Filters</h2>
-          {activeFilterCount > 0 && (
-            <button 
-              className={styles.resetButton} 
-              onClick={handleResetFilters}
-              disabled={loading}
-            >
-              Reset ({activeFilterCount})
-            </button>
-          )}
-        </div>
+      <div className={styles.filterHeader}>
+  <h2>{t('map.filter.title') || "Exploration Filters"}</h2>
+  {activeFilterCount > 0 && (
+    <button 
+      className={styles.resetButton} 
+      onClick={handleResetFilters}
+      disabled={loading}
+    >
+      {t('map.filter.reset') || "Reset"} ({activeFilterCount})
+    </button>
+  )}
+</div>
         
         {/* Search Component */}
         <SearchPanel 
@@ -373,6 +376,7 @@ export const ImprovedFilterPanel = () => {
           setDetailPanelType={setDetailPanelType}
           setShowDetailPanel={setShowDetailPanel}
           setViewBounds={setViewBounds}
+          t={t} 
         />
         
         {/* Filter Options Component */}
@@ -386,6 +390,7 @@ export const ImprovedFilterPanel = () => {
           filters={filters}
           debouncedSelectChange={debouncedSelectChange}
           loading={loading}
+          t={t} 
         />
       </div>
       
@@ -396,6 +401,7 @@ export const ImprovedFilterPanel = () => {
         cruiseCount={cruiseCount}
         stationCount={stationCount}
         mapData={mapData}  // Pass the actual mapData for use in CSV export
+        t={t} 
       />
     </div>
   );

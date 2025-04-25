@@ -483,9 +483,42 @@
       "description": "All contract information is available as part of ISA's commitment to transparency in deep seabed activities and environmental protection."
     }
   }
+,
+
+ 
+  "filter": {
+    "title": "Exploration Filters",
+    "reset": "Reset",
+    "filterBy": "Filter By",
+    "contractor": "Contractor Name",
+    "mineralType": "Mineral Type",
+    "contractStatus": "Contract Status",
+    "sponsoringState": "Sponsoring State",
+    "year": "Contract Year",
+    "location": "Location",
+    "allContractors": "All Contractors",
+    "allMineralTypes": "All Mineral Types",
+    "allStatuses": "All Statuses",
+    "allStates": "All States",
+    "allYears": "All Years",
+    "allLocations": "All Locations"
+  },
+  "search": {
+    "placeholder": "Search contractors, areas, blocks, stations...",
+    "results": "Search Results",
+    "noResults": "No results found for"
+  },
+  "results": {
+    "loading": "Loading data...",
+    "showing": "Showing {{contractors}} contractors, {{cruises}} cruises, and {{stations}} stations",
+    "downloadCSV": "Download CSV",
+    "exporting": "Exporting..."
+  }
 }
-  
+
+
 }
+
 
   
 

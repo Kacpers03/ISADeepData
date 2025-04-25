@@ -19,6 +19,7 @@ interface SearchPanelProps {
   setDetailPanelType?: (type: string | null) => void;
   setShowDetailPanel?: (show: boolean) => void;
   setViewBounds?: (bounds: any) => void;
+  t: any;
 }
 
 const SearchPanel: React.FC<SearchPanelProps> = ({
@@ -37,7 +38,8 @@ const SearchPanel: React.FC<SearchPanelProps> = ({
   setSelectedCruiseId,
   setDetailPanelType,
   setShowDetailPanel,
-  setViewBounds
+  setViewBounds,
+  t
 }) => {
   // Handle search query change
   const handleSearchChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
@@ -372,7 +374,7 @@ const SearchPanel: React.FC<SearchPanelProps> = ({
       <div className={styles.searchInputWrapper}>
         <input
           type="text"
-          placeholder="Search contractors, areas, blocks, stations..."
+          placeholder={t('map.search.placeholder') || "Search contractors, areas, blocks, stations..."}
           value={searchQuery}
           onChange={handleSearchChange}
           onKeyPress={handleKeyPress}
@@ -394,7 +396,7 @@ const SearchPanel: React.FC<SearchPanelProps> = ({
       {showResults && (
         <div id="search-results-panel" className={styles.searchResultsList}>
           <div className={styles.searchResultsHeader}>
-            <span>Search Results ({searchResults.length})</span>
+             <span>{t('map.search.results') || "Search Results"} ({searchResults.length})</span>
             <button 
               className={styles.closeResultsButton} 
               onClick={() => setShowResults(false)}
@@ -406,7 +408,7 @@ const SearchPanel: React.FC<SearchPanelProps> = ({
           <div className={styles.searchResultsContent}>
             {searchResults.length === 0 ? (
               <div className={styles.noResults}>
-                No results found for "{searchQuery}"
+                {t('map.search.noResults') || "No results found for"} "{searchQuery}"
               </div>
             ) : (
               <ul>

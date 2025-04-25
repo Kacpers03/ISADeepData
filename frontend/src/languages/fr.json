@@ -503,6 +503,37 @@
       "title": "Transparence des Données",
       "description": "Toutes les informations contractuelles sont disponibles dans le cadre de l'engagement de l'ISA en faveur de la transparence dans les activités des fonds marins et la protection de l'environnement."
     }
+  },
+
+
+
+  "filter": {
+    "title": "Filtres d'Exploration",
+    "reset": "Réinitialiser",
+    "filterBy": "Filtrer Par",
+    "contractor": "Nom du Contractant",
+    "mineralType": "Type de Minéral",
+    "contractStatus": "Statut du Contrat",
+    "sponsoringState": "État Sponsor",
+    "year": "Année du Contrat",
+    "location": "Emplacement",
+    "allContractors": "Tous les Contractants",
+    "allMineralTypes": "Tous les Types de Minéraux",
+    "allStatuses": "Tous les Statuts",
+    "allStates": "Tous les États Sponsors",
+    "allYears": "Toutes les Années",
+    "allLocations": "Tous les Emplacements"
+  },
+  "search": {
+    "placeholder": "Rechercher contractants, zones, blocs, stations...",
+    "results": "Résultats de Recherche",
+    "noResults": "Aucun résultat trouvé pour"
+  },
+  "results": {
+    "loading": "Chargement des données...",
+    "showing": "Affichage de {{contractors}} contractants, {{cruises}} croisières et {{stations}} stations",
+    "downloadCSV": "Télécharger CSV",
+    "exporting": "Exportation en cours..."
   }
 }
 
