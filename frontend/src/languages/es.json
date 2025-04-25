@@ -508,8 +508,40 @@
       "title": "Transparencia de Datos",
       "description": "Toda la información sobre contratos está disponible como parte del compromiso de la ISA con la transparencia en las actividades de los fondos marinos y la protección del medio ambiente."
     }
+  },
+
+ 
+  "filter": {
+    "title": "Filtros de Exploración",
+    "reset": "Restablecer",
+    "filterBy": "Filtrar Por",
+    "contractor": "Nombre del Contratista",
+    "mineralType": "Tipo de Mineral",
+    "contractStatus": "Estado del Contrato",
+    "sponsoringState": "Estado Patrocinador",
+    "year": "Año del Contrato",
+    "location": "Ubicación",
+    "allContractors": "Todos los Contratistas",
+    "allMineralTypes": "Todos los Tipos de Minerales",
+    "allStatuses": "Todos los Estados",
+    "allStates": "Todos los Estados Patrocinadores",
+    "allYears": "Todos los Años",
+    "allLocations": "Todas las Ubicaciones"
+  },
+  "search": {
+    "placeholder": "Buscar contratistas, áreas, bloques, estaciones...",
+    "results": "Resultados de Búsqueda",
+    "noResults": "No se encontraron resultados para"
+  },
+  "results": {
+    "loading": "Cargando datos...",
+    "showing": "Mostrando {{contractors}} contratistas, {{cruises}} cruceros y {{stations}} estaciones",
+    "downloadCSV": "Descargar CSV",
+    "exporting": "Exportando..."
   }
 }
+
+
 }
 
 

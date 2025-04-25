@@ -9,6 +9,7 @@ interface ResultsInfoProps {
   cruiseCount: number;
   stationCount: number;
   mapData: any; // The actual map data to export
+  t: any;
 }
 
 const ResultsInfo: React.FC<ResultsInfoProps> = ({
@@ -16,7 +17,9 @@ const ResultsInfo: React.FC<ResultsInfoProps> = ({
   contractorCount,
   cruiseCount,
   stationCount,
-  mapData
+  mapData,
+  t
+  
 }) => {
   const [isExporting, setIsExporting] = useState(false);
   const [exportState, setExportState] = useState<string | null>(null);
@@ -59,15 +62,18 @@ const ResultsInfo: React.FC<ResultsInfoProps> = ({
   return (
     <div className={styles.resultsInfoWrapper}>
       <div className={styles.resultsInfo}>
-        {loading ? (
-          <span>Loading data...</span>
-        ) : (
-          <span>
-            Showing {contractorCount} contractor{contractorCount !== 1 ? 's' : ''}, {' '}
-            {cruiseCount} cruise{cruiseCount !== 1 ? 's' : ''}, {' '}
-            and {stationCount} station{stationCount !== 1 ? 's' : ''}
-          </span>
-        )}
+      {loading ? (
+  <span>{t('map.results.loading') || "Loading data..."}</span>
+) : (
+  <span>
+    {t('map.results.showing', {
+      contractors: contractorCount,
+      cruises: cruiseCount,
+      stations: stationCount
+    }) || `Showing ${contractorCount} contractor${contractorCount !== 1 ? 's' : ''}, ${cruiseCount} cruise${cruiseCount !== 1 ? 's' : ''}, and ${stationCount} station${stationCount !== 1 ? 's' : ''}`}
+  </span>
+)}
+        
       </div>
       
       {/* CSV Export Button with improved loading state and feedback */}
@@ -77,14 +83,14 @@ const ResultsInfo: React.FC<ResultsInfoProps> = ({
         disabled={loading || contractorCount === 0 || isExporting}
         title="Download complete data as CSV file"
       >
-        {isExporting ? (
-          <>
-            <span className={styles.buttonSpinner}></span>
-            <span>{exportState || 'Exporting...'}</span>
-          </>
-        ) : (
-          <>Download CSV</>
-        )}
+     {isExporting ? (
+  <>
+    <span className={styles.buttonSpinner}></span>
+    <span>{exportState || t('map.results.exporting') || 'Exporting...'}</span>
+  </>
+) : (
+  <>{t('map.results.downloadCSV') || "Download CSV"}</>
+)}
       </button>
     </div>
   );

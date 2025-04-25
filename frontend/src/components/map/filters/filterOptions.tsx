@@ -3,6 +3,7 @@ import React from 'react';
 import styles from '../../../styles/map/filter.module.css';
 import { CustomDropdown } from './CustomDropdown';
 
+
 interface FilterOptionsProps {
   contractorOptions: any[];
   mineralTypeOptions: any[];
@@ -13,6 +14,7 @@ interface FilterOptionsProps {
   filters: any;
   debouncedSelectChange: (key: string, value: string) => void;
   loading: boolean;
+  t: any;
 }
 
 const FilterOptions: React.FC<FilterOptionsProps> = ({
@@ -24,15 +26,16 @@ const FilterOptions: React.FC<FilterOptionsProps> = ({
   locationOptions,
   filters,
   debouncedSelectChange,
-  loading
+  loading,
+  t
 }) => {
   return (
     <div className={styles.filtersGroup}>
-      <h3>Filter By</h3>
+     <h3>{t('map.filter.filterBy') || "Filter By"}</h3>
       
       <CustomDropdown
         id="contractorId"
-        label="Contractor Name"
+        label={t('map.filter.contractor') || "Contractor Name"}
         options={contractorOptions}
         value={filters.contractorId?.toString() || 'all'}
         onChange={(e) => debouncedSelectChange('contractorId', e.target.value)}
@@ -42,7 +45,7 @@ const FilterOptions: React.FC<FilterOptionsProps> = ({
       
       <CustomDropdown
         id="mineralTypeId"
-        label="Mineral Type"
+        label={t('map.filter.mineralType') || "Mineral Type"}
         options={mineralTypeOptions}
         value={filters.mineralTypeId?.toString() || 'all'}
         onChange={(e) => debouncedSelectChange('mineralTypeId', e.target.value)}
@@ -52,7 +55,7 @@ const FilterOptions: React.FC<FilterOptionsProps> = ({
       
       <CustomDropdown
         id="contractStatusId"
-        label="Contract Status"
+        label={t('map.filter.contractStatus') || "Contract Status"}
         options={contractStatusOptions}
         value={filters.contractStatusId?.toString() || 'all'}
         onChange={(e) => debouncedSelectChange('contractStatusId', e.target.value)}
@@ -62,7 +65,7 @@ const FilterOptions: React.FC<FilterOptionsProps> = ({
       
       <CustomDropdown
         id="sponsoringState"
-        label="Sponsoring State"
+        label={t('map.filter.sponsoringState') || "Sponsoring State"}
         options={sponsoringStateOptions}
         value={filters.sponsoringState || 'all'}
         onChange={(e) => debouncedSelectChange('sponsoringState', e.target.value)}
@@ -72,7 +75,7 @@ const FilterOptions: React.FC<FilterOptionsProps> = ({
       
       <CustomDropdown
         id="year"
-        label="Contract Year"
+        label={t('map.filter.year') || "Contract Year"}
         options={yearOptions}
         value={filters.year?.toString() || 'all'}
         onChange={(e) => debouncedSelectChange('year', e.target.value)}
@@ -82,7 +85,7 @@ const FilterOptions: React.FC<FilterOptionsProps> = ({
       
       <CustomDropdown
         id="locationId"
-        label="Location"
+        label={t('map.filter.location') || "Location"}
         options={locationOptions}
         value={filters.locationId || 'all'}
         onChange={(e) => debouncedSelectChange('locationId', e.target.value)}
