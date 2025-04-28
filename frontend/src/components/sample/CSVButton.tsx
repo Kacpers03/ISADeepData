@@ -1,6 +1,7 @@
 // CsvExportButton.tsx
 import React from "react";
 import { convertToCSV, downloadCSV } from "../../utils/csvExportTable";
+import { useLanguage } from "../../contexts/languageContext";
 
 interface CsvExportButtonProps {
   data: any[];
@@ -10,6 +11,7 @@ interface CsvExportButtonProps {
 }
 
 const CsvExportButton: React.FC<CsvExportButtonProps> = ({ data, columns, filename = "export.csv", meta }) => {
+  const { t } = useLanguage();
   const handleExport = () => {
     const csv = convertToCSV(data, columns, meta);
     downloadCSV(csv, filename);
@@ -17,8 +19,8 @@ const CsvExportButton: React.FC<CsvExportButtonProps> = ({ data, columns, filena
 
   return (
     <button onClick={handleExport} className="csvbutton">
-      Export CSV
-    </button>
+      {t('library.samples.button.exportCSV') || "Export CSV"}
+      </button>
   );
 };
 

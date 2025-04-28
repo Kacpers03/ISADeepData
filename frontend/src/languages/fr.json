@@ -651,6 +651,52 @@
     "status": "Statut",
     "areaSize": "Taille de la Zone",
     "na": "N/A"
+  },
+
+  "samples": {
+    "title": "Gestion des Échantillons",
+    "description": "Explorez tous les échantillons collectés et leurs métadonnées. Filtrez par type d'échantillon, habitat, matrice ou type d'analyse.",
+    "filter": {
+      "title": "Filtres d'Échantillons",
+      "reset": "Réinitialiser",
+      "search": "Rechercher",
+      "searchPlaceholder": "Rechercher code d'échantillon...",
+      "contractor": "Contractant",
+      "station": "Station",
+      "cruise": "Croisière",
+      "sampleType": "Type d'Échantillon",
+      "matrixType": "Type de Matrice",
+      "habitatType": "Type d'Habitat",
+      "analysis": "Analyse",
+      "visibleColumns": "Colonnes Visibles",
+      "loading": "Chargement des filtres...",
+      "allContractors": "Tous les Contractants",
+      "allStations": "Toutes les Stations",
+      "allCruises": "Toutes les Croisières",
+      "allSampleTypes": "Tous les Types d'Échantillons",
+      "allMatrixTypes": "Tous les Types de Matrices",
+      "allHabitatTypes": "Tous les Types d'Habitats",
+      "allAnalyses": "Toutes les Analyses",
+      "all": "Tous"
+    },
+    "table": {
+      "sampleCode": "Code d'Échantillon",
+      "station": "Station",
+      "cruise": "Croisière",
+      "contractor": "Contractant",
+      "sampleType": "Type d'Échantillon",
+      "matrixType": "Type de Matrice",
+      "habitatType": "Type d'Habitat",
+      "analysis": "Analyse",
+      "result": "Résultat",
+      "description": "Description",
+      "loading": "Chargement des données d'échantillons...",
+      "showing": "Affichage de {{contractors}} contractant{{contractorS}}, {{cruises}} croisière{{cruiseS}} et {{stations}} station{{stationS}}",
+      "noResults": "Aucun échantillon ne correspond à vos critères de filtre. Essayez d'ajuster vos filtres."
+    },
+    "button": {
+      "exportCSV": "Exporter CSV"
+    }
   }
 }
 

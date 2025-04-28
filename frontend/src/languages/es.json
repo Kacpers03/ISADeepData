@@ -654,6 +654,52 @@
     "status": "Estado",
     "areaSize": "Tamaño del Área",
     "na": "N/A"
+  },
+
+  "samples": {
+    "title": "Gestión de Muestras",
+    "description": "Explore todas las muestras recolectadas y sus metadatos. Filtre por tipo de muestra, hábitat, matriz o tipo de análisis.",
+    "filter": {
+      "title": "Filtros de Muestras",
+      "reset": "Restablecer",
+      "search": "Buscar",
+      "searchPlaceholder": "Buscar código de muestra...",
+      "contractor": "Contratista",
+      "station": "Estación",
+      "cruise": "Crucero",
+      "sampleType": "Tipo de Muestra",
+      "matrixType": "Tipo de Matriz",
+      "habitatType": "Tipo de Hábitat",
+      "analysis": "Análisis",
+      "visibleColumns": "Columnas Visibles",
+      "loading": "Cargando filtros...",
+      "allContractors": "Todos los Contratistas",
+      "allStations": "Todas las Estaciones",
+      "allCruises": "Todos los Cruceros",
+      "allSampleTypes": "Todos los Tipos de Muestras",
+      "allMatrixTypes": "Todos los Tipos de Matrices",
+      "allHabitatTypes": "Todos los Tipos de Hábitats",
+      "allAnalyses": "Todos los Análisis",
+      "all": "Todos"
+    },
+    "table": {
+      "sampleCode": "Código de Muestra",
+      "station": "Estación",
+      "cruise": "Crucero",
+      "contractor": "Contratista",
+      "sampleType": "Tipo de Muestra",
+      "matrixType": "Tipo de Matriz",
+      "habitatType": "Tipo de Hábitat",
+      "analysis": "Análisis",
+      "result": "Resultado",
+      "description": "Descripción",
+      "loading": "Cargando datos de muestras...",
+      "showing": "Mostrando {{contractors}} contratista{{contractorS}}, {{cruises}} crucero{{cruiseS}} y {{stations}} estación{{stationS}}",
+      "noResults": "Ninguna muestra coincide con sus criterios de filtro. Intente ajustar sus filtros."
+    },
+    "button": {
+      "exportCSV": "Exportar CSV"
+    }
   }
 }
 

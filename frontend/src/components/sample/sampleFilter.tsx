@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef, useMemo } from "react";
 import { ChevronDown, X, Filter } from "lucide-react";
 import styles from "../../styles/samples/filter.module.css";
+import { useLanguage } from "../../contexts/languageContext";
 
 const SampleFilter = ({
   filters,
@@ -10,6 +11,7 @@ const SampleFilter = ({
   setVisibleColumns,
   filteredData = []
 }) => {
+  const { t } = useLanguage();
   const [sampleTypes, setSampleTypes] = useState([]);
   const [matrixTypes, setMatrixTypes] = useState([]);
   const [habitatTypes, setHabitatTypes] = useState([]);
@@ -189,14 +191,14 @@ const SampleFilter = ({
   const getDisplayValue = (name, value) => {
     if (value === 'all') {
       switch(name) {
-        case 'contractor': return 'All Contractors';
-        case 'station': return 'All Stations';
-        case 'cruise': return 'All Cruises';
-        case 'sampleType': return 'All Sample Types';
-        case 'matrixType': return 'All Matrix Types';
-        case 'habitatType': return 'All Habitat Types';
-        case 'analysis': return 'All Analyses';
-        default: return 'All';
+        case 'contractor': return t('library.samples.filter.allContractors') || 'All Contractors';
+        case 'station': return t('library.samples.filter.allStations') || 'All Stations';
+        case 'cruise': return t('library.samples.filter.allCruises') || 'All Cruises';
+        case 'sampleType': return t('library.samples.filter.allSampleTypes') || 'All Sample Types';
+        case 'matrixType': return t('library.samples.filter.allMatrixTypes') || 'All Matrix Types';
+        case 'habitatType': return t('library.samples.filter.allHabitatTypes') || 'All Habitat Types';
+        case 'analysis': return t('library.samples.filter.allAnalyses') || 'All Analyses';
+        default: return t('library.samples.filter.all') || 'All';
       }
     }
     return value;
@@ -206,7 +208,7 @@ const SampleFilter = ({
     return (
       <div className={styles.filterContainer}>
         <div className={styles.loadingContainer}>
-          <span className={styles.loadingText}>Loading filters...</span>
+          <span className={styles.loadingText}>{t('library.samples.filter.loading') || "Loading filters..."}</span>
         </div>
       </div>
     );
@@ -217,28 +219,28 @@ const SampleFilter = ({
       <div className={styles.filterHeader}>
         <h2>
           <Filter size={16} className={styles.filterIcon} />
-          Sample Filters
+          {t('library.samples.filter.title') || "Sample Filters"}
         </h2>
         <button 
           className={styles.resetButton} 
           onClick={handleClearFilters}
           type="button"
         >
-          Reset
+          {t('library.samples.filter.reset') || "Reset"}
         </button>
       </div>
 
       <div className={styles.filterContent}>
         <div className={styles.filtersGroup}>
           {/* Search Filter */}
-          <label className={styles.filterLabel}>Search</label>
+          <label className={styles.filterLabel}>{t('library.samples.filter.search') || "Search"}</label>
           <div className={styles.searchInputContainer}>
             <input
               type="text"
               name="searchQuery"
               value={filters.searchQuery || ""}
               onChange={handleFilterChange}
-              placeholder="Search sample code..."
+              placeholder={t('library.samples.filter.searchPlaceholder') || "Search sample code..."}
               className={filters.searchQuery ? `${styles.searchInput} ${styles.hasValue}` : styles.searchInput}
             />
             {filters.searchQuery && (
@@ -254,7 +256,7 @@ const SampleFilter = ({
           </div>
           
           {/* Contractor Dropdown */}
-          <label className={styles.filterLabel}>Contractor</label>
+          <label className={styles.filterLabel}>{t('library.samples.filter.contractor') || "Contractor"}</label>
           <div className={styles.dropdownContainer} ref={el => dropdownRefs.current['contractor'] = el}>
             <button 
               className={filters.contractor !== 'all' ? `${styles.customSelect} ${styles.hasSelection}` : styles.customSelect}
@@ -287,7 +289,7 @@ const SampleFilter = ({
           </div>
           
           {/* Station Dropdown */}
-          <label className={styles.filterLabel}>Station</label>
+          <label className={styles.filterLabel}>{t('library.samples.filter.station') || "Station"}</label>
           <div className={styles.dropdownContainer} ref={el => dropdownRefs.current['station'] = el}>
             <button 
               className={filters.station !== 'all' ? `${styles.customSelect} ${styles.hasSelection}` : styles.customSelect}
@@ -320,7 +322,7 @@ const SampleFilter = ({
           </div>
 
           {/* Cruise Dropdown */}
-          <label className={styles.filterLabel}>Cruise</label>
+          <label className={styles.filterLabel}>{t('library.samples.filter.station') || "Station"}</label>
           <div className={styles.dropdownContainer} ref={el => dropdownRefs.current['cruise'] = el}>
             <button 
               className={filters.cruise !== 'all' ? `${styles.customSelect} ${styles.hasSelection}` : styles.customSelect}
@@ -353,7 +355,7 @@ const SampleFilter = ({
           </div>
 
           {/* Sample Type Dropdown */}
-          <label className={styles.filterLabel}>Sample Type</label>
+          <label className={styles.filterLabel}>{t('library.samples.filter.sampleType') || "Sample Type"}</label>
           <div className={styles.dropdownContainer} ref={el => dropdownRefs.current['sampleType'] = el}>
             <button 
               className={filters.sampleType !== 'all' ? `${styles.customSelect} ${styles.hasSelection}` : styles.customSelect}
@@ -386,7 +388,7 @@ const SampleFilter = ({
           </div>
 
           {/* Matrix Type Dropdown */}
-          <label className={styles.filterLabel}>Matrix Type</label>
+          <label className={styles.filterLabel}>{t('library.samples.filter.matrixType') || "Matrix Type"}</label>
           <div className={styles.dropdownContainer} ref={el => dropdownRefs.current['matrixType'] = el}>
             <button 
               className={filters.matrixType !== 'all' ? `${styles.customSelect} ${styles.hasSelection}` : styles.customSelect}
@@ -419,7 +421,7 @@ const SampleFilter = ({
           </div>
 
           {/* Habitat Type Dropdown */}
-          <label className={styles.filterLabel}>Habitat Type</label>
+          <label className={styles.filterLabel}>{t('library.samples.filter.habitatType') || "Habitat Type"}</label>
           <div className={styles.dropdownContainer} ref={el => dropdownRefs.current['habitatType'] = el}>
             <button 
               className={filters.habitatType !== 'all' ? `${styles.customSelect} ${styles.hasSelection}` : styles.customSelect}
@@ -452,7 +454,7 @@ const SampleFilter = ({
           </div>
 
           {/* Analysis Dropdown */}
-          <label className={styles.filterLabel}>Analysis</label>
+          <label className={styles.filterLabel}>{t('library.samples.filter.analysis') || "Analysis"}</label>
           <div className={styles.dropdownContainer} ref={el => dropdownRefs.current['analysis'] = el}>
             <button 
               className={filters.analysis !== 'all' ? `${styles.customSelect} ${styles.hasSelection}` : styles.customSelect}
@@ -489,7 +491,7 @@ const SampleFilter = ({
       {/* Column Visibility Section */}
       <div className={styles.visibilitySection}>
         <div className={styles.visibilityHeader}>
-          <span>Visible Columns</span>
+          <span>{t('library.samples.filter.visibleColumns') || "Visible Columns"}</span>
         </div>
         <div className={styles.columnsGrid}>
           {allColumnOptions.map((col) => (

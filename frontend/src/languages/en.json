@@ -629,12 +629,59 @@
     "status": "Status",
     "areaSize": "Area Size",
     "na": "N/A"
+  },
+
+  "samples": {
+    "title": "Sample Management",
+    "description": "Explore all collected samples and their metadata. Filter by sample type, habitat, matrix, or analysis type.",
+    "filter": {
+      "title": "Sample Filters",
+      "reset": "Reset",
+      "search": "Search",
+      "searchPlaceholder": "Search sample code...",
+      "contractor": "Contractor",
+      "station": "Station",
+      "cruise": "Cruise",
+      "sampleType": "Sample Type",
+      "matrixType": "Matrix Type",
+      "habitatType": "Habitat Type",
+      "analysis": "Analysis",
+      "visibleColumns": "Visible Columns",
+      "loading": "Loading filters...",
+      "allContractors": "All Contractors",
+      "allStations": "All Stations",
+      "allCruises": "All Cruises",
+      "allSampleTypes": "All Sample Types",
+      "allMatrixTypes": "All Matrix Types",
+      "allHabitatTypes": "All Habitat Types",
+      "allAnalyses": "All Analyses",
+      "all": "All"
+    },
+    "table": {
+      "sampleCode": "Sample Code",
+      "station": "Station",
+      "cruise": "Cruise",
+      "contractor": "Contractor",
+      "sampleType": "Sample Type",
+      "matrixType": "Matrix Type",
+      "habitatType": "Habitat Type",
+      "analysis": "Analysis",
+      "result": "Result",
+      "description": "Description",
+      "loading": "Loading sample data...",
+      "showing": "Showing {{contractors}} contractor{{contractorS}}, {{cruises}} cruise{{cruiseS}}, and {{stations}} station{{stationS}}",
+      "noResults": "No samples match your filter criteria. Try adjusting your filters."
+    },
+    "button": {
+      "exportCSV": "Export CSV"
+    }
   }
 }
-
-
-
 }
+
+
+
+
 
 
 

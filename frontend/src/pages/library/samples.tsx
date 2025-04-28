@@ -3,8 +3,10 @@ import { Filter } from "lucide-react";
 import SampleFilter from "../../components/sample/sampleFilter";
 import SampleTable from "../../components/sample/sampleTable";
 import styles from "../../styles/samples/table.module.css";
+import { useLanguage } from "../../contexts/languageContext";
 
 export default function SamplesPage() {
+  const { t } = useLanguage();
   // Default filter values
   const defaultFilters = {
     sampleType: "all",
@@ -40,9 +42,9 @@ export default function SamplesPage() {
   return (
     <div className={styles.pageWrapper}>
       <div className={styles.headerSection}>
-        <h1 className={styles.pageTitle}>Sample Management</h1>
+        <h1 className={styles.pageTitle}>{t('library.samples.title') || "Sample Management"}</h1>
         <p className={styles.pageDescription}>
-          Explore all collected samples and their metadata. Filter by sample type, habitat, matrix, or analysis type.
+        {t('library.samples.description') || "Explore all collected samples and their metadata. Filter by sample type, habitat, matrix, or analysis type."}
         </p>
       </div>
       

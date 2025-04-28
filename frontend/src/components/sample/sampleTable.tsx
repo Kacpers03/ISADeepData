@@ -9,8 +9,10 @@ import {
 import styles from "../../styles/samples/table.module.css";
 import CsvExportButton from "./CSVButton";
 import { formatNumericValue } from "../../utils/dataUtilities";
+import { useLanguage } from "../../contexts/languageContext";
 
 const SampleTable = ({ filters, visibleColumns, setFilteredData }) => {
+  const { t } = useLanguage();
   const [tableData, setTableData] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -104,52 +106,52 @@ const SampleTable = ({ filters, visibleColumns, setFilteredData }) => {
   const allColumns = {
     sampleCode: {
       accessorKey: "sampleCode",
-      header: "Sample Code",
+      header: t('library.samples.table.sampleCode') || "Sample Code",
       cell: (info) => info.getValue() ?? "-",
     },
     station: {
       accessorKey: "stationCode",
-      header: "Station",
+      header: t('library.samples.table.station') || "Station",
       cell: (info) => info.getValue() ?? "-",
     },
     cruise: {
       accessorKey: "cruiseName",
-      header: "Cruise",
+      header: t('library.samples.table.cruise') || "Cruise",
       cell: (info) => info.getValue() ?? "-",
     },
     contractor: {
       accessorKey: "contractorName",
-      header: "Contractor",
+      header: t('library.samples.table.contractor') || "Contractor",
       cell: (info) => info.getValue() ?? "-",
     },    
     sampleType: {
       accessorKey: "sampleType",
-      header: "Sample Type",
+      header: t('library.samples.table.sampleType') || "Sample Type",
       cell: (info) => info.getValue() ?? "-",
     },
     matrixType: {
       accessorKey: "matrixType",
-      header: "Matrix Type",
+      header: t('library.samples.table.matrixType') || "Matrix Type",
       cell: (info) => info.getValue() ?? "-",
     },
     habitatType: {
       accessorKey: "habitatType",
-      header: "Habitat Type",
+      header: t('library.samples.table.habitatType') || "Habitat Type",
       cell: (info) => info.getValue() ?? "-",
     },
     analysis: {
       accessorKey: "analysis",
-      header: "Analysis",
+      header: t('library.samples.table.analysis') || "Analysis",
       cell: (info) => info.getValue() ?? "-",
     },
     result: {
       accessorKey: "result",
-      header: "Result",
+      header: t('library.samples.table.result') || "Result",
       cell: (info) => info.getValue() ?? "-",
     },
     sampleDescription: {
       accessorKey: "sampleDescription",
-      header: "Description",
+      header: t('library.samples.table.description') || "Description",
       // Special cell rendering for description to handle long text
       cell: (info) => (
         <div className={styles.descriptionCell}>
@@ -208,7 +210,7 @@ const SampleTable = ({ filters, visibleColumns, setFilteredData }) => {
           padding: '40px',
           color: '#475569' 
         }}>
-          Loading sample data...
+          {t('library.samples.table.loading') || "Loading sample data..."}
         </div>
       </div>
     );
@@ -252,7 +254,8 @@ const SampleTable = ({ filters, visibleColumns, setFilteredData }) => {
           borderRadius: '8px',
           marginTop: '16px'
         }}>
-          No samples match your filter criteria. Try adjusting your filters.
+                    {t('library.samples.table.noResults') || "No samples match your filter criteria. Try adjusting your filters."}
+
         </div>
       ) : (
         <div className={styles.tableWrapper}>
