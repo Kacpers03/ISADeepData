@@ -2,8 +2,10 @@ import React, { useEffect, useState } from "react";
 import FileFilter from "../../components/files/fileFilter";
 import FileTable from "../../components/files/fileTable";
 import styles from "../../styles/files/reports.module.css"; 
+import { useLanguage } from "../../contexts/languageContext"; 
 
 export default function FilesPage() {
+  const { t } = useLanguage();
   const [filters, setFilters] = useState({
     country: "all",
     contractor: "all",
@@ -83,13 +85,12 @@ export default function FilesPage() {
   return (
     <div className={styles.pageWrapper}>
       <div className={styles.centeredHeaderSection}>
-        <h1 className={styles.centeredPageTitle}>File Management Library</h1>
+        <h1 className={styles.centeredPageTitle}>{t('library.files.title') || "File Management Library"}</h1>
         <p className={styles.centeredPageDescription}>
-          Browse and download official documents from contractors. Use filters to narrow down files by country, contractor, theme, or year.
+        {t('library.files.description') || "Browse and download official documents from contractors. Use filters to narrow down files by country, contractor, theme, or year."}
         </p>
         <p className={styles.centeredPageDescription}>
-          Click on any column header to sort the data. Click on a row to view detailed information about the file. 
-          The table displays essential metadata for each document, allowing for quick scanning and comparison of available resources.
+        {t('library.files.instructions') || "Click on any column header to sort the data. Click on a row to view detailed information about the file. The table displays essential metadata for each document, allowing for quick scanning and comparison of available resources."}
         </p>
       </div>
       <div className={styles.mainContentRow}>

@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import { FileInfo } from "../../types/fileTypes";
 import { Contractor, ContractorArea, ContractorAreaBlock } from "../../types/filter-types";
+import { useLanguage } from "../../contexts/languageContext";
 
 interface FileInfoProps {
   fileInfo: FileInfo;
@@ -24,10 +25,11 @@ interface FileInfoProps {
 
 const MediaInfoTemplate: React.FC<FileInfoProps> = ({ fileInfo }) => {
   const router = useRouter();
+  const { t } = useLanguage();
 
   // Format the date properly (assuming date comes in as ISO string)
   const formatDate = (dateString: string) => {
-    if (!dateString) return "N/A";
+    if (!dateString) return  t('library.fileInfo.na') || "N/A";
     
     try {
       const date = new Date(dateString);
@@ -49,12 +51,12 @@ const MediaInfoTemplate: React.FC<FileInfoProps> = ({ fileInfo }) => {
           <button 
             className={styles.backButton} 
             onClick={() => router.back()}
-            aria-label="Go back"
+            aria-label={t('library.fileInfo.goBack') || "Go back"}
           >
             <ArrowLeft size={20} />
-            <span>Back to Files</span>
+            <span>{t('library.fileInfo.backToFiles') || "Back to Files"}</span>
           </button>
-          <h1 className={styles.pageTitle}>File Information</h1>
+          <h1 className={styles.pageTitle}>{t('library.fileInfo.title') || "File Information"}</h1>
         </div>
       </div>
 
@@ -65,7 +67,7 @@ const MediaInfoTemplate: React.FC<FileInfoProps> = ({ fileInfo }) => {
             {fileInfo.isConfidential && (
               <div className={styles.confidentialBadge}>
                 <Shield size={16} />
-                <span>Confidential</span>
+                <span>{t('library.fileInfo.confidential') || "Confidential"}</span>
               </div>
             )}
           </div>
@@ -76,7 +78,7 @@ const MediaInfoTemplate: React.FC<FileInfoProps> = ({ fileInfo }) => {
             <div className={styles.metaItem}>
               <div className={styles.metaLabel}>
                 <FileText size={18} />
-                <span>File Name</span>
+                <span>{t('library.fileInfo.fileName') || "File Name"}</span>
               </div>
               <div className={styles.metaValue}>
                 <span className={styles.fileNameValue}>
@@ -88,10 +90,10 @@ const MediaInfoTemplate: React.FC<FileInfoProps> = ({ fileInfo }) => {
                   target="_blank"
                   rel="noopener noreferrer"
                   className={styles.downloadButton}
-                  aria-label="Download file"
+                  aria-label={t('library.fileInfo.downloadFile') || "Download file"}
                 >
                   <Download size={16} />
-                  <span>Download</span>
+                  <span>{t('library.fileInfo.download') || "Download"}</span>
                 </a>
               </div>
             </div>
@@ -99,7 +101,7 @@ const MediaInfoTemplate: React.FC<FileInfoProps> = ({ fileInfo }) => {
             <div className={styles.metaItem}>
               <div className={styles.metaLabel}>
                 <Tag size={18} />
-                <span>Theme</span>
+                <span>{t('library.fileInfo.theme') || "Theme"}</span>
               </div>
               <div className={styles.metaValue}>{fileInfo.theme}</div>
             </div>
@@ -107,13 +109,13 @@ const MediaInfoTemplate: React.FC<FileInfoProps> = ({ fileInfo }) => {
             <div className={styles.metaItem}>
               <div className={styles.metaLabel}>
                 <User size={18} />
-                <span>Contractor</span>
+                <span>{t('library.fileInfo.contractor') || "Contractor"}</span>
               </div>
               <div className={styles.metaValue}>
                 {fileInfo.contractor}
                 {fileInfo.contractorObj && (
                   <span className={styles.metaExtra}>
-                    Contract Type: {fileInfo.contractorObj.contractType}
+                    {t('library.fileInfo.contractType') || "Contract Type"}: {fileInfo.contractorObj.contractType}
                   </span>
                 )}
               </div>
@@ -122,7 +124,7 @@ const MediaInfoTemplate: React.FC<FileInfoProps> = ({ fileInfo }) => {
             <div className={styles.metaItem}>
               <div className={styles.metaLabel}>
                 <Calendar size={18} />
-                <span>Submission Date</span>
+                <span>{t('library.fileInfo.submissionDate') || "Submission Date"}</span>
               </div>
               <div className={styles.metaValue}>{formatDate(fileInfo.submissionDate)}</div>
             </div>
@@ -131,7 +133,7 @@ const MediaInfoTemplate: React.FC<FileInfoProps> = ({ fileInfo }) => {
               <div className={styles.metaItem}>
                 <div className={styles.metaLabel}>
                   <Globe size={18} />
-                  <span>Country</span>
+                  <span>{t('library.fileInfo.country') || "Country"}</span>
                 </div>
                 <div className={styles.metaValue}>{fileInfo.country}</div>
               </div>
@@ -141,7 +143,7 @@ const MediaInfoTemplate: React.FC<FileInfoProps> = ({ fileInfo }) => {
               <div className={styles.metaItem}>
                 <div className={styles.metaLabel}>
                   <Clock size={18} />
-                  <span>Year</span>
+                  <span>{t('library.fileInfo.year') || "Year"}</span>
                 </div>
                 <div className={styles.metaValue}>{fileInfo.year}</div>
               </div>
@@ -151,13 +153,13 @@ const MediaInfoTemplate: React.FC<FileInfoProps> = ({ fileInfo }) => {
               <div className={styles.metaItem}>
                 <div className={styles.metaLabel}>
                   <Map size={18} />
-                  <span>Contract Area</span>
+                  <span>{t('library.fileInfo.contractArea') || "Contract Area"}</span>
                 </div>
                 <div className={styles.metaValue}>
                   {fileInfo.contractorArea.areaName}
                   {fileInfo.contractorArea.totalAreaSizeKm2 && (
                     <span className={styles.metaExtra}>
-                      Size: {fileInfo.contractorArea.totalAreaSizeKm2} km²
+                      {t('library.fileInfo.size') || "Size"}: {fileInfo.contractorArea.totalAreaSizeKm2} km²
                     </span>
                   )}
                 </div>
@@ -168,7 +170,7 @@ const MediaInfoTemplate: React.FC<FileInfoProps> = ({ fileInfo }) => {
           <div className={styles.descriptionSection}>
             <div className={styles.descriptionHeader}>
               <AlertCircle size={18} />
-              <h3>Description</h3>
+              <h3>{t('library.fileInfo.description') || "Description"}</h3>
             </div>
             <p className={styles.descriptionText}>{fileInfo.description}</p>
           </div>
@@ -177,22 +179,22 @@ const MediaInfoTemplate: React.FC<FileInfoProps> = ({ fileInfo }) => {
             <div className={styles.relatedInfoSection}>
               <div className={styles.sectionHeader}>
                 <Map size={18} />
-                <h3>Block Information</h3>
+                <h3>{t('library.fileInfo.blockInformation') || "Block Information"}</h3>
               </div>
               <div className={styles.blockInfo}>
                 <div className={styles.blockInfoItem}>
-                  <span className={styles.blockInfoLabel}>Block Name:</span>
+                  <span className={styles.blockInfoLabel}>{t('library.fileInfo.blockName') || "Block Name"}:</span>
                   <span className={styles.blockInfoValue}>{fileInfo.contractorBlock.blockName}</span>
                 </div>
                 {fileInfo.contractorBlock.status && (
                   <div className={styles.blockInfoItem}>
-                    <span className={styles.blockInfoLabel}>Status:</span>
+                    <span className={styles.blockInfoLabel}>{t('library.fileInfo.status') || "Status"}:</span>
                     <span className={styles.blockInfoValue}>{fileInfo.contractorBlock.status}</span>
                   </div>
                 )}
                 {fileInfo.contractorBlock.areaSizeKm2 && (
                   <div className={styles.blockInfoItem}>
-                    <span className={styles.blockInfoLabel}>Area Size:</span>
+                    <span className={styles.blockInfoLabel}>{t('library.fileInfo.areaSize') || "Area Size"}:</span>
                     <span className={styles.blockInfoValue}>{fileInfo.contractorBlock.areaSizeKm2} km²</span>
                   </div>
                 )}

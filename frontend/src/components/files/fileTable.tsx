@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState, useRef } from "react";
+import { useLanguage } from "../../contexts/languageContext";
 import {
   useReactTable,
   getCoreRowModel,
@@ -36,7 +37,9 @@ const FileTable: React.FC<{
     searchQuery: string;
   };
   setFilteredItems?: (items: FileData[]) => void;
+  
 }> = ({ filters, setFilteredItems }) => {
+  const { t } = useLanguage();
   const [tableData, setTableData] = useState<FileData[]>([]);
   const router = useRouter();
   const tableScrollRef = useRef<HTMLDivElement>(null);
@@ -154,7 +157,7 @@ const FileTable: React.FC<{
     () => [
       {
         accessorKey: "fileName",
-        header: "File Name",
+        header: t('library.table.fileName') || "File Name",
         minWidth: 200,
         cell: (info) => {
           const fileUrl = info.getValue<string>();
@@ -178,34 +181,34 @@ const FileTable: React.FC<{
       },
       {
         accessorKey: "contractor",
-        header: "Contractor",
+        header: t('library.table.contractor') || "Contractorr",
         minWidth: 120,
-        cell: (info) => <span>{info.getValue<string>() || "Unknown"}</span>,
+        cell: (info) => <span>{info.getValue<string>() || t('library.table.unknown') || "Unknown"}</span>,
       },
       {
         accessorKey: "country",
-        header: "Country",
+        header: t('library.table.country') || "Country",
         minWidth: 120,
-        cell: (info) => <span>{info.getValue<string>() || "N/A"}</span>,
+        cell: (info) => <span>{info.getValue<string>() || t('library.table.na') || "N/A"}</span>,
       },
       {
         accessorKey: "year",
-        header: "Year",
+        header: t('library.table.year') || "Year",
         minWidth: 80,
-        cell: (info) => <span>{info.getValue<string | number>() || "N/A"}</span>,
+        cell: (info) => <span>{info.getValue<string | number>() || t('library.table.na') || "N/A"}</span>,
       },
       {
         accessorKey: "theme",
-        header: "Theme",
+        header: t('library.table.theme') || "Theme",
         minWidth: 120,
-        cell: (info) => <span>{info.getValue<string>() || "N/A"}</span>,
+        cell: (info) => <span>{info.getValue<string>() || t('library.table.na') || "N/A"}</span>,
       },
       {
         id: "description",
-        header: "Description",
+        header: t('library.table.description') || "Description",
         minWidth: 100,
         cell: ({ row }) => {
-          const description = row.original.description || "No description available";
+          const description = row.original.description || t('library.table.noDescription') || "No description available";
           return (
             <div className={styles.tooltipContainer} onClick={(e) => e.stopPropagation()}>
               <div className={styles.tooltip}>
@@ -326,7 +329,9 @@ const FileTable: React.FC<{
             <ChevronLeft size={16} />
           </button>
           <span className={styles.pageInfo}>
-            Page {table.getState().pagination.pageIndex + 1} of {Math.max(1, table.getPageCount())}
+          <span className={styles.pageInfo}>
+  {t('library.pagination.page') || "Page"} {table.getState().pagination.pageIndex + 1} {t('library.pagination.of') || "of"} {Math.max(1, table.getPageCount())}
+</span>
           </span>
           <button 
             onClick={() => table.nextPage()} 
@@ -347,11 +352,11 @@ const FileTable: React.FC<{
             onChange={(e) => table.setPageSize(Number(e.target.value))}
             className={styles.pageSizeSelect}
           >
-            {[5, 10, 20, 30, 50].map((pageSize) => (
-              <option key={pageSize} value={pageSize}>
-                Show {pageSize}
-              </option>
-            ))}
+              {[5, 10, 20, 30, 50].map((pageSize) => (
+    <option key={pageSize} value={pageSize}>
+      {t('library.pagination.show') || "Show"} {pageSize}
+    </option>
+  ))}
           </select>
         </div>
       </div>

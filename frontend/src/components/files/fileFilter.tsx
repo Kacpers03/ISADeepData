@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useCallback, useMemo } from "react";
 import styles from "../../styles/files/reports.module.css";
 import dropdownStyles from "../../styles/files/dropdown.module.css";
+import { useLanguage } from "../../contexts/languageContext"; 
 
 interface FileFilterProps {
   filters: {
@@ -17,6 +18,7 @@ interface FileFilterProps {
   years: string[];
   themes: string[];
   currentFilteredItems: any[];
+
 }
 
 const debounce = (func: Function, wait: number) => {
@@ -37,6 +39,7 @@ const FileFilter: React.FC<FileFilterProps> = ({
   themes,
   currentFilteredItems,
 }) => {
+  const { t } = useLanguage();
   const [searchQuery, setSearchQuery] = useState(filters.searchQuery);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
 
@@ -119,29 +122,29 @@ const FileFilter: React.FC<FileFilterProps> = ({
     setActiveDropdown(activeDropdown === id ? null : id);
   };
 
-  // Get display value for dropdown
-  const getDisplayValue = (name: string, value: string) => {
-    if (value === 'all') {
-      switch(name) {
-        case 'contractor': return 'All Contractors';
-        case 'country': return 'All Countries';
-        case 'year': return 'All Years';
-        case 'theme': return 'All Themes';
-        default: return 'All';
-      }
+ // Get display value for dropdown
+const getDisplayValue = (name: string, value: string) => {
+  if (value === 'all') {
+    switch(name) {
+      case 'contractor': return t('library.filter.allContractors') || 'All Contractors';
+      case 'country': return t('library.filter.allCountries') || 'All Countries';
+      case 'year': return t('library.filter.allYears') || 'All Years';
+      case 'theme': return t('library.filter.allThemes') || 'All Themes';
+      default: return t('library.filter.all') || 'All';
     }
-    return value;
-  };
+  }
+  return value;
+};
 
   return (
     <div className={styles.filterContainer} style={{ overflow: "visible" }}>
       <div className={dropdownStyles.improvedFilterPanel}>
         <div className={dropdownStyles.filterContent}>
           <div className={dropdownStyles.filterHeader}>
-            <h2>File Filters</h2>
+            <h2>{t('library.filter.title') || "File Filters"}</h2>
             {countActiveFilters() > 0 && (
               <button className={dropdownStyles.resetButton} onClick={onResetFilters}>
-                Reset ({countActiveFilters()})
+                 {t('library.filter.reset') || "Reset"} ({countActiveFilters()})
               </button>
             )}
           </div>
@@ -150,7 +153,7 @@ const FileFilter: React.FC<FileFilterProps> = ({
             <div className={dropdownStyles.searchInputWrapper}>
               <input
                 type="text"
-                placeholder="Search files..."
+                placeholder={t('library.filter.searchPlaceholder') || "Search files..."}
                 value={searchQuery}
                 onChange={handleSearchChange}
                 className={dropdownStyles.searchInput}
@@ -166,10 +169,10 @@ const FileFilter: React.FC<FileFilterProps> = ({
           </div>
 
           <div className={dropdownStyles.filtersGroup}>
-            <h3>Filter By</h3>
+            <h3>{t('library.filter.filterBy') || "Filter By"}</h3>
 
             <div className={dropdownStyles.customSelectWrapper}>
-              <label className={dropdownStyles.filterLabel}>Contractor</label>
+            <label className={dropdownStyles.filterLabel}>{t('library.filter.contractor') || "Contractor"}</label>
               <div 
                 className={`${dropdownStyles.customSelect} ${filters.contractor !== "all" ? dropdownStyles.activeFilter : ""}`}
                 onClick={() => handleDropdownToggle("contractor")}
@@ -220,7 +223,7 @@ const FileFilter: React.FC<FileFilterProps> = ({
             </div>
 
             <div className={dropdownStyles.customSelectWrapper}>
-              <label className={dropdownStyles.filterLabel}>Country</label>
+            <label className={dropdownStyles.filterLabel}>{t('library.filter.country') || "Country"}</label>
               <div 
                 className={`${dropdownStyles.customSelect} ${filters.country !== "all" ? dropdownStyles.activeFilter : ""}`}
                 onClick={() => handleDropdownToggle("country")}
@@ -271,7 +274,7 @@ const FileFilter: React.FC<FileFilterProps> = ({
             </div>
 
             <div className={dropdownStyles.customSelectWrapper}>
-              <label className={dropdownStyles.filterLabel}>Year</label>
+            <label className={dropdownStyles.filterLabel}>{t('library.filter.year') || "Year"}</label>
               <div 
                 className={`${dropdownStyles.customSelect} ${filters.year !== "all" ? dropdownStyles.activeFilter : ""}`}
                 onClick={() => handleDropdownToggle("year")}
@@ -322,7 +325,7 @@ const FileFilter: React.FC<FileFilterProps> = ({
             </div>
 
             <div className={dropdownStyles.customSelectWrapper}>
-              <label className={dropdownStyles.filterLabel}>Theme</label>
+            <label className={dropdownStyles.filterLabel}>{t('library.filter.theme') || "Theme"}</label>
               <div 
                 className={`${dropdownStyles.customSelect} ${filters.theme !== "all" ? dropdownStyles.activeFilter : ""}`}
                 onClick={() => handleDropdownToggle("theme")}
@@ -375,7 +378,7 @@ const FileFilter: React.FC<FileFilterProps> = ({
         </div>
 
         <div className={dropdownStyles.resultsInfo}>
-          <span>{currentFilteredItems.length} items match your filters</span>
+        <span>{currentFilteredItems.length} {t('library.filter.itemsMatch') || "items match your filters"}</span>
         </div>
       </div>
     </div>

@@ -565,6 +565,71 @@
     "downloadCSV": "Download CSV",
     "exporting": "Exporting..."
   }
+},
+"library": {
+  "files": {
+    "title": "File Management Library",
+    "description": "Browse and download official documents from contractors. Use filters to narrow down files by country, contractor, theme, or year.",
+    "instructions": "Click on any column header to sort the data. Click on a row to view detailed information about the file. The table displays essential metadata for each document, allowing for quick scanning and comparison of available resources."
+  },
+"pagination": {
+    "page": "Page",
+    "of": "of",
+    "show": "Show"
+  },
+
+  "filter": {
+    "title": "File Filters",
+    "reset": "Reset",
+    "searchPlaceholder": "Search files...",
+    "searchLabel": "Search",
+    "filterBy": "Filter By",
+    "contractor": "Contractor",
+    "country": "Country",
+    "year": "Year",
+    "theme": "Theme",
+    "itemsMatch": "items match your filters",
+    "allContractors": "All Contractors",
+    "allCountries": "All Countries",
+    "allYears": "All Years",
+    "allThemes": "All Themes",
+    "all": "All"
+  },
+  "table": {
+    "fileName": "File Name",
+    "contractor": "Contractor",
+    "country": "Country",
+    "year": "Year",
+    "theme": "Theme",
+    "description": "Description",
+    "unknown": "Unknown",
+    "na": "N/A",
+    "noDescription": "No description available",
+    "noResults": "No results match your current filters"
+  },
+  "fileInfo": {
+    "title": "File Information",
+    "backToFiles": "Back to Files",
+    "goBack": "Go back",
+    "confidential": "Confidential",
+    "fileName": "File Name",
+    "download": "Download",
+    "downloadFile": "Download file",
+    "theme": "Theme",
+    "contractor": "Contractor",
+    "contractType": "Contract Type",
+    "submissionDate": "Submission Date",
+    "country": "Country",
+    "year": "Year",
+    "contractArea": "Contract Area",
+    "size": "Size",
+    "description": "Description",
+    "blockInformation": "Block Information",
+    "blockName": "Block Name",
+    "status": "Status",
+    "areaSize": "Area Size",
+    "na": "N/A"
+  }
 }
 
 

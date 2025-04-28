@@ -590,6 +590,71 @@
     "downloadCSV": "Descargar CSV",
     "exporting": "Exportando..."
   }
+},
+"library": {
+  "files": {
+    "title": "Biblioteca de Gestión de Archivos",
+    "description": "Examine y descargue documentos oficiales de contratistas. Utilice filtros para delimitar los archivos por país, contratista, tema o año.",
+    "instructions": "Haga clic en cualquier encabezado de columna para ordenar los datos. Haga clic en una fila para ver información detallada sobre el archivo. La tabla muestra metadatos esenciales para cada documento, lo que permite escanear y comparar rápidamente los recursos disponibles."
+  },
+"pagination": {
+    "page": "Página",
+    "of": "de",
+    "show": "Mostrar"},
+
+  
+  "filter": {
+    "title": "Filtros de Archivos",
+    "reset": "Restablecer",
+    "searchPlaceholder": "Buscar archivos...",
+    "searchLabel": "Buscar",
+    "filterBy": "Filtrar Por",
+    "contractor": "Contratista",
+    "country": "País",
+    "year": "Año",
+    "theme": "Tema",
+    "itemsMatch": "elementos coinciden con sus filtros",
+    "allContractors": "Todos los Contratistas",
+    "allCountries": "Todos los Países",
+    "allYears": "Todos los Años",
+    "allThemes": "Todos los Temas",
+    "all": "Todos"
+  },
+  "table": {
+    "fileName": "Nombre del Archivo",
+    "contractor": "Contratista",
+    "country": "País",
+    "year": "Año",
+    "theme": "Tema",
+    "description": "Descripción",
+    "unknown": "Desconocido",
+    "na": "N/A",
+    "noDescription": "No hay descripción disponible",
+    "noResults": "No hay resultados que coincidan con sus filtros actuales"
+  },
+  "fileInfo": {
+    "title": "Información del Archivo",
+    "backToFiles": "Volver a Archivos",
+    "goBack": "Volver atrás",
+    "confidential": "Confidencial",
+    "fileName": "Nombre del Archivo",
+    "download": "Descargar",
+    "downloadFile": "Descargar archivo",
+    "theme": "Tema",
+    "contractor": "Contratista",
+    "contractType": "Tipo de Contrato",
+    "submissionDate": "Fecha de Entrega",
+    "country": "País",
+    "year": "Año",
+    "contractArea": "Área de Contrato",
+    "size": "Tamaño",
+    "description": "Descripción",
+    "blockInformation": "Información del Bloque",
+    "blockName": "Nombre del Bloque",
+    "status": "Estado",
+    "areaSize": "Tamaño del Área",
+    "na": "N/A"
+  }
 }
 
 }

@@ -585,6 +585,73 @@
     "downloadCSV": "Télécharger CSV",
     "exporting": "Exportation en cours..."
   }
+},
+"library": {
+  "files": {
+    "title": "Bibliothèque de Gestion de Fichiers",
+    "description": "Parcourez et téléchargez des documents officiels des contractants. Utilisez des filtres pour affiner les fichiers par pays, contractant, thème ou année.",
+    "instructions": "Cliquez sur n'importe quel en-tête de colonne pour trier les données. Cliquez sur une ligne pour voir les informations détaillées sur le fichier. Le tableau affiche les métadonnées essentielles pour chaque document, permettant un scan rapide et une comparaison des ressources disponibles."
+  },
+"pagination": {
+    "page": "Página",
+    "of": "de",
+    "show": "Mostrar"},
+
+
+
+  "filter": {
+    "title": "Filtres de Fichiers",
+    "reset": "Réinitialiser",
+    "searchPlaceholder": "Rechercher des fichiers...",
+    "searchLabel": "Rechercher",
+    "filterBy": "Filtrer Par",
+    "contractor": "Contractant",
+    "country": "Pays",
+    "year": "Année",
+    "theme": "Thème",
+    "itemsMatch": "éléments correspondent à vos filtres",
+    "allContractors": "Tous les Contractants",
+    "allCountries": "Tous les Pays",
+    "allYears": "Toutes les Années",
+    "allThemes": "Tous les Thèmes",
+    "all": "Tous"
+  },
+  "table": {
+    "fileName": "Nom du Fichier",
+    "contractor": "Contractant",
+    "country": "Pays",
+    "year": "Année",
+    "theme": "Thème",
+    "description": "Description",
+    "unknown": "Inconnu",
+    "na": "N/A",
+    "noDescription": "Aucune description disponible",
+    "noResults": "Aucun résultat ne correspond à vos filtres actuels"
+  },
+
+  "fileInfo": {
+    "title": "Information sur le Fichier",
+    "backToFiles": "Retour aux Fichiers",
+    "goBack": "Retour",
+    "confidential": "Confidentiel",
+    "fileName": "Nom du Fichier",
+    "download": "Télécharger",
+    "downloadFile": "Télécharger le fichier",
+    "theme": "Thème",
+    "contractor": "Contractant",
+    "contractType": "Type de Contrat",
+    "submissionDate": "Date de Soumission",
+    "country": "Pays",
+    "year": "Année",
+    "contractArea": "Zone de Contrat",
+    "size": "Taille",
+    "description": "Description",
+    "blockInformation": "Information sur le Bloc",
+    "blockName": "Nom du Bloc",
+    "status": "Statut",
+    "areaSize": "Taille de la Zone",
+    "na": "N/A"
+  }
 }
 
 }
