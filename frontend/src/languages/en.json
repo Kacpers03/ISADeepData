@@ -557,6 +557,13 @@
       "cruisesDesc": "Research voyages with connected stations",
       "filterTip": "Use filters on the left to search by contractor or region"
     }
+  },
+
+
+  "detailPanel": {
+    "close": "Close",
+    "downloadCSV": "Download CSV",
+    "exporting": "Exporting..."
   }
 }
 

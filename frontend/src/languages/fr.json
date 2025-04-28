@@ -578,6 +578,12 @@
       "cruisesDesc": "Voyages de recherche avec stations connectées",
       "filterTip": "Utilisez les filtres à gauche pour rechercher par contractant ou région"
     }
+  },
+
+  "detailPanel": {
+    "close": "Fermer",
+    "downloadCSV": "Télécharger CSV",
+    "exporting": "Exportation en cours..."
   }
 }
 

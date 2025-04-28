@@ -583,6 +583,12 @@
       "cruisesDesc": "Viajes de investigación con estaciones conectadas",
       "filterTip": "Use los filtros a la izquierda para buscar por contratista o región"
     }
+  },
+
+  "detailPanel": {
+    "close": "Cerrar",
+    "downloadCSV": "Descargar CSV",
+    "exporting": "Exportando..."
   }
 }
 

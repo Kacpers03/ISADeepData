@@ -5,6 +5,7 @@ import styles from '../../../styles/map/panels.module.css';
 import uiStyles from '../../../styles/map/ui.module.css';
 import layerStyles from '../../../styles/map/layers.module.css';
 import { exportStationCSV, exportCruiseCSV, exportContractorCSV } from "../../../utils/detailExport";
+import { useLanguage } from "../../../contexts/languageContext";
 
 interface DetailPanelProps {
   type: 'contractor' | 'cruise' | 'station' | null;
@@ -28,6 +29,7 @@ export const DetailPanel: React.FC<DetailPanelProps> = ({
   // State for download status
   const [isExporting, setIsExporting] = useState(false);
   const [exportStatus, setExportStatus] = useState<string | null>(null);
+  const { t } = useLanguage();
   
   // Format date
   const formatDate = (dateString: string) => {
@@ -323,7 +325,7 @@ export const DetailPanel: React.FC<DetailPanelProps> = ({
       
       {/* Action buttons */}
       <div className={styles.detailActions}>
-        <button className={styles.actionButton} onClick={onClose}>Close</button>
+        <button className={styles.actionButton} onClick={onClose}> {t('map.detailPanel.close') || "Close"}</button>
         
         {/* CSV Download button */}
         <button 
@@ -337,7 +339,7 @@ export const DetailPanel: React.FC<DetailPanelProps> = ({
               <span>{exportStatus || 'Exporting...'}</span>
             </>
           ) : (
-            <>Download CSV</>
+            <>{t('map.detailPanel.downloadCSV') || "Download CSV"}</>
           )}
         </button>
       </div>
