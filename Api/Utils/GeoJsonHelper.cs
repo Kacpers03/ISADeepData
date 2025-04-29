@@ -11,7 +11,7 @@ namespace Api.Helpers
             double minLon, 
             double maxLat, 
             double maxLon, 
-            Dictionary<string, object> properties = null)
+            Dictionary<string, object>? properties = null)
         {
             var coordinates = new List<List<double[]>>
             {
@@ -46,7 +46,7 @@ namespace Api.Helpers
             double maxLon,
             string blockName,
             string status,
-            string category = null,
+            string? category = null,
             double? resourceDensity = null,
             int blockId = 0)
         {
@@ -73,7 +73,7 @@ namespace Api.Helpers
         public static string GeneratePointGeoJson(
             double lat, 
             double lon, 
-            Dictionary<string, object> properties = null)
+            Dictionary<string, object>? properties = null)
         {
             var geoJson = new
             {

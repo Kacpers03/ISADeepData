@@ -12,9 +12,9 @@ namespace Models.Contractors
 
         [Required]
         [StringLength(100)]
-        public string ContractStatusName { get; set; } // contract_status
+        public string ContractStatusName { get; set; } = string.Empty;
 
         // Navigasjon: Alle contractors med denne statusen
-        public ICollection<Contractor> Contractors { get; set; }
+        public ICollection<Contractor>? Contractors { get; set; }
     }
 }

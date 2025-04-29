@@ -6,13 +6,13 @@ namespace DTOs.Library_Dto
     {
         public int LibraryId { get; set; }
         public int ContractorId { get; set; }
-        public string Contractor { get; set; } 
+        public string? Contractor { get; set; } 
 
-        public string Theme { get; set; }
-        public string FileName { get; set; }
-        public string Title { get; set; }
-        public string Description { get; set; }
-        public string Country { get; set; }
+        public string? Theme { get; set; }
+        public string? FileName { get; set; }
+        public string? Title { get; set; }
+        public string? Description { get; set; }
+        public string? Country { get; set; }
         public DateTime SubmissionDate { get; set; }
         public int Year { get; set; }
         public bool IsConfidential { get; set; }

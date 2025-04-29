@@ -10,8 +10,8 @@ namespace Models.Qualifiers
         public int QualifierId { get; set; } // qualifier_id
 
         [StringLength(100)]
-        public string QualifierCode { get; set; } // qualifier_code
+        public string? QualifierCode { get; set; } // qualifier_code
 
-        public string QualifierDefinition { get; set; } // qualifier_definition
+        public string? QualifierDefinition { get; set; } // qualifier_definition
     }
 }

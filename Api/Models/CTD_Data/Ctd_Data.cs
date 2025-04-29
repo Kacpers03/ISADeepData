@@ -14,7 +14,7 @@ namespace Models.CTD_Data
         // Utenlandsk nøkkel: Kobling til Station
         public int StationId { get; set; }
         [ForeignKey("StationId")]
-        public Station Station { get; set; }
+        public Station? Station { get; set; }
 
         public double DepthM { get; set; }       // depth_m
         public double TemperatureC { get; set; } // temperature_c

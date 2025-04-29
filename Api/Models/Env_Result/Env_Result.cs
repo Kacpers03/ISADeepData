@@ -13,19 +13,19 @@ namespace Models.Env_Result
         // Utenlandsk nøkkel: Hvilken Sample tilhører dette resultatet?
         public int SampleId { get; set; }
         [ForeignKey("SampleId")]
-        public Sample Sample { get; set; }
+        public Sample? Sample { get; set; }
 
         [StringLength(100)]
-        public string AnalysisCategory { get; set; } // analysis_category
+        public string AnalysisCategory { get; set; } = string.Empty;
 
         [StringLength(100)]
-        public string AnalysisName { get; set; } // analysis_name
+        public string AnalysisName { get; set; } = string.Empty;
 
         public double AnalysisValue { get; set; } // analysis_value
 
         [StringLength(50)]
-        public string Units { get; set; } // units
+        public string Units { get; set; } = string.Empty;
 
-        public string Remarks { get; set; } // remarks
+        public string Remarks { get; set; } = string.Empty;
     }
 }

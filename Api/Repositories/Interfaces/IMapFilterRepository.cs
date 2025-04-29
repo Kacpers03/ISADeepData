@@ -17,7 +17,7 @@ namespace Api.Repositories.Interfaces
     {
         // Contractor-related methods
         Task<IEnumerable<ContractorDto>> GetContractorsAsync(int? contractTypeId = null, int? contractStatusId = null, 
-            string sponsoringState = null, int? year = null);
+            string? sponsoringState = null, int? year = null);
         Task<IEnumerable<ContractorAreaDto>> GetContractorAreasAsync(int? contractorId = null);
         Task<IEnumerable<ContractorAreaBlockDto>> GetContractorAreaBlocksAsync(int? areaId = null);
         
@@ -27,12 +27,12 @@ namespace Api.Repositories.Interfaces
             double? maxLat = null, double? minLon = null, double? maxLon = null);
         
         // Sample and Media methods
-        Task<IEnumerable<SampleDto>> GetSamplesAsync(int? stationId = null, string sampleType = null);
-        Task<IEnumerable<PhotoVideoDto>> GetMediaAsync(int? sampleId = null, string mediaType = null);
+        Task<IEnumerable<SampleDto>> GetSamplesAsync(int? stationId = null, string? sampleType = null);
+        Task<IEnumerable<PhotoVideoDto>> GetMediaAsync(int? sampleId = null, string? mediaType = null);
         
         // Combined methods for map display
         Task<object> GetMapDataAsync(int? contractorId = null, int? contractTypeId = null, 
-            int? contractStatusId = null, string sponsoringState = null, int? year = null, int? cruiseId = null);
+            int? contractStatusId = null, string? sponsoringState = null, int? year = null, int? cruiseId = null);
         
         // Filter options
         Task<IEnumerable<ContractTypeDto>> GetContractTypesAsync();

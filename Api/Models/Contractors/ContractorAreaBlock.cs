@@ -12,19 +12,19 @@ namespace Models.Contractors
         // Utenlandsk nøkkel: Hvilket område tilhører denne blokken
         public int AreaId { get; set; }
         [ForeignKey("AreaId")]
-        public ContractorArea ContractorArea { get; set; }
+        public ContractorArea? ContractorArea { get; set; }
 
         [Required]
         [StringLength(255)]
-        public string BlockName { get; set; }
+        public string BlockName { get; set; } = string.Empty;
 
-        public string BlockDescription { get; set; }
+        public string BlockDescription { get; set; } = string.Empty;
 
         [StringLength(100)]
-        public string Status { get; set; }
+        public string Status { get; set; } = string.Empty;
         
         // Eksisterende GeoJSON-relaterte felt
-        public string GeoJsonBoundary { get; set; }
+        public string GeoJsonBoundary { get; set; } = string.Empty;
         public double CenterLatitude { get; set; }
         public double CenterLongitude { get; set; }
         public double AreaSizeKm2 { get; set; }

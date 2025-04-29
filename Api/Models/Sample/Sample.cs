@@ -44,8 +44,8 @@ namespace Models.Samples
         public Double Result { get; set; }
         public string Unit {get; set;}
 
-        public ICollection<EnvResult> EnvResults { get; set; }
-        public ICollection<GeoResult> GeoResults { get; set; }
-        public ICollection<PhotoVideo> PhotoVideos { get; set; }
+        public ICollection<EnvResult>? EnvResults { get; set; }
+        public ICollection<GeoResult>? GeoResults { get; set; }
+        public ICollection<PhotoVideo>? PhotoVideos { get; set; }
     }
 }

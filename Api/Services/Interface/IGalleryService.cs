@@ -15,7 +15,7 @@ namespace Api.Services.Interfaces
             int? cruiseId, 
             int? stationId, 
             int? sampleId, 
-            string mediaType,
+            string? mediaType,
             int? year);
         
         Task<(Stream Content, string ContentType, string FileName)> GetMediaForDownloadAsync(int mediaId);

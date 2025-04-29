@@ -10,11 +10,11 @@ namespace Models.Valid_Value
         public int ValueId { get; set; } // value_id
 
         [StringLength(100)]
-        public string FieldName { get; set; } // field_name
+        public string FieldName { get; set; } = string.Empty;
 
         [StringLength(255)]
-        public string ValidValueName { get; set; } // valid_value
+        public string ValidValueName { get; set; } = string.Empty;
 
-        public string Description { get; set; } // description
+        public string Description { get; set; } = string.Empty;
     }
 }

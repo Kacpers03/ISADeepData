@@ -13,22 +13,22 @@ namespace Models.Geo_result
         // Utenlandsk nøkkel: Hvilken Sample tilhører dette resultatet?
         public int SampleId { get; set; }
         [ForeignKey("SampleId")]
-        public Sample Sample { get; set; }
+        public Sample? Sample { get; set; }
 
         [StringLength(100)]
-        public string Category { get; set; } // category
+        public string Category { get; set; } = string.Empty;
 
         [StringLength(100)]
-        public string Analysis { get; set; } // analysis
+        public string Analysis { get; set; } = string.Empty;
 
         public double Value { get; set; } // value
 
         [StringLength(50)]
-        public string Units { get; set; } // units
+        public string Units { get; set; } = string.Empty;
 
         [StringLength(100)]
-        public string Qualifier { get; set; } // qualifier
+        public string Qualifier { get; set; } = string.Empty;
 
-        public string Remarks { get; set; } // remarks
+        public string Remarks { get; set; } = string.Empty;
     }
 }

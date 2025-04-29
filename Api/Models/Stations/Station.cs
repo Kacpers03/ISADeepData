@@ -17,13 +17,13 @@ namespace Models.Stations
         // Utenlandsk nøkkel: Hvilket Cruise tilhører denne stasjonen?
         public int CruiseId { get; set; }
         [ForeignKey("CruiseId")]
-        public Cruise Cruise { get; set; }
+        public Cruise? Cruise { get; set; }
 
         [StringLength(100)]
-        public string StationCode { get; set; }
+        public string StationCode { get; set; } = string.Empty;
 
         [StringLength(100)]
-        public string StationType { get; set; }
+        public string StationType { get; set; } = string.Empty;
 
         public double Latitude { get; set; }
         public double Longitude { get; set; }
@@ -31,10 +31,10 @@ namespace Models.Stations
         // Ny kobling til ContractorAreaBlock
         public int? ContractorAreaBlockId { get; set; }
         [ForeignKey("ContractorAreaBlockId")]
-        public ContractorAreaBlock ContractorAreaBlock { get; set; }
+        public ContractorAreaBlock? ContractorAreaBlock { get; set; }
 
         // Navigasjon: Samples + CTD-data
-        public ICollection<Sample> Samples { get; set; }
-        public ICollection<CTDData> CtdDataSet { get; set; }
+        public ICollection<Sample>? Samples { get; set; }
+        public ICollection<CTDData>? CtdDataSet { get; set; }
     }
 }

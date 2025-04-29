@@ -33,7 +33,7 @@ namespace Api.Services.Implementations
         public async Task<IEnumerable<ContractorDto>> GetContractorsAsync(
             int? contractTypeId = null, 
             int? contractStatusId = null, 
-            string sponsoringState = null, 
+            string? sponsoringState = null, 
             int? year = null)
         {
             var cacheKey = $"Contractors_{contractTypeId}_{contractStatusId}_{sponsoringState}_{year}";
@@ -112,18 +112,18 @@ namespace Api.Services.Implementations
             return await _repository.GetStationsAsync(cruiseId, minLat, maxLat, minLon, maxLon);
         }
 
-        public async Task<IEnumerable<SampleDto>> GetSamplesAsync(int? stationId = null, string sampleType = null)
+        public async Task<IEnumerable<SampleDto>> GetSamplesAsync(int? stationId = null, string? sampleType = null)
         {
             return await _repository.GetSamplesAsync(stationId, sampleType);
         }
 
-        public async Task<IEnumerable<PhotoVideoDto>> GetMediaAsync(int? sampleId = null, string mediaType = null)
+        public async Task<IEnumerable<PhotoVideoDto>> GetMediaAsync(int? sampleId = null, string? mediaType = null)
         {
             return await _repository.GetMediaAsync(sampleId, mediaType);
         }
 
         public async Task<object> GetMapDataAsync(int? contractorId = null, int? contractTypeId = null, 
-            int? contractStatusId = null, string sponsoringState = null, int? year = null, int? cruiseId = null)
+            int? contractStatusId = null, string? sponsoringState = null, int? year = null, int? cruiseId = null)
         {
             var cacheKey = $"MapData_{contractorId}_{contractTypeId}_{contractStatusId}_{sponsoringState}_{year}_{cruiseId}";
             

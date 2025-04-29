@@ -12,10 +12,10 @@ namespace Models.Contractors
 
         [Required]
         [StringLength(100)]
-        public string ContractTypeName { get; set; } // contract_type
+        public string ContractTypeName { get; set; } = string.Empty;
 
         // Navigasjon: Alle contractors som tilhører denne typen
-        public ICollection<Contractor> Contractors { get; set; }
+        public ICollection<Contractor>? Contractors { get; set; }
         
     }
 }

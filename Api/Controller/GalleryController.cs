@@ -58,7 +58,7 @@ namespace Api.Controllers
                     
                     // Save the original filename for reference
                     // This doesn't affect display but keeps the record of the original name
-                    string originalFileName = item.FileName;
+                    string originalFileName = item.FileName ?? string.Empty;
                     
                     // Log mapping for debugging
                     Console.WriteLine($"Mapped {originalFileName} to {mappedFileName}");

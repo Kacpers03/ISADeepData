@@ -29,7 +29,7 @@ namespace Api.Repositories.Implementations
         }
 
         public async Task<IEnumerable<ContractorDto>> GetContractorsAsync(int? contractTypeId = null, int? contractStatusId = null, 
-            string sponsoringState = null, int? year = null)
+            string? sponsoringState = null, int? year = null)
         {
             var query = _context.Contractors.AsQueryable();
             
@@ -176,7 +176,7 @@ namespace Api.Repositories.Implementations
                 .ToListAsync();
         }
 
-        public async Task<IEnumerable<SampleDto>> GetSamplesAsync(int? stationId = null, string sampleType = null)
+        public async Task<IEnumerable<SampleDto>> GetSamplesAsync(int? stationId = null, string? sampleType = null)
         {
             var query = _context.Samples.AsQueryable();
             
@@ -207,7 +207,7 @@ namespace Api.Repositories.Implementations
                 .ToListAsync();
         }
 
-        public async Task<IEnumerable<PhotoVideoDto>> GetMediaAsync(int? sampleId = null, string mediaType = null)
+        public async Task<IEnumerable<PhotoVideoDto>> GetMediaAsync(int? sampleId = null, string? mediaType = null)
         {
             var query = _context.PhotoVideos.AsQueryable();
             
@@ -236,7 +236,7 @@ namespace Api.Repositories.Implementations
         }
 
         public async Task<object> GetMapDataAsync(int? contractorId = null, int? contractTypeId = null, 
-            int? contractStatusId = null, string sponsoringState = null, int? year = null, int? cruiseId = null)
+            int? contractStatusId = null, string? sponsoringState = null, int? year = null, int? cruiseId = null)
         {
             // Start with contractors query
             var contractorsQuery = _context.Contractors.AsQueryable();
@@ -540,5 +540,5 @@ namespace Api.Repositories.Implementations
                     .ToList()
             };
         }
-    }
+    } //s
 }
