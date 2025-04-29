@@ -106,5 +106,5 @@ namespace Api.Services.Implementations
                 _ => "application/octet-stream"
             };
         }
-    }
+    } 
 }
