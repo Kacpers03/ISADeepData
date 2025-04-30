@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Api.Migrations
 {
     [DbContext(typeof(MyDbContext))]
-    [Migration("20250321123859_InitialCreate")]
+    [Migration("20250430081308_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -402,7 +402,6 @@ namespace Api.Migrations
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("CameraSpecs")
-                        .IsRequired()
                         .HasMaxLength(255)
                         .HasColumnType("TEXT");
 
@@ -410,17 +409,14 @@ namespace Api.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("FileName")
-                        .IsRequired()
                         .HasMaxLength(255)
                         .HasColumnType("TEXT");
 
                     b.Property<string>("MediaType")
-                        .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Remarks")
-                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<int>("SampleId")
@@ -440,12 +436,10 @@ namespace Api.Migrations
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("QualifierCode")
-                        .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("TEXT");
 
                     b.Property<string>("QualifierDefinition")
-                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.HasKey("QualifierId");

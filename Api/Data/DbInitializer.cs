@@ -489,16 +489,14 @@ namespace Api.Data
             );
 
             // --- Seed Stations ---
-            // Original stations
+            // Original stations plus new stations for cruises that don't have any
             context.Stations.AddRange(
-                new Station { StationId = 1, CruiseId = 1, StationCode = "Bio12-48SC", StationType = "CTD Station", Latitude = 11.7897, Longitude = -117.5983 },
-                new Station { StationId = 2, CruiseId = 10, StationCode = "15MNRO09 St.W", StationType = "CTD Station", Latitude = 10.50071667, Longitude = -149.00248333 },
-                new Station { StationId = 3, CruiseId = 10, StationCode = "15MNRO10 St.C", StationType = "CTD Station", Latitude = 10.50000000, Longitude = -149.00000000 },
-                new Station { StationId = 4, CruiseId = 12, StationCode = "DY79I-KW1-CTD01", StationType = "CTD Station", Latitude = 10.003132, Longitude = -154.012328 }
-            );
-
-            // New stations for the new cruises
-            context.Stations.AddRange(
+                // Original stations with ContractorAreaBlockId values
+                new Station { StationId = 1, CruiseId = 1, StationCode = "Bio12-48SC", StationType = "CTD Station", Latitude = 11.7897, Longitude = -117.5983, ContractorAreaBlockId = 1 },
+                new Station { StationId = 2, CruiseId = 10, StationCode = "15MNRO09 St.W", StationType = "CTD Station", Latitude = 10.50071667, Longitude = -149.00248333, ContractorAreaBlockId = 5 },
+                new Station { StationId = 3, CruiseId = 10, StationCode = "15MNRO10 St.C", StationType = "CTD Station", Latitude = 10.50000000, Longitude = -149.00000000, ContractorAreaBlockId = 5 },
+                new Station { StationId = 4, CruiseId = 12, StationCode = "DY79I-KW1-CTD01", StationType = "CTD Station", Latitude = 10.003132, Longitude = -154.012328, ContractorAreaBlockId = 3 },
+                
                 // Mid-Atlantic Ridge stations
                 new Station { 
                     StationId = 5, 
@@ -506,7 +504,8 @@ namespace Api.Data
                     StationCode = "MAR-18-001", 
                     StationType = "Sampling Station", 
                     Latitude = 26.13642, 
-                    Longitude = -44.83275 
+                    Longitude = -44.83275,
+                    ContractorAreaBlockId = 6
                 },
                 new Station { 
                     StationId = 6, 
@@ -514,7 +513,8 @@ namespace Api.Data
                     StationCode = "MAR-18-002", 
                     StationType = "CTD Station", 
                     Latitude = 26.14789, 
-                    Longitude = -44.82436 
+                    Longitude = -44.82436,
+                    ContractorAreaBlockId = 6
                 },
                 new Station { 
                     StationId = 7, 
@@ -522,7 +522,8 @@ namespace Api.Data
                     StationCode = "MAR-20-015", 
                     StationType = "ROV Dive", 
                     Latitude = 27.36482, 
-                    Longitude = -44.52837 
+                    Longitude = -44.52837,
+                    ContractorAreaBlockId = 7
                 },
                 new Station { 
                     StationId = 8, 
@@ -530,7 +531,8 @@ namespace Api.Data
                     StationCode = "MAR-23-009", 
                     StationType = "Biological Sampling", 
                     Latitude = 26.09752, 
-                    Longitude = -44.85231 
+                    Longitude = -44.85231,
+                    ContractorAreaBlockId = 6
                 },
                 
                 // Indian Ocean stations
@@ -540,7 +542,8 @@ namespace Api.Data
                     StationCode = "CIR-17-001", 
                     StationType = "CTD Station", 
                     Latitude = -10.02431, 
-                    Longitude = 66.0786 
+                    Longitude = 66.0786,
+                    ContractorAreaBlockId = 8
                 },
                 new Station { 
                     StationId = 10, 
@@ -548,7 +551,8 @@ namespace Api.Data
                     StationCode = "CIR-17-002", 
                     StationType = "Hydrothermal Survey", 
                     Latitude = -10.04256, 
-                    Longitude = 66.09327 
+                    Longitude = 66.09327,
+                    ContractorAreaBlockId = 8
                 },
                 new Station { 
                     StationId = 11, 
@@ -556,7 +560,8 @@ namespace Api.Data
                     StationCode = "CIR-19-008", 
                     StationType = "AUV Survey", 
                     Latitude = -9.23854, 
-                    Longitude = 67.28976 
+                    Longitude = 67.28976,
+                    ContractorAreaBlockId = 9
                 },
                 new Station { 
                     StationId = 12, 
@@ -564,7 +569,8 @@ namespace Api.Data
                     StationCode = "CIR-22-005", 
                     StationType = "ROV Dive", 
                     Latitude = -9.98765, 
-                    Longitude = 66.12346 
+                    Longitude = 66.12346,
+                    ContractorAreaBlockId = 8
                 },
                 
                 // Western Pacific stations
@@ -574,7 +580,8 @@ namespace Api.Data
                     StationCode = "WP-19-001", 
                     StationType = "Dredge", 
                     Latitude = 16.10324, 
-                    Longitude = 156.48712 
+                    Longitude = 156.48712,
+                    ContractorAreaBlockId = 10
                 },
                 new Station { 
                     StationId = 14, 
@@ -582,7 +589,8 @@ namespace Api.Data
                     StationCode = "WP-19-002", 
                     StationType = "CTD Station", 
                     Latitude = 16.09875, 
-                    Longitude = 156.42389 
+                    Longitude = 156.42389,
+                    ContractorAreaBlockId = 10
                 },
                 new Station { 
                     StationId = 15, 
@@ -590,7 +598,8 @@ namespace Api.Data
                     StationCode = "WP-21-010", 
                     StationType = "Box Corer", 
                     Latitude = 16.97654, 
-                    Longitude = 157.43287 
+                    Longitude = 157.43287,
+                    ContractorAreaBlockId = 11
                 },
                 new Station { 
                     StationId = 16, 
@@ -598,7 +607,114 @@ namespace Api.Data
                     StationCode = "WP-23-007", 
                     StationType = "Multicore", 
                     Latitude = 16.03421, 
-                    Longitude = 156.50875 
+                    Longitude = 156.50875,
+                    ContractorAreaBlockId = 10
+                },
+                
+                // New stations for cruises that didn't have any
+                // For Contractor 2 cruises (Dayang Yihao vessels)
+                new Station {
+                    StationId = 17,
+                    CruiseId = 2,
+                    StationCode = "DY115_20_1-ST01",
+                    StationType = "CTD Station",
+                    Latitude = 10.73,
+                    Longitude = -124.05,
+                    ContractorAreaBlockId = 2
+                },
+                new Station {
+                    StationId = 18,
+                    CruiseId = 3,
+                    StationCode = "DY115_20_2-ST01",
+                    StationType = "CTD Station",
+                    Latitude = 10.65,
+                    Longitude = -123.95,
+                    ContractorAreaBlockId = 2
+                },
+                new Station {
+                    StationId = 19,
+                    CruiseId = 4,
+                    StationCode = "DY115_21_1-ST01",
+                    StationType = "CTD Station",
+                    Latitude = 10.68,
+                    Longitude = -124.12,
+                    ContractorAreaBlockId = 2
+                },
+                new Station {
+                    StationId = 20,
+                    CruiseId = 5,
+                    StationCode = "DY115_21_2-ST01",
+                    StationType = "CTD Station",
+                    Latitude = 10.76,
+                    Longitude = -123.98,
+                    ContractorAreaBlockId = 2
+                },
+                new Station {
+                    StationId = 21,
+                    CruiseId = 6,
+                    StationCode = "DY125_22_9-ST01",
+                    StationType = "CTD Station",
+                    Latitude = 10.67,
+                    Longitude = -124.03,
+                    ContractorAreaBlockId = 2
+                },
+                new Station {
+                    StationId = 22,
+                    CruiseId = 7,
+                    StationCode = "DY73_I-ST01",
+                    StationType = "CTD Station",
+                    Latitude = 10.72,
+                    Longitude = -123.93,
+                    ContractorAreaBlockId = 2
+                },
+                new Station {
+                    StationId = 23,
+                    CruiseId = 8,
+                    StationCode = "DY73_II-ST01",
+                    StationType = "CTD Station",
+                    Latitude = 10.78,
+                    Longitude = -124.08,
+                    ContractorAreaBlockId = 2
+                },
+                new Station {
+                    StationId = 24,
+                    CruiseId = 9,
+                    StationCode = "DY79_II-ST01",
+                    StationType = "CTD Station",
+                    Latitude = 10.63,
+                    Longitude = -123.97,
+                    ContractorAreaBlockId = 2
+                },
+                
+                // For Contractor 4 (Beijing Pioneer Hi-Tech) cruise
+                new Station {
+                    StationId = 25,
+                    CruiseId = 11,
+                    StationCode = "DY69_1-ST01",
+                    StationType = "CTD Station",
+                    Latitude = 16.89,
+                    Longitude = -125.35,
+                    ContractorAreaBlockId = 4
+                },
+                
+                // For Contractor 3 (China Minmetals) cruises
+                new Station {
+                    StationId = 26,
+                    CruiseId = 13,
+                    StationCode = "DY70_I-ST01",
+                    StationType = "CTD Station",
+                    Latitude = 13.65,
+                    Longitude = -126.30,
+                    ContractorAreaBlockId = 3
+                },
+                new Station {
+                    StationId = 27,
+                    CruiseId = 14,
+                    StationCode = "DY2022_DY73_I-ST01",
+                    StationType = "CTD Station",
+                    Latitude = 13.55,
+                    Longitude = -126.20,
+                    ContractorAreaBlockId = 3
                 }
             );
 
@@ -611,7 +727,6 @@ namespace Api.Data
             new Sample { SampleId = 4, StationId = 4, SampleCode = "DY79I-KW1-CTD01-01", SampleType = "Water", MatrixType = "Seawater", HabitatType = "Water Column", SamplingDevice = "CTD Rosette", DepthLower = 5.0, DepthUpper = 5.01, SampleDescription = "Near-surface water sample", Analysis = "Nitrate", Result = 3.4, Unit = "µmol/L" },
             new Sample { SampleId = 5, StationId = 4, SampleCode = "DY79I-KW1-CTD01-03", SampleType = "Water", MatrixType = "Seawater", HabitatType = "Water Column", SamplingDevice = "CTD Rosette", DepthLower = 125.0, DepthUpper = 125.01, SampleDescription = "Mid-depth water sample", Analysis = "Phosphate", Result = 0.72, Unit = "µmol/L" }
         );
-
 
             // New samples for the new stations
             context.Samples.AddRange(
@@ -1022,133 +1137,135 @@ namespace Api.Data
                     Value = 0.43, 
                     Units = "wt%", 
                     Qualifier = "Measured", 
-                    Remarks = "ICP-MS analysis" 
-                }
-            );
+                    Remarks = "ICP-MS analysis",
+                     
+               }
+        
+           );
 
-            // --- Seed Libraries (documents) ---
-            context.Libraries.AddRange(
-                // Mid-Atlantic Ridge documents
-                new Library { 
-                    LibraryId = 1, 
-                    ContractorId = 6, 
-                    Theme = "Environmental Baseline", 
-                    FileName = "GO174_2018-122-0001dat.csv", 
-                    Title = "Environmental Baseline Study for the TAG Hydrothermal Field", 
-                    Description = "Comprehensive description of the baseline environmental conditions at the TAG Hydrothermal Field exploration area", 
-                    Year = 2023,
-                    Country = "China",
-                    SubmissionDate = new DateTime(2018, 12, 15), 
-                    IsConfidential = false 
-                },
-                new Library { 
-                    LibraryId = 2, 
-                    ContractorId = 6, 
-                    Theme = "Resource Assessment", 
-                    FileName = "GO174_2018-121-2056dat.csv", 
-                    Title = "Mineral Resource Assessment of Hydrothermal Deposits at the Mid-Atlantic Ridge", 
-                    Description = "Technical report on the mineral potential of hydrothermal deposits in the exploration contract area", 
-                    Year = 2022,
-                    Country = "South-Korea",
-                    SubmissionDate = new DateTime(2020, 9, 30), 
-                    IsConfidential = true 
-                },
-                
-                // Indian Ocean documents
-                new Library { 
-                    LibraryId = 3, 
-                    ContractorId = 7, 
-                    Theme = "Environmental Impact", 
-                    FileName = "GO174_2018-122-1439dat.csv", 
-                    Title = "Environmental Impact Statement for Exploration Activities in the Central Indian Ridge", 
-                    Description = "Assessment of potential environmental impacts from exploration activities", 
-                    Year = 2024,
-                    Country = "India",
-                    SubmissionDate = new DateTime(2019, 5, 22), 
-                    IsConfidential = false 
-                },
-                
-                // Western Pacific documents
-                new Library { 
-                    LibraryId = 4, 
-                    ContractorId = 8, 
-                    Theme = "Resource Assessment", 
-                    FileName = "IOMPMN12018_Hydro_meteo_rawdata_Raw meteo data.csv", 
-                    Title = "Cobalt-rich Ferromanganese Crusts Resource Assessment", 
-                    Description = "Technical assessment of cobalt-rich crust resources in the Western Pacific exploration area", 
-                    Year = 2025,
-                    Country = "USA",
-                    SubmissionDate = new DateTime(2021, 8, 15), 
-                    IsConfidential = true 
-                },
-                new Library { 
-                    LibraryId = 5, 
-                    ContractorId = 8, 
-                    Theme = "Biodiversity", 
-                    FileName = "IOMPMN12018_SVP_profiling_SVP.csv", 
-                    Title = "Seamount Biodiversity Survey Results", 
-                    Description = "Scientific report on the biodiversity observed on surveyed seamounts", 
-                    Year = 2022,
-                    Country = "USA",
-                    SubmissionDate = new DateTime(2022, 2, 28), 
-                    IsConfidential = false 
-                }
-            );
+           // --- Seed Libraries (documents) ---
+           context.Libraries.AddRange(
+               // Mid-Atlantic Ridge documents
+               new Library { 
+                   LibraryId = 1, 
+                   ContractorId = 6, 
+                   Theme = "Environmental Baseline", 
+                   FileName = "GO174_2018-122-0001dat.csv", 
+                   Title = "Environmental Baseline Study for the TAG Hydrothermal Field", 
+                   Description = "Comprehensive description of the baseline environmental conditions at the TAG Hydrothermal Field exploration area", 
+                   Year = 2023,
+                   Country = "China",
+                   SubmissionDate = new DateTime(2018, 12, 15), 
+                   IsConfidential = false 
+               },
+               new Library { 
+                   LibraryId = 2, 
+                   ContractorId = 6, 
+                   Theme = "Resource Assessment", 
+                   FileName = "GO174_2018-121-2056dat.csv", 
+                   Title = "Mineral Resource Assessment of Hydrothermal Deposits at the Mid-Atlantic Ridge", 
+                   Description = "Technical report on the mineral potential of hydrothermal deposits in the exploration contract area", 
+                   Year = 2022,
+                   Country = "South-Korea",
+                   SubmissionDate = new DateTime(2020, 9, 30), 
+                   IsConfidential = true 
+               },
+               
+               // Indian Ocean documents
+               new Library { 
+                   LibraryId = 3, 
+                   ContractorId = 7, 
+                   Theme = "Environmental Impact", 
+                   FileName = "GO174_2018-122-1439dat.csv", 
+                   Title = "Environmental Impact Statement for Exploration Activities in the Central Indian Ridge", 
+                   Description = "Assessment of potential environmental impacts from exploration activities", 
+                   Year = 2024,
+                   Country = "India",
+                   SubmissionDate = new DateTime(2019, 5, 22), 
+                   IsConfidential = false 
+               },
+               
+               // Western Pacific documents
+               new Library { 
+                   LibraryId = 4, 
+                   ContractorId = 8, 
+                   Theme = "Resource Assessment", 
+                   FileName = "IOMPMN12018_Hydro_meteo_rawdata_Raw meteo data.csv", 
+                   Title = "Cobalt-rich Ferromanganese Crusts Resource Assessment", 
+                   Description = "Technical assessment of cobalt-rich crust resources in the Western Pacific exploration area", 
+                   Year = 2025,
+                   Country = "USA",
+                   SubmissionDate = new DateTime(2021, 8, 15), 
+                   IsConfidential = true 
+               },
+               new Library { 
+                   LibraryId = 5, 
+                   ContractorId = 8, 
+                   Theme = "Biodiversity", 
+                   FileName = "IOMPMN12018_SVP_profiling_SVP.csv", 
+                   Title = "Seamount Biodiversity Survey Results", 
+                   Description = "Scientific report on the biodiversity observed on surveyed seamounts", 
+                   Year = 2022,
+                   Country = "USA",
+                   SubmissionDate = new DateTime(2022, 2, 28), 
+                   IsConfidential = false 
+               }
+           );
 
-            // --- Seed Qualifiers ---
-            context.Qualifiers.AddRange(
-                new Qualifier { QualifierId = 1, QualifierCode = "M", QualifierDefinition = "Measured value" },
-                new Qualifier { QualifierId = 2, QualifierCode = "E", QualifierDefinition = "Estimated value" },
-                new Qualifier { QualifierId = 3, QualifierCode = "C", QualifierDefinition = "Calculated value" },
-                new Qualifier { QualifierId = 4, QualifierCode = "BDL", QualifierDefinition = "Below detection limit" }
-            );
+           // --- Seed Qualifiers ---
+           context.Qualifiers.AddRange(
+               new Qualifier { QualifierId = 1, QualifierCode = "M", QualifierDefinition = "Measured value" },
+               new Qualifier { QualifierId = 2, QualifierCode = "E", QualifierDefinition = "Estimated value" },
+               new Qualifier { QualifierId = 3, QualifierCode = "C", QualifierDefinition = "Calculated value" },
+               new Qualifier { QualifierId = 4, QualifierCode = "BDL", QualifierDefinition = "Below detection limit" }
+           );
 
-            // --- Seed Valid Values ---
-            context.ValidValues.AddRange(
-                // Sample types
-                new ValidValue { ValueId = 1, FieldName = "SampleType", ValidValueName = "Water", Description = "Water samples collected from the water column" },
-                new ValidValue { ValueId = 2, FieldName = "SampleType", ValidValueName = "Rock", Description = "Rock samples from seafloor or outcrops" },
-                new ValidValue { ValueId = 3, FieldName = "SampleType", ValidValueName = "Sediment", Description = "Sediment samples from seafloor" },
-                new ValidValue { ValueId = 4, FieldName = "SampleType", ValidValueName = "Biological", Description = "Biological samples" },
-                
-                // Matrix types
-                new ValidValue { ValueId = 5, FieldName = "MatrixType", ValidValueName = "Seawater", Description = "Seawater matrix" },
-                new ValidValue { ValueId = 6, FieldName = "MatrixType", ValidValueName = "Sulfide", Description = "Sulfide mineral matrix" },
-                new ValidValue { ValueId = 7, FieldName = "MatrixType", ValidValueName = "Basalt", Description = "Basaltic rock matrix" },
-                new ValidValue { ValueId = 8, FieldName = "MatrixType", ValidValueName = "Fe-Mn Crust", Description = "Ferromanganese crust matrix" },
-                new ValidValue { ValueId = 9, FieldName = "MatrixType", ValidValueName = "Pelagic Sediment", Description = "Pelagic sediment matrix" },
-                new ValidValue { ValueId = 10, FieldName = "MatrixType", ValidValueName = "Metalliferous Sediment", Description = "Metalliferous sediment matrix" },
-                new ValidValue { ValueId = 11, FieldName = "MatrixType", ValidValueName = "Calcareous Ooze", Description = "Calcareous ooze sediment matrix" },
-                
-                // Habitat types
-                new ValidValue { ValueId = 12, FieldName = "HabitatType", ValidValueName = "Water Column", Description = "Open water habitat" },
-                new ValidValue { ValueId = 13, FieldName = "HabitatType", ValidValueName = "Seafloor", Description = "General seafloor habitat" },
-                new ValidValue { ValueId = 14, FieldName = "HabitatType", ValidValueName = "Hydrothermal Vent", Description = "Active hydrothermal vent habitat" },
-                new ValidValue { ValueId = 15, FieldName = "HabitatType", ValidValueName = "Seamount", Description = "Seamount habitat" },
-                
-                new ValidValue { ValueId = 17, FieldName = "StationType", ValidValueName = "Sampling Station", Description = "General sampling station" },
-                new ValidValue { ValueId = 18, FieldName = "StationType", ValidValueName = "ROV Dive", Description = "Station for ROV dive operations" },
-                new ValidValue { ValueId = 19, FieldName = "StationType", ValidValueName = "Dredge", Description = "Station for dredge sampling" },
-                new ValidValue { ValueId = 20, FieldName = "StationType", ValidValueName = "Box Corer", Description = "Station for box corer sampling" },
-                new ValidValue { ValueId = 21, FieldName = "StationType", ValidValueName = "Multicore", Description = "Station for multicore sampling" },
-                new ValidValue { ValueId = 22, FieldName = "StationType", ValidValueName = "AUV Survey", Description = "Station for AUV survey operations" },
-                new ValidValue { ValueId = 23, FieldName = "StationType", ValidValueName = "Biological Sampling", Description = "Station for biological sampling" },
-                
-                // Sampling devices
-                new ValidValue { ValueId = 24, FieldName = "SamplingDevice", ValidValueName = "CTD Rosette", Description = "Water sampling rosette with CTD" },
-                new ValidValue { ValueId = 25, FieldName = "SamplingDevice", ValidValueName = "ROV Manipulator", Description = "Sampling using ROV manipulator arm" },
-                new ValidValue { ValueId = 26, FieldName = "SamplingDevice", ValidValueName = "Dredge", Description = "Dredge sampling device" },
-                new ValidValue { ValueId = 27, FieldName = "SamplingDevice", ValidValueName = "Box Corer", Description = "Box corer sampling device" },
-                new ValidValue { ValueId = 28, FieldName = "SamplingDevice", ValidValueName = "Push Core", Description = "Push core sampling device" },
-                new ValidValue { ValueId = 29, FieldName = "SamplingDevice", ValidValueName = "Multicore", Description = "Multicore sampling device" },
-                
-                // Media types
-                new ValidValue { ValueId = 30, FieldName = "MediaType", ValidValueName = "Photo", Description = "Still photograph" },
-                new ValidValue { ValueId = 31, FieldName = "MediaType", ValidValueName = "Video", Description = "Video recording" }
-            );
+           // --- Seed Valid Values ---
+           context.ValidValues.AddRange(
+               // Sample types
+               new ValidValue { ValueId = 1, FieldName = "SampleType", ValidValueName = "Water", Description = "Water samples collected from the water column" },
+               new ValidValue { ValueId = 2, FieldName = "SampleType", ValidValueName = "Rock", Description = "Rock samples from seafloor or outcrops" },
+               new ValidValue { ValueId = 3, FieldName = "SampleType", ValidValueName = "Sediment", Description = "Sediment samples from seafloor" },
+               new ValidValue { ValueId = 4, FieldName = "SampleType", ValidValueName = "Biological", Description = "Biological samples" },
+               
+               // Matrix types
+               new ValidValue { ValueId = 5, FieldName = "MatrixType", ValidValueName = "Seawater", Description = "Seawater matrix" },
+               new ValidValue { ValueId = 6, FieldName = "MatrixType", ValidValueName = "Sulfide", Description = "Sulfide mineral matrix" },
+               new ValidValue { ValueId = 7, FieldName = "MatrixType", ValidValueName = "Basalt", Description = "Basaltic rock matrix" },
+               new ValidValue { ValueId = 8, FieldName = "MatrixType", ValidValueName = "Fe-Mn Crust", Description = "Ferromanganese crust matrix" },
+               new ValidValue { ValueId = 9, FieldName = "MatrixType", ValidValueName = "Pelagic Sediment", Description = "Pelagic sediment matrix" },
+               new ValidValue { ValueId = 10, FieldName = "MatrixType", ValidValueName = "Metalliferous Sediment", Description = "Metalliferous sediment matrix" },
+               new ValidValue { ValueId = 11, FieldName = "MatrixType", ValidValueName = "Calcareous Ooze", Description = "Calcareous ooze sediment matrix" },
+               
+               // Habitat types
+               new ValidValue { ValueId = 12, FieldName = "HabitatType", ValidValueName = "Water Column", Description = "Open water habitat" },
+               new ValidValue { ValueId = 13, FieldName = "HabitatType", ValidValueName = "Seafloor", Description = "General seafloor habitat" },
+               new ValidValue { ValueId = 14, FieldName = "HabitatType", ValidValueName = "Hydrothermal Vent", Description = "Active hydrothermal vent habitat" },
+               new ValidValue { ValueId = 15, FieldName = "HabitatType", ValidValueName = "Seamount", Description = "Seamount habitat" },
+               
+               new ValidValue { ValueId = 17, FieldName = "StationType", ValidValueName = "Sampling Station", Description = "General sampling station" },
+               new ValidValue { ValueId = 18, FieldName = "StationType", ValidValueName = "ROV Dive", Description = "Station for ROV dive operations" },
+               new ValidValue { ValueId = 19, FieldName = "StationType", ValidValueName = "Dredge", Description = "Station for dredge sampling" },
+               new ValidValue { ValueId = 20, FieldName = "StationType", ValidValueName = "Box Corer", Description = "Station for box corer sampling" },
+               new ValidValue { ValueId = 21, FieldName = "StationType", ValidValueName = "Multicore", Description = "Station for multicore sampling" },
+               new ValidValue { ValueId = 22, FieldName = "StationType", ValidValueName = "AUV Survey", Description = "Station for AUV survey operations" },
+               new ValidValue { ValueId = 23, FieldName = "StationType", ValidValueName = "Biological Sampling", Description = "Station for biological sampling" },
+               
+               // Sampling devices
+               new ValidValue { ValueId = 24, FieldName = "SamplingDevice", ValidValueName = "CTD Rosette", Description = "Water sampling rosette with CTD" },
+               new ValidValue { ValueId = 25, FieldName = "SamplingDevice", ValidValueName = "ROV Manipulator", Description = "Sampling using ROV manipulator arm" },
+               new ValidValue { ValueId = 26, FieldName = "SamplingDevice", ValidValueName = "Dredge", Description = "Dredge sampling device" },
+               new ValidValue { ValueId = 27, FieldName = "SamplingDevice", ValidValueName = "Box Corer", Description = "Box corer sampling device" },
+               new ValidValue { ValueId = 28, FieldName = "SamplingDevice", ValidValueName = "Push Core", Description = "Push core sampling device" },
+               new ValidValue { ValueId = 29, FieldName = "SamplingDevice", ValidValueName = "Multicore", Description = "Multicore sampling device" },
+               
+               // Media types
+               new ValidValue { ValueId = 30, FieldName = "MediaType", ValidValueName = "Photo", Description = "Still photograph" },
+               new ValidValue { ValueId = 31, FieldName = "MediaType", ValidValueName = "Video", Description = "Video recording" }
+           );
 
-            // Save all changes
-            context.SaveChanges();
-        }
-    }
+           // Save all changes
+           context.SaveChanges();
+       }
+   }
 }

@@ -43,8 +43,8 @@ namespace Api.Migrations
                 {
                     QualifierId = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
-                    QualifierCode = table.Column<string>(type: "TEXT", maxLength: 100, nullable: false),
-                    QualifierDefinition = table.Column<string>(type: "TEXT", nullable: false)
+                    QualifierCode = table.Column<string>(type: "TEXT", maxLength: 100, nullable: true),
+                    QualifierDefinition = table.Column<string>(type: "TEXT", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -348,11 +348,11 @@ namespace Api.Migrations
                     MediaId = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
                     SampleId = table.Column<int>(type: "INTEGER", nullable: false),
-                    FileName = table.Column<string>(type: "TEXT", maxLength: 255, nullable: false),
-                    MediaType = table.Column<string>(type: "TEXT", maxLength: 50, nullable: false),
-                    CameraSpecs = table.Column<string>(type: "TEXT", maxLength: 255, nullable: false),
+                    FileName = table.Column<string>(type: "TEXT", maxLength: 255, nullable: true),
+                    MediaType = table.Column<string>(type: "TEXT", maxLength: 50, nullable: true),
+                    CameraSpecs = table.Column<string>(type: "TEXT", maxLength: 255, nullable: true),
                     CaptureDate = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    Remarks = table.Column<string>(type: "TEXT", nullable: false)
+                    Remarks = table.Column<string>(type: "TEXT", nullable: true)
                 },
                 constraints: table =>
                 {
