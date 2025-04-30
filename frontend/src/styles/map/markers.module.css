@@ -106,11 +106,18 @@
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: transform 0.2s ease;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .clusterMarker:hover {
   transform: scale(1.05);
+}
+
+/* Active cluster marker */
+.clusterMarker.active {
+  box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.8), 0 0 0 6px rgba(255, 77, 79, 0.6);
+  transform: scale(1.05);
+  z-index: 100;
 }
 
 .clusterCount {
@@ -209,6 +216,58 @@
   text-align: center;
   padding-top: 4px; /* Reduced padding */
   color: rgba(255, 255, 255, 0.7);
+}
+
+/* ========== ENHANCED TOOLTIP FOR PERSISTENCE ========== */
+/* Enhanced cluster tooltip that persists when active */
+.persistentTooltip {
+  /* Make it more prominent */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  /* Ensure it's always visible */
+  opacity: 1;
+  visibility: visible;
+  /* Make the tooltip interactable */
+  pointer-events: auto;
+  /* Improved positioning */
+  z-index: 101;
+}
+
+/* Enhanced tooltip content for better scrolling */
+.persistentTooltip .clusterTooltipContent {
+  /* Better scrolling experience */
+  max-height: 150px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  /* Add padding for better look */
+  padding: 4px 6px;
+}
+
+/* Styling for scrollbars in the tooltip content */
+.persistentTooltip .clusterTooltipContent::-webkit-scrollbar {
+  width: 6px;
+}
+
+.persistentTooltip .clusterTooltipContent::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 3px;
+}
+
+.persistentTooltip .clusterTooltipContent::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.5);
+  border-radius: 3px;
+}
+
+/* Make station items more interactive */
+.clusterStationItem {
+  padding: 5px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.clusterStationItem:hover {
+  background-color: rgba(255, 255, 255, 0.15);
 }
 
 /* ========== CRUISE MARKER STYLES ========== */

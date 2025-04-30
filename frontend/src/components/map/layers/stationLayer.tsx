@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import StationMarker from '../markers/stationMarker';
 import ClusterMarker from '../markers/clusterMarker';
 
@@ -17,6 +17,28 @@ const StationLayer: React.FC<StationLayerProps> = ({
   mapRef,
   onStationClick 
 }) => {
+  // Add state for tracking the active cluster
+  const [activeClusterId, setActiveClusterId] = useState<string | null>(null);
+  
+  // Effect to close active tooltip when map moves significantly
+  useEffect(() => {
+    if (!mapRef.current || !activeClusterId) return;
+    
+    const map = mapRef.current.getMap();
+    
+    const handleMapMove = () => {
+      // Close the tooltip when the map moves significantly
+      setActiveClusterId(null);
+    };
+    
+    // Add event listener for moveend (when the map stops moving)
+    map.on('moveend', handleMapMove);
+    
+    return () => {
+      map.off('moveend', handleMapMove);
+    };
+  }, [activeClusterId, mapRef]);
+
   if (!showStations || !clusters || clusters.length === 0) {
     return null;
   }
@@ -65,6 +87,8 @@ const StationLayer: React.FC<StationLayerProps> = ({
               }}
               clusterIndex={clusterIndex}
               points={clusterPoints}
+              activeClusterId={activeClusterId}
+              setActiveClusterId={setActiveClusterId}
               onClick={() => {
                 // Zoom in when cluster is clicked
                 try {
@@ -84,6 +108,9 @@ const StationLayer: React.FC<StationLayerProps> = ({
                     zoom: expansionZoom,
                     duration: 500
                   });
+
+                  // Close any active tooltip when zooming
+                  setActiveClusterId(null);
                 } catch (err) {
                   console.error('Error handling cluster click:', err);
                 }
