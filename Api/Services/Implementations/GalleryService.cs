@@ -11,45 +11,48 @@ using DTOs.Gallery_Dto;
 
 namespace Api.Services.Implementations
 {
-   public class GalleryService : IGalleryService
-{
-    private readonly IGalleryRepository _repository;
-    private readonly string _connectionString;
-    private readonly string _containerName;
-    
-    public GalleryService(
-        IGalleryRepository repository,
-        IConfiguration configuration)
+    public class GalleryService : IGalleryService
     {
-        _repository = repository;
-        _connectionString = configuration.GetSection("AzureStorage:GalleryStorage:ConnectionString").Value;
-        _containerName = configuration.GetSection("AzureStorage:GalleryStorage:ContainerName").Value;
-    }
-        
+        private readonly IGalleryRepository _repository;
+        private readonly string _connectionString;
+        private readonly string _containerName;
+
+        public GalleryService(
+            IGalleryRepository repository,
+            IConfiguration configuration)
+        {
+            _repository = repository;
+            _connectionString = configuration.GetSection("AzureStorage:GalleryStorage:ConnectionString").Value
+                ?? throw new InvalidOperationException("Azure Storage connection string mangler i konfigurasjonen.");
+            _containerName = configuration.GetSection("AzureStorage:GalleryStorage:ContainerName").Value
+                ?? throw new InvalidOperationException("Azure Storage container name mangler i konfigurasjonen.");
+        }
+
         public async Task<IEnumerable<GalleryItemDto>> GetGalleryItemsAsync(
-            int? contractorId, 
-            int? areaId, 
-            int? blockId, 
-            int? cruiseId, 
-            int? stationId, 
-            int? sampleId, 
-            string mediaType,
+            int? contractorId,
+            int? areaId,
+            int? blockId,
+            int? cruiseId,
+            int? stationId,
+            int? sampleId,
+            string? mediaType,
             int? year)
         {
             var mediaItems = await _repository.GetGalleryItemsAsync(
                 contractorId, areaId, blockId, cruiseId, stationId, sampleId, mediaType);
-            
+
             var result = new List<GalleryItemDto>();
-            
+
             foreach (var item in mediaItems)
             {
+                // Hopper over elementer som mangler viktig data
                 if (item.Sample?.Station?.Cruise?.Contractor == null)
                     continue;
-                    
-                // Apply year filter if specified
+
+                // Filtrer på år hvis spesifisert
                 if (year.HasValue && item.CaptureDate.Year != year.Value)
                     continue;
-                    
+
                 result.Add(new GalleryItemDto
                 {
                     MediaId = item.MediaId,
@@ -71,30 +74,33 @@ namespace Api.Services.Implementations
                     ContractorName = item.Sample.Station.Cruise.Contractor.ContractorName
                 });
             }
-            
+
             return result;
         }
-        
+
         public async Task<(Stream Content, string ContentType, string FileName)> GetMediaForDownloadAsync(int mediaId)
         {
             var media = await _repository.GetMediaByIdAsync(mediaId);
+
             if (media == null)
             {
-                throw new ArgumentException($"Media with ID {mediaId} not found");
+                throw new ArgumentException($"Fant ikke media med ID {mediaId}");
             }
-            
+
             var blobServiceClient = new BlobServiceClient(_connectionString);
             var containerClient = blobServiceClient.GetBlobContainerClient(_containerName);
             var blobClient = containerClient.GetBlobClient(media.FileName);
-            
+
             var response = await blobClient.DownloadAsync();
-            
+
             return (response.Value.Content, GetContentType(media.FileName), media.FileName);
         }
-        
+
         private string GetContentType(string fileName)
         {
             var extension = Path.GetExtension(fileName).ToLowerInvariant();
+
+            // Returnerer riktig Content-Type basert på filendelse
             return extension switch
             {
                 ".jpg" or ".jpeg" => "image/jpeg",
@@ -106,5 +112,5 @@ namespace Api.Services.Implementations
                 _ => "application/octet-stream"
             };
         }
-    } 
+    }
 }
