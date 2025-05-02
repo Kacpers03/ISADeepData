@@ -1,9 +1,7 @@
 // frontend/src/pages/document/documents.tsx
-import React from "react";
-import DocumentTemplate from "../../components/documents/documentTemplate";
+import React from 'react'
+import DocumentTemplate from '../../components/documents/documentTemplate'
 
 export default function Documents() {
-    return (
-        <DocumentTemplate />
-    );
+	return <DocumentTemplate />
 }

@@ -1,707 +1,695 @@
 {
-  "header": {
-    "home": "ISA DeepData",
-    "subtitle": "Autorité Internationale des Fonds Marins"
-  },
-  "nav": {
-    "about": "À propos de l'ISA",
-    "aboutSubItems": {
-      "about": "À propos",
-      "purpose": "Objectif",
-      "missions": "Missions"
-    },
-    "map": "Carte",
-    "library": "Bibliothèque",
-    "librarySubItems": {
-      "reports": "Rapports",
-      "publications": "Publications",
-      "research": "Recherche",
-      "samples": "Échantillons"
-    },
-    "gallery": "Galerie",
-    "documents": "Documents"
-  },
-  "home": {
-    "title": "Bienvenue à ISA DeepData",
-    "subtitle": "Explorez les profondeurs de l'océan avec nos cartes et ressources interactives."
-  },
-  "languages": {
-    "en": "Anglais",
-    "es": "Espagnol",
-    "fr": "Français"
-  },
-  "footer": {
-"contact": "Contact",
-"topics": "Sujets",
-"information": "Information",
-"address": "14 - 20 Port Royal Street, Kingston, Jamaïque",
-"email": "news@isa.org.jm",
-"phone": "+1 (876) 922-9105",
-"termsOfUse": "Conditions d'Utilisation",
-"strategicPlan": "Plan Stratégique",
-"miningCode": "Code Minier",
-"marineProtection": "Protection de l'Environnement Marin",
-"explorationContracts": "Contrats d'Exploration",
-"workshops": "Ateliers",
-"copyright": "© 2025 Tous droits réservés."
-},
+	"header": {
+		"home": "ISA DeepData",
+		"subtitle": "Autorité Internationale des Fonds Marins"
+	},
+	"nav": {
+		"about": "À propos de l'ISA",
+		"aboutSubItems": {
+			"about": "À propos",
+			"purpose": "Objectif",
+			"missions": "Missions"
+		},
+		"map": "Carte",
+		"library": "Bibliothèque",
+		"librarySubItems": {
+			"reports": "Rapports",
+			"publications": "Publications",
+			"research": "Recherche",
+			"samples": "Échantillons"
+		},
+		"gallery": "Galerie",
+		"documents": "Documents"
+	},
+	"home": {
+		"title": "Bienvenue à ISA DeepData",
+		"subtitle": "Explorez les profondeurs de l'océan avec nos cartes et ressources interactives."
+	},
+	"languages": {
+		"en": "Anglais",
+		"es": "Espagnol",
+		"fr": "Français"
+	},
+	"footer": {
+		"contact": "Contact",
+		"topics": "Sujets",
+		"information": "Information",
+		"address": "14 - 20 Port Royal Street, Kingston, Jamaïque",
+		"email": "news@isa.org.jm",
+		"phone": "+1 (876) 922-9105",
+		"termsOfUse": "Conditions d'Utilisation",
+		"strategicPlan": "Plan Stratégique",
+		"miningCode": "Code Minier",
+		"marineProtection": "Protection de l'Environnement Marin",
+		"explorationContracts": "Contrats d'Exploration",
+		"workshops": "Ateliers",
+		"copyright": "© 2025 Tous droits réservés."
+	},
 
+	"about": {
+		"title": "À propos d'ISA DeepData",
+		"leadText": "ISA DeepData propose des solutions innovantes pour l'analyse des données des grands fonds marins.",
+		"description": "Notre plateforme exploite une technologie de pointe pour transformer les données marines brutes en informations exploitables, permettant aux parties prenantes de prendre des décisions éclairées sur la gestion durable des ressources marines.",
+		"features": {
+			"innovativeAnalytics": {
+				"title": "Analyse Innovante",
+				"description": "Transformer les données marines brutes en informations claires et exploitables."
+			},
+			"marineInsights": {
+				"title": "Connaissances Marines",
+				"description": "Exploiter l'analyse d'experts pour une gestion marine durable."
+			},
+			"collaborativeExpertise": {
+				"title": "Expertise Collaborative",
+				"description": "S'associer avec les leaders de l'industrie pour stimuler l'innovation et l'excellence."
+			}
+		},
+		"joinSection": {
+			"title": "Rejoignez Notre Révolution des Données Profondes",
+			"description": "Découvrez comment ISA DeepData transforme l'industrie marine. Explorez nos outils interactifs, nos rapports complets et notre recherche de pointe pour rester à la pointe dans le monde des données des grands fonds marins."
+		}
+	},
 
-"about": {
-"title": "À propos d'ISA DeepData",
-"leadText": "ISA DeepData propose des solutions innovantes pour l'analyse des données des grands fonds marins.",
-"description": "Notre plateforme exploite une technologie de pointe pour transformer les données marines brutes en informations exploitables, permettant aux parties prenantes de prendre des décisions éclairées sur la gestion durable des ressources marines.",
-"features": {
-  "innovativeAnalytics": {
-    "title": "Analyse Innovante",
-    "description": "Transformer les données marines brutes en informations claires et exploitables."
-  },
-  "marineInsights": {
-    "title": "Connaissances Marines",
-    "description": "Exploiter l'analyse d'experts pour une gestion marine durable."
-  },
-  "collaborativeExpertise": {
-    "title": "Expertise Collaborative",
-    "description": "S'associer avec les leaders de l'industrie pour stimuler l'innovation et l'excellence."
-  }
-},
-"joinSection": {
-  "title": "Rejoignez Notre Révolution des Données Profondes",
-  "description": "Découvrez comment ISA DeepData transforme l'industrie marine. Explorez nos outils interactifs, nos rapports complets et notre recherche de pointe pour rester à la pointe dans le monde des données des grands fonds marins."
+	"strategicPlan": {
+		"hero": {
+			"title": "Plan Stratégique de l'ISA",
+			"subtitle": "Guider l'avenir durable de l'exploitation minière des fonds marins."
+		},
+		"about": {
+			"title": "À propos du Plan Stratégique",
+			"description": "Le Plan Stratégique de l'ISA présente notre vision d'une approche équilibrée, durable et scientifiquement informée de la gestion des ressources des fonds marins. Il fournit une feuille de route pour une réglementation efficace, la recherche et le renforcement des capacités, garantissant que l'exploration et l'exploitation profitent à toute l'humanité."
+		},
+		"features": {
+			"regulation": {
+				"title": "Réglementation Robuste",
+				"description": "Établir des cadres solides pour régir les activités des fonds marins.",
+				"details": "Notre cadre réglementaire robuste est conçu pour fournir des directives claires et des mesures applicables. En intégrant des examens périodiques et un engagement continu des parties prenantes, nous veillons à ce que nos réglementations restent réactives et efficaces, favorisant un environnement de responsabilité et de transparence."
+			},
+			"environment": {
+				"title": "Protection Environnementale",
+				"description": "Préserver les écosystèmes marins pour les générations futures.",
+				"details": "La protection de l'environnement est au cœur de notre mission. Nous mettons en œuvre des mesures de conservation complètes, y compris des évaluations environnementales régulières et des programmes de surveillance proactive, pour assurer la gestion durable des écosystèmes marins. Cette approche protège non seulement la biodiversité, mais favorise également la résilience écologique à long terme."
+			},
+			"collaboration": {
+				"title": "Collaboration Mondiale",
+				"description": "Encourager les partenariats avec les parties prenantes du monde entier.",
+				"details": "La collaboration mondiale est essentielle pour exploiter l'expertise collective de nos partenaires internationaux. En travaillant en étroite collaboration avec les parties prenantes mondiales, les organismes de réglementation et les communautés scientifiques, nous nous efforçons de construire un cadre cohérent et innovant qui profite à toutes les parties concernées. Cet esprit de partenariat garantit que nous partageons les connaissances, harmonisons les meilleures pratiques et relevons ensemble les défis de l'exploitation minière des fonds marins."
+			}
+		},
+		"download": {
+			"title": "Télécharger le Plan Stratégique",
+			"description": "Accédez au document complet du Plan Stratégique de l'ISA et explorez les objectifs clés, les réglementations et les initiatives qui façonnent l'avenir de l'exploitation minière des fonds marins.",
+			"button": "Voir et Télécharger le PDF"
+		}
+	},
+
+	"miningCode": {
+		"hero": {
+			"title": "Le Code Minier",
+			"subtitle": "Un ensemble complet de règles, de réglementations et de procédures pour l'exploration et l'exploitation durables des minéraux marins."
+		},
+		"about": {
+			"title": "À propos du Code Minier",
+			"description": "Le \"Code Minier\" fait référence au cadre complet publié par l'Autorité Internationale des Fonds Marins pour réglementer la prospection, l'exploration et l'exploitation des minéraux marins dans la Zone internationale des fonds marins. Il comprend des règlements, des recommandations et des procédures conçus pour garantir que les activités des fonds marins sont menées de manière responsable et bénéficient à toute l'humanité."
+		},
+		"features": {
+			"polymetallic": {
+				"title": "Nodules Polymétalliques",
+				"description": "Réglementations pour l'exploration des nodules riches en nickel, cuivre, cobalt et manganèse."
+			},
+			"sulphides": {
+				"title": "Sulfures Polymétalliques",
+				"description": "Orientation sur l'exploration durable des sulfures massifs des fonds marins."
+			},
+			"cobalt": {
+				"title": "Croûtes Riches en Cobalt",
+				"description": "Réglementations pour les croûtes contenant du cobalt, du fer et d'autres métaux."
+			}
+		},
+		"details": {
+			"title": "Cadre Réglementaire",
+			"description1": "Le Code Minier évolue continuellement pour répondre aux nouvelles technologies et aux considérations environnementales. Il est complété par les recommandations de la Commission Juridique et Technique, assurant que les meilleures informations scientifiques et techniques disponibles sont intégrées dans les réglementations.",
+			"description2": "L'ISA travaille également sur des <strong>projets de règlements d'exploitation</strong>, communément appelés le \"Code Minier\", qui décrivent les responsabilités des contractants et des États qui les parrainent, les mesures de protection de l'environnement et les structures de paiement financier."
+		},
+		"cta": {
+			"title": "Explorez le Code Plus en Profondeur",
+			"description": "Découvrez comment le Code Minier favorise la gestion durable des ressources des fonds marins, promeut la coopération internationale et équilibre le développement économique avec la protection de l'environnement marin.",
+			"button": "Contactez-nous"
+		}
+	},
+
+	"mission": {
+		"title": "Notre Mission",
+		"subtitle": "Chez ISA DeepData, nous exploitons la puissance des données des grands fonds marins pour stimuler l'innovation marine durable.",
+		"description": "Découvrez les éléments essentiels qui motivent notre engagement envers une gestion durable et innovante des données marines.",
+		"keyObjectives": {
+			"title": "Piliers Clés de Notre Mission",
+			"objective1": {
+				"title": "Durabilité",
+				"description": "Promouvoir une gestion responsable et durable des ressources des fonds marins."
+			},
+			"objective2": {
+				"title": "Protection Marine",
+				"description": "Soutenir les initiatives qui sauvegardent et préservent les écosystèmes marins."
+			},
+			"objective3": {
+				"title": "Accès Ouvert aux Données",
+				"description": "Fournir des données de recherche transparentes et de haute qualité sur les grands fonds marins pour une prise de décision éclairée."
+			},
+			"objective4": {
+				"title": "Collaboration Mondiale",
+				"description": "Favoriser la coopération entre les États membres et les institutions de recherche du monde entier."
+			}
+		},
+		"impact": {
+			"title": "Stimuler l'Innovation et l'Impact",
+			"description1": "Notre plateforme ne se contente pas de déchiffrer des données marines complexes, mais génère également des solutions innovantes qui transforment l'industrie marine. En intégrant des analyses avancées avec des pratiques durables, ISA DeepData permet des découvertes révolutionnaires et renforce la prise de décision éclairée.",
+			"description2": "Nous travaillons en partenariat avec des experts mondiaux pour garantir que chaque aperçu contribue à un écosystème océanique plus sain et plus durable."
+		}
+	},
+
+	"terms": {
+		"title": "Termes et Conditions",
+		"subtitle": "Site Web de l'Autorité Internationale des Fonds Marins",
+		"toc": {
+			"disclaimers": "Avis de Non-Responsabilité",
+			"immunities": "Préservation des Immunités",
+			"general": "Général",
+			"amendments": "Notification des Modifications"
+		},
+		"overview": {
+			"title": "Aperçu",
+			"paragraph1": "L'utilisateur de ce site web constitue un accord avec les termes et conditions suivants. L'Autorité Internationale des Fonds Marins (ISA) maintient ce site web (le \"Site\") à titre de courtoisie pour ceux qui pourraient choisir d'y accéder (\"Utilisateurs\"). Les informations présentées sont uniquement à des fins informatives.",
+			"paragraph2": "ISA accorde aux Utilisateurs la permission de visiter le Site et de télécharger, copier et imprimer les informations, documents et matériaux (collectivement, \"Matériaux\") pour l'usage personnel et non commercial de l'Utilisateur, sous réserve de restrictions plus spécifiques qui peuvent s'appliquer."
+		},
+		"disclaimers": {
+			"title": "Avis de Non-Responsabilité",
+			"paragraph1": "Les matériaux fournis sur le Site sont fournis \"tels quels\", sans garantie d'aucune sorte, expresse ou implicite. ISA ne fait aucune garantie ou représentation quant à l'exactitude ou l'exhaustivité de ces Matériaux.",
+			"paragraph2": "En aucun cas, ISA ne sera responsable de toute perte, dommage, responsabilité ou dépense encourue ou subie qui est prétendue avoir résulté de l'utilisation du Site, y compris, sans limitation, toute faute, erreur, omission, interruption ou retard."
+		},
+		"immunities": {
+			"title": "Préservation des Immunités",
+			"paragraph1": "Rien dans ce document ne constitue ou ne doit être considéré comme une limitation ou une renonciation aux privilèges et immunités de l'ISA, qui sont spécifiquement réservés."
+		},
+		"general": {
+			"title": "Général",
+			"paragraph1": "ISA se réserve le droit exclusif, à sa seule discrétion, de modifier, limiter ou interrompre le Site ou tout Matériel à tous égards. ISA n'aura aucune obligation de prendre en compte les besoins de tout Utilisateur à cet égard.",
+			"paragraph2": "ISA se réserve le droit de refuser, à sa seule discrétion, à tout utilisateur l'accès à ce Site ou à toute partie de celui-ci sans préavis. Aucune renonciation par ISA à une disposition de ces Termes et Conditions ne sera contraignante, sauf tel qu'énoncé par écrit et signé par son représentant dûment autorisé."
+		},
+		"amendments": {
+			"title": "Notification des Modifications",
+			"paragraph1": "ISA se réserve le droit de modifier cette politique à sa propre discrétion. Si vous n'êtes pas d'accord avec de telles modifications, vous devez immédiatement cesser d'utiliser le Site."
+		}
+	},
+
+	"marineProtection": {
+		"hero": {
+			"title": "Protection de l'Environnement Marin",
+			"subtitle": "Préserver les écosystèmes océaniques pour un avenir durable."
+		},
+		"about": {
+			"title": "Notre Engagement pour la Conservation Marine",
+			"description": "L'Autorité Internationale des Fonds Marins s'engage à garantir que toutes les activités des grands fonds marins sont menées avec le plus grand respect pour l'environnement marin. Nos politiques et pratiques sont conçues pour protéger les écosystèmes sensibles, préserver la biodiversité et promouvoir l'utilisation durable des ressources marines.",
+			"imageAlt": "Environnement Marin"
+		},
+		"features": {
+			"conservation": {
+				"title": "Mesures de Conservation",
+				"description": "Mise en œuvre de mesures robustes pour protéger les habitats marins."
+			},
+			"monitoring": {
+				"title": "Surveillance Environnementale",
+				"description": "Utilisation de technologies avancées pour surveiller la santé des océans en temps réel."
+			},
+			"research": {
+				"title": "Recherche Scientifique",
+				"description": "Soutien aux initiatives de recherche pour comprendre et atténuer les impacts sur les écosystèmes marins."
+			}
+		},
+		"cta": {
+			"title": "Rejoignez Nos Efforts de Conservation",
+			"description": "Découvrez comment les initiatives de l'ISA protègent l'environnement marin et apprenez comment vous pouvez contribuer à un avenir durable pour nos océans.",
+			"button": "Contactez-nous"
+		}
+	},
+
+	"explorationContracts": {
+		"hero": {
+			"title": "Contrats d'Exploration",
+			"subtitle": "Permettre une exploration durable et transparente des fonds marins au profit de toute l'humanité",
+			"browseButton": "Parcourir les Contrats",
+			"learnMoreButton": "En Savoir Plus"
+		},
+		"stats": {
+			"activeContracts": "Contrats Actifs",
+			"sponsoringStates": "États Parrains",
+			"area": "km² de Surface"
+		},
+		"about": {
+			"title": "À Propos des Contrats d'Exploration",
+			"description": "L'Autorité Internationale des Fonds Marins accorde des contrats pour l'exploration des ressources minérales dans la Zone internationale des fonds marins. Ces accords juridiquement contraignants définissent les droits et obligations des contractants, garantissant que les activités d'exploration respectent les garanties environnementales, les exigences en matière de rapports et le principe fondamental du patrimoine commun de l'humanité.",
+			"imageAlt": "Navire d'exploration sur l'océan",
+			"features": {
+				"legal": {
+					"title": "Cadre Juridique",
+					"description": "Chaque contrat fonctionne selon des règles strictes pour maintenir la transparence et la responsabilité."
+				},
+				"environmental": {
+					"title": "Garanties Environnementales",
+					"description": "Les contractants doivent suivre les meilleures pratiques pour protéger les écosystèmes marins."
+				},
+				"research": {
+					"title": "Recherche et Partage de Données",
+					"description": "Promouvoir la recherche scientifique et l'échange de connaissances pour faire progresser l'exploration des fonds marins."
+				}
+			}
+		},
+		"typesSection": {
+			"title": "Types de Contrats d'Exploration",
+			"viewDetails": "Voir les Détails"
+		},
+		"types": {
+			"polymetallic": {
+				"title": "Nodules Polymétalliques",
+				"description": "Contrats pour l'exploration de nodules polymétalliques sur les fonds marins"
+			},
+			"sulphides": {
+				"title": "Sulfures Polymétalliques",
+				"description": "Contrats pour l'exploration de sulfures polymétalliques dans les évents hydrothermaux"
+			},
+			"cobalt": {
+				"title": "Croûtes Riches en Cobalt",
+				"description": "Contrats pour l'exploration de croûtes de ferromanganèse riches en cobalt sur les monts sous-marins"
+			}
+		},
+		"details": {
+			"title": "Contractants et États Parrains",
+			"paragraph1": "Les contrats d'exploration sont généralement attribués à des entités parrainées par un État Partie à la Convention des Nations Unies sur le Droit de la Mer. Ces États parrains ont la responsabilité de s'assurer que les contractants respectent les réglementations et maintiennent les obligations environnementales et financières.",
+			"paragraph2": "L'ISA examine régulièrement les performances des contractants, exigeant des rapports annuels détaillés sur les activités d'exploration, les études environnementales de référence et tout impact potentiel sur l'environnement marin.",
+			"requirements": {
+				"title": "Exigences Clés pour les Contractants:",
+				"item1": "Rapports d'activité annuels",
+				"item2": "Surveillance environnementale",
+				"item3": "Garanties financières",
+				"item4": "Engagements de transfert de technologie",
+				"item5": "Conformité aux réglementations de l'ISA"
+			}
+		},
+		"map": {
+			"title": "Zones d'Exploration",
+			"description": "Consultez la répartition géographique des contrats d'exploration actuels dans le monde.",
+			"placeholder": "Carte Interactive des Zones d'Exploration",
+			"viewFullMapButton": "Voir la Carte Complète"
+		},
+		"cta": {
+			"title": "En Savoir Plus sur les Contrats d'Exploration",
+			"description": "Découvrez le cadre, les obligations et les opportunités associés aux contrats d'exploration, et découvrez comment l'ISA travaille pour équilibrer le développement des ressources avec la protection de l'environnement.",
+			"contactButton": "Contactez-nous",
+			"resourcesButton": "Télécharger des Ressources"
+		}
+	},
+
+	"workshops": {
+		"hero": {
+			"title": "Ateliers et Webinaires",
+			"subtitle": "Élargir les connaissances et favoriser la collaboration par le biais d'événements interactifs."
+		},
+		"about": {
+			"title": "S'engager, Apprendre et Innover",
+			"description": "Les Ateliers et Webinaires de l'ISA rassemblent experts, chercheurs et décideurs pour discuter des derniers développements dans l'exploration des grands fonds marins et la protection de l'environnement marin. Ces événements visent à promouvoir le renforcement des capacités, l'échange de connaissances et des solutions innovantes pour la gestion durable des ressources océaniques.",
+			"imageAlt": "Ateliers de l'ISA",
+			"features": {
+				"capacity": {
+					"title": "Renforcement des Capacités",
+					"description": "Sessions de formation pratique pour améliorer les compétences et l'expertise."
+				},
+				"knowledge": {
+					"title": "Partage de Connaissances",
+					"description": "Échanger des idées et des meilleures pratiques avec les parties prenantes mondiales."
+				},
+				"networking": {
+					"title": "Networking",
+					"description": "Connectez-vous avec des professionnels, des chercheurs et des leaders de l'industrie."
+				}
+			}
+		},
+		"details": {
+			"title": "Événements à Venir et Passés",
+			"description": "Restez informé des prochains ateliers et webinaires sur des sujets allant des avancées technologiques marines aux mises à jour réglementaires. Notre bibliothèque d'événements passés propose des sessions enregistrées et des matériaux pour un apprentissage continu et une référence.",
+			"featuredTopics": {
+				"label": "Sujets Vedettes:",
+				"topics": "Recherche sur les écosystèmes des grands fonds marins, évaluations d'impact environnemental, méthodes d'évaluation des ressources, et plus encore."
+			}
+		},
+		"cta": {
+			"title": "Rejoignez la Conversation",
+			"description": "Inscrivez-vous à notre prochain atelier ou webinaire pour apprendre des experts de premier plan et contribuer à façonner l'avenir de la gouvernance des océans.",
+			"button": "Contactez-nous"
+		}
+	},
+
+	"documents": {
+		"title": "Manuel d'Utilisation",
+		"userManual": {
+			"description": "Le Manuel d'Utilisation ISA DeepData fournit des instructions détaillées et des conseils sur la façon d'utiliser efficacement toutes les fonctionnalités de la plateforme. Il comprend des tutoriels étape par étape, des explications sur les outils de visualisation de données et les meilleures pratiques pour l'exploration et l'analyse des données.",
+			"openManual": "Ouvrir le Manuel d'Utilisation (PDF)",
+			"contents": {
+				"title": "Dans ce manuel, vous trouverez:",
+				"item1": "Navigation sur la plateforme et aperçu de l'interface",
+				"item2": "Techniques de recherche et de filtrage des données",
+				"item3": "Outils et fonctionnalités de cartographie interactive",
+				"item4": "Téléchargement et exportation de données",
+				"item5": "Options avancées d'analyse et de visualisation"
+			}
+		}
+	},
+
+	"gallery": {
+		"pageTitle": "Galerie",
+		"pageDescription": "Parcourez les images et vidéos des grands fonds marins de la galerie ISA DeepData",
+		"title": "Galerie de Médias des Grands Fonds Marins",
+		"description": "Explorez une collection d'images et de vidéos des grands fonds marins provenant de diverses missions d'exploration et activités de recherche.",
+		"loading": "Chargement des médias...",
+		"retry": "Réessayer la Connexion",
+		"checkConnectivity": "Vérifier la Connectivité API",
+		"checkingConnectivity": "Vérification de la connectivité API...",
+		"connectivityResults": "Résultats de Vérification de Connectivité API",
+		"matchPortMessage": "Essayez de faire correspondre l'un de ces ports dans votre code, ou vérifiez le fichier launchSettings.json de votre API.",
+		"noResults": "Aucun média ne correspond à vos filtres.",
+		"resetFilters": "Réinitialiser les Filtres",
+		"showing": "Affichage de {{from}} - {{to}} sur {{total}} éléments",
+
+		"errors": {
+			"timeout": "La requête a expiré. Veuillez vérifier votre connexion et réessayer.",
+			"network": "Erreur réseau: Impossible de se connecter au serveur API. Nous avons essayé les ports 5802 et 5062. Veuillez vous assurer que votre API backend fonctionne et est accessible.",
+			"connection": "Connexion refusée: Le serveur a refusé la connexion. Assurez-vous que votre API fonctionne et que CORS est correctement configuré.",
+			"unknown": "Une erreur inconnue s'est produite lors de la récupération des données",
+			"bothPorts": "La connexion a échoué sur les deux ports (5802, 5062). Vérifiez si votre serveur API fonctionne et est accessible."
+		},
+
+		"pagination": {
+			"previous": "Précédent",
+			"next": "Suivant"
+		},
+
+		"filter": {
+			"title": "Filtres de Médias",
+			"reset": "Réinitialiser",
+			"searchPlaceholder": "Rechercher des médias...",
+			"searchAriaLabel": "Rechercher des médias",
+			"search": "Rechercher",
+			"searchResults": "Résultats de Recherche",
+			"noResultsFound": "Aucun résultat trouvé pour",
+			"video": "Vidéo",
+			"image": "Image",
+			"station": "Station",
+			"filterBy": "Filtrer Par",
+			"mediaType": "Type de Média",
+			"contractor": "Contractant",
+			"cruise": "Croisière",
+			"year": "Année",
+			"preparingDownload": "Préparation du Téléchargement...",
+			"downloadCSV": "Télécharger CSV",
+			"itemsMatchFilters": "éléments correspondent à vos filtres",
+			"all": "Tous",
+			"allMediaTypes": "Tous les Types de Médias",
+			"imagesOnly": "Images uniquement",
+			"videosOnly": "Vidéos uniquement",
+			"allYears": "Toutes les Années",
+			"noItemsToDownload": "Aucun élément à télécharger.",
+			"noMatchingItems": "Aucun élément ne correspond au filtre actuel pour le téléchargement.",
+			"allMedia": "Tous les Médias",
+			"images": "Images",
+			"videos": "Vidéos",
+			"selectedContractor": "Contractant Sélectionné",
+			"selected": "Sélectionné"
+		},
+
+		"export": {
+			"title": "Exportation de Galerie ISA DeepData",
+			"generated": "Généré le",
+			"media": "MÉDIAS",
+			"stations": "STATIONS",
+			"cruises": "CROISIÈRES",
+			"contractors": "CONTRACTANTS",
+			"error": "Une erreur s'est produite lors de la préparation de votre téléchargement. Veuillez réessayer.",
+
+			"headers": {
+				"mediaId": "ID du Média",
+				"fileName": "Nom de Fichier",
+				"mediaType": "Type de Média",
+				"url": "URL",
+				"stationCode": "Code de Station",
+				"contractorName": "Nom du Contractant",
+				"captureDate": "Date de Capture",
+				"description": "Description",
+				"stationId": "ID de Station",
+				"cruiseId": "ID de Croisière",
+				"latitude": "Latitude",
+				"longitude": "Longitude",
+				"cruiseName": "Nom de Croisière",
+				"contractorId": "ID de Contractant",
+				"year": "Année",
+				"mediaCount": "Nombre de Médias"
+			}
+		},
+
+		"card": {
+			"video": "Vidéo",
+			"image": "Image",
+			"dateUnknown": "Date inconnue",
+			"station": "Station",
+			"date": "Date",
+			"contractor": "Contractant",
+			"viewDetails": "Voir les Détails",
+			"download": "Télécharger"
+		},
+
+		"modal": {
+			"dateUnknown": "Date inconnue",
+			"notAvailable": "Non disponible",
+			"mediaType": "Type de Média",
+			"video": "Vidéo",
+			"image": "Image",
+			"captureDate": "Date de Capture",
+			"station": "Station",
+			"cruise": "Croisière",
+			"contractor": "Contractant",
+			"sample": "Échantillon",
+			"coordinates": "Coordonnées",
+			"cameraSpecs": "Spécifications de l'Appareil",
+			"download": "Télécharger",
+			"showOnMap": "Afficher sur la Carte"
+		}
+	},
+
+	"map": {
+		"title": "Zones d'Exploration de l'ISA",
+		"description": "Carte interactive des contrats d'exploration des fonds marins et des zones réglementées par l'Autorité Internationale des Fonds Marins. Utilisez les filtres à gauche pour explorer par type de minéral, statut du contrat, emplacement et État parrain. Cliquez sur le bouton des contrôles de la carte (en bas à droite) pour basculer la visibilité des zones, des blocs, des stations et des croisières. Consultez l'onglet Info dans les contrôles de la carte pour une légende complète. Utilisez l'onglet Display pour afficher le panneau de résumé avec des statistiques sur les données visibles. Cliquez sur n'importe quel élément de la carte pour des informations détaillées et utilisez les contrôles de zoom pour naviguer sur la carte",
+		"infoCards": {
+			"explore": {
+				"title": "Explorer les Zones de Contrat",
+				"description": "Utilisez la fonction de recherche pour trouver rapidement des contractants, des zones, des blocs et des stations. Cliquez sur les marqueurs pour des informations détaillées."
+			},
+			"resources": {
+				"title": "Ressources des Fonds Marins",
+				"description": "L'ISA réglemente l'exploration des minéraux dans la zone internationale des fonds marins, qui couvre environ 54% des océans du monde."
+			},
+			"transparency": {
+				"title": "Transparence des Données",
+				"description": "Toutes les informations contractuelles sont disponibles dans le cadre de l'engagement de l'ISA en faveur de la transparence dans les activités des fonds marins et la protection de l'environnement."
+			}
+		},
+
+		"filter": {
+			"title": "Filtres d'Exploration",
+			"reset": "Réinitialiser",
+			"filterBy": "Filtrer Par",
+			"contractor": "Nom du Contractant",
+			"mineralType": "Type de Minéral",
+			"contractStatus": "Statut du Contrat",
+			"sponsoringState": "État Sponsor",
+			"year": "Année du Contrat",
+			"location": "Emplacement",
+			"allContractors": "Tous les Contractants",
+			"allMineralTypes": "Tous les Types de Minéraux",
+			"allStatuses": "Tous les Statuts",
+			"allStates": "Tous les États Sponsors",
+			"allYears": "Toutes les Années",
+			"allLocations": "Tous les Emplacements"
+		},
+		"search": {
+			"placeholder": "Rechercher contractants, zones, blocs, stations...",
+			"results": "Résultats de Recherche",
+			"noResults": "Aucun résultat trouvé pour"
+		},
+		"results": {
+			"loading": "Chargement des données...",
+			"showing": "Affichage de {{contractors}} contractants, {{cruises}} croisières et {{stations}} stations",
+			"downloadCSV": "Télécharger CSV",
+			"exporting": "Exportation en cours..."
+		},
+
+		"controls": {
+			"zoomOut": "Zoom Arrière",
+			"zoomOutTitle": "Zoom arrière vers vue mondiale",
+			"mapControls": "Contrôles de Carte",
+			"toggleMapControls": "Basculer les contrôles de carte",
+			"tabs": {
+				"layers": "Couches",
+				"style": "Style",
+				"display": "Affichage",
+				"info": "Info"
+			},
+			"layers": {
+				"areas": "Zones",
+				"blocks": "Blocs",
+				"stations": "Stations",
+				"cruises": "Croisières"
+			},
+			"style": {
+				"mapStyle": "Style de Carte",
+				"streets": "Rues",
+				"outdoors": "Extérieur",
+				"satellite": "Satellite",
+				"light": "Clair",
+				"dark": "Sombre"
+			},
+			"display": {
+				"showSummary": "Afficher le Panneau de Résumé",
+				"hideSummary": "Masquer le Panneau de Résumé",
+				"summaryDescription": "Le panneau de résumé affiche des statistiques sur les données d'exploration actuellement visibles.",
+				"tip": "Lorsque vous sélectionnez un contractant, la carte zoome automatiquement sur ses zones."
+			},
+			"info": {
+				"stations": "Stations",
+				"stationsDesc": "Sites d'exploration ou de recherche avec données collectées",
+				"blocks": "Blocs",
+				"blocksDesc": "Zones d'exploration désignées par contractant",
+				"areas": "Zones",
+				"areasDesc": "Grandes zones contenant plusieurs blocs",
+				"cruises": "Croisières",
+				"cruisesDesc": "Voyages de recherche avec stations connectées",
+				"filterTip": "Utilisez les filtres à gauche pour rechercher par contractant ou région"
+			}
+		},
+
+		"detailPanel": {
+			"close": "Fermer",
+			"downloadCSV": "Télécharger CSV",
+			"exporting": "Exportation en cours..."
+		}
+	},
+	"library": {
+		"files": {
+			"title": "Bibliothèque de Gestion de Fichiers",
+			"description": "Parcourez et téléchargez des documents officiels des contractants. Utilisez des filtres pour affiner les fichiers par pays, contractant, thème ou année.",
+			"instructions": "Cliquez sur n'importe quel en-tête de colonne pour trier les données. Cliquez sur une ligne pour voir les informations détaillées sur le fichier. Le tableau affiche les métadonnées essentielles pour chaque document, permettant un scan rapide et une comparaison des ressources disponibles."
+		},
+		"pagination": {
+			"page": "Página",
+			"of": "de",
+			"show": "Mostrar"
+		},
+
+		"filter": {
+			"title": "Filtres de Fichiers",
+			"reset": "Réinitialiser",
+			"searchPlaceholder": "Rechercher des fichiers...",
+			"searchLabel": "Rechercher",
+			"filterBy": "Filtrer Par",
+			"contractor": "Contractant",
+			"country": "Pays",
+			"year": "Année",
+			"theme": "Thème",
+			"itemsMatch": "éléments correspondent à vos filtres",
+			"allContractors": "Tous les Contractants",
+			"allCountries": "Tous les Pays",
+			"allYears": "Toutes les Années",
+			"allThemes": "Tous les Thèmes",
+			"all": "Tous"
+		},
+		"table": {
+			"fileName": "Nom du Fichier",
+			"contractor": "Contractant",
+			"country": "Pays",
+			"year": "Année",
+			"theme": "Thème",
+			"description": "Description",
+			"unknown": "Inconnu",
+			"na": "N/A",
+			"noDescription": "Aucune description disponible",
+			"noResults": "Aucun résultat ne correspond à vos filtres actuels"
+		},
+
+		"fileInfo": {
+			"title": "Information sur le Fichier",
+			"backToFiles": "Retour aux Fichiers",
+			"goBack": "Retour",
+			"confidential": "Confidentiel",
+			"fileName": "Nom du Fichier",
+			"download": "Télécharger",
+			"downloadFile": "Télécharger le fichier",
+			"theme": "Thème",
+			"contractor": "Contractant",
+			"contractType": "Type de Contrat",
+			"submissionDate": "Date de Soumission",
+			"country": "Pays",
+			"year": "Année",
+			"contractArea": "Zone de Contrat",
+			"size": "Taille",
+			"description": "Description",
+			"blockInformation": "Information sur le Bloc",
+			"blockName": "Nom du Bloc",
+			"status": "Statut",
+			"areaSize": "Taille de la Zone",
+			"na": "N/A"
+		},
+
+		"samples": {
+			"title": "Gestion des Échantillons",
+			"description": "Explorez tous les échantillons collectés et leurs métadonnées. Filtrez par type d'échantillon, habitat, matrice ou type d'analyse.",
+			"filter": {
+				"title": "Filtres d'Échantillons",
+				"reset": "Réinitialiser",
+				"search": "Rechercher",
+				"searchPlaceholder": "Rechercher code d'échantillon...",
+				"contractor": "Contractant",
+				"station": "Station",
+				"cruise": "Croisière",
+				"sampleType": "Type d'Échantillon",
+				"matrixType": "Type de Matrice",
+				"habitatType": "Type d'Habitat",
+				"analysis": "Analyse",
+				"visibleColumns": "Colonnes Visibles",
+				"loading": "Chargement des filtres...",
+				"allContractors": "Tous les Contractants",
+				"allStations": "Toutes les Stations",
+				"allCruises": "Toutes les Croisières",
+				"allSampleTypes": "Tous les Types d'Échantillons",
+				"allMatrixTypes": "Tous les Types de Matrices",
+				"allHabitatTypes": "Tous les Types d'Habitats",
+				"allAnalyses": "Toutes les Analyses",
+				"all": "Tous"
+			},
+			"table": {
+				"sampleCode": "Code d'Échantillon",
+				"station": "Station",
+				"cruise": "Croisière",
+				"contractor": "Contractant",
+				"sampleType": "Type d'Échantillon",
+				"matrixType": "Type de Matrice",
+				"habitatType": "Type d'Habitat",
+				"analysis": "Analyse",
+				"result": "Résultat",
+				"description": "Description",
+				"loading": "Chargement des données d'échantillons...",
+				"showing": "Affichage de {{contractors}} contractant{{contractorS}}, {{cruises}} croisière{{cruiseS}} et {{stations}} station{{stationS}}",
+				"noResults": "Aucun échantillon ne correspond à vos critères de filtre. Essayez d'ajuster vos filtres."
+			},
+			"button": {
+				"exportCSV": "Exporter CSV"
+			}
+		}
+	}
 }
-},
-
-"strategicPlan": {
-"hero": {
-  "title": "Plan Stratégique de l'ISA",
-  "subtitle": "Guider l'avenir durable de l'exploitation minière des fonds marins."
-},
-"about": {
-  "title": "À propos du Plan Stratégique",
-  "description": "Le Plan Stratégique de l'ISA présente notre vision d'une approche équilibrée, durable et scientifiquement informée de la gestion des ressources des fonds marins. Il fournit une feuille de route pour une réglementation efficace, la recherche et le renforcement des capacités, garantissant que l'exploration et l'exploitation profitent à toute l'humanité."
-},
-"features": {
-  "regulation": {
-    "title": "Réglementation Robuste",
-    "description": "Établir des cadres solides pour régir les activités des fonds marins.",
-    "details": "Notre cadre réglementaire robuste est conçu pour fournir des directives claires et des mesures applicables. En intégrant des examens périodiques et un engagement continu des parties prenantes, nous veillons à ce que nos réglementations restent réactives et efficaces, favorisant un environnement de responsabilité et de transparence."
-  },
-  "environment": {
-    "title": "Protection Environnementale",
-    "description": "Préserver les écosystèmes marins pour les générations futures.",
-    "details": "La protection de l'environnement est au cœur de notre mission. Nous mettons en œuvre des mesures de conservation complètes, y compris des évaluations environnementales régulières et des programmes de surveillance proactive, pour assurer la gestion durable des écosystèmes marins. Cette approche protège non seulement la biodiversité, mais favorise également la résilience écologique à long terme."
-  },
-  "collaboration": {
-    "title": "Collaboration Mondiale",
-    "description": "Encourager les partenariats avec les parties prenantes du monde entier.",
-    "details": "La collaboration mondiale est essentielle pour exploiter l'expertise collective de nos partenaires internationaux. En travaillant en étroite collaboration avec les parties prenantes mondiales, les organismes de réglementation et les communautés scientifiques, nous nous efforçons de construire un cadre cohérent et innovant qui profite à toutes les parties concernées. Cet esprit de partenariat garantit que nous partageons les connaissances, harmonisons les meilleures pratiques et relevons ensemble les défis de l'exploitation minière des fonds marins."
-  }
-},
-"download": {
-  "title": "Télécharger le Plan Stratégique",
-  "description": "Accédez au document complet du Plan Stratégique de l'ISA et explorez les objectifs clés, les réglementations et les initiatives qui façonnent l'avenir de l'exploitation minière des fonds marins.",
-  "button": "Voir et Télécharger le PDF"
-}
-},
-
-"miningCode": {
-"hero": {
-  "title": "Le Code Minier",
-  "subtitle": "Un ensemble complet de règles, de réglementations et de procédures pour l'exploration et l'exploitation durables des minéraux marins."
-},
-"about": {
-  "title": "À propos du Code Minier",
-  "description": "Le \"Code Minier\" fait référence au cadre complet publié par l'Autorité Internationale des Fonds Marins pour réglementer la prospection, l'exploration et l'exploitation des minéraux marins dans la Zone internationale des fonds marins. Il comprend des règlements, des recommandations et des procédures conçus pour garantir que les activités des fonds marins sont menées de manière responsable et bénéficient à toute l'humanité."
-},
-"features": {
-  "polymetallic": {
-    "title": "Nodules Polymétalliques",
-    "description": "Réglementations pour l'exploration des nodules riches en nickel, cuivre, cobalt et manganèse."
-  },
-  "sulphides": {
-    "title": "Sulfures Polymétalliques",
-    "description": "Orientation sur l'exploration durable des sulfures massifs des fonds marins."
-  },
-  "cobalt": {
-    "title": "Croûtes Riches en Cobalt",
-    "description": "Réglementations pour les croûtes contenant du cobalt, du fer et d'autres métaux."
-  }
-},
-"details": {
-  "title": "Cadre Réglementaire",
-  "description1": "Le Code Minier évolue continuellement pour répondre aux nouvelles technologies et aux considérations environnementales. Il est complété par les recommandations de la Commission Juridique et Technique, assurant que les meilleures informations scientifiques et techniques disponibles sont intégrées dans les réglementations.",
-  "description2": "L'ISA travaille également sur des <strong>projets de règlements d'exploitation</strong>, communément appelés le \"Code Minier\", qui décrivent les responsabilités des contractants et des États qui les parrainent, les mesures de protection de l'environnement et les structures de paiement financier."
-},
-"cta": {
-  "title": "Explorez le Code Plus en Profondeur",
-  "description": "Découvrez comment le Code Minier favorise la gestion durable des ressources des fonds marins, promeut la coopération internationale et équilibre le développement économique avec la protection de l'environnement marin.",
-  "button": "Contactez-nous"
-}
-},
-
-"mission": {
-"title": "Notre Mission",
-"subtitle": "Chez ISA DeepData, nous exploitons la puissance des données des grands fonds marins pour stimuler l'innovation marine durable.",
-"description": "Découvrez les éléments essentiels qui motivent notre engagement envers une gestion durable et innovante des données marines.",
-"keyObjectives": {
-  "title": "Piliers Clés de Notre Mission",
-  "objective1": {
-    "title": "Durabilité",
-    "description": "Promouvoir une gestion responsable et durable des ressources des fonds marins."
-  },
-  "objective2": {
-    "title": "Protection Marine",
-    "description": "Soutenir les initiatives qui sauvegardent et préservent les écosystèmes marins."
-  },
-  "objective3": {
-    "title": "Accès Ouvert aux Données",
-    "description": "Fournir des données de recherche transparentes et de haute qualité sur les grands fonds marins pour une prise de décision éclairée."
-  },
-  "objective4": {
-    "title": "Collaboration Mondiale",
-    "description": "Favoriser la coopération entre les États membres et les institutions de recherche du monde entier."
-  }
-},
-"impact": {
-  "title": "Stimuler l'Innovation et l'Impact",
-  "description1": "Notre plateforme ne se contente pas de déchiffrer des données marines complexes, mais génère également des solutions innovantes qui transforment l'industrie marine. En intégrant des analyses avancées avec des pratiques durables, ISA DeepData permet des découvertes révolutionnaires et renforce la prise de décision éclairée.",
-  "description2": "Nous travaillons en partenariat avec des experts mondiaux pour garantir que chaque aperçu contribue à un écosystème océanique plus sain et plus durable."
-}
-},
-
-
-"terms": {
-  "title": "Termes et Conditions",
-  "subtitle": "Site Web de l'Autorité Internationale des Fonds Marins",
-  "toc": {
-    "disclaimers": "Avis de Non-Responsabilité",
-    "immunities": "Préservation des Immunités",
-    "general": "Général",
-    "amendments": "Notification des Modifications"
-  },
-  "overview": {
-    "title": "Aperçu",
-    "paragraph1": "L'utilisateur de ce site web constitue un accord avec les termes et conditions suivants. L'Autorité Internationale des Fonds Marins (ISA) maintient ce site web (le \"Site\") à titre de courtoisie pour ceux qui pourraient choisir d'y accéder (\"Utilisateurs\"). Les informations présentées sont uniquement à des fins informatives.",
-    "paragraph2": "ISA accorde aux Utilisateurs la permission de visiter le Site et de télécharger, copier et imprimer les informations, documents et matériaux (collectivement, \"Matériaux\") pour l'usage personnel et non commercial de l'Utilisateur, sous réserve de restrictions plus spécifiques qui peuvent s'appliquer."
-  },
-  "disclaimers": {
-    "title": "Avis de Non-Responsabilité",
-    "paragraph1": "Les matériaux fournis sur le Site sont fournis \"tels quels\", sans garantie d'aucune sorte, expresse ou implicite. ISA ne fait aucune garantie ou représentation quant à l'exactitude ou l'exhaustivité de ces Matériaux.",
-    "paragraph2": "En aucun cas, ISA ne sera responsable de toute perte, dommage, responsabilité ou dépense encourue ou subie qui est prétendue avoir résulté de l'utilisation du Site, y compris, sans limitation, toute faute, erreur, omission, interruption ou retard."
-  },
-  "immunities": {
-    "title": "Préservation des Immunités",
-    "paragraph1": "Rien dans ce document ne constitue ou ne doit être considéré comme une limitation ou une renonciation aux privilèges et immunités de l'ISA, qui sont spécifiquement réservés."
-  },
-  "general": {
-    "title": "Général",
-    "paragraph1": "ISA se réserve le droit exclusif, à sa seule discrétion, de modifier, limiter ou interrompre le Site ou tout Matériel à tous égards. ISA n'aura aucune obligation de prendre en compte les besoins de tout Utilisateur à cet égard.",
-    "paragraph2": "ISA se réserve le droit de refuser, à sa seule discrétion, à tout utilisateur l'accès à ce Site ou à toute partie de celui-ci sans préavis. Aucune renonciation par ISA à une disposition de ces Termes et Conditions ne sera contraignante, sauf tel qu'énoncé par écrit et signé par son représentant dûment autorisé."
-  },
-  "amendments": {
-    "title": "Notification des Modifications",
-    "paragraph1": "ISA se réserve le droit de modifier cette politique à sa propre discrétion. Si vous n'êtes pas d'accord avec de telles modifications, vous devez immédiatement cesser d'utiliser le Site."
-  }
-},
-
-"marineProtection": {
-  "hero": {
-    "title": "Protection de l'Environnement Marin",
-    "subtitle": "Préserver les écosystèmes océaniques pour un avenir durable."
-  },
-  "about": {
-    "title": "Notre Engagement pour la Conservation Marine",
-    "description": "L'Autorité Internationale des Fonds Marins s'engage à garantir que toutes les activités des grands fonds marins sont menées avec le plus grand respect pour l'environnement marin. Nos politiques et pratiques sont conçues pour protéger les écosystèmes sensibles, préserver la biodiversité et promouvoir l'utilisation durable des ressources marines.",
-    "imageAlt": "Environnement Marin"
-  },
-  "features": {
-    "conservation": {
-      "title": "Mesures de Conservation",
-      "description": "Mise en œuvre de mesures robustes pour protéger les habitats marins."
-    },
-    "monitoring": {
-      "title": "Surveillance Environnementale",
-      "description": "Utilisation de technologies avancées pour surveiller la santé des océans en temps réel."
-    },
-    "research": {
-      "title": "Recherche Scientifique",
-      "description": "Soutien aux initiatives de recherche pour comprendre et atténuer les impacts sur les écosystèmes marins."
-    }
-  },
-  "cta": {
-    "title": "Rejoignez Nos Efforts de Conservation",
-    "description": "Découvrez comment les initiatives de l'ISA protègent l'environnement marin et apprenez comment vous pouvez contribuer à un avenir durable pour nos océans.",
-    "button": "Contactez-nous"
-  }
-},
-
-"explorationContracts": {
-  "hero": {
-    "title": "Contrats d'Exploration",
-    "subtitle": "Permettre une exploration durable et transparente des fonds marins au profit de toute l'humanité",
-    "browseButton": "Parcourir les Contrats",
-    "learnMoreButton": "En Savoir Plus"
-  },
-  "stats": {
-    "activeContracts": "Contrats Actifs",
-    "sponsoringStates": "États Parrains",
-    "area": "km² de Surface"
-  },
-  "about": {
-    "title": "À Propos des Contrats d'Exploration",
-    "description": "L'Autorité Internationale des Fonds Marins accorde des contrats pour l'exploration des ressources minérales dans la Zone internationale des fonds marins. Ces accords juridiquement contraignants définissent les droits et obligations des contractants, garantissant que les activités d'exploration respectent les garanties environnementales, les exigences en matière de rapports et le principe fondamental du patrimoine commun de l'humanité.",
-    "imageAlt": "Navire d'exploration sur l'océan",
-    "features": {
-      "legal": {
-        "title": "Cadre Juridique",
-        "description": "Chaque contrat fonctionne selon des règles strictes pour maintenir la transparence et la responsabilité."
-      },
-      "environmental": {
-        "title": "Garanties Environnementales",
-        "description": "Les contractants doivent suivre les meilleures pratiques pour protéger les écosystèmes marins."
-      },
-      "research": {
-        "title": "Recherche et Partage de Données",
-        "description": "Promouvoir la recherche scientifique et l'échange de connaissances pour faire progresser l'exploration des fonds marins."
-      }
-    }
-  },
-  "typesSection": {
-    "title": "Types de Contrats d'Exploration",
-    "viewDetails": "Voir les Détails"
-  },
-  "types": {
-    "polymetallic": {
-      "title": "Nodules Polymétalliques",
-      "description": "Contrats pour l'exploration de nodules polymétalliques sur les fonds marins"
-    },
-    "sulphides": {
-      "title": "Sulfures Polymétalliques",
-      "description": "Contrats pour l'exploration de sulfures polymétalliques dans les évents hydrothermaux"
-    },
-    "cobalt": {
-      "title": "Croûtes Riches en Cobalt",
-      "description": "Contrats pour l'exploration de croûtes de ferromanganèse riches en cobalt sur les monts sous-marins"
-    }
-  },
-  "details": {
-    "title": "Contractants et États Parrains",
-    "paragraph1": "Les contrats d'exploration sont généralement attribués à des entités parrainées par un État Partie à la Convention des Nations Unies sur le Droit de la Mer. Ces États parrains ont la responsabilité de s'assurer que les contractants respectent les réglementations et maintiennent les obligations environnementales et financières.",
-    "paragraph2": "L'ISA examine régulièrement les performances des contractants, exigeant des rapports annuels détaillés sur les activités d'exploration, les études environnementales de référence et tout impact potentiel sur l'environnement marin.",
-    "requirements": {
-      "title": "Exigences Clés pour les Contractants:",
-      "item1": "Rapports d'activité annuels",
-      "item2": "Surveillance environnementale",
-      "item3": "Garanties financières",
-      "item4": "Engagements de transfert de technologie",
-      "item5": "Conformité aux réglementations de l'ISA"
-    }
-  },
-  "map": {
-    "title": "Zones d'Exploration",
-    "description": "Consultez la répartition géographique des contrats d'exploration actuels dans le monde.",
-    "placeholder": "Carte Interactive des Zones d'Exploration",
-    "viewFullMapButton": "Voir la Carte Complète"
-  },
-  "cta": {
-    "title": "En Savoir Plus sur les Contrats d'Exploration",
-    "description": "Découvrez le cadre, les obligations et les opportunités associés aux contrats d'exploration, et découvrez comment l'ISA travaille pour équilibrer le développement des ressources avec la protection de l'environnement.",
-    "contactButton": "Contactez-nous",
-    "resourcesButton": "Télécharger des Ressources"
-  }
-},
-
-"workshops": {
-  "hero": {
-    "title": "Ateliers et Webinaires",
-    "subtitle": "Élargir les connaissances et favoriser la collaboration par le biais d'événements interactifs."
-  },
-  "about": {
-    "title": "S'engager, Apprendre et Innover",
-    "description": "Les Ateliers et Webinaires de l'ISA rassemblent experts, chercheurs et décideurs pour discuter des derniers développements dans l'exploration des grands fonds marins et la protection de l'environnement marin. Ces événements visent à promouvoir le renforcement des capacités, l'échange de connaissances et des solutions innovantes pour la gestion durable des ressources océaniques.",
-    "imageAlt": "Ateliers de l'ISA",
-    "features": {
-      "capacity": {
-        "title": "Renforcement des Capacités",
-        "description": "Sessions de formation pratique pour améliorer les compétences et l'expertise."
-      },
-      "knowledge": {
-        "title": "Partage de Connaissances",
-        "description": "Échanger des idées et des meilleures pratiques avec les parties prenantes mondiales."
-      },
-      "networking": {
-        "title": "Networking",
-        "description": "Connectez-vous avec des professionnels, des chercheurs et des leaders de l'industrie."
-      }
-    }
-  },
-  "details": {
-    "title": "Événements à Venir et Passés",
-    "description": "Restez informé des prochains ateliers et webinaires sur des sujets allant des avancées technologiques marines aux mises à jour réglementaires. Notre bibliothèque d'événements passés propose des sessions enregistrées et des matériaux pour un apprentissage continu et une référence.",
-    "featuredTopics": {
-      "label": "Sujets Vedettes:",
-      "topics": "Recherche sur les écosystèmes des grands fonds marins, évaluations d'impact environnemental, méthodes d'évaluation des ressources, et plus encore."
-    }
-  },
-  "cta": {
-    "title": "Rejoignez la Conversation",
-    "description": "Inscrivez-vous à notre prochain atelier ou webinaire pour apprendre des experts de premier plan et contribuer à façonner l'avenir de la gouvernance des océans.",
-    "button": "Contactez-nous"
-  }
-},
-
-"documents": {
-  "title": "Manuel d'Utilisation",
-  "userManual": {
-    "description": "Le Manuel d'Utilisation ISA DeepData fournit des instructions détaillées et des conseils sur la façon d'utiliser efficacement toutes les fonctionnalités de la plateforme. Il comprend des tutoriels étape par étape, des explications sur les outils de visualisation de données et les meilleures pratiques pour l'exploration et l'analyse des données.",
-    "openManual": "Ouvrir le Manuel d'Utilisation (PDF)",
-    "contents": {
-      "title": "Dans ce manuel, vous trouverez:",
-      "item1": "Navigation sur la plateforme et aperçu de l'interface",
-      "item2": "Techniques de recherche et de filtrage des données",
-      "item3": "Outils et fonctionnalités de cartographie interactive",
-      "item4": "Téléchargement et exportation de données",
-      "item5": "Options avancées d'analyse et de visualisation"
-    }
-  }
-},
-
-
-
-"gallery": {
-  "pageTitle": "Galerie",
-  "pageDescription": "Parcourez les images et vidéos des grands fonds marins de la galerie ISA DeepData",
-  "title": "Galerie de Médias des Grands Fonds Marins",
-  "description": "Explorez une collection d'images et de vidéos des grands fonds marins provenant de diverses missions d'exploration et activités de recherche.",
-  "loading": "Chargement des médias...",
-  "retry": "Réessayer la Connexion",
-  "checkConnectivity": "Vérifier la Connectivité API",
-  "checkingConnectivity": "Vérification de la connectivité API...",
-  "connectivityResults": "Résultats de Vérification de Connectivité API",
-  "matchPortMessage": "Essayez de faire correspondre l'un de ces ports dans votre code, ou vérifiez le fichier launchSettings.json de votre API.",
-  "noResults": "Aucun média ne correspond à vos filtres.",
-  "resetFilters": "Réinitialiser les Filtres",
-  "showing": "Affichage de {{from}} - {{to}} sur {{total}} éléments",
-  
-  "errors": {
-    "timeout": "La requête a expiré. Veuillez vérifier votre connexion et réessayer.",
-    "network": "Erreur réseau: Impossible de se connecter au serveur API. Nous avons essayé les ports 5802 et 5062. Veuillez vous assurer que votre API backend fonctionne et est accessible.",
-    "connection": "Connexion refusée: Le serveur a refusé la connexion. Assurez-vous que votre API fonctionne et que CORS est correctement configuré.",
-    "unknown": "Une erreur inconnue s'est produite lors de la récupération des données",
-    "bothPorts": "La connexion a échoué sur les deux ports (5802, 5062). Vérifiez si votre serveur API fonctionne et est accessible."
-  },
-  
-  "pagination": {
-    "previous": "Précédent",
-    "next": "Suivant"
-  },
-  
-  "filter": {
-    "title": "Filtres de Médias",
-    "reset": "Réinitialiser",
-    "searchPlaceholder": "Rechercher des médias...",
-    "searchAriaLabel": "Rechercher des médias",
-    "search": "Rechercher",
-    "searchResults": "Résultats de Recherche",
-    "noResultsFound": "Aucun résultat trouvé pour",
-    "video": "Vidéo",
-    "image": "Image",
-    "station": "Station",
-    "filterBy": "Filtrer Par",
-    "mediaType": "Type de Média",
-    "contractor": "Contractant",
-    "cruise": "Croisière",
-    "year": "Année",
-    "preparingDownload": "Préparation du Téléchargement...",
-    "downloadCSV": "Télécharger CSV",
-    "itemsMatchFilters": "éléments correspondent à vos filtres",
-    "all": "Tous",
-    "allMediaTypes": "Tous les Types de Médias",
-    "imagesOnly": "Images uniquement",
-    "videosOnly": "Vidéos uniquement",
-    "allYears": "Toutes les Années",
-    "noItemsToDownload": "Aucun élément à télécharger.",
-    "noMatchingItems": "Aucun élément ne correspond au filtre actuel pour le téléchargement.",
-    "allMedia": "Tous les Médias",
-    "images": "Images",
-    "videos": "Vidéos",
-    "selectedContractor": "Contractant Sélectionné",
-    "selected": "Sélectionné"
-  },
-  
-  "export": {
-    "title": "Exportation de Galerie ISA DeepData",
-    "generated": "Généré le",
-    "media": "MÉDIAS",
-    "stations": "STATIONS",
-    "cruises": "CROISIÈRES",
-    "contractors": "CONTRACTANTS",
-    "error": "Une erreur s'est produite lors de la préparation de votre téléchargement. Veuillez réessayer.",
-    
-    "headers": {
-      "mediaId": "ID du Média",
-      "fileName": "Nom de Fichier",
-      "mediaType": "Type de Média",
-      "url": "URL",
-      "stationCode": "Code de Station",
-      "contractorName": "Nom du Contractant",
-      "captureDate": "Date de Capture",
-      "description": "Description",
-      "stationId": "ID de Station",
-      "cruiseId": "ID de Croisière",
-      "latitude": "Latitude",
-      "longitude": "Longitude",
-      "cruiseName": "Nom de Croisière",
-      "contractorId": "ID de Contractant",
-      "year": "Année",
-      "mediaCount": "Nombre de Médias"
-    }
-  },
-  
-  "card": {
-    "video": "Vidéo",
-    "image": "Image",
-    "dateUnknown": "Date inconnue",
-    "station": "Station",
-    "date": "Date",
-    "contractor": "Contractant",
-    "viewDetails": "Voir les Détails",
-    "download": "Télécharger"
-  },
-  
-  "modal": {
-    "dateUnknown": "Date inconnue",
-    "notAvailable": "Non disponible",
-    "mediaType": "Type de Média",
-    "video": "Vidéo",
-    "image": "Image",
-    "captureDate": "Date de Capture",
-    "station": "Station",
-    "cruise": "Croisière",
-    "contractor": "Contractant",
-    "sample": "Échantillon",
-    "coordinates": "Coordonnées",
-    "cameraSpecs": "Spécifications de l'Appareil",
-    "download": "Télécharger",
-    "showOnMap": "Afficher sur la Carte"
-  }
-},
-
-"map": {
-  "title": "Zones d'Exploration de l'ISA",
-  "description": "Carte interactive des contrats d'exploration des fonds marins et des zones réglementées par l'Autorité Internationale des Fonds Marins. Utilisez les filtres à gauche pour explorer par type de minéral, statut du contrat, emplacement et État parrain. Cliquez sur le bouton des contrôles de la carte (en bas à droite) pour basculer la visibilité des zones, des blocs, des stations et des croisières. Consultez l'onglet Info dans les contrôles de la carte pour une légende complète. Utilisez l'onglet Display pour afficher le panneau de résumé avec des statistiques sur les données visibles. Cliquez sur n'importe quel élément de la carte pour des informations détaillées et utilisez les contrôles de zoom pour naviguer sur la carte",
-  "infoCards": {
-    "explore": {
-      "title": "Explorer les Zones de Contrat",
-      "description": "Utilisez la fonction de recherche pour trouver rapidement des contractants, des zones, des blocs et des stations. Cliquez sur les marqueurs pour des informations détaillées."
-    },
-    "resources": {
-      "title": "Ressources des Fonds Marins",
-      "description": "L'ISA réglemente l'exploration des minéraux dans la zone internationale des fonds marins, qui couvre environ 54% des océans du monde."
-    },
-    "transparency": {
-      "title": "Transparence des Données",
-      "description": "Toutes les informations contractuelles sont disponibles dans le cadre de l'engagement de l'ISA en faveur de la transparence dans les activités des fonds marins et la protection de l'environnement."
-    }
-  },
-
-
-
-  "filter": {
-    "title": "Filtres d'Exploration",
-    "reset": "Réinitialiser",
-    "filterBy": "Filtrer Par",
-    "contractor": "Nom du Contractant",
-    "mineralType": "Type de Minéral",
-    "contractStatus": "Statut du Contrat",
-    "sponsoringState": "État Sponsor",
-    "year": "Année du Contrat",
-    "location": "Emplacement",
-    "allContractors": "Tous les Contractants",
-    "allMineralTypes": "Tous les Types de Minéraux",
-    "allStatuses": "Tous les Statuts",
-    "allStates": "Tous les États Sponsors",
-    "allYears": "Toutes les Années",
-    "allLocations": "Tous les Emplacements"
-  },
-  "search": {
-    "placeholder": "Rechercher contractants, zones, blocs, stations...",
-    "results": "Résultats de Recherche",
-    "noResults": "Aucun résultat trouvé pour"
-  },
-  "results": {
-    "loading": "Chargement des données...",
-    "showing": "Affichage de {{contractors}} contractants, {{cruises}} croisières et {{stations}} stations",
-    "downloadCSV": "Télécharger CSV",
-    "exporting": "Exportation en cours..."
-  },
-
-  "controls": {
-    "zoomOut": "Zoom Arrière",
-    "zoomOutTitle": "Zoom arrière vers vue mondiale",
-    "mapControls": "Contrôles de Carte",
-    "toggleMapControls": "Basculer les contrôles de carte",
-    "tabs": {
-      "layers": "Couches",
-      "style": "Style",
-      "display": "Affichage",
-      "info": "Info"
-    },
-    "layers": {
-      "areas": "Zones",
-      "blocks": "Blocs",
-      "stations": "Stations",
-      "cruises": "Croisières"
-    },
-    "style": {
-      "mapStyle": "Style de Carte",
-      "streets": "Rues",
-      "outdoors": "Extérieur",
-      "satellite": "Satellite",
-      "light": "Clair",
-      "dark": "Sombre"
-    },
-    "display": {
-      "showSummary": "Afficher le Panneau de Résumé",
-      "hideSummary": "Masquer le Panneau de Résumé",
-      "summaryDescription": "Le panneau de résumé affiche des statistiques sur les données d'exploration actuellement visibles.",
-      "tip": "Lorsque vous sélectionnez un contractant, la carte zoome automatiquement sur ses zones."
-    },
-    "info": {
-      "stations": "Stations",
-      "stationsDesc": "Sites d'exploration ou de recherche avec données collectées",
-      "blocks": "Blocs",
-      "blocksDesc": "Zones d'exploration désignées par contractant",
-      "areas": "Zones",
-      "areasDesc": "Grandes zones contenant plusieurs blocs",
-      "cruises": "Croisières",
-      "cruisesDesc": "Voyages de recherche avec stations connectées",
-      "filterTip": "Utilisez les filtres à gauche pour rechercher par contractant ou région"
-    }
-  },
-
-  "detailPanel": {
-    "close": "Fermer",
-    "downloadCSV": "Télécharger CSV",
-    "exporting": "Exportation en cours..."
-  }
-},
-"library": {
-  "files": {
-    "title": "Bibliothèque de Gestion de Fichiers",
-    "description": "Parcourez et téléchargez des documents officiels des contractants. Utilisez des filtres pour affiner les fichiers par pays, contractant, thème ou année.",
-    "instructions": "Cliquez sur n'importe quel en-tête de colonne pour trier les données. Cliquez sur une ligne pour voir les informations détaillées sur le fichier. Le tableau affiche les métadonnées essentielles pour chaque document, permettant un scan rapide et une comparaison des ressources disponibles."
-  },
-"pagination": {
-    "page": "Página",
-    "of": "de",
-    "show": "Mostrar"},
-
-
-
-  "filter": {
-    "title": "Filtres de Fichiers",
-    "reset": "Réinitialiser",
-    "searchPlaceholder": "Rechercher des fichiers...",
-    "searchLabel": "Rechercher",
-    "filterBy": "Filtrer Par",
-    "contractor": "Contractant",
-    "country": "Pays",
-    "year": "Année",
-    "theme": "Thème",
-    "itemsMatch": "éléments correspondent à vos filtres",
-    "allContractors": "Tous les Contractants",
-    "allCountries": "Tous les Pays",
-    "allYears": "Toutes les Années",
-    "allThemes": "Tous les Thèmes",
-    "all": "Tous"
-  },
-  "table": {
-    "fileName": "Nom du Fichier",
-    "contractor": "Contractant",
-    "country": "Pays",
-    "year": "Année",
-    "theme": "Thème",
-    "description": "Description",
-    "unknown": "Inconnu",
-    "na": "N/A",
-    "noDescription": "Aucune description disponible",
-    "noResults": "Aucun résultat ne correspond à vos filtres actuels"
-  },
-
-  "fileInfo": {
-    "title": "Information sur le Fichier",
-    "backToFiles": "Retour aux Fichiers",
-    "goBack": "Retour",
-    "confidential": "Confidentiel",
-    "fileName": "Nom du Fichier",
-    "download": "Télécharger",
-    "downloadFile": "Télécharger le fichier",
-    "theme": "Thème",
-    "contractor": "Contractant",
-    "contractType": "Type de Contrat",
-    "submissionDate": "Date de Soumission",
-    "country": "Pays",
-    "year": "Année",
-    "contractArea": "Zone de Contrat",
-    "size": "Taille",
-    "description": "Description",
-    "blockInformation": "Information sur le Bloc",
-    "blockName": "Nom du Bloc",
-    "status": "Statut",
-    "areaSize": "Taille de la Zone",
-    "na": "N/A"
-  },
-
-  "samples": {
-    "title": "Gestion des Échantillons",
-    "description": "Explorez tous les échantillons collectés et leurs métadonnées. Filtrez par type d'échantillon, habitat, matrice ou type d'analyse.",
-    "filter": {
-      "title": "Filtres d'Échantillons",
-      "reset": "Réinitialiser",
-      "search": "Rechercher",
-      "searchPlaceholder": "Rechercher code d'échantillon...",
-      "contractor": "Contractant",
-      "station": "Station",
-      "cruise": "Croisière",
-      "sampleType": "Type d'Échantillon",
-      "matrixType": "Type de Matrice",
-      "habitatType": "Type d'Habitat",
-      "analysis": "Analyse",
-      "visibleColumns": "Colonnes Visibles",
-      "loading": "Chargement des filtres...",
-      "allContractors": "Tous les Contractants",
-      "allStations": "Toutes les Stations",
-      "allCruises": "Toutes les Croisières",
-      "allSampleTypes": "Tous les Types d'Échantillons",
-      "allMatrixTypes": "Tous les Types de Matrices",
-      "allHabitatTypes": "Tous les Types d'Habitats",
-      "allAnalyses": "Toutes les Analyses",
-      "all": "Tous"
-    },
-    "table": {
-      "sampleCode": "Code d'Échantillon",
-      "station": "Station",
-      "cruise": "Croisière",
-      "contractor": "Contractant",
-      "sampleType": "Type d'Échantillon",
-      "matrixType": "Type de Matrice",
-      "habitatType": "Type d'Habitat",
-      "analysis": "Analyse",
-      "result": "Résultat",
-      "description": "Description",
-      "loading": "Chargement des données d'échantillons...",
-      "showing": "Affichage de {{contractors}} contractant{{contractorS}}, {{cruises}} croisière{{cruiseS}} et {{stations}} station{{stationS}}",
-      "noResults": "Aucun échantillon ne correspond à vos critères de filtre. Essayez d'ajuster vos filtres."
-    },
-    "button": {
-      "exportCSV": "Exporter CSV"
-    }
-  }
-}
-
-}
-
-
-
-

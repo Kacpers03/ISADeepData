@@ -1,347 +1,347 @@
 /* ========== STATION MARKER STYLES ========== */
 .mapMarker {
-  width: 20px;
-  height: 20px;
-  background-color: transparent !important;
-  border: none !important;
-  box-shadow: none !important;
-  position: relative;
-  transform: translate(-50%, -50%) scale(var(--marker-scale, 1));
-  transform-origin: center;
-  transition: all 0.2s ease;
-  cursor: pointer;
-  z-index: 5;
+	width: 20px;
+	height: 20px;
+	background-color: transparent !important;
+	border: none !important;
+	box-shadow: none !important;
+	position: relative;
+	transform: translate(-50%, -50%) scale(var(--marker-scale, 1));
+	transform-origin: center;
+	transition: all 0.2s ease;
+	cursor: pointer;
+	z-index: 5;
 }
 
 .markerIcon {
-  width: 20px;
-  height: 20px;
-  background-color: #dc2626; /* Bright red */
-  border: 2px solid white;
-  border-radius: 50%;
-  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.2), 0 3px 6px rgba(0, 0, 0, 0.3);
-  position: absolute;
-  top: 0;
-  left: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+	width: 20px;
+	height: 20px;
+	background-color: #dc2626; /* Bright red */
+	border: 2px solid white;
+	border-radius: 50%;
+	box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.2), 0 3px 6px rgba(0, 0, 0, 0.3);
+	position: absolute;
+	top: 0;
+	left: 0;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .stationTypeIcon {
-  font-size: 10px;
-  line-height: 1;
-  transform: scale(0.9);
+	font-size: 10px;
+	line-height: 1;
+	transform: scale(0.9);
 }
 
 .markerIcon::after {
-  content: '';
-  position: absolute;
-  bottom: -8px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 2px;
-  height: 8px;
-  background-color: #dc2626;
+	content: '';
+	position: absolute;
+	bottom: -8px;
+	left: 50%;
+	transform: translateX(-50%);
+	width: 2px;
+	height: 8px;
+	background-color: #dc2626;
 }
 
 .markerHover .markerIcon {
-  transform: scale(1.1);
-  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.2), 0 4px 8px rgba(0, 0, 0, 0.3);
+	transform: scale(1.1);
+	box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.2), 0 4px 8px rgba(0, 0, 0, 0.3);
 }
 
 .stationTooltip {
-  position: absolute;
-  bottom: 100%;
-  left: 50%;
-  transform: translateX(-50%);
-  background-color: rgba(0, 0, 0, 0.8);
-  color: white;
-  padding: 5px 10px;
-  border-radius: 4px;
-  font-size: 12px;
-  white-space: nowrap;
-  pointer-events: none;
-  opacity: 0;
-  visibility: hidden;
-  transition: opacity 0.2s ease, visibility 0.2s ease;
-  z-index: 10;
-  margin-bottom: 10px;
+	position: absolute;
+	bottom: 100%;
+	left: 50%;
+	transform: translateX(-50%);
+	background-color: rgba(0, 0, 0, 0.8);
+	color: white;
+	padding: 5px 10px;
+	border-radius: 4px;
+	font-size: 12px;
+	white-space: nowrap;
+	pointer-events: none;
+	opacity: 0;
+	visibility: hidden;
+	transition: opacity 0.2s ease, visibility 0.2s ease;
+	z-index: 10;
+	margin-bottom: 10px;
 }
 
 .stationTooltip::after {
-  content: '';
-  position: absolute;
-  top: 100%;
-  left: 50%;
-  transform: translateX(-50%);
-  border-width: 5px;
-  border-style: solid;
-  border-color: rgba(0, 0, 0, 0.8) transparent transparent transparent;
+	content: '';
+	position: absolute;
+	top: 100%;
+	left: 50%;
+	transform: translateX(-50%);
+	border-width: 5px;
+	border-style: solid;
+	border-color: rgba(0, 0, 0, 0.8) transparent transparent transparent;
 }
 
 .markerHover .stationTooltip {
-  opacity: 1;
-  visibility: visible;
+	opacity: 1;
+	visibility: visible;
 }
 
 /* ========== ASSOCIATED MARKER STYLES ========== */
 .associatedMarker .markerIcon {
-  background-color: #15803d !important; /* Dark green */
-  border: 2px solid white;
+	background-color: #15803d !important; /* Dark green */
+	border: 2px solid white;
 }
 
 .associatedMarker .markerIcon::after {
-  background-color: #15803d;
+	background-color: #15803d;
 }
 
 /* ========== CLUSTER MARKER STYLES ========== */
 .clusterMarker {
-  background: #ff4d4f;
-  border-radius: 50%;
-  box-shadow: 0 0 0 4px white, 0 0 0 5px rgba(0, 0, 0, 0.2), 0 4px 8px rgba(0, 0, 0, 0.3);
-  color: white;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+	background: #ff4d4f;
+	border-radius: 50%;
+	box-shadow: 0 0 0 4px white, 0 0 0 5px rgba(0, 0, 0, 0.2), 0 4px 8px rgba(0, 0, 0, 0.3);
+	color: white;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	cursor: pointer;
+	transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .clusterMarker:hover {
-  transform: scale(1.05);
+	transform: scale(1.05);
 }
 
 /* Active cluster marker */
 .clusterMarker.active {
-  box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.8), 0 0 0 6px rgba(255, 77, 79, 0.6);
-  transform: scale(1.05);
-  z-index: 100;
+	box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.8), 0 0 0 6px rgba(255, 77, 79, 0.6);
+	transform: scale(1.05);
+	z-index: 100;
 }
 
 .clusterCount {
-  font-weight: bold;
-  font-size: 14px;
+	font-weight: bold;
+	font-size: 14px;
 }
 
 /* Size variations based on count */
-.clusterMarker[style*="width: 45px"] .clusterCount {
-  font-size: 16px;
+.clusterMarker[style*='width: 45px'] .clusterCount {
+	font-size: 16px;
 }
 
-.clusterMarker[style*="width: 55px"] .clusterCount {
-  font-size: 18px;
+.clusterMarker[style*='width: 55px'] .clusterCount {
+	font-size: 18px;
 }
 
-.clusterMarker[style*="width: 65px"] .clusterCount {
-  font-size: 20px;
+.clusterMarker[style*='width: 65px'] .clusterCount {
+	font-size: 20px;
 }
 
 /* ========== CLUSTER TOOLTIP STYLES ========== */
 .clusterTooltip {
-  position: absolute;
-  bottom: 100%;
-  left: 50%;
-  transform: translateX(-50%);
-  background-color: rgba(0, 0, 0, 0.85);
-  color: white;
-  padding: 6px 10px; /* Reduced padding */
-  border-radius: 6px;
-  font-size: 11px; /* Smaller font */
-  min-width: 180px; /* Reduced width */
-  white-space: normal;
-  pointer-events: none;
-  opacity: 1;
-  z-index: 100;
-  margin-bottom: 15px; /* Reduced margin */
-  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
+	position: absolute;
+	bottom: 100%;
+	left: 50%;
+	transform: translateX(-50%);
+	background-color: rgba(0, 0, 0, 0.85);
+	color: white;
+	padding: 6px 10px; /* Reduced padding */
+	border-radius: 6px;
+	font-size: 11px; /* Smaller font */
+	min-width: 180px; /* Reduced width */
+	white-space: normal;
+	pointer-events: none;
+	opacity: 1;
+	z-index: 100;
+	margin-bottom: 15px; /* Reduced margin */
+	box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
 }
 
 .clusterTooltip::after {
-  content: '';
-  position: absolute;
-  bottom: -6px; /* Smaller arrow */
-  left: 50%;
-  transform: translateX(-50%);
-  border-width: 6px 6px 0; /* Smaller arrow */
-  border-style: solid;
-  border-color: rgba(0, 0, 0, 0.85) transparent transparent transparent;
+	content: '';
+	position: absolute;
+	bottom: -6px; /* Smaller arrow */
+	left: 50%;
+	transform: translateX(-50%);
+	border-width: 6px 6px 0; /* Smaller arrow */
+	border-style: solid;
+	border-color: rgba(0, 0, 0, 0.85) transparent transparent transparent;
 }
 
 .clusterTooltipHeader {
-  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-  padding-bottom: 4px; /* Reduced padding */
-  margin-bottom: 4px; /* Reduced margin */
-  text-align: center;
+	border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+	padding-bottom: 4px; /* Reduced padding */
+	margin-bottom: 4px; /* Reduced margin */
+	text-align: center;
 }
 
 .clusterTooltipHeader strong {
-  display: block;
-  font-size: 12px; /* Smaller font */
-  margin-bottom: 2px; /* Reduced margin */
+	display: block;
+	font-size: 12px; /* Smaller font */
+	margin-bottom: 2px; /* Reduced margin */
 }
 
 .clusterTooltipSubtext {
-  font-size: 10px; /* Smaller font */
-  color: rgba(255, 255, 255, 0.7);
-  font-style: italic;
+	font-size: 10px; /* Smaller font */
+	color: rgba(255, 255, 255, 0.7);
+	font-style: italic;
 }
 
 .clusterTooltipContent {
-  max-height: 130px; /* Reduced height */
-  overflow-y: auto;
+	max-height: 130px; /* Reduced height */
+	overflow-y: auto;
 }
 
 .clusterStationItem {
-  display: flex;
-  justify-content: space-between;
-  padding: 3px 0; /* Reduced padding */
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+	display: flex;
+	justify-content: space-between;
+	padding: 3px 0; /* Reduced padding */
+	border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .stationCode {
-  font-weight: 500;
-  margin-right: 8px; /* Reduced margin */
+	font-weight: 500;
+	margin-right: 8px; /* Reduced margin */
 }
 
 .stationType {
-  font-size: 10px; /* Smaller font */
-  color: rgba(255, 255, 255, 0.7);
+	font-size: 10px; /* Smaller font */
+	color: rgba(255, 255, 255, 0.7);
 }
 
 .clusterMoreStations {
-  font-style: italic;
-  font-size: 10px; /* Smaller font */
-  text-align: center;
-  padding-top: 4px; /* Reduced padding */
-  color: rgba(255, 255, 255, 0.7);
+	font-style: italic;
+	font-size: 10px; /* Smaller font */
+	text-align: center;
+	padding-top: 4px; /* Reduced padding */
+	color: rgba(255, 255, 255, 0.7);
 }
 
 /* ========== ENHANCED TOOLTIP FOR PERSISTENCE ========== */
 /* Enhanced cluster tooltip that persists when active */
 .persistentTooltip {
-  /* Make it more prominent */
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-  border: 1px solid rgba(0, 0, 0, 0.2);
-  /* Ensure it's always visible */
-  opacity: 1;
-  visibility: visible;
-  /* Make the tooltip interactable */
-  pointer-events: auto;
-  /* Improved positioning */
-  z-index: 101;
+	/* Make it more prominent */
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+	border: 1px solid rgba(0, 0, 0, 0.2);
+	/* Ensure it's always visible */
+	opacity: 1;
+	visibility: visible;
+	/* Make the tooltip interactable */
+	pointer-events: auto;
+	/* Improved positioning */
+	z-index: 101;
 }
 
 /* Enhanced tooltip content for better scrolling */
 .persistentTooltip .clusterTooltipContent {
-  /* Better scrolling experience */
-  max-height: 150px;
-  overflow-y: auto;
-  scrollbar-width: thin;
-  /* Add padding for better look */
-  padding: 4px 6px;
+	/* Better scrolling experience */
+	max-height: 150px;
+	overflow-y: auto;
+	scrollbar-width: thin;
+	/* Add padding for better look */
+	padding: 4px 6px;
 }
 
 /* Styling for scrollbars in the tooltip content */
 .persistentTooltip .clusterTooltipContent::-webkit-scrollbar {
-  width: 6px;
+	width: 6px;
 }
 
 .persistentTooltip .clusterTooltipContent::-webkit-scrollbar-track {
-  background: rgba(0, 0, 0, 0.1);
-  border-radius: 3px;
+	background: rgba(0, 0, 0, 0.1);
+	border-radius: 3px;
 }
 
 .persistentTooltip .clusterTooltipContent::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.5);
-  border-radius: 3px;
+	background: rgba(255, 255, 255, 0.5);
+	border-radius: 3px;
 }
 
 /* Make station items more interactive */
 .clusterStationItem {
-  padding: 5px;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: background-color 0.15s ease;
+	padding: 5px;
+	border-radius: 4px;
+	cursor: pointer;
+	transition: background-color 0.15s ease;
 }
 
 .clusterStationItem:hover {
-  background-color: rgba(255, 255, 255, 0.15);
+	background-color: rgba(255, 255, 255, 0.15);
 }
 
 /* ========== CRUISE MARKER STYLES ========== */
 .cruiseMarker {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  pointer-events: auto;
-  cursor: pointer;
-  margin-bottom: 5px;
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	pointer-events: auto;
+	cursor: pointer;
+	margin-bottom: 5px;
 }
 
 .cruiseIcon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 2;
-  transition: transform 0.2s ease;
-  width: 32px;
-  height: 32px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  /* SVG colors are controlled directly in the SVG element */
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	z-index: 2;
+	transition: transform 0.2s ease;
+	width: 32px;
+	height: 32px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	/* SVG colors are controlled directly in the SVG element */
 }
 
 .selectedCruise {
-  transform: scale(1.1);
+	transform: scale(1.1);
 }
 
 /* Cruise tooltip style */
 .cruiseTooltip {
-  position: absolute;
-  bottom: 100%;
-  left: 50%;
-  transform: translateX(-50%);
-  background-color: rgba(0, 0, 0, 0.85);
-  color: white;
-  padding: 4px 8px;
-  border-radius: 4px;
-  font-size: 11px;
-  white-space: nowrap;
-  pointer-events: none;
-  z-index: 100;
-  margin-bottom: 8px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+	position: absolute;
+	bottom: 100%;
+	left: 50%;
+	transform: translateX(-50%);
+	background-color: rgba(0, 0, 0, 0.85);
+	color: white;
+	padding: 4px 8px;
+	border-radius: 4px;
+	font-size: 11px;
+	white-space: nowrap;
+	pointer-events: none;
+	z-index: 100;
+	margin-bottom: 8px;
+	box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
 }
 
 .cruiseTooltip::after {
-  content: '';
-  position: absolute;
-  bottom: -4px;
-  left: 50%;
-  transform: translateX(-50%);
-  border-width: 4px 4px 0;
-  border-style: solid;
-  border-color: rgba(0, 0, 0, 0.85) transparent transparent transparent;
+	content: '';
+	position: absolute;
+	bottom: -4px;
+	left: 50%;
+	transform: translateX(-50%);
+	border-width: 4px 4px 0;
+	border-style: solid;
+	border-color: rgba(0, 0, 0, 0.85) transparent transparent transparent;
 }
 
 /* Add a slight scaling effect on hover */
 .cruiseMarker:hover .cruiseIcon {
-  transform: scale(1.1);
+	transform: scale(1.1);
 }
 
 /* ========== BLOCK TOOLTIP ========== */
 .blockTooltip {
-  position: absolute;
-  background-color: rgba(0, 0, 0, 0.8);
-  color: white;
-  padding: 5px 10px;
-  border-radius: 4px;
-  font-size: 12px;
-  pointer-events: none;
-  z-index: 100;
-  white-space: nowrap;
+	position: absolute;
+	background-color: rgba(0, 0, 0, 0.8);
+	color: white;
+	padding: 5px 10px;
+	border-radius: 4px;
+	font-size: 12px;
+	pointer-events: none;
+	z-index: 100;
+	white-space: nowrap;
 }

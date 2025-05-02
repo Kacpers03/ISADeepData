@@ -1,287 +1,287 @@
 /* src/styles/map/summary.module.css */
 
 .summaryPanel {
-  position: absolute;
-  top: 20px;
-  left: 20px;
-  width: 280px; /* Fixed width */
-  background-color: white;
-  border-radius: 8px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
-  z-index: 10;
-  overflow: hidden;
-  transition: all 0.3s ease;
+	position: absolute;
+	top: 20px;
+	left: 20px;
+	width: 280px; /* Fixed width */
+	background-color: white;
+	border-radius: 8px;
+	box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+	z-index: 10;
+	overflow: hidden;
+	transition: all 0.3s ease;
 }
 
 .collapsed {
-  width: 280px; /* Keep the same width */
-  height: 42px; /* Just enough for the header */
-  overflow: hidden;
+	width: 280px; /* Keep the same width */
+	height: 42px; /* Just enough for the header */
+	overflow: hidden;
 }
 
 .summaryHeader {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 10px 12px;
-  background-color: #0077b6;
-  color: white;
-  cursor: pointer; /* Make entire header clickable */
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 10px 12px;
+	background-color: #0077b6;
+	color: white;
+	cursor: pointer; /* Make entire header clickable */
 }
 
 .summaryHeader h3 {
-  margin: 0;
-  font-size: 1rem;
-  font-weight: 600;
+	margin: 0;
+	font-size: 1rem;
+	font-weight: 600;
 }
 
 .headerControls {
-  display: flex;
-  gap: 6px;
+	display: flex;
+	gap: 6px;
 }
 
 .collapseButton,
 .closeButton {
-  background: none;
-  border: none;
-  color: white;
-  font-size: 1rem;
-  width: 20px;
-  height: 20px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  border-radius: 4px;
-  z-index: 11; /* Make sure it's above the header for clickability */
+	background: none;
+	border: none;
+	color: white;
+	font-size: 1rem;
+	width: 20px;
+	height: 20px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	cursor: pointer;
+	border-radius: 4px;
+	z-index: 11; /* Make sure it's above the header for clickability */
 }
 
 .collapseButton:hover,
 .closeButton:hover {
-  background-color: rgba(255, 255, 255, 0.2);
+	background-color: rgba(255, 255, 255, 0.2);
 }
 
 .summaryContent {
-  height: 300px; /* Fixed height */
-  overflow-y: auto; /* Always show scrollbar */
-  overflow-x: hidden;
-  padding: 8px; /* Reduced padding */
+	height: 300px; /* Fixed height */
+	overflow-y: auto; /* Always show scrollbar */
+	overflow-x: hidden;
+	padding: 8px; /* Reduced padding */
 }
 
 /* Stats grid - 2x2 grid with distinct boxes */
 .statsGrid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  grid-gap: 8px;
-  width: 100%;
-  margin-bottom: 8px;
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	grid-gap: 8px;
+	width: 100%;
+	margin-bottom: 8px;
 }
 
 /* Individual stat box styling - clearly defined boxes with shadows */
 .statBox {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 10px 8px;
-  text-align: center;
-  background-color: #f8f9fa;
-  border: 1px solid #eaeaea;
-  border-radius: 6px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-  transition: transform 0.2s ease;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	padding: 10px 8px;
+	text-align: center;
+	background-color: #f8f9fa;
+	border: 1px solid #eaeaea;
+	border-radius: 6px;
+	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+	transition: transform 0.2s ease;
 }
 
 .statBox:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+	transform: translateY(-3px);
+	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 /* Apply the same style as statBox to maintain consistency */
 .statItem {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 15px 10px;
-  text-align: center;
-  background-color: #f8f9fa;
-  border: 1px solid #eaeaea;
-  border-radius: 8px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
-  transition: transform 0.2s ease;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	padding: 15px 10px;
+	text-align: center;
+	background-color: #f8f9fa;
+	border: 1px solid #eaeaea;
+	border-radius: 8px;
+	box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+	transition: transform 0.2s ease;
 }
 
 .statItem:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+	transform: translateY(-3px);
+	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .statValue {
-  font-size: 1.5rem; /* Smaller font size */
-  font-weight: 500;
-  color: #0077b6;
-  margin-bottom: 3px;
+	font-size: 1.5rem; /* Smaller font size */
+	font-weight: 500;
+	color: #0077b6;
+	margin-bottom: 3px;
 }
 
 .statLabel {
-  font-size: 0.8rem;
-  color: #64748b;
+	font-size: 0.8rem;
+	color: #64748b;
 }
 
 /* Total Exploration Area box styling */
 .explorationAreaBox {
-  background-color: #f8f9fa;
-  border: 1px solid #eaeaea;
-  border-radius: 6px;
-  padding: 10px 12px;
-  margin-bottom: 8px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+	background-color: #f8f9fa;
+	border: 1px solid #eaeaea;
+	border-radius: 6px;
+	padding: 10px 12px;
+	margin-bottom: 8px;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
 .areaLabel {
-  font-size: 0.8rem;
-  color: #64748b;
-  font-weight: 500;
+	font-size: 0.8rem;
+	color: #64748b;
+	font-weight: 500;
 }
 
 .areaValue {
-  font-size: 0.9rem;
-  color: #0077b6;
-  font-weight: 600;
+	font-size: 0.9rem;
+	color: #0077b6;
+	font-weight: 600;
 }
 
 /* Category box styling for Contract Types and Sponsoring States */
 .categoryBox {
-  background-color: #f8f9fa;
-  border: 1px solid #eaeaea;
-  border-radius: 6px;
-  margin-bottom: 8px;
-  overflow: hidden;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+	background-color: #f8f9fa;
+	border: 1px solid #eaeaea;
+	border-radius: 6px;
+	margin-bottom: 8px;
+	overflow: hidden;
+	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
 .categoryHeader {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 10px 12px;
-  cursor: pointer;
-  font-size: 0.85rem;
-  font-weight: 500;
-  color: #333;
-  background-color: #f8f9fa;
-  border-bottom: 1px solid transparent;
-  transition: background-color 0.2s ease;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 10px 12px;
+	cursor: pointer;
+	font-size: 0.85rem;
+	font-weight: 500;
+	color: #333;
+	background-color: #f8f9fa;
+	border-bottom: 1px solid transparent;
+	transition: background-color 0.2s ease;
 }
 
 .categoryHeader:hover {
-  background-color: #f1f3f5;
+	background-color: #f1f3f5;
 }
 
 .plusIcon {
-  font-size: 1.2rem;
-  color: #0077b6;
-  font-weight: bold;
+	font-size: 1.2rem;
+	color: #0077b6;
+	font-weight: bold;
 }
 
 .expandedContent {
-  background-color: white;
-  max-height: 200px;
-  overflow-y: auto;
+	background-color: white;
+	max-height: 200px;
+	overflow-y: auto;
 }
 
 .expandedItem {
-  display: flex;
-  justify-content: space-between;
-  padding: 8px 12px;
-  font-size: 0.8rem;
-  border-bottom: 1px solid #f1f3f5;
+	display: flex;
+	justify-content: space-between;
+	padding: 8px 12px;
+	font-size: 0.8rem;
+	border-bottom: 1px solid #f1f3f5;
 }
 
 .expandedItem:last-child {
-  border-bottom: none;
+	border-bottom: none;
 }
 
 /* No contractor message */
 .noContractorMessage {
-  text-align: center;
-  padding: 30px 15px;
+	text-align: center;
+	padding: 30px 15px;
 }
 
 .noContractorMessage p {
-  margin: 0 0 10px 0;
+	margin: 0 0 10px 0;
 }
 
 .noContractorMessage p:first-child {
-  font-weight: 600;
-  font-size: 1.1rem;
-  color: #333;
+	font-weight: 600;
+	font-size: 1.1rem;
+	color: #333;
 }
 
 .noContractorSubtext {
-  font-size: 0.9rem;
-  color: #64748b;
+	font-size: 0.9rem;
+	color: #64748b;
 }
 
 /* Selected Contractor View */
 .selectedContractorSection {
-  padding: 5px;
+	padding: 5px;
 }
 
 .selectedContractorSection h4 {
-  font-size: 1.1rem;
-  margin: 0 0 15px 0;
-  color: #333;
+	font-size: 1.1rem;
+	margin: 0 0 15px 0;
+	color: #333;
 }
 
 .viewDetailsButton {
-  margin-top: 15px;
-  width: 100%;
-  background-color: #0077b6;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  padding: 8px 16px;
-  font-size: 0.9rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s ease;
+	margin-top: 15px;
+	width: 100%;
+	background-color: #0077b6;
+	color: white;
+	border: none;
+	border-radius: 6px;
+	padding: 8px 16px;
+	font-size: 0.9rem;
+	font-weight: 500;
+	cursor: pointer;
+	transition: all 0.2s ease;
 }
 
 .viewDetailsButton:hover {
-  background-color: #00598c;
+	background-color: #00598c;
 }
 
 .globalSummarySection {
-  padding: 5px 0;
+	padding: 5px 0;
 }
 
 .cruiseSection {
-  margin-top: 16px;
-  padding-top: 16px;
-  border-top: 1px solid #e2e8f0;
+	margin-top: 16px;
+	padding-top: 16px;
+	border-top: 1px solid #e2e8f0;
 }
 
 .sectionTitle {
-  font-size: 0.95rem;
-  font-weight: 600;
-  color: #334155;
-  margin-bottom: 12px;
+	font-size: 0.95rem;
+	font-weight: 600;
+	color: #334155;
+	margin-bottom: 12px;
 }
 
 .cruiseList {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
 }
 
 .viewMoreLink {
-  text-align: center;
-  font-size: 0.75rem;
-  color: #64748b;
-  margin-top: 8px;
+	text-align: center;
+	font-size: 0.75rem;
+	color: #64748b;
+	margin-top: 8px;
 }

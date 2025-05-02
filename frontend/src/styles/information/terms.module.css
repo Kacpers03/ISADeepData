@@ -1,157 +1,157 @@
 .container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 20px;
-  font-family: Arial, sans-serif;
-  color: #333;
+	max-width: 1200px;
+	margin: 0 auto;
+	padding: 20px;
+	font-family: Arial, sans-serif;
+	color: #333;
 }
 
 /* HERO SECTION */
 .hero {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  background-color: #f7f9fb;
-  margin-bottom: 40px;
-  border-radius: 8px;
-  overflow: hidden;
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: space-between;
+	background-color: #f7f9fb;
+	margin-bottom: 40px;
+	border-radius: 8px;
+	overflow: hidden;
 }
 
 .heroText {
-  flex: 1 1 50%;
-  padding: 40px;
+	flex: 1 1 50%;
+	padding: 40px;
 }
 
 .heroTitle {
-  font-size: 2.5rem;
-  margin: 0;
-  color: #003366;
+	font-size: 2.5rem;
+	margin: 0;
+	color: #003366;
 }
 
 .heroSubtitle {
-  font-size: 1.2rem;
-  margin-top: 10px;
-  color: #555;
-  max-width: 500px;
+	font-size: 1.2rem;
+	margin-top: 10px;
+	color: #555;
+	max-width: 500px;
 }
 
 .heroImage {
-  flex: 1 1 50%;
-  max-height: 400px;
-  overflow: hidden;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+	flex: 1 1 50%;
+	max-height: 400px;
+	overflow: hidden;
+	display: flex;
+	justify-content: center;
+	align-items: center;
 }
 
 .heroImage img {
-  width: 100%;
-  height: auto;
-  object-fit: cover;
+	width: 100%;
+	height: auto;
+	object-fit: cover;
 }
 
 /* ABOUT SECTION */
 .about {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 20px;
-  margin: 40px 0;
-  align-items: center;
+	display: flex;
+	flex-wrap: wrap;
+	gap: 20px;
+	margin: 40px 0;
+	align-items: center;
 }
 
 .textBlock {
-  flex: 1;
-  min-width: 300px;
+	flex: 1;
+	min-width: 300px;
 }
 
 .features {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 20px;
-  margin-top: 20px;
+	display: flex;
+	flex-wrap: wrap;
+	gap: 20px;
+	margin-top: 20px;
 }
 
 .feature {
-  flex: 1;
-  min-width: 150px;
-  padding: 20px;
-  background-color: #f9f9f9;
-  border-radius: 6px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+	flex: 1;
+	min-width: 150px;
+	padding: 20px;
+	background-color: #f9f9f9;
+	border-radius: 6px;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .imageBlock {
-  flex: 1;
-  min-width: 300px;
+	flex: 1;
+	min-width: 300px;
 }
 
 .image {
-  width: 100%;
-  height: auto;
-  border: 2px solid #eaeaea;
-  border-radius: 4px;
+	width: 100%;
+	height: auto;
+	border: 2px solid #eaeaea;
+	border-radius: 4px;
 }
 
 /* DETAILS SECTION */
 .details {
-  margin: 40px 0;
-  font-size: 1.1rem;
-  line-height: 1.8;
+	margin: 40px 0;
+	font-size: 1.1rem;
+	line-height: 1.8;
 }
 
 .sectionTitle {
-  font-size: 2rem;
-  margin-bottom: 20px;
-  border-bottom: 2px solid #45526e;
-  display: inline-block;
-  padding-bottom: 5px;
+	font-size: 2rem;
+	margin-bottom: 20px;
+	border-bottom: 2px solid #45526e;
+	display: inline-block;
+	padding-bottom: 5px;
 }
 
 .infoBox {
-  background-color: #f8f9fa;
-  border-radius: 8px;
-  padding: 20px;
-  margin-bottom: 20px;
-  border: 1px solid #e2e2e2;
+	background-color: #f8f9fa;
+	border-radius: 8px;
+	padding: 20px;
+	margin-bottom: 20px;
+	border: 1px solid #e2e2e2;
 }
 
 .infoBox h3 {
-  display: flex;
-  align-items: center;
-  margin-top: 0;
-  color: #003366;
+	display: flex;
+	align-items: center;
+	margin-top: 0;
+	color: #003366;
 }
 
 .accordionIcon {
-  margin-right: 0.5rem;
-  font-size: 1.25rem;
+	margin-right: 0.5rem;
+	font-size: 1.25rem;
 }
 
 /* CTA SECTION */
 .cta {
-  text-align: center;
-  margin: 60px 0;
+	text-align: center;
+	margin: 60px 0;
 }
 
 .ctaButton {
-  background-color: #45526e;
-  color: white;
-  padding: 10px 20px;
-  text-decoration: none;
-  border: 2px solid #45526e;
-  transition: background-color 0.3s ease, color 0.3s ease;
-  font-weight: bold;
+	background-color: #45526e;
+	color: white;
+	padding: 10px 20px;
+	text-decoration: none;
+	border: 2px solid #45526e;
+	transition: background-color 0.3s ease, color 0.3s ease;
+	font-weight: bold;
 }
 
 .ctaButton:hover {
-  background-color: white;
-  color: #45526e;
+	background-color: white;
+	color: #45526e;
 }
 
 /* RESPONSIVE STYLES */
 @media (max-width: 768px) {
-  .about {
-    flex-direction: column;
-  }
+	.about {
+		flex-direction: column;
+	}
 }
