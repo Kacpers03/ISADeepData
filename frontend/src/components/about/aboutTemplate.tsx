@@ -1,32 +1,48 @@
 // components/AboutTemplate.tsx
-import { useLanguage } from '../../contexts/languageContext'
+import { useLanguage } from '../../contexts/languageContext' // Imports language context for multilingual support
 
 export default function AboutTemplate() {
-	const { t } = useLanguage()
+	const { t } = useLanguage() // Gets translation function from language context
 
 	return (
 		<section className='py-3 py-md-5'>
+			{' '}
+			{/* Main section with responsive padding */}
 			<div className='container'>
 				<div className='row gy-3 gy-md-4 gy-lg-0 align-items-lg-center'>
+					{' '}
+					{/* Responsive grid with centering on larger screens */}
 					<div className='col-12 col-lg-6 col-xl-5'>
+						{' '}
+						{/* Image column - full width on mobile, 6/12 on desktop */}
 						<img
 							className='img-fluid rounded'
-							loading='lazy'
-							src='/image/DeepSeaMiningPic.jpg'
-							alt='ISA DeepData Overview'
+							loading='lazy' // Loads the image when it's visible in viewport
+							src='/image/DeepSeaMiningPic.jpg' // Image path with absolute reference
+							alt='ISA DeepData Overview' // Alt text for accessibility
 						/>
 					</div>
 					<div className='col-12 col-lg-6 col-xl-7'>
+						{' '}
+						{/* Content column - larger than image column on XL screens */}
 						<div className='row justify-content-xl-center'>
 							<div className='col-12 col-xl-11'>
-								<h2 className='mb-3'>{t('about.title')}</h2>
-								<p className='lead fs-4 text-secondary mb-3'>{t('about.leadText')}</p>
-								<p className='mb-5'>{t('about.description')}</p>
+								{' '}
+								{/* Contains text slightly narrowed on XL screens */}
+								<h2 className='mb-3'>{t('about.title')}</h2> {/* Main title with translated text */}
+								<p className='lead fs-4 text-secondary mb-3'>{t('about.leadText')}</p> {/* Emphasized subheading */}
+								<p className='mb-5'>{t('about.description')}</p> {/* Main description with good margin below */}
 								<div className='row gy-4 gy-md-0 gx-xxl-5'>
+									{' '}
+									{/* Grid for 3 features with responsive spacing */}
 									<div className='col-12 col-md-4'>
+										{' '}
+										{/* First feature - full width on mobile, 1/3 on desktop */}
 										<div className='d-flex'>
+											{' '}
+											{/* Uses flexbox to position icon and text */}
 											<div className='me-3 text-primary'>
-												{/* Innovative Analytics Icon */}
+												{/* Innovative Analytics Icon - SVG for scalable and sharp display */}
 												<svg
 													xmlns='http://www.w3.org/2000/svg'
 													width='32'
@@ -40,15 +56,21 @@ export default function AboutTemplate() {
 												</svg>
 											</div>
 											<div>
-												<h2 className='h5 mb-2'>{t('about.features.innovativeAnalytics.title')}</h2>
-												<p className='text-secondary mb-0'>{t('about.features.innovativeAnalytics.description')}</p>
+												<h2 className='h5 mb-2'>{t('about.features.innovativeAnalytics.title')}</h2>{' '}
+												{/* Feature title */}
+												<p className='text-secondary mb-0'>
+													{t('about.features.innovativeAnalytics.description')}
+												</p>{' '}
+												{/* Feature description */}
 											</div>
 										</div>
 									</div>
 									<div className='col-12 col-md-4'>
+										{' '}
+										{/* Second feature - full width on mobile, 1/3 on desktop */}
 										<div className='d-flex'>
 											<div className='me-3 text-primary'>
-												{/* Marine Insights Icon */}
+												{/* Marine Insights Icon - water symbol */}
 												<svg
 													xmlns='http://www.w3.org/2000/svg'
 													width='32'
@@ -60,15 +82,18 @@ export default function AboutTemplate() {
 												</svg>
 											</div>
 											<div>
-												<h2 className='h5 mb-2'>{t('about.features.marineInsights.title')}</h2>
-												<p className='text-secondary mb-0'>{t('about.features.marineInsights.description')}</p>
+												<h2 className='h5 mb-2'>{t('about.features.marineInsights.title')}</h2> {/* Feature title */}
+												<p className='text-secondary mb-0'>{t('about.features.marineInsights.description')}</p>{' '}
+												{/* Feature description */}
 											</div>
 										</div>
 									</div>
 									<div className='col-12 col-md-4'>
+										{' '}
+										{/* Third feature - full width on mobile, 1/3 on desktop */}
 										<div className='d-flex'>
 											<div className='me-3 text-primary'>
-												{/* Collaborative Expertise Icon */}
+												{/* Collaborative Expertise Icon - handshake symbol */}
 												<svg
 													xmlns='http://www.w3.org/2000/svg'
 													width='32'
@@ -83,16 +108,21 @@ export default function AboutTemplate() {
 												</svg>
 											</div>
 											<div>
-												<h2 className='h5 mb-2'>{t('about.features.collaborativeExpertise.title')}</h2>
-												<p className='text-secondary mb-0'>{t('about.features.collaborativeExpertise.description')}</p>
+												<h2 className='h5 mb-2'>{t('about.features.collaborativeExpertise.title')}</h2>{' '}
+												{/* Feature title */}
+												<p className='text-secondary mb-0'>
+													{t('about.features.collaborativeExpertise.description')}
+												</p>{' '}
+												{/* Feature description */}
 											</div>
 										</div>
 									</div>
 								</div>
-								{/* Extra content - e.g. a call-to-action */}
+								{/* Extra content - call-to-action section */}
 								<div className='mt-5'>
-									<h3 className='mb-3'>{t('about.joinSection.title')}</h3>
-									<p className='text-secondary'>{t('about.joinSection.description')}</p>
+									<h3 className='mb-3'>{t('about.joinSection.title')}</h3> {/* Call-to-action title */}
+									<p className='text-secondary'>{t('about.joinSection.description')}</p>{' '}
+									{/* Call-to-action description */}
 								</div>
 							</div>
 						</div>

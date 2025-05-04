@@ -1,27 +1,44 @@
 // components/MissionTemplate.tsx
-import { useLanguage } from '../../contexts/languageContext'
+import { useLanguage } from '../../contexts/languageContext' // Imports language context for multilingual support
 
 export default function MissionTemplate() {
-	const { t } = useLanguage()
+	const { t } = useLanguage() // Gets translation function from language context
 
 	return (
 		<section className='py-3 py-md-5'>
+			{' '}
+			{/* Main section with responsive padding */}
 			<div className='container'>
 				<div className='row gy-3 gy-md-4 gy-lg-0 align-items-lg-center'>
+					{' '}
+					{/* Responsive grid with centering on larger screens */}
 					<div className='col-12 col-lg-6 col-xl-5'>
-						<img className='img-fluid rounded' loading='lazy' src='../image/missions.jpg' alt='Deep Data Impact' />
+						{' '}
+						{/* Image column - full width on mobile, 6/12 on desktop */}
+						<img className='img-fluid rounded' loading='lazy' src='../image/missions.jpg' alt='Deep Data Impact' />{' '}
+						{/* Image with relative path */}
 					</div>
 					<div className='col-12 col-lg-6 col-xl-7'>
+						{' '}
+						{/* Content column - larger than image column on XL screens */}
 						<div className='row justify-content-xl-center'>
 							<div className='col-12 col-xl-11'>
-								<h2 className='mb-3'>{t('mission.title')}</h2>
-								<p className='lead fs-4 text-secondary mb-3'>{t('mission.subtitle')}</p>
-								<p className='mb-5'>{t('mission.description')}</p>
+								{' '}
+								{/* Contains text slightly narrowed on XL screens */}
+								<h2 className='mb-3'>{t('mission.title')}</h2> {/* Main title with translated text */}
+								<p className='lead fs-4 text-secondary mb-3'>{t('mission.subtitle')}</p> {/* Emphasized subheading */}
+								<p className='mb-5'>{t('mission.description')}</p> {/* Main description with good margin below */}
 								<div className='row gy-4 gy-md-0 gx-xxl-5'>
+									{' '}
+									{/* Grid for first row of objectives with responsive spacing */}
 									<div className='col-12 col-md-6'>
+										{' '}
+										{/* First objective - full width on mobile, 1/2 on desktop */}
 										<div className='d-flex'>
+											{' '}
+											{/* Uses flexbox to position icon and text */}
 											<div className='me-3 text-primary'>
-												{/* Sustainability Icon */}
+												{/* Sustainability Icon - water symbol */}
 												<svg
 													xmlns='http://www.w3.org/2000/svg'
 													width='32'
@@ -33,15 +50,19 @@ export default function MissionTemplate() {
 												</svg>
 											</div>
 											<div>
-												<h2 className='h5 mb-2'>{t('mission.keyObjectives.objective1.title')}</h2>
-												<p className='text-secondary mb-0'>{t('mission.keyObjectives.objective1.description')}</p>
+												<h2 className='h5 mb-2'>{t('mission.keyObjectives.objective1.title')}</h2>{' '}
+												{/* Objective title */}
+												<p className='text-secondary mb-0'>{t('mission.keyObjectives.objective1.description')}</p>{' '}
+												{/* Objective description */}
 											</div>
 										</div>
 									</div>
 									<div className='col-12 col-md-6'>
+										{' '}
+										{/* Second objective - full width on mobile, 1/2 on desktop */}
 										<div className='d-flex'>
 											<div className='me-3 text-primary'>
-												{/* Marine Protection Icon */}
+												{/* Marine Protection Icon - shield lock symbol */}
 												<svg
 													xmlns='http://www.w3.org/2000/svg'
 													width='32'
@@ -56,17 +77,23 @@ export default function MissionTemplate() {
 												</svg>
 											</div>
 											<div>
-												<h2 className='h5 mb-2'>{t('mission.keyObjectives.objective2.title')}</h2>
-												<p className='text-secondary mb-0'>{t('mission.keyObjectives.objective2.description')}</p>
+												<h2 className='h5 mb-2'>{t('mission.keyObjectives.objective2.title')}</h2>{' '}
+												{/* Objective title */}
+												<p className='text-secondary mb-0'>{t('mission.keyObjectives.objective2.description')}</p>{' '}
+												{/* Objective description */}
 											</div>
 										</div>
 									</div>
 								</div>
 								<div className='row gy-4 gy-md-0 gx-xxl-5 mt-4'>
+									{' '}
+									{/* Grid for second row of objectives with top margin */}
 									<div className='col-12 col-md-6'>
+										{' '}
+										{/* Third objective - full width on mobile, 1/2 on desktop */}
 										<div className='d-flex'>
 											<div className='me-3 text-primary'>
-												{/* Open Data Access Icon */}
+												{/* Open Data Access Icon - bar chart symbol */}
 												<svg
 													xmlns='http://www.w3.org/2000/svg'
 													width='32'
@@ -80,15 +107,19 @@ export default function MissionTemplate() {
 												</svg>
 											</div>
 											<div>
-												<h2 className='h5 mb-2'>{t('mission.keyObjectives.objective3.title')}</h2>
-												<p className='text-secondary mb-0'>{t('mission.keyObjectives.objective3.description')}</p>
+												<h2 className='h5 mb-2'>{t('mission.keyObjectives.objective3.title')}</h2>{' '}
+												{/* Objective title */}
+												<p className='text-secondary mb-0'>{t('mission.keyObjectives.objective3.description')}</p>{' '}
+												{/* Objective description */}
 											</div>
 										</div>
 									</div>
 									<div className='col-12 col-md-6'>
+										{' '}
+										{/* Fourth objective - full width on mobile, 1/2 on desktop */}
 										<div className='d-flex'>
 											<div className='me-3 text-primary'>
-												{/* Global Collaboration Icon */}
+												{/* Global Collaboration Icon - globe symbol */}
 												<svg
 													xmlns='http://www.w3.org/2000/svg'
 													width='32'
@@ -100,18 +131,21 @@ export default function MissionTemplate() {
 												</svg>
 											</div>
 											<div>
-												<h2 className='h5 mb-2'>{t('mission.keyObjectives.objective4.title')}</h2>
-												<p className='text-secondary mb-0'>{t('mission.keyObjectives.objective4.description')}</p>
+												<h2 className='h5 mb-2'>{t('mission.keyObjectives.objective4.title')}</h2>{' '}
+												{/* Objective title */}
+												<p className='text-secondary mb-0'>{t('mission.keyObjectives.objective4.description')}</p>{' '}
+												{/* Objective description */}
 											</div>
 										</div>
 									</div>
 								</div>
-
-								{/* Impact Section */}
+								{/* Impact Section - additional information about mission impact */}
 								<div className='mt-5'>
-									<h3 className='mb-3'>{t('mission.impact.title')}</h3>
-									<p className='text-secondary'>{t('mission.impact.description1')}</p>
-									<p className='text-secondary'>{t('mission.impact.description2')}</p>
+									{' '}
+									{/* Extra margin on top to separate from objectives */}
+									<h3 className='mb-3'>{t('mission.impact.title')}</h3> {/* Impact section title */}
+									<p className='text-secondary'>{t('mission.impact.description1')}</p> {/* First impact paragraph */}
+									<p className='text-secondary'>{t('mission.impact.description2')}</p> {/* Second impact paragraph */}
 								</div>
 							</div>
 						</div>
