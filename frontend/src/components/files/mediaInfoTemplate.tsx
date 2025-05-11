@@ -1,7 +1,7 @@
 // components/files/mediaInfoTemplate.tsx
-import React from 'react'
-import { useRouter } from 'next/router'
-import styles from '../../styles/files/mediaInfo.module.css'
+import React from 'react' // Import React
+import { useRouter } from 'next/router' // Import Next.js router for navigation
+import styles from '../../styles/files/mediaInfo.module.css' // Import CSS module for styling
 import {
 	ArrowLeft,
 	Download,
@@ -14,22 +14,23 @@ import {
 	Map,
 	Globe,
 	Clock,
-} from 'lucide-react'
-import { FileInfo } from '../../types/fileTypes'
-import { Contractor, ContractorArea, ContractorAreaBlock } from '../../types/filter-types'
-import { useLanguage } from '../../contexts/languageContext'
+} from 'lucide-react' // Import Lucide icons for UI elements
+import { FileInfo } from '../../types/fileTypes' // Import file information type
+import { Contractor, ContractorArea, ContractorAreaBlock } from '../../types/filter-types' // Import related type definitions
+import { useLanguage } from '../../contexts/languageContext' // Import language context for translations
 
+// Interface defining the component props
 interface FileInfoProps {
-	fileInfo: FileInfo
+	fileInfo: FileInfo // File information object to display
 }
 
 const MediaInfoTemplate: React.FC<FileInfoProps> = ({ fileInfo }) => {
-	const router = useRouter()
-	const { t } = useLanguage()
+	const router = useRouter() // Initialize router for navigation
+	const { t } = useLanguage() // Get translation function
 
 	// Format the date properly (assuming date comes in as ISO string)
 	const formatDate = (dateString: string) => {
-		if (!dateString) return t('library.fileInfo.na') || 'N/A'
+		if (!dateString) return t('library.fileInfo.na') || 'N/A' // Handle missing dates
 
 		try {
 			const date = new Date(dateString)
@@ -37,43 +38,53 @@ const MediaInfoTemplate: React.FC<FileInfoProps> = ({ fileInfo }) => {
 				year: 'numeric',
 				month: 'long',
 				day: 'numeric',
-			})
+			}) // Format as "Month Day, Year"
 		} catch (e) {
 			// If date can't be parsed, return the original string or first part
-			return dateString.split('T')[0] || dateString
+			return dateString.split('T')[0] || dateString // Fallback to YYYY-MM-DD format
 		}
 	}
 
 	return (
 		<div className={styles.pageContainer}>
+			{' '}
+			{/* Main page container */}
 			<div className={styles.header}>
+				{' '}
+				{/* Page header with back button */}
 				<div className={styles.headerContent}>
 					<button
 						className={styles.backButton}
-						onClick={() => router.back()}
+						onClick={() => router.back()} // Return to previous page
 						aria-label={t('library.fileInfo.goBack') || 'Go back'}>
 						<ArrowLeft size={20} />
 						<span>{t('library.fileInfo.backToFiles') || 'Back to Files'}</span>
 					</button>
-					<h1 className={styles.pageTitle}>{t('library.fileInfo.title') || 'File Information'}</h1>
+					<h1 className={styles.pageTitle}>{t('library.fileInfo.title') || 'File Information'}</h1> {/* Page title */}
 				</div>
 			</div>
-
 			<div className={styles.contentContainer}>
+				{' '}
+				{/* Main content container */}
 				<div className={styles.mediaInfoCard}>
+					{' '}
+					{/* Card container for file information */}
 					<div className={styles.titleSection}>
-						<h2 className={styles.fileTitle}>{fileInfo.title}</h2>
+						{' '}
+						{/* Title section with confidential badge if needed */}
+						<h2 className={styles.fileTitle}>{fileInfo.title}</h2> {/* File title */}
 						{fileInfo.isConfidential && (
 							<div className={styles.confidentialBadge}>
 								<Shield size={16} />
-								<span>{t('library.fileInfo.confidential') || 'Confidential'}</span>
+								<span>{t('library.fileInfo.confidential') || 'Confidential'}</span> {/* Confidential badge */}
 							</div>
 						)}
 					</div>
-
-					<div className={styles.divider}></div>
-
+					<div className={styles.divider}></div> {/* Visual divider */}
 					<div className={styles.fileMetaGrid}>
+						{' '}
+						{/* Grid for file metadata items */}
+						{/* File name info with download button */}
 						<div className={styles.metaItem}>
 							<div className={styles.metaLabel}>
 								<FileText size={18} />
@@ -93,7 +104,7 @@ const MediaInfoTemplate: React.FC<FileInfoProps> = ({ fileInfo }) => {
 								</a>
 							</div>
 						</div>
-
+						{/* Theme information */}
 						<div className={styles.metaItem}>
 							<div className={styles.metaLabel}>
 								<Tag size={18} />
@@ -101,7 +112,7 @@ const MediaInfoTemplate: React.FC<FileInfoProps> = ({ fileInfo }) => {
 							</div>
 							<div className={styles.metaValue}>{fileInfo.theme}</div>
 						</div>
-
+						{/* Contractor information */}
 						<div className={styles.metaItem}>
 							<div className={styles.metaLabel}>
 								<User size={18} />
@@ -116,15 +127,15 @@ const MediaInfoTemplate: React.FC<FileInfoProps> = ({ fileInfo }) => {
 								)}
 							</div>
 						</div>
-
+						{/* Submission date */}
 						<div className={styles.metaItem}>
 							<div className={styles.metaLabel}>
 								<Calendar size={18} />
 								<span>{t('library.fileInfo.submissionDate') || 'Submission Date'}</span>
 							</div>
-							<div className={styles.metaValue}>{formatDate(fileInfo.submissionDate)}</div>
+							<div className={styles.metaValue}>{formatDate(fileInfo.submissionDate)}</div> {/* Formatted date */}
 						</div>
-
+						{/* Country information - conditionally rendered if available */}
 						{fileInfo.country && (
 							<div className={styles.metaItem}>
 								<div className={styles.metaLabel}>
@@ -134,7 +145,7 @@ const MediaInfoTemplate: React.FC<FileInfoProps> = ({ fileInfo }) => {
 								<div className={styles.metaValue}>{fileInfo.country}</div>
 							</div>
 						)}
-
+						{/* Year information - conditionally rendered if available */}
 						{fileInfo.year && (
 							<div className={styles.metaItem}>
 								<div className={styles.metaLabel}>
@@ -144,7 +155,7 @@ const MediaInfoTemplate: React.FC<FileInfoProps> = ({ fileInfo }) => {
 								<div className={styles.metaValue}>{fileInfo.year}</div>
 							</div>
 						)}
-
+						{/* Contractor area information - conditionally rendered if available */}
 						{fileInfo.contractorArea && (
 							<div className={styles.metaItem}>
 								<div className={styles.metaLabel}>
@@ -162,7 +173,7 @@ const MediaInfoTemplate: React.FC<FileInfoProps> = ({ fileInfo }) => {
 							</div>
 						)}
 					</div>
-
+					{/* Description section */}
 					<div className={styles.descriptionSection}>
 						<div className={styles.descriptionHeader}>
 							<AlertCircle size={18} />
@@ -170,7 +181,7 @@ const MediaInfoTemplate: React.FC<FileInfoProps> = ({ fileInfo }) => {
 						</div>
 						<p className={styles.descriptionText}>{fileInfo.description}</p>
 					</div>
-
+					{/* Block information section - conditionally rendered if available */}
 					{fileInfo.contractorBlock && (
 						<div className={styles.relatedInfoSection}>
 							<div className={styles.sectionHeader}>

@@ -1,5 +1,5 @@
-import React, { useEffect, useMemo, useState, useRef } from 'react'
-import { useLanguage } from '../../contexts/languageContext'
+import React, { useEffect, useMemo, useState, useRef } from 'react' // Import React hooks
+import { useLanguage } from '../../contexts/languageContext' // Import language context for translations
 import {
 	useReactTable,
 	getCoreRowModel,
@@ -7,11 +7,12 @@ import {
 	getPaginationRowModel,
 	flexRender,
 	ColumnDef,
-} from '@tanstack/react-table'
-import { Download, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from 'lucide-react'
-import styles from '../../styles/files/reports.module.css'
-import { useRouter } from 'next/router'
+} from '@tanstack/react-table' // Import TanStack Table library components
+import { Download, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from 'lucide-react' // Import Lucide icons
+import styles from '../../styles/files/reports.module.css' // Import CSS module
+import { useRouter } from 'next/router' // Import Next.js router for navigation
 
+// Interface defining the file data structure
 interface FileData {
 	fileName: string
 	contractor: string
@@ -28,54 +29,56 @@ const FileTable: React.FC<{
 		year: string
 		theme: string
 		searchQuery: string
-	}
-	setFilteredItems?: (items: FileData[]) => void
+	} // Current filter state
+	setFilteredItems?: (items: FileData[]) => void // Optional callback to notify parent of filtered items
 }> = ({ filters, setFilteredItems }) => {
-	const { t } = useLanguage()
-	const [tableData, setTableData] = useState<FileData[]>([])
-	const router = useRouter()
-	const tableScrollRef = useRef<HTMLDivElement>(null)
-	const [scrollPosition, setScrollPosition] = useState(0)
-	const [initialLoad, setInitialLoad] = useState(true)
+	const { t } = useLanguage() // Get translation function
+	const [tableData, setTableData] = useState<FileData[]>([]) // State for all table data
+	const router = useRouter() // Next.js router for navigation
+	const tableScrollRef = useRef<HTMLDivElement>(null) // Ref for table scroll container
+	const [scrollPosition, setScrollPosition] = useState(0) // Track scroll position
+	const [initialLoad, setInitialLoad] = useState(true) // Flag for initial data load
 
 	// Track previous filter values to detect changes
 	const prevFiltersRef = useRef(filters)
 
+	// Fetch file data from API on component mount
 	useEffect(() => {
 		const fetchFiles = async () => {
 			try {
-				const response = await fetch('http://localhost:5062/api/library/list')
+				const response = await fetch('http://localhost:5062/api/library/list') // API endpoint
 				if (!response.ok) throw new Error('Network response was not ok')
 
 				const data = await response.json()
-				setTableData(data)
-				setInitialLoad(false)
+				setTableData(data) // Store fetched data
+				setInitialLoad(false) // Mark initial load as complete
 			} catch (error) {
 				console.error('Error fetching files:', error)
-				setInitialLoad(false)
+				setInitialLoad(false) // Still mark initial load as complete even on error
 			}
 		}
 
 		fetchFiles()
 	}, [])
 
-	// Save scroll position when user scrolls
+	// Save scroll position when user scrolls - used to maintain position after filtering
 	useEffect(() => {
 		const handleScroll = () => {
 			if (tableScrollRef.current) {
-				setScrollPosition(tableScrollRef.current.scrollTop)
+				setScrollPosition(tableScrollRef.current.scrollTop) // Store current scroll position
 			}
 		}
 
 		const scrollContainer = tableScrollRef.current
 		if (scrollContainer) {
-			scrollContainer.addEventListener('scroll', handleScroll)
+			scrollContainer.addEventListener('scroll', handleScroll) // Add scroll listener
 			return () => {
-				scrollContainer.removeEventListener('scroll', handleScroll)
+				scrollContainer.removeEventListener('scroll', handleScroll) // Clean up listener on unmount
 			}
 		}
 	}, [])
 
+	// Filter data based on current filters - memoized for performance
 	const filteredData = useMemo(() => {
 		const filtered = tableData.filter(item => {
 			const matchCountry = filters.country === 'all' || item.country?.toLowerCase() === filters.country.toLowerCase()
@@ -92,20 +95,22 @@ const FileTable: React.FC<{
 				item.fileName?.toLowerCase().includes(filters.searchQuery.toLowerCase()) ||
 				item.description?.toLowerCase().includes(filters.searchQuery.toLowerCase())
 
-			return matchCountry && matchContractor && matchYear && matchTheme && matchSearch
+			return matchCountry && matchContractor && matchYear && matchTheme && matchSearch // Item must match all active filters
 		})
 
+		// Notify parent component of filtered items if callback provided
 		if (setFilteredItems) {
 			setFilteredItems(filtered)
 		}
 
 		return filtered
-	}, [filters, tableData, setFilteredItems])
+	}, [filters, tableData, setFilteredItems]) // Recalculate when filters or data change
 
-	// Get summary statistics for the filter bar
+	// Get summary statistics for the filter bar - memoized for performance
 	const filterSummary = useMemo(() => {
 		if (!filteredData.length) return null
 
+		// Calculate unique counts for display
 		const uniqueContractors = new Set(filteredData.map(item => item.contractor).filter(Boolean))
 		const uniqueCountries = new Set(filteredData.map(item => item.country).filter(Boolean))
 		const uniqueThemes = new Set(filteredData.map(item => item.theme).filter(Boolean))
@@ -115,7 +120,7 @@ const FileTable: React.FC<{
 			countryCount: uniqueCountries.size,
 			themeCount: uniqueThemes.size,
 		}
-	}, [filteredData])
+	}, [filteredData]) // Recalculate when filtered data changes
 
 	// Restore scroll position when filtered data changes
 	useEffect(() => {
@@ -132,7 +137,7 @@ const FileTable: React.FC<{
 			// Small delay to ensure the DOM has updated
 			setTimeout(() => {
 				if (tableScrollRef.current) {
-					tableScrollRef.current.scrollTop = scrollPosition
+					tableScrollRef.current.scrollTop = scrollPosition // Restore previous scroll position
 				}
 			}, 0)
 		}
@@ -141,6 +146,7 @@ const FileTable: React.FC<{
 		prevFiltersRef.current = filters
 	}, [filteredData, initialLoad, scrollPosition, filters])
 
+	// Define table columns with accessors, headers and cell renderers
 	const columns: ColumnDef<FileData>[] = useMemo(
 		() => [
 			{
@@ -149,7 +155,7 @@ const FileTable: React.FC<{
 				minWidth: 200,
 				cell: info => {
 					const fileUrl = info.getValue<string>()
-					const fileName = fileUrl?.split('/').pop() || 'Unknown File'
+					const fileName = fileUrl?.split('/').pop() || 'Unknown File' // Extract file name from URL
 					return (
 						<div className={styles.fileLinkContainer}>
 							<a
@@ -158,9 +164,9 @@ const FileTable: React.FC<{
 								rel='noopener noreferrer'
 								download
 								className={styles.fileLink}
-								onClick={e => e.stopPropagation()} // Stop event propagation to prevent navigation
+								onClick={e => e.stopPropagation()} // Stop event propagation to prevent row click triggering
 							>
-								<Download className={styles.downloadIcon} size={16} />
+								<Download className={styles.downloadIcon} size={16} /> {/* Download icon */}
 								{fileName}
 							</a>
 						</div>
@@ -171,25 +177,25 @@ const FileTable: React.FC<{
 				accessorKey: 'contractor',
 				header: t('library.table.contractor') || 'Contractorr',
 				minWidth: 120,
-				cell: info => <span>{info.getValue<string>() || t('library.table.unknown') || 'Unknown'}</span>,
+				cell: info => <span>{info.getValue<string>() || t('library.table.unknown') || 'Unknown'}</span>, // Show "Unknown" for missing values
 			},
 			{
 				accessorKey: 'country',
 				header: t('library.table.country') || 'Country',
 				minWidth: 120,
-				cell: info => <span>{info.getValue<string>() || t('library.table.na') || 'N/A'}</span>,
+				cell: info => <span>{info.getValue<string>() || t('library.table.na') || 'N/A'}</span>, // Show "N/A" for missing values
 			},
 			{
 				accessorKey: 'year',
 				header: t('library.table.year') || 'Year',
 				minWidth: 80,
-				cell: info => <span>{info.getValue<string | number>() || t('library.table.na') || 'N/A'}</span>,
+				cell: info => <span>{info.getValue<string | number>() || t('library.table.na') || 'N/A'}</span>, // Show "N/A" for missing values
 			},
 			{
 				accessorKey: 'theme',
 				header: t('library.table.theme') || 'Theme',
 				minWidth: 120,
-				cell: info => <span>{info.getValue<string>() || t('library.table.na') || 'N/A'}</span>,
+				cell: info => <span>{info.getValue<string>() || t('library.table.na') || 'N/A'}</span>, // Show "N/A" for missing values
 			},
 			{
 				id: 'description',
@@ -199,7 +205,7 @@ const FileTable: React.FC<{
 					const description = row.original.description || t('library.table.noDescription') || 'No description available'
 					return (
 						<div className={styles.tooltipContainer} onClick={e => e.stopPropagation()}>
-							<div className={styles.tooltip}>{description}</div>
+							<div className={styles.tooltip}>{description}</div> {/* Tooltip for description */}
 						</div>
 					)
 				},
@@ -208,26 +214,29 @@ const FileTable: React.FC<{
 		[]
 	)
 
-	const [sorting, setSorting] = useState([])
+	const [sorting, setSorting] = useState([]) // State for table sorting
 	const [pagination, setPagination] = useState({
-		pageIndex: 0,
-		pageSize: 10,
+		pageIndex: 0, // Current page index (0-based)
+		pageSize: 10, // Number of items per page
 	})
 
+	// Initialize and configure the table
 	const table = useReactTable({
 		data: filteredData,
 		columns,
-		getCoreRowModel: getCoreRowModel(),
-		getSortedRowModel: getSortedRowModel(),
-		getPaginationRowModel: getPaginationRowModel(),
-		state: { pagination, sorting },
-		onSortingChange: setSorting,
-		onPaginationChange: setPagination,
+		getCoreRowModel: getCoreRowModel(), // Basic row model
+		getSortedRowModel: getSortedRowModel(), // Adds sorting capability
+		getPaginationRowModel: getPaginationRowModel(), // Adds pagination capability
+		state: { pagination, sorting }, // Connect state to table
+		onSortingChange: setSorting, // Handle sort state changes
+		onPaginationChange: setPagination, // Handle pagination state changes
 	})
 
 	return (
 		<div className={styles.fileTableContainer}>
-			{/* Filter Summary */}
+			{' '}
+			{/* Main container */}
+			{/* Filter Summary - shows counts of filtered items */}
 			{filterSummary && (
 				<div className={styles.filterSummary}>
 					Showing {filterSummary.contractorCount} contractor{filterSummary.contractorCount !== 1 ? 's' : ''},{' '}
@@ -235,10 +244,9 @@ const FileTable: React.FC<{
 					{filterSummary.themeCount} theme{filterSummary.themeCount !== 1 ? 's' : ''}
 				</div>
 			)}
-
 			<div
 				className={styles.tableScrollContainer}
-				ref={tableScrollRef}
+				ref={tableScrollRef} // Reference for scroll position tracking
 				style={{ height: 'auto' }} // Ensure height is based on content
 			>
 				<table className={styles.table}>
@@ -248,13 +256,15 @@ const FileTable: React.FC<{
 								{headerGroup.headers.map(column => (
 									<th
 										key={column.id}
-										onClick={column.column.getToggleSortingHandler()}
+										onClick={column.column.getToggleSortingHandler()} // Add click handler for sorting
 										className={styles.sortableHeader}
 										style={{ minWidth: (column.column.columnDef as any).minWidth }}>
-										{flexRender(column.column.columnDef.header, column.getContext())}
+										{' '}
+										{/* Apply min width from column definition */}
+										{flexRender(column.column.columnDef.header, column.getContext())} {/* Render header content */}
 										{column.column.getIsSorted() && (
 											<span className={styles.sortIndicator}>
-												{column.column.getIsSorted() === 'desc' ? ' ▼' : ' ▲'}
+												{column.column.getIsSorted() === 'desc' ? ' ▼' : ' ▲'} {/* Show sort direction indicator */}
 											</span>
 										)}
 									</th>
@@ -271,13 +281,15 @@ const FileTable: React.FC<{
 									onClick={() =>
 										router.push({
 											pathname: '/library/moreinfo',
-											query: { data: JSON.stringify(row.original) },
+											query: { data: JSON.stringify(row.original) }, // Navigate to details page with row data
 										})
 									}
 									style={{ cursor: 'pointer' }}>
+									{' '}
+									{/* Show pointer cursor to indicate clickable */}
 									{row.getVisibleCells().map(cell => (
 										<td key={cell.id} style={{ minWidth: (cell.column.columnDef as any).minWidth }}>
-											{flexRender(cell.column.columnDef.cell, cell.getContext())}
+											{flexRender(cell.column.columnDef.cell, cell.getContext())} {/* Render cell content */}
 										</td>
 									))}
 								</tr>
@@ -285,27 +297,27 @@ const FileTable: React.FC<{
 						) : (
 							<tr>
 								<td colSpan={columns.length} style={{ textAlign: 'center', padding: '32px 20px' }}>
-									No results match your current filters
+									No results match your current filters {/* Empty state message */}
 								</td>
 							</tr>
 						)}
 					</tbody>
 				</table>
 			</div>
-
+			{/* Pagination controls */}
 			<div className={styles.pagination}>
 				<div className={styles.paginationControls}>
 					<button
-						onClick={() => table.setPageIndex(0)}
-						disabled={!table.getCanPreviousPage()}
+						onClick={() => table.setPageIndex(0)} // Go to first page
+						disabled={!table.getCanPreviousPage()} // Disable if already on first page
 						className={styles.paginationButton}>
-						<ChevronsLeft size={16} />
+						<ChevronsLeft size={16} /> {/* First page icon */}
 					</button>
 					<button
-						onClick={() => table.previousPage()}
-						disabled={!table.getCanPreviousPage()}
+						onClick={() => table.previousPage()} // Go to previous page
+						disabled={!table.getCanPreviousPage()} // Disable if already on first page
 						className={styles.paginationButton}>
-						<ChevronLeft size={16} />
+						<ChevronLeft size={16} /> {/* Previous page icon */}
 					</button>
 					<span className={styles.pageInfo}>
 						<span className={styles.pageInfo}>
@@ -314,24 +326,24 @@ const FileTable: React.FC<{
 						</span>
 					</span>
 					<button
-						onClick={() => table.nextPage()}
-						disabled={!table.getCanNextPage()}
+						onClick={() => table.nextPage()} // Go to next page
+						disabled={!table.getCanNextPage()} // Disable if already on last page
 						className={styles.paginationButton}>
-						<ChevronRight size={16} />
+						<ChevronRight size={16} /> {/* Next page icon */}
 					</button>
 					<button
-						onClick={() => table.setPageIndex(table.getPageCount() - 1)}
-						disabled={!table.getCanNextPage()}
+						onClick={() => table.setPageIndex(table.getPageCount() - 1)} // Go to last page
+						disabled={!table.getCanNextPage()} // Disable if already on last page
 						className={styles.paginationButton}>
-						<ChevronsRight size={16} />
+						<ChevronsRight size={16} /> {/* Last page icon */}
 					</button>
 					<select
-						value={table.getState().pagination.pageSize}
-						onChange={e => table.setPageSize(Number(e.target.value))}
+						value={table.getState().pagination.pageSize} // Current page size
+						onChange={e => table.setPageSize(Number(e.target.value))} // Handle page size change
 						className={styles.pageSizeSelect}>
 						{[5, 10, 20, 30, 50].map(pageSize => (
 							<option key={pageSize} value={pageSize}>
-								{t('library.pagination.show') || 'Show'} {pageSize}
+								{t('library.pagination.show') || 'Show'} {pageSize} {/* Page size options */}
 							</option>
 						))}
 					</select>

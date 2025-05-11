@@ -1,41 +1,44 @@
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react' // Import React hooks
 import {
 	useReactTable,
 	getCoreRowModel,
 	getSortedRowModel,
 	getPaginationRowModel,
 	flexRender,
-} from '@tanstack/react-table'
-import styles from '../../styles/samples/table.module.css'
-import CsvExportButton from './CSVButton'
-import { formatNumericValue } from '../../utils/dataUtilities'
-import { useLanguage } from '../../contexts/languageContext'
+} from '@tanstack/react-table' // Import TanStack Table library for data table functionality
+import styles from '../../styles/samples/table.module.css' // Import CSS modules for styling
+import CsvExportButton from './CSVButton' // Import CSV export button component
+import { formatNumericValue } from '../../utils/dataUtilities' // Import utility for formatting numeric values
+import { useLanguage } from '../../contexts/languageContext' // Import language context for translations
 
 const SampleTable = ({ filters, visibleColumns, setFilteredData }) => {
-	const { t } = useLanguage()
-	const [tableData, setTableData] = useState([])
-	const [loading, setLoading] = useState(true)
+	const { t } = useLanguage() // Get translation function from language context
+	const [tableData, setTableData] = useState([]) // State for all sample data
+	const [loading, setLoading] = useState(true) // Loading state for initial data fetch
 
+	// Fetch sample data from API on component mount
 	useEffect(() => {
 		const fetchSamples = async () => {
 			setLoading(true)
 			try {
-				const response = await fetch('http://localhost:5062/api/sample/list')
+				const response = await fetch('http://localhost:5062/api/sample/list') // API endpoint for samples
 				if (!response.ok) throw new Error('Network response was not ok')
 				const data = await response.json()
-				setTableData(data.result || [])
+				setTableData(data.result || []) // Store fetched data in state
 			} catch (error) {
 				console.error('Error fetching samples:', error)
 			} finally {
-				setLoading(false)
+				setLoading(false) // Mark loading complete regardless of success/failure
 			}
 		}
 
 		fetchSamples()
-	}, [])
+	}, []) // Empty dependency array means this runs once on mount
 
+	// Filter data based on active filters - memoized for performance
 	const filteredData = useMemo(() => {
 		const filtered = tableData.filter(item => {
+			// Apply multiple filter conditions - item must match ALL active filters
 			const matchSampleType =
 				filters.sampleType === 'all' || item.sampleType?.toLowerCase() === filters.sampleType?.toLowerCase()
 
@@ -59,6 +62,7 @@ const SampleTable = ({ filters, visibleColumns, setFilteredData }) => {
 
 			const matchContractor = filters.contractor === 'all' || item.contractorName === filters.contractor
 
+			// Return true only if ALL conditions are met
 			return (
 				matchSampleType &&
 				matchMatrixType &&
@@ -75,12 +79,13 @@ const SampleTable = ({ filters, visibleColumns, setFilteredData }) => {
 		setFilteredData(filtered)
 
 		return filtered
-	}, [filters, tableData, setFilteredData])
+	}, [filters, tableData, setFilteredData]) // Recalculate when filters or data change
 
-	// Get summary statistics for the filter bar
+	// Get summary statistics for the filter bar - memoized for performance
 	const filterSummary = useMemo(() => {
 		if (!filteredData.length) return null
 
+		// Calculate unique values for display in summary bar
 		const uniqueContractors = new Set(filteredData.map(item => item.contractorName).filter(Boolean))
 		const uniqueCruises = new Set(filteredData.map(item => item.cruiseName).filter(Boolean))
 		const uniqueStations = new Set(filteredData.map(item => item.stationCode).filter(Boolean))
@@ -90,14 +95,14 @@ const SampleTable = ({ filters, visibleColumns, setFilteredData }) => {
 			cruiseCount: uniqueCruises.size,
 			stationCount: uniqueStations.size,
 		}
-	}, [filteredData])
+	}, [filteredData]) // Recalculate when filtered data changes
 
 	// Define all possible columns with improved cell rendering
 	const allColumns = {
 		sampleCode: {
-			accessorKey: 'sampleCode',
-			header: t('library.samples.table.sampleCode') || 'Sample Code',
-			cell: info => info.getValue() ?? '-',
+			accessorKey: 'sampleCode', // Property to access from data object
+			header: t('library.samples.table.sampleCode') || 'Sample Code', // Column header with translation
+			cell: info => info.getValue() ?? '-', // Cell rendering with fallback for null/undefined
 		},
 		station: {
 			accessorKey: 'stationCode',
@@ -147,45 +152,49 @@ const SampleTable = ({ filters, visibleColumns, setFilteredData }) => {
 		},
 	}
 
-	// Only include columns the user selected
+	// Filter to include only columns the user selected - memoized for performance
 	const columns = useMemo(() => {
 		return Object.keys(allColumns)
-			.filter(key => visibleColumns.includes(key))
-			.map(key => allColumns[key])
-	}, [visibleColumns])
+			.filter(key => visibleColumns.includes(key)) // Only include columns selected by user
+			.map(key => allColumns[key]) // Map keys to column definitions
+	}, [visibleColumns]) // Recalculate when visible columns change
 
-	const [sorting, setSorting] = useState([])
-	const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 10 })
+	const [sorting, setSorting] = useState([]) // State for table sorting configuration
+	const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 10 }) // State for pagination configuration
 
+	// Initialize and configure the table with TanStack Table
 	const table = useReactTable({
-		data: filteredData,
-		columns,
-		getCoreRowModel: getCoreRowModel(),
-		getSortedRowModel: getSortedRowModel(),
-		getPaginationRowModel: getPaginationRowModel(),
-		state: { sorting, pagination },
-		onSortingChange: setSorting,
-		onPaginationChange: setPagination,
+		data: filteredData, // Data to display
+		columns, // Column definitions
+		getCoreRowModel: getCoreRowModel(), // Basic row model
+		getSortedRowModel: getSortedRowModel(), // Enables sorting
+		getPaginationRowModel: getPaginationRowModel(), // Enables pagination
+		state: { sorting, pagination }, // Connect state to table
+		onSortingChange: setSorting, // Handle sort state changes
+		onPaginationChange: setPagination, // Handle pagination state changes
 	})
 
-	// Export columns for CSV export
+	// Define columns for CSV export - memoized for performance
 	const exportColumns = useMemo(() => {
 		if (!filteredData.length) return []
 
-		// Define formatters for specific fields to prevent Excel date conversion issues
+		// Define formatters for specific fields to ensure proper CSV export format
+		// (especially important for numeric values to prevent Excel conversion issues)
 		const formatters = {
-			result: val => formatNumericValue(val),
-			depthLower: val => formatNumericValue(val),
-			depthUpper: val => formatNumericValue(val),
+			result: val => formatNumericValue(val), // Format numeric results
+			depthLower: val => formatNumericValue(val), // Format depth values
+			depthUpper: val => formatNumericValue(val), // Format depth values
 		}
 
+		// Create column definitions for each data property
 		return Object.keys(filteredData[0]).map(key => ({
-			label: key,
-			key,
-			format: formatters[key] || (val => (val !== null && val !== undefined ? String(val) : '')),
+			label: key, // Column label
+			key, // Property key
+			format: formatters[key] || (val => (val !== null && val !== undefined ? String(val) : '')), // Formatter function with fallback
 		}))
-	}, [filteredData])
+	}, [filteredData]) // Recalculate when filtered data changes
 
+	// Show loading state while fetching initial data
 	if (loading) {
 		return (
 			<div className={styles.fileTableContainer}>
@@ -197,15 +206,15 @@ const SampleTable = ({ filters, visibleColumns, setFilteredData }) => {
 						padding: '40px',
 						color: '#475569',
 					}}>
-					{t('library.samples.table.loading') || 'Loading sample data...'}
+					{t('library.samples.table.loading') || 'Loading sample data...'} {/* Loading message with translation */}
 				</div>
 			</div>
 		)
 	}
 
 	return (
-		<div className={styles.fileTableContainer}>
-			{/* Filter Summary */}
+		<div className={styles.fileTableContainer}> {/* Main container */}
+			{/* Filter Summary - shows counts of filtered items by category */}
 			{filterSummary && (
 				<div className={styles.filterSummary}>
 					Showing {filterSummary.contractorCount} contractor{filterSummary.contractorCount !== 1 ? 's' : ''},{' '}
@@ -214,11 +223,12 @@ const SampleTable = ({ filters, visibleColumns, setFilteredData }) => {
 				</div>
 			)}
 
+			{/* CSV Export Button - for downloading filtered data */}
 			<CsvExportButton
-				data={filteredData}
-				columns={exportColumns}
-				filename='filtered-samples.csv'
-				meta={{
+				data={filteredData} // Data to export
+				columns={exportColumns} // Column definitions for export
+				filename='filtered-samples.csv' // Default filename
+				meta={{ // Metadata to include in CSV header
 					title: 'Samples',
 					filters: {
 						'Sample Type': filters.sampleType,
@@ -232,6 +242,7 @@ const SampleTable = ({ filters, visibleColumns, setFilteredData }) => {
 				}}
 			/>
 
+			{/* Empty state - shown when no data matches filters */}
 			{filteredData.length === 0 ? (
 				<div
 					style={{
@@ -245,8 +256,8 @@ const SampleTable = ({ filters, visibleColumns, setFilteredData }) => {
 					{t('library.samples.table.noResults') || 'No samples match your filter criteria. Try adjusting your filters.'}
 				</div>
 			) : (
-				<div className={styles.tableWrapper}>
-					<div className={styles.tableContainer}>
+				<div className={styles.tableWrapper}> {/* Table wrapper - only shown when data exists */}
+					<div className={styles.tableContainer}> {/* Table container with scroll capability */}
 						<table className={styles.table}>
 							<thead className={styles.tableHead}>
 								{table.getHeaderGroups().map(headerGroup => (
@@ -254,15 +265,15 @@ const SampleTable = ({ filters, visibleColumns, setFilteredData }) => {
 										{headerGroup.headers.map(header => (
 											<th
 												key={header.id}
-												onClick={header.column.getToggleSortingHandler()}
+												onClick={header.column.getToggleSortingHandler()} // Add click handler for sorting
 												className={styles.sortableHeader}
 												style={{
 													width: header.column.columnDef.accessorKey === 'sampleDescription' ? '300px' : 'auto',
-												}}>
-												{flexRender(header.column.columnDef.header, header.getContext())}
+												}}> {/* Special width for description column */}
+												{flexRender(header.column.columnDef.header, header.getContext())} {/* Render header content */}
 												{header.column.getIsSorted() && (
 													<span className={styles.sortIndicator}>
-														{header.column.getIsSorted() === 'desc' ? ' ▼' : ' ▲'}
+														{header.column.getIsSorted() === 'desc' ? ' ▼' : ' ▲'} {/* Sort direction indicator */}
 													</span>
 												)}
 											</th>
@@ -274,7 +285,7 @@ const SampleTable = ({ filters, visibleColumns, setFilteredData }) => {
 								{table.getRowModel().rows.map(row => (
 									<tr key={row.id} className={styles.tableRow}>
 										{row.getVisibleCells().map(cell => (
-											<td key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</td>
+											<td key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</td> {/* Render cell content */}
 										))}
 									</tr>
 								))}
@@ -282,48 +293,48 @@ const SampleTable = ({ filters, visibleColumns, setFilteredData }) => {
 						</table>
 					</div>
 
-					{/* Pagination */}
+					{/* Pagination controls */}
 					<div className={styles.pagination}>
 						<div className={styles.paginationControls}>
 							<button
-								onClick={() => table.setPageIndex(0)}
-								disabled={!table.getCanPreviousPage()}
+								onClick={() => table.setPageIndex(0)} // Go to first page
+								disabled={!table.getCanPreviousPage()} // Disable if already on first page
 								className={styles.paginationButton}
 								aria-label='First page'>
-								{'<<'}
+								{'<<'} {/* First page icon */}
 							</button>
 							<button
-								onClick={() => table.previousPage()}
-								disabled={!table.getCanPreviousPage()}
+								onClick={() => table.previousPage()} // Go to previous page
+								disabled={!table.getCanPreviousPage()} // Disable if already on first page
 								className={styles.paginationButton}
 								aria-label='Previous page'>
-								{'<'}
+								{'<'} {/* Previous page icon */}
 							</button>
 							<span className={styles.pageInfo}>
-								Page {table.getState().pagination.pageIndex + 1} of {table.getPageCount()}
+								Page {table.getState().pagination.pageIndex + 1} of {table.getPageCount()} {/* Page indicator */}
 							</span>
 							<button
-								onClick={() => table.nextPage()}
-								disabled={!table.getCanNextPage()}
+								onClick={() => table.nextPage()} // Go to next page
+								disabled={!table.getCanNextPage()} // Disable if already on last page
 								className={styles.paginationButton}
 								aria-label='Next page'>
-								{'>'}
+								{'>'} {/* Next page icon */}
 							</button>
 							<button
-								onClick={() => table.setPageIndex(table.getPageCount() - 1)}
-								disabled={!table.getCanNextPage()}
+								onClick={() => table.setPageIndex(table.getPageCount() - 1)} // Go to last page
+								disabled={!table.getCanNextPage()} // Disable if already on last page
 								className={styles.paginationButton}
 								aria-label='Last page'>
-								{'>>'}
+								{'>>'} {/* Last page icon */}
 							</button>
 							<select
-								value={table.getState().pagination.pageSize}
-								onChange={e => table.setPageSize(Number(e.target.value))}
+								value={table.getState().pagination.pageSize} // Current page size
+								onChange={e => table.setPageSize(Number(e.target.value))} // Change handler for page size
 								className={styles.pageSizeSelect}
 								aria-label='Items per page'>
 								{[10, 20, 30, 40, 50].map(size => (
 									<option key={size} value={size}>
-										Show {size}
+										Show {size} {/* Page size options */}
 									</option>
 								))}
 							</select>

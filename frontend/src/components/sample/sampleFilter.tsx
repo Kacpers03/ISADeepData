@@ -1,30 +1,33 @@
-import React, { useEffect, useState, useRef, useMemo } from 'react'
-import { ChevronDown, X, Filter } from 'lucide-react'
-import styles from '../../styles/samples/filter.module.css'
-import { useLanguage } from '../../contexts/languageContext'
+import React, { useEffect, useState, useRef, useMemo } from 'react' // Import React hooks
+import { ChevronDown, X, Filter } from 'lucide-react' // Import Lucide icons
+import styles from '../../styles/samples/filter.module.css' // Import CSS modules for styling
+import { useLanguage } from '../../contexts/languageContext' // Import language context for translations
 
 const SampleFilter = ({
-	filters,
-	setFilters,
-	defaultFilters,
-	visibleColumns,
-	setVisibleColumns,
-	filteredData = [],
+	filters, // Current filter state
+	setFilters, // Function to update filters
+	defaultFilters, // Default filter values for reset
+	visibleColumns, // Currently visible table columns
+	setVisibleColumns, // Function to update visible columns
+	filteredData = [], // Data after filtering (for calculating available options)
 }) => {
-	const { t } = useLanguage()
-	const [sampleTypes, setSampleTypes] = useState([])
-	const [matrixTypes, setMatrixTypes] = useState([])
-	const [habitatTypes, setHabitatTypes] = useState([])
-	const [analyses, setAnalyses] = useState([])
-	const [stationOptions, setStationOptions] = useState([])
-	const [cruiseOptions, setCruiseOptions] = useState([])
-	const [contractorOptions, setContractorOptions] = useState([])
-	const [loading, setLoading] = useState(true)
+	const { t } = useLanguage() // Get translation function from language context
 
-	// Refs for dropdown functionality
+	// State for filter options fetched from API
+	const [sampleTypes, setSampleTypes] = useState([]) // Sample type options
+	const [matrixTypes, setMatrixTypes] = useState([]) // Matrix type options
+	const [habitatTypes, setHabitatTypes] = useState([]) // Habitat type options
+	const [analyses, setAnalyses] = useState([]) // Analysis options
+	const [stationOptions, setStationOptions] = useState([]) // Station options
+	const [cruiseOptions, setCruiseOptions] = useState([]) // Cruise options
+	const [contractorOptions, setContractorOptions] = useState([]) // Contractor options
+	const [loading, setLoading] = useState(true) // Loading state for initial data fetch
+
+	// Refs for dropdown functionality - tracks DOM elements for click outside detection
 	const dropdownRefs = useRef({})
-	const [openDropdown, setOpenDropdown] = useState(null)
+	const [openDropdown, setOpenDropdown] = useState(null) // Tracks which dropdown is currently open
 
+	// Define all possible column options for the column visibility toggles
 	const allColumnOptions = [
 		{ key: 'sampleCode', label: 'Sample Code' },
 		{ key: 'sampleType', label: 'Sample Type' },
@@ -38,8 +41,9 @@ const SampleFilter = ({
 		{ key: 'sampleDescription', label: 'Description' },
 	]
 
-	// Calculate available options based on the filtered data
+	// Calculate available options based on the filtered data - memoized for performance
 	const availableOptions = useMemo(() => {
+		// If no filtered data, return all options
 		if (!filteredData.length) {
 			return {
 				sampleTypes: sampleTypes,
@@ -52,7 +56,7 @@ const SampleFilter = ({
 			}
 		}
 
-		// Extract unique values from filtered data
+		// Extract unique values from filtered data for each filter category
 		const uniqueSampleTypes = [...new Set(filteredData.map(item => item.sampleType).filter(Boolean))]
 		const uniqueMatrixTypes = [...new Set(filteredData.map(item => item.matrixType).filter(Boolean))]
 		const uniqueHabitatTypes = [...new Set(filteredData.map(item => item.habitatType).filter(Boolean))]
@@ -61,7 +65,8 @@ const SampleFilter = ({
 		const uniqueCruises = [...new Set(filteredData.map(item => item.cruiseName).filter(Boolean))]
 		const uniqueContractors = [...new Set(filteredData.map(item => item.contractorName).filter(Boolean))]
 
-		// Only show filtered options for filters that aren't current active
+		// Only show filtered options for filters that aren't currently active
+		// (Show all options for active filters, only remaining valid options for inactive filters)
 		return {
 			sampleTypes: filters.sampleType !== 'all' ? sampleTypes : uniqueSampleTypes,
 			matrixTypes: filters.matrixType !== 'all' ? matrixTypes : uniqueMatrixTypes,
@@ -87,9 +92,9 @@ const SampleFilter = ({
 		stationOptions,
 		cruiseOptions,
 		contractorOptions,
-	])
+	]) // Recalculate when any of these dependencies change
 
-	// Close dropdown when clicking outside
+	// Close dropdown when clicking outside - click-outside detection
 	useEffect(() => {
 		const handleClickOutside = event => {
 			if (
@@ -97,20 +102,22 @@ const SampleFilter = ({
 				dropdownRefs.current[openDropdown] &&
 				!dropdownRefs.current[openDropdown].contains(event.target)
 			) {
-				setOpenDropdown(null)
+				setOpenDropdown(null) // Close the open dropdown if clicked outside
 			}
 		}
 
-		document.addEventListener('mousedown', handleClickOutside)
+		document.addEventListener('mousedown', handleClickOutside) // Add global click listener
 		return () => {
-			document.removeEventListener('mousedown', handleClickOutside)
+			document.removeEventListener('mousedown', handleClickOutside) // Clean up on unmount
 		}
 	}, [openDropdown])
 
+	// Fetch filter options from API endpoints on component mount
 	useEffect(() => {
 		const fetchFilterOptions = async () => {
 			setLoading(true)
 			try {
+				// Parallel fetch of all filter options
 				const [sampleTypeRes, matrixTypeRes, habitatTypeRes, analysisRes, stationRes, cruiseRes, contractorRes] =
 					await Promise.all([
 						fetch('http://localhost:5062/api/sample/sampletypes'),
@@ -122,6 +129,7 @@ const SampleFilter = ({
 						fetch('http://localhost:5062/api/sample/contractors'),
 					])
 
+				// Parse JSON responses
 				const sampleTypeData = await sampleTypeRes.json()
 				const matrixTypeData = await matrixTypeRes.json()
 				const habitatTypeData = await habitatTypeRes.json()
@@ -130,6 +138,7 @@ const SampleFilter = ({
 				const cruiseData = await cruiseRes.json()
 				const contractorData = await contractorRes.json()
 
+				// Update state with fetched options
 				setSampleTypes(sampleTypeData.result || [])
 				setMatrixTypes(matrixTypeData.result || [])
 				setHabitatTypes(habitatTypeData.result || [])
@@ -140,52 +149,56 @@ const SampleFilter = ({
 			} catch (error) {
 				console.error('Error fetching filter options:', error)
 			} finally {
-				setLoading(false)
+				setLoading(false) // Mark loading as complete regardless of success/failure
 			}
 		}
 
 		fetchFilterOptions()
-	}, [])
+	}, []) // Empty dependency array means this runs once on mount
 
+	// Handle input filter changes (search input)
 	const handleFilterChange = e => {
 		const { name, value } = e.target
 		setFilters(prev => ({
 			...prev,
-			[name]: value,
+			[name]: value, // Update the specific filter value
 		}))
 	}
 
+	// Reset all filters to default values
 	const handleClearFilters = () => {
-		setFilters(defaultFilters)
-		setOpenDropdown(null)
+		setFilters(defaultFilters) // Reset to default filter values
+		setOpenDropdown(null) // Close any open dropdown
 	}
 
+	// Handle column visibility toggle
 	const handleColumnToggle = e => {
 		const { value, checked } = e.target
 		if (checked) {
-			setVisibleColumns(prev => [...prev, value])
+			setVisibleColumns(prev => [...prev, value]) // Add column to visible list
 		} else {
-			setVisibleColumns(prev => prev.filter(col => col !== value))
+			setVisibleColumns(prev => prev.filter(col => col !== value)) // Remove column from visible list
 		}
 	}
 
-	// Toggle dropdown visibility
+	// Toggle dropdown open/closed state
 	const toggleDropdown = name => {
-		setOpenDropdown(openDropdown === name ? null : name)
+		setOpenDropdown(openDropdown === name ? null : name) // Toggle - close if already open, open if closed
 	}
 
 	// Select option from dropdown
 	const selectOption = (name, value) => {
 		setFilters(prev => ({
 			...prev,
-			[name]: value,
+			[name]: value, // Update the specific filter value
 		}))
-		setOpenDropdown(null)
+		setOpenDropdown(null) // Close the dropdown after selection
 	}
 
-	// Get display value for dropdown
+	// Get display value for dropdown based on selected filter value
 	const getDisplayValue = (name, value) => {
 		if (value === 'all') {
+			// Return appropriate "All X" text for different filter types
 			switch (name) {
 				case 'contractor':
 					return t('library.samples.filter.allContractors') || 'All Contractors'
@@ -205,9 +218,10 @@ const SampleFilter = ({
 					return t('library.samples.filter.all') || 'All'
 			}
 		}
-		return value
+		return value // Return the actual value if not "all"
 	}
 
+	// Show loading state while fetching initial options
 	if (loading) {
 		return (
 			<div className={styles.filterContainer}>
@@ -220,19 +234,24 @@ const SampleFilter = ({
 
 	return (
 		<div className={styles.filterContainer}>
+			{' '}
+			{/* Main filter container */}
 			<div className={styles.filterHeader}>
+				{' '}
+				{/* Filter header with title and reset button */}
 				<h2>
 					<Filter size={16} className={styles.filterIcon} />
 					{t('library.samples.filter.title') || 'Sample Filters'}
 				</h2>
 				<button className={styles.resetButton} onClick={handleClearFilters} type='button'>
-					{t('library.samples.filter.reset') || 'Reset'}
+					{t('library.samples.filter.reset') || 'Reset'} {/* Reset button */}
 				</button>
 			</div>
-
 			<div className={styles.filterContent}>
+				{' '}
+				{/* Main filter content area */}
 				<div className={styles.filtersGroup}>
-					{/* Search Filter */}
+					{/* Search Filter - text input for free text search */}
 					<label className={styles.filterLabel}>{t('library.samples.filter.search') || 'Search'}</label>
 					<div className={styles.searchInputContainer}>
 						<input
@@ -246,50 +265,52 @@ const SampleFilter = ({
 						{filters.searchQuery && (
 							<button
 								className={styles.clearSearchButton}
-								onClick={() => setFilters(prev => ({ ...prev, searchQuery: '' }))}
+								onClick={() => setFilters(prev => ({ ...prev, searchQuery: '' }))} // Clear search text
 								type='button'
 								aria-label='Clear search'>
-								<X size={14} />
+								<X size={14} /> {/* X icon for clear button */}
 							</button>
 						)}
 					</div>
-
-					{/* Contractor Dropdown */}
+					{/* Contractor Dropdown - custom dropdown implementation */}
 					<label className={styles.filterLabel}>{t('library.samples.filter.contractor') || 'Contractor'}</label>
 					<div className={styles.dropdownContainer} ref={el => (dropdownRefs.current['contractor'] = el)}>
+						{' '}
+						{/* Reference for click detection */}
 						<button
 							className={
 								filters.contractor !== 'all' ? `${styles.customSelect} ${styles.hasSelection}` : styles.customSelect
-							}
+							} // Apply active styling if filter is set
 							onClick={() => toggleDropdown('contractor')}
 							type='button'>
-							<span className={styles.selectText}>{getDisplayValue('contractor', filters.contractor)}</span>
+							<span className={styles.selectText}>{getDisplayValue('contractor', filters.contractor)}</span>{' '}
+							{/* Display selected value */}
 							<ChevronDown
 								size={16}
 								className={`${styles.selectIcon} ${openDropdown === 'contractor' ? styles.selectIconOpen : ''}`}
-							/>
+							/>{' '}
+							{/* Dropdown arrow that rotates when open */}
 						</button>
-
+						{/* Dropdown options menu - only shown when dropdown is open */}
 						{openDropdown === 'contractor' && (
 							<div className={styles.dropdownContent}>
 								<div
 									className={`${styles.dropdownOption} ${filters.contractor === 'all' ? styles.selectedOption : ''}`}
 									onClick={() => selectOption('contractor', 'all')}>
-									All Contractors
+									All Contractors {/* "All" option */}
 								</div>
 								{availableOptions.contractors.map((option, index) => (
 									<div
 										key={index}
 										className={`${styles.dropdownOption} ${filters.contractor === option ? styles.selectedOption : ''}`}
 										onClick={() => selectOption('contractor', option)}>
-										{option}
+										{option} {/* Individual contractor options */}
 									</div>
 								))}
 							</div>
 						)}
 					</div>
-
-					{/* Station Dropdown */}
+					{/* Station Dropdown - similar structure to contractor dropdown */}
 					<label className={styles.filterLabel}>{t('library.samples.filter.station') || 'Station'}</label>
 					<div className={styles.dropdownContainer} ref={el => (dropdownRefs.current['station'] = el)}>
 						<button
@@ -323,9 +344,9 @@ const SampleFilter = ({
 							</div>
 						)}
 					</div>
-
-					{/* Cruise Dropdown */}
-					<label className={styles.filterLabel}>{t('library.samples.filter.station') || 'Station'}</label>
+					{/* Cruise Dropdown - similar structure to previous dropdowns */}
+					<label className={styles.filterLabel}>{t('library.samples.filter.station') || 'Station'}</label>{' '}
+					{/* Note: Label might need correction - currently shows "Station" for Cruise */}
 					<div className={styles.dropdownContainer} ref={el => (dropdownRefs.current['cruise'] = el)}>
 						<button
 							className={
@@ -358,8 +379,7 @@ const SampleFilter = ({
 							</div>
 						)}
 					</div>
-
-					{/* Sample Type Dropdown */}
+					{/* Sample Type Dropdown - similar structure to previous dropdowns */}
 					<label className={styles.filterLabel}>{t('library.samples.filter.sampleType') || 'Sample Type'}</label>
 					<div className={styles.dropdownContainer} ref={el => (dropdownRefs.current['sampleType'] = el)}>
 						<button
@@ -393,8 +413,7 @@ const SampleFilter = ({
 							</div>
 						)}
 					</div>
-
-					{/* Matrix Type Dropdown */}
+					{/* Matrix Type Dropdown - similar structure to previous dropdowns */}
 					<label className={styles.filterLabel}>{t('library.samples.filter.matrixType') || 'Matrix Type'}</label>
 					<div className={styles.dropdownContainer} ref={el => (dropdownRefs.current['matrixType'] = el)}>
 						<button
@@ -428,8 +447,7 @@ const SampleFilter = ({
 							</div>
 						)}
 					</div>
-
-					{/* Habitat Type Dropdown */}
+					{/* Habitat Type Dropdown - similar structure to previous dropdowns */}
 					<label className={styles.filterLabel}>{t('library.samples.filter.habitatType') || 'Habitat Type'}</label>
 					<div className={styles.dropdownContainer} ref={el => (dropdownRefs.current['habitatType'] = el)}>
 						<button
@@ -465,8 +483,7 @@ const SampleFilter = ({
 							</div>
 						)}
 					</div>
-
-					{/* Analysis Dropdown */}
+					{/* Analysis Dropdown - similar structure to previous dropdowns */}
 					<label className={styles.filterLabel}>{t('library.samples.filter.analysis') || 'Analysis'}</label>
 					<div className={styles.dropdownContainer} ref={el => (dropdownRefs.current['analysis'] = el)}>
 						<button
@@ -502,25 +519,26 @@ const SampleFilter = ({
 					</div>
 				</div>
 			</div>
-
-			{/* Column Visibility Section */}
+			{/* Column Visibility Section - allows toggling which columns are shown in the table */}
 			<div className={styles.visibilitySection}>
 				<div className={styles.visibilityHeader}>
 					<span>{t('library.samples.filter.visibleColumns') || 'Visible Columns'}</span>
 				</div>
 				<div className={styles.columnsGrid}>
+					{' '}
+					{/* Grid layout for column checkboxes */}
 					{allColumnOptions.map(col => (
 						<div key={col.key} className={styles.columnToggle}>
 							<input
 								type='checkbox'
 								id={`col-${col.key}`}
 								value={col.key}
-								checked={visibleColumns.includes(col.key)}
-								onChange={handleColumnToggle}
+								checked={visibleColumns.includes(col.key)} // Checked if column is in visible columns array
+								onChange={handleColumnToggle} // Handle checkbox toggle
 								className={styles.columnCheckbox}
 							/>
 							<label htmlFor={`col-${col.key}`} className={styles.columnLabel}>
-								{col.label}
+								{col.label} {/* Column display name */}
 							</label>
 						</div>
 					))}

@@ -1,28 +1,30 @@
-import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react'
-import { CustomDropdown } from '../map/filters/CustomDropdown'
-import styles from '../../styles/gallery/gallery.module.css'
-import mapStyles from '../../styles/map/filter.module.css'
-import { useLanguage } from '../../contexts/languageContext' // Import language context
+import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react' // Import React hooks
+import { CustomDropdown } from '../map/filters/CustomDropdown' // Import custom dropdown component
+import styles from '../../styles/gallery/gallery.module.css' // Import gallery-specific styles
+import mapStyles from '../../styles/map/filter.module.css' // Import map filter styles for reuse
+import { useLanguage } from '../../contexts/languageContext' // Import language context for translations
 
+// Define the component props interface
 interface GalleryFilterProps {
 	filters: {
-		mediaType: string
-		contractorId: string
-		cruiseId: string
-		stationId: string
-		year: string
-		searchQuery: string
+		mediaType: string // Type of media (image, video, all)
+		contractorId: string // Selected contractor ID
+		cruiseId: string // Selected cruise ID
+		stationId: string // Selected station ID
+		year: string // Selected year
+		searchQuery: string // Text search query
 	}
-	onFilterChange: (filterName: string, value: string) => void
-	onResetFilters: () => void
-	contractors: { id: number; name: string }[]
-	cruises: { id: number; name: string }[]
-	stations: { id: number; code: string }[]
-	years: string[]
+	onFilterChange: (filterName: string, value: string) => void // Callback for filter changes
+	onResetFilters: () => void // Callback to reset all filters
+	contractors: { id: number; name: string }[] // Available contractors list
+	cruises: { id: number; name: string }[] // Available cruises list
+	stations: { id: number; code: string }[] // Available stations list
+	years: string[] // Available years list
 	currentFilteredItems: any[] // Array of currently filtered media items
 }
 
 // Create a simple debounce function instead of importing from lodash
+// This delays execution of a function until after a specified wait time
 const debounce = (func: Function, wait: number) => {
 	let timeout: NodeJS.Timeout
 	return function executedFunction(...args: any[]) {
@@ -45,18 +47,20 @@ const GalleryFilter: React.FC<GalleryFilterProps> = ({
 	years,
 	currentFilteredItems,
 }) => {
-	const { t } = useLanguage() // Use the language context
-	const [isCollapsed, setIsCollapsed] = useState(false)
-	const [isDownloading, setIsDownloading] = useState(false)
-	const [searchQuery, setSearchQuery] = useState(filters.searchQuery)
-	const [showResults, setShowResults] = useState(false)
-	const [searchResults, setSearchResults] = useState<any[]>([])
+	const { t } = useLanguage() // Use the language context for translations
+	const [isCollapsed, setIsCollapsed] = useState(false) // Track if filter panel is collapsed
+	const [isDownloading, setIsDownloading] = useState(false) // Track if CSV download is in progress
+	const [searchQuery, setSearchQuery] = useState(filters.searchQuery) // Local state for search input
+	const [showResults, setShowResults] = useState(false) // Track if search results dropdown is visible
+	const [searchResults, setSearchResults] = useState<any[]>([]) // Store search results
 
-	const searchInputRef = useRef<HTMLInputElement>(null)
-	const resultsRef = useRef<HTMLDivElement>(null)
+	// Refs for managing DOM access and interactions
+	const searchInputRef = useRef<HTMLInputElement>(null) // Reference to search input element
+	const resultsRef = useRef<HTMLDivElement>(null) // Reference to search results dropdown
 
-	// Calculate available options based on the current filtered items
+	// Calculate available options based on the current filtered items - memoized for performance
 	const availableOptions = useMemo(() => {
+		// If no filtered items, return all options
 		if (!currentFilteredItems.length) {
 			return {
 				mediaTypes: ['image', 'video'],
@@ -67,7 +71,7 @@ const GalleryFilter: React.FC<GalleryFilterProps> = ({
 			}
 		}
 
-		// Check for media types
+		// Check which media types exist in the filtered data
 		const hasImages = currentFilteredItems.some(
 			item => !item.mediaType?.toLowerCase().includes('video') && !item.fileName.match(/\.(mp4|webm|avi|mov|wmv|flv)$/i)
 		)
@@ -81,7 +85,7 @@ const GalleryFilter: React.FC<GalleryFilterProps> = ({
 		if (hasImages) availableMediaTypes.push('image')
 		if (hasVideos) availableMediaTypes.push('video')
 
-		// Extract unique values from filtered items
+		// Extract unique values from filtered items for each filter type
 		const uniqueContractorIds = new Set(
 			currentFilteredItems.map(item => item.contractorId).filter(id => id !== null && id !== undefined)
 		)
@@ -105,7 +109,8 @@ const GalleryFilter: React.FC<GalleryFilterProps> = ({
 				.filter(year => year !== null)
 		)
 
-		// Only show options that are in the filtered data
+		// Return filtered options - only show options that exist in the filtered data
+		// If a filter is active (not 'all'), still show all options for that filter type
 		return {
 			mediaTypes: filters.mediaType !== 'all' ? ['image', 'video'] : availableMediaTypes,
 
@@ -129,47 +134,50 @@ const GalleryFilter: React.FC<GalleryFilterProps> = ({
 		cruises,
 		stations,
 		years,
-	])
+	]) // Recalculate when any of these dependencies change
 
-	// Handle click outside search results
+	// Handle click outside search results - close results dropdown when clicking elsewhere
 	useEffect(() => {
 		const handleClickOutside = (event: MouseEvent) => {
 			if (resultsRef.current && !resultsRef.current.contains(event.target as Node)) {
-				setShowResults(false)
+				setShowResults(false) // Close search results dropdown
 			}
 		}
 
-		document.addEventListener('mousedown', handleClickOutside)
+		document.addEventListener('mousedown', handleClickOutside) // Add global click listener
 		return () => {
-			document.removeEventListener('mousedown', handleClickOutside)
+			document.removeEventListener('mousedown', handleClickOutside) // Clean up on unmount
 		}
 	}, [])
 
-	// Handle search change with debounce
+	// Handle search input change with debounce to avoid excessive searches while typing
 	const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-		setSearchQuery(e.target.value)
+		setSearchQuery(e.target.value) // Update local state immediately for UI
 
 		if (e.target.value.trim() === '') {
+			// Clear results and filters if search is empty
 			setSearchResults([])
 			setShowResults(false)
 			onFilterChange('searchQuery', '')
 		} else {
+			// Debounce the search to avoid excessive searches while typing
 			debouncedSearch(e.target.value)
 		}
 	}
 
-	// Perform search
+	// Perform search on the filtered items
 	const performSearch = useCallback(
 		(query: string) => {
 			if (query.trim() === '') {
+				// Clear results if search is empty
 				setSearchResults([])
 				setShowResults(false)
 				return
 			}
 
-			const lowercaseQuery = query.toLowerCase()
+			const lowercaseQuery = query.toLowerCase() // Case-insensitive search
 
-			// Search through currentFilteredItems
+			// Search through currentFilteredItems for matches
 			const results = currentFilteredItems
 				.filter(
 					item =>
@@ -179,23 +187,24 @@ const GalleryFilter: React.FC<GalleryFilterProps> = ({
 						(item.contractorName && item.contractorName.toLowerCase().includes(lowercaseQuery)) ||
 						(item.cruiseName && item.cruiseName.toLowerCase().includes(lowercaseQuery))
 				)
-				.slice(0, 10) // Limit to 10 results for performance
+				.slice(0, 10) // Limit to 10 results for performance and usability
 
-			setSearchResults(results)
-			setShowResults(results.length > 0)
-			onFilterChange('searchQuery', query)
+			setSearchResults(results) // Update search results state
+			setShowResults(results.length > 0) // Show dropdown if there are results
+			onFilterChange('searchQuery', query) // Update parent component's filter state
 		},
 		[currentFilteredItems, onFilterChange]
 	)
 
+	// Create debounced version of the search function - memoized to avoid recreation
 	const debouncedSearch = useCallback(
 		debounce((query: string) => {
 			performSearch(query)
-		}, 300),
+		}, 300), // 300ms delay
 		[performSearch]
 	)
 
-	// Handle search on Enter key
+	// Handle Enter key press in search input - immediately perform search
 	const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
 		if (e.key === 'Enter') {
 			performSearch(searchQuery)
@@ -214,9 +223,9 @@ const GalleryFilter: React.FC<GalleryFilterProps> = ({
 		return count
 	}
 
-	const activeFiltersCount = countActiveFilters()
+	const activeFiltersCount = countActiveFilters() // Calculate active filters count
 
-	// Debounced filter change handler
+	// Debounced filter change handler to prevent rapid updates
 	const debouncedFilterChange = useCallback(
 		debounce((key: string, value: string) => {
 			onFilterChange(key, value)
@@ -224,7 +233,7 @@ const GalleryFilter: React.FC<GalleryFilterProps> = ({
 		[onFilterChange]
 	)
 
-	// Handle dropdown change
+	// Handle dropdown selection changes
 	const handleSelectChange = (key: string, value: any) => {
 		if (value === 'all') {
 			debouncedFilterChange(key, 'all')
@@ -233,14 +242,15 @@ const GalleryFilter: React.FC<GalleryFilterProps> = ({
 		}
 	}
 
-	// Handle search result click
+	// Handle search result item click - updates filters based on the selected item
 	const handleResultClick = (item: any) => {
-		// Navigate to the item detail or apply specific filters
+		// Close results dropdown
 		setShowResults(false)
 
 		// Set filters based on the clicked item
 		onFilterChange('searchQuery', item.fileName || item.stationCode || '')
 
+		// Apply relevant filters based on the clicked item
 		if (item.contractorId) {
 			onFilterChange('contractorId', item.contractorId.toString())
 		}
@@ -269,7 +279,7 @@ const GalleryFilter: React.FC<GalleryFilterProps> = ({
 		return `"${noLineBreaks}"`
 	}
 
-	// Format date consistently for Excel
+	// Format date consistently for Excel - YYYY-MM-DD format
 	const formatDate = (dateString?: string): string => {
 		if (!dateString) return 'N/A'
 
@@ -305,7 +315,7 @@ const GalleryFilter: React.FC<GalleryFilterProps> = ({
 		}
 	}
 
-	// Function to download all filtered images - UPDATED TO MATCH MAP CSV EXPORT FORMAT
+	// Function to download all filtered media items as a CSV file
 	const handleDownloadAllImages = async () => {
 		if (currentFilteredItems.length === 0) {
 			alert(t('gallery.filter.noItemsToDownload') || 'No items to download.')
@@ -313,9 +323,9 @@ const GalleryFilter: React.FC<GalleryFilterProps> = ({
 		}
 
 		try {
-			setIsDownloading(true)
+			setIsDownloading(true) // Show download in progress state
 
-			// Filter items based on mediaType
+			// Filter items based on mediaType if that filter is active
 			const itemsToDownload =
 				filters.mediaType === 'image'
 					? currentFilteredItems.filter(
@@ -336,7 +346,7 @@ const GalleryFilter: React.FC<GalleryFilterProps> = ({
 				return
 			}
 
-			// Create download description
+			// Create download description based on active filters
 			let filterDescription = t('gallery.filter.allMedia') || 'All Media'
 			if (filters.mediaType !== 'all')
 				filterDescription =
@@ -359,7 +369,7 @@ const GalleryFilter: React.FC<GalleryFilterProps> = ({
 
 			// Store all CSV rows here
 			const allRows: string[] = []
-			const delimiter = ';'
+			const delimiter = ';' // Use semicolon as delimiter for Excel compatibility
 
 			// Add report title section
 			allRows.push(`"${t('gallery.export.title') || 'ISA DeepData Gallery Export'} - ${filterDescription}"`)
@@ -406,7 +416,7 @@ const GalleryFilter: React.FC<GalleryFilterProps> = ({
 			allRows.push('')
 			allRows.push('')
 
-			// 2. STATION REFERENCE SECTION
+			// 2. STATION REFERENCE SECTION - include information about stations
 			// Get unique stations from the media items
 			const uniqueStations = Array.from(new Set(itemsToDownload.map(item => item.stationCode).filter(Boolean)))
 
@@ -452,7 +462,7 @@ const GalleryFilter: React.FC<GalleryFilterProps> = ({
 				allRows.push('')
 			}
 
-			// 3. CRUISE REFERENCE SECTION
+			// 3. CRUISE REFERENCE SECTION - include information about cruises
 			// Get unique cruises from the media items
 			const uniqueCruises = Array.from(new Set(itemsToDownload.map(item => item.cruiseName).filter(Boolean)))
 
@@ -496,7 +506,7 @@ const GalleryFilter: React.FC<GalleryFilterProps> = ({
 				allRows.push('')
 			}
 
-			// 4. CONTRACTOR REFERENCE SECTION
+			// 4. CONTRACTOR REFERENCE SECTION - include information about contractors
 			// Get unique contractors from the media items
 			const uniqueContractors = Array.from(new Set(itemsToDownload.map(item => item.contractorName).filter(Boolean)))
 
@@ -558,14 +568,14 @@ const GalleryFilter: React.FC<GalleryFilterProps> = ({
 			console.error('Error downloading files:', error)
 			alert(t('gallery.export.error') || 'There was an error preparing your download. Please try again.')
 		} finally {
-			setIsDownloading(false)
+			setIsDownloading(false) // Reset downloading state
 		}
 	}
 
-	// Prepare dropdown options
+	// Helper function to prepare dropdown options
 	const prepareDropdownOptions = (items: any[], valueKey: string, labelKey: string) => {
 		return [
-			{ value: 'all', label: t('gallery.filter.all') || 'All' },
+			{ value: 'all', label: t('gallery.filter.all') || 'All' }, // "All" option
 			...items.map(item => ({
 				value: item[valueKey].toString(),
 				label: item[labelKey],
@@ -576,15 +586,17 @@ const GalleryFilter: React.FC<GalleryFilterProps> = ({
 	// Create dropdown options with dynamic filtering
 	const mediaTypeOptions = [
 		{ value: 'all', label: t('gallery.filter.allMediaTypes') || 'All Media Types' },
+		// Only include image option if images are available
 		...(availableOptions.mediaTypes.includes('image')
 			? [{ value: 'image', label: t('gallery.filter.imagesOnly') || 'Images only' }]
 			: []),
+		// Only include video option if videos are available
 		...(availableOptions.mediaTypes.includes('video')
 			? [{ value: 'video', label: t('gallery.filter.videosOnly') || 'Videos only' }]
 			: []),
 	]
 
-	// Use filtered options
+	// Use filtered options for dropdowns
 	const contractorOptions = prepareDropdownOptions(availableOptions.contractors, 'id', 'name')
 	const cruiseOptions = prepareDropdownOptions(availableOptions.cruises, 'id', 'name')
 	const stationOptions = prepareDropdownOptions(availableOptions.stations, 'id', 'code')
@@ -597,29 +609,33 @@ const GalleryFilter: React.FC<GalleryFilterProps> = ({
 		<div
 			className={`${mapStyles.improvedFilterPanel} ${styles.filterContainer} ${isCollapsed ? styles.collapsed : ''}`}>
 			<div className={mapStyles.filterContent}>
+				{' '}
+				{/* Main content container */}
 				<div className={mapStyles.filterHeader}>
+					{' '}
+					{/* Header with title and reset button */}
 					<h2>{t('gallery.filter.title') || 'Media Filters'}</h2>
 					{activeFiltersCount > 0 && (
 						<button className={mapStyles.resetButton} onClick={onResetFilters}>
-							{t('gallery.filter.reset') || 'Reset'} ({activeFiltersCount})
+							{t('gallery.filter.reset') || 'Reset'} ({activeFiltersCount}){' '}
+							{/* Reset button with active filter count */}
 						</button>
 					)}
 				</div>
-
-				{/* Search Container */}
+				{/* Search Container - text search input and results */}
 				<div className={mapStyles.searchContainer}>
 					<div className={mapStyles.searchInputWrapper}>
 						<input
 							ref={searchInputRef}
 							type='text'
-							id='mediaSearch' // Added ID attribute
-							name='mediaSearch' // Added name attribute
+							id='mediaSearch' // Added ID attribute for accessibility
+							name='mediaSearch' // Added name attribute for forms
 							placeholder={t('gallery.filter.searchPlaceholder') || 'Search media...'}
 							value={searchQuery}
 							onChange={handleSearchChange}
 							onKeyPress={handleKeyPress}
 							className={mapStyles.searchInput}
-							aria-label={t('gallery.filter.searchAriaLabel') || 'Search media'} // Added aria-label
+							aria-label={t('gallery.filter.searchAriaLabel') || 'Search media'} // Added aria-label for accessibility
 						/>
 						<button
 							onClick={() => performSearch(searchQuery)}
@@ -637,11 +653,12 @@ const GalleryFilter: React.FC<GalleryFilterProps> = ({
 								strokeLinejoin='round'>
 								<circle cx='11' cy='11' r='8'></circle>
 								<line x1='21' y1='21' x2='16.65' y2='16.65'></line>
-							</svg>
+							</svg>{' '}
+							{/* Search icon */}
 						</button>
 					</div>
 
-					{/* Search Results */}
+					{/* Search Results dropdown - only visible when search has results */}
 					{showResults && (
 						<div ref={resultsRef} className={mapStyles.searchResultsList}>
 							<div className={mapStyles.searchResultsHeader}>
@@ -649,7 +666,7 @@ const GalleryFilter: React.FC<GalleryFilterProps> = ({
 									{t('gallery.filter.searchResults') || 'Search Results'} ({searchResults.length})
 								</span>
 								<button className={mapStyles.closeResultsButton} onClick={() => setShowResults(false)}>
-									×
+									× {/* Close button */}
 								</button>
 							</div>
 
@@ -677,7 +694,8 @@ const GalleryFilter: React.FC<GalleryFilterProps> = ({
 																strokeLinecap='round'
 																strokeLinejoin='round'>
 																<polygon points='5 3 19 12 5 21 5 3'></polygon>
-															</svg>
+															</svg>{' '}
+															{/* Video play icon */}
 															{t('gallery.filter.video') || 'Video'}
 														</>
 													) : (
@@ -695,16 +713,17 @@ const GalleryFilter: React.FC<GalleryFilterProps> = ({
 																<rect x='3' y='3' width='18' height='18' rx='2' ry='2'></rect>
 																<circle cx='8.5' cy='8.5' r='1.5'></circle>
 																<polyline points='21 15 16 10 5 21'></polyline>
-															</svg>
+															</svg>{' '}
+															{/* Image icon */}
 															{t('gallery.filter.image') || 'Image'}
 														</>
 													)}
 												</div>
-												<div className={mapStyles.resultName}>{result.fileName}</div>
+												<div className={mapStyles.resultName}>{result.fileName}</div> {/* File name */}
 												{result.stationCode && (
 													<div className={mapStyles.resultParent}>
 														{t('gallery.filter.station') || 'Station'}: {result.stationCode}
-													</div>
+													</div> /* Station information if available */
 												)}
 											</li>
 										))}
@@ -714,67 +733,71 @@ const GalleryFilter: React.FC<GalleryFilterProps> = ({
 						</div>
 					)}
 				</div>
-
 				<div className={mapStyles.filtersGroup}>
+					{' '}
+					{/* Filter dropdowns container */}
 					<h3>{t('gallery.filter.filterBy') || 'Filter By'}</h3>
-
+					{/* Media Type Dropdown */}
 					<CustomDropdown
 						id='mediaType'
 						label={t('gallery.filter.mediaType') || 'Media Type'}
 						options={mediaTypeOptions}
 						value={filters.mediaType}
 						onChange={e => handleSelectChange('mediaType', e.target.value)}
-						isActive={filters.mediaType !== 'all'}
+						isActive={filters.mediaType !== 'all'} // Highlight if filter is active
 					/>
-
+					{/* Contractor Dropdown */}
 					<CustomDropdown
 						id='contractorId'
 						label={t('gallery.filter.contractor') || 'Contractor'}
 						options={contractorOptions}
 						value={filters.contractorId}
 						onChange={e => handleSelectChange('contractorId', e.target.value)}
-						isActive={filters.contractorId !== 'all'}
+						isActive={filters.contractorId !== 'all'} // Highlight if filter is active
 					/>
-
+					{/* Cruise Dropdown */}
 					<CustomDropdown
 						id='cruiseId'
 						label={t('gallery.filter.cruise') || 'Cruise'}
 						options={cruiseOptions}
 						value={filters.cruiseId}
 						onChange={e => handleSelectChange('cruiseId', e.target.value)}
-						isActive={filters.cruiseId !== 'all'}
+						isActive={filters.cruiseId !== 'all'} // Highlight if filter is active
 					/>
-
+					{/* Station Dropdown */}
 					<CustomDropdown
 						id='stationId'
 						label={t('gallery.filter.station') || 'Station'}
 						options={stationOptions}
 						value={filters.stationId}
 						onChange={e => handleSelectChange('stationId', e.target.value)}
-						isActive={filters.stationId !== 'all'}
+						isActive={filters.stationId !== 'all'} // Highlight if filter is active
 					/>
-
+					{/* Year Dropdown */}
 					<CustomDropdown
 						id='year'
 						label={t('gallery.filter.year') || 'Year'}
 						options={yearOptions}
 						value={filters.year}
 						onChange={e => handleSelectChange('year', e.target.value)}
-						isActive={filters.year !== 'all'}
+						isActive={filters.year !== 'all'} // Highlight if filter is active
 					/>
-
-					{/* Download All Button */}
+					{/* Download All Button - export CSV file with filtered items */}
 					<button
 						className={`${styles.downloadAllButton} ${mapStyles.actionButton}`}
 						onClick={handleDownloadAllImages}
 						disabled={isDownloading || currentFilteredItems.length === 0}>
+						{' '}
+						{/* Disable when downloading or no items */}
 						{isDownloading
-							? t('gallery.filter.preparingDownload') || 'Preparing Download...'
-							: `${t('gallery.filter.downloadCSV') || 'Download CSV'} (${currentFilteredItems.length})`}
+							? t('gallery.filter.preparingDownload') || 'Preparing Download...' // Show loading text
+							: `${t('gallery.filter.downloadCSV') || 'Download CSV'} (${currentFilteredItems.length})`}{' '}
+						{/* Show item count */}
 					</button>
 				</div>
 			</div>
 
+			{/* Results count indicator - shows number of items that match current filters */}
 			<div className={mapStyles.resultsInfo}>
 				<span>
 					{currentFilteredItems.length} {t('gallery.filter.itemsMatchFilters') || 'items match your filters'}

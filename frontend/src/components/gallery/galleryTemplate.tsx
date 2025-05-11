@@ -1,67 +1,67 @@
 // Updated GalleryTemplate.tsx with translation support
-import React, { useState, useEffect } from 'react'
-import styles from '../../styles/gallery/gallery.module.css'
-import ImprovedGalleryFilter from './galleryFilter'
-import MediaCard from './mediaCard'
-import MediaModal from './mediaModal'
-import { useLanguage } from '../../contexts/languageContext' // Import language context
+import React, { useState, useEffect } from 'react' // Import React and hooks
+import styles from '../../styles/gallery/gallery.module.css' // Import CSS module for styling
+import ImprovedGalleryFilter from './galleryFilter' // Import filter sidebar component
+import MediaCard from './mediaCard' // Import media card component
+import MediaModal from './mediaModal' // Import modal component for media preview
+import { useLanguage } from '../../contexts/languageContext' // Import language context for translations
 
-// Media item interface
+// Media item interface - defines the structure of gallery items
 interface MediaItem {
-	mediaId: number
-	fileName: string
-	fileUrl: string
-	mediaType: string
-	thumbnailUrl: string
-	captureDate: string
-	stationId: number
-	stationCode: string
-	contractorId: number
-	contractorName: string
-	cruiseId: number
-	cruiseName: string
-	sampleId: number
-	sampleCode: string
-	latitude: number
-	longitude: number
-	description: string
-	cameraSpecs?: string
+	mediaId: number // Unique identifier for the media item
+	fileName: string // File name
+	fileUrl: string // URL to the full media file
+	mediaType: string // Type of media (image, video)
+	thumbnailUrl: string // URL to the thumbnail image
+	captureDate: string // When the media was captured
+	stationId: number // Related station ID
+	stationCode: string // Code identifying the station
+	contractorId: number // Related contractor ID
+	contractorName: string // Name of the contractor
+	cruiseId: number // Related cruise ID
+	cruiseName: string // Name of the cruise
+	sampleId: number // Related sample ID
+	sampleCode: string // Code identifying the sample
+	latitude: number // Geographic latitude coordinate
+	longitude: number // Geographic longitude coordinate
+	description: string // Descriptive text about the media
+	cameraSpecs?: string // Optional camera specifications
 }
 
-// Filter state interface
+// Filter state interface - defines the structure of the filter state
 interface FilterState {
-	mediaType: string
-	contractorId: string
-	cruiseId: string
-	stationId: string
-	year: string
-	searchQuery: string
+	mediaType: string // Type of media to filter by (image, video, all)
+	contractorId: string // Contractor ID to filter by
+	cruiseId: string // Cruise ID to filter by
+	stationId: string // Station ID to filter by
+	year: string // Year to filter by
+	searchQuery: string // Text search query
 }
 
 const GalleryTemplate: React.FC = () => {
-	const { t } = useLanguage() // Use the language context
+	const { t } = useLanguage() // Use the language context for translations
 
 	// State for media items and loading
-	const [mediaItems, setMediaItems] = useState<MediaItem[]>([])
-	const [filteredItems, setFilteredItems] = useState<MediaItem[]>([])
-	const [loading, setLoading] = useState(true)
-	const [error, setError] = useState<string | null>(null)
+	const [mediaItems, setMediaItems] = useState<MediaItem[]>([]) // All media items
+	const [filteredItems, setFilteredItems] = useState<MediaItem[]>([]) // Media items after filtering
+	const [loading, setLoading] = useState(true) // Loading state indicator
+	const [error, setError] = useState<string | null>(null) // Error message if loading fails
 
-	// State for filter options
-	const [contractors, setContractors] = useState<{ id: number; name: string }[]>([])
-	const [cruises, setCruises] = useState<{ id: number; name: string }[]>([])
-	const [stations, setStations] = useState<{ id: number; code: string }[]>([])
-	const [years, setYears] = useState<string[]>([])
+	// State for filter options - populate dropdown selections
+	const [contractors, setContractors] = useState<{ id: number; name: string }[]>([]) // Available contractors
+	const [cruises, setCruises] = useState<{ id: number; name: string }[]>([]) // Available cruises
+	const [stations, setStations] = useState<{ id: number; code: string }[]>([]) // Available stations
+	const [years, setYears] = useState<string[]>([]) // Available years
 
-	// State for modal
-	const [selectedMedia, setSelectedMedia] = useState<MediaItem | null>(null)
-	const [showModal, setShowModal] = useState(false)
+	// State for modal display
+	const [selectedMedia, setSelectedMedia] = useState<MediaItem | null>(null) // Currently selected media item
+	const [showModal, setShowModal] = useState(false) // Whether to show the modal
 
 	// State for pagination
-	const [currentPage, setCurrentPage] = useState(1)
-	const [itemsPerPage] = useState(12)
+	const [currentPage, setCurrentPage] = useState(1) // Current page number
+	const [itemsPerPage] = useState(12) // Number of items to display per page
 
-	// State for filters
+	// State for filters - initialize with default "all" values
 	const [filters, setFilters] = useState<FilterState>({
 		mediaType: 'all',
 		contractorId: 'all',
@@ -71,7 +71,7 @@ const GalleryTemplate: React.FC = () => {
 		searchQuery: '',
 	})
 
-	// Initial data fetch
+	// Initial data fetch - run once when component mounts
 	useEffect(() => {
 		const fetchMediaItems = async () => {
 			try {
@@ -83,12 +83,13 @@ const GalleryTemplate: React.FC = () => {
 
 				console.log(`Attempting to fetch media from: ${API_BASE_URL}/Gallery/media`)
 
-				// Fetch media items with timeout
+				// Fetch media items with timeout for better error handling
 				const controller = new AbortController()
 				const timeoutId = setTimeout(() => controller.abort(), 10000) // 10 second timeout
 
 				let response
 				try {
+					// First attempt using primary URL
 					response = await fetch(`${API_BASE_URL}/Gallery/media`, {
 						signal: controller.signal,
 					})
@@ -123,14 +124,16 @@ const GalleryTemplate: React.FC = () => {
 				setMediaItems(processedData)
 				setFilteredItems(processedData)
 
-				// Extract filter options
+				// Extract filter options from the data
+				// Get unique contractor options
 				const contractorOptions = Array.from(new Set(processedData.map((item: MediaItem) => item.contractorId)))
-					.filter(id => id !== null && id !== undefined)
+					.filter(id => id !== null && id !== undefined) // Remove nulls and undefined
 					.map(id => ({
 						id,
 						name: processedData.find((item: MediaItem) => item.contractorId === id)?.contractorName || 'Unknown',
 					}))
 
+				// Get unique cruise options
 				const cruiseOptions = Array.from(new Set(processedData.map((item: MediaItem) => item.cruiseId)))
 					.filter(id => id !== null && id !== undefined)
 					.map(id => ({
@@ -138,6 +141,7 @@ const GalleryTemplate: React.FC = () => {
 						name: processedData.find((item: MediaItem) => item.cruiseId === id)?.cruiseName || 'Unknown',
 					}))
 
+				// Get unique station options
 				const stationOptions = Array.from(new Set(processedData.map((item: MediaItem) => item.stationId)))
 					.filter(id => id !== null && id !== undefined)
 					.map(id => ({
@@ -145,6 +149,7 @@ const GalleryTemplate: React.FC = () => {
 						code: processedData.find((item: MediaItem) => item.stationId === id)?.stationCode || 'Unknown',
 					}))
 
+				// Get unique year options from capture dates
 				const yearOptions = Array.from(
 					new Set(
 						processedData.map((item: MediaItem) => {
@@ -156,14 +161,15 @@ const GalleryTemplate: React.FC = () => {
 					)
 				).filter(year => year !== null) as string[]
 
+				// Update state with filter options
 				setContractors(contractorOptions)
 				setCruises(cruiseOptions)
 				setStations(stationOptions)
-				setYears(yearOptions.sort())
+				setYears(yearOptions.sort()) // Sort years in ascending order
 			} catch (err) {
 				console.error('Error fetching gallery data:', err)
 
-				// Handle specific error cases
+				// Handle specific error cases with user-friendly messages
 				if (err instanceof Error) {
 					if (err.name === 'AbortError') {
 						setError(t('gallery.errors.timeout') || 'Request timed out. Please check your connection and try again.')
@@ -188,30 +194,32 @@ const GalleryTemplate: React.FC = () => {
 					setError(t('gallery.errors.unknown') || 'An unknown error occurred while fetching data')
 				}
 			} finally {
-				setLoading(false)
+				setLoading(false) // Always set loading to false when done
 			}
 		}
 
-		fetchMediaItems()
-	}, [t])
+		fetchMediaItems() // Execute the fetch function
+	}, [t]) // Dependency on translation function
 
 	// Apply filters whenever filters state changes
 	useEffect(() => {
-		if (mediaItems.length === 0) return
+		if (mediaItems.length === 0) return // Skip if no items loaded yet
 
 		const applyFilters = () => {
-			let filtered = [...mediaItems]
+			let filtered = [...mediaItems] // Start with all media items
 
 			// Filter by media type
 			if (filters.mediaType !== 'all') {
 				filtered = filtered.filter(item => {
 					if (filters.mediaType === 'image') {
+						// Identify images by media type or file extension
 						return (
 							item.mediaType?.toLowerCase().includes('image') ||
 							item.mediaType?.toLowerCase().includes('photo') ||
 							item.fileName.match(/\.(jpg|jpeg|png|gif|bmp|webp)$/i)
 						)
 					} else if (filters.mediaType === 'video') {
+						// Identify videos by media type or file extension
 						return (
 							item.mediaType?.toLowerCase().includes('video') || item.fileName.match(/\.(mp4|webm|avi|mov|wmv|flv)$/i)
 						)
@@ -220,17 +228,17 @@ const GalleryTemplate: React.FC = () => {
 				})
 			}
 
-			// Filter by contractor
+			// Filter by contractor ID
 			if (filters.contractorId !== 'all') {
 				filtered = filtered.filter(item => item.contractorId?.toString() === filters.contractorId)
 			}
 
-			// Filter by cruise
+			// Filter by cruise ID
 			if (filters.cruiseId !== 'all') {
 				filtered = filtered.filter(item => item.cruiseId?.toString() === filters.cruiseId)
 			}
 
-			// Filter by station
+			// Filter by station ID
 			if (filters.stationId !== 'all') {
 				filtered = filtered.filter(item => item.stationId?.toString() === filters.stationId)
 			}
@@ -246,7 +254,7 @@ const GalleryTemplate: React.FC = () => {
 				})
 			}
 
-			// Filter by search query
+			// Filter by search query - search across multiple fields
 			if (filters.searchQuery.trim() !== '') {
 				const query = filters.searchQuery.toLowerCase()
 				filtered = filtered.filter(
@@ -260,22 +268,22 @@ const GalleryTemplate: React.FC = () => {
 				)
 			}
 
-			setFilteredItems(filtered)
+			setFilteredItems(filtered) // Update filtered items
 			setCurrentPage(1) // Reset to first page when filters change
 		}
 
-		applyFilters()
-	}, [filters, mediaItems])
+		applyFilters() // Execute the filter function
+	}, [filters, mediaItems]) // Dependency on filters and mediaItems
 
-	// Handle filter changes
+	// Handle filter changes from the filter component
 	const handleFilterChange = (filterName: keyof FilterState, value: string) => {
 		setFilters(prev => ({
 			...prev,
-			[filterName]: value,
+			[filterName]: value, // Update just the changed filter
 		}))
 	}
 
-	// Reset all filters
+	// Reset all filters to default values
 	const handleResetFilters = () => {
 		setFilters({
 			mediaType: 'all',
@@ -289,30 +297,31 @@ const GalleryTemplate: React.FC = () => {
 
 	// Open modal with selected media
 	const handleMediaClick = (media: MediaItem) => {
-		setSelectedMedia(media)
-		setShowModal(true)
+		setSelectedMedia(media) // Store the selected media item
+		setShowModal(true) // Show the modal
 	}
 
 	// Close modal
 	const handleCloseModal = () => {
-		setShowModal(false)
-		setSelectedMedia(null)
+		setShowModal(false) // Hide the modal
+		setSelectedMedia(null) // Clear the selected media
 	}
 
-	// Pagination logic
+	// Pagination logic - calculate which items to show on current page
 	const indexOfLastItem = currentPage * itemsPerPage
 	const indexOfFirstItem = indexOfLastItem - itemsPerPage
 	const currentItems = filteredItems.slice(indexOfFirstItem, indexOfLastItem)
 
 	const totalPages = Math.ceil(filteredItems.length / itemsPerPage)
 
+	// Handle page change
 	const handlePageChange = (pageNumber: number) => {
 		setCurrentPage(pageNumber)
-		// Scroll to top when page changes
+		// Scroll to top when page changes for better user experience
 		window.scrollTo({ top: 0, behavior: 'smooth' })
 	}
 
-	// Generate pagination buttons
+	// Generate pagination buttons with efficient display for many pages
 	const renderPaginationButtons = () => {
 		// Maximum number of page buttons to show
 		const maxButtons = 5
@@ -345,6 +354,7 @@ const GalleryTemplate: React.FC = () => {
 			pages.push(totalPages)
 		}
 
+		// Render the page buttons or ellipses
 		return pages.map((page, index) => {
 			if (page < 0) {
 				// Render ellipsis
@@ -366,7 +376,7 @@ const GalleryTemplate: React.FC = () => {
 		})
 	}
 
-	// Function to retry loading data
+	// Function to retry loading data after connection failure
 	const handleRetry = () => {
 		setError(null)
 		setLoading(true)
@@ -475,21 +485,26 @@ const GalleryTemplate: React.FC = () => {
 			}
 		}
 
-		fetchMediaItems()
+		fetchMediaItems() // Execute the fetch retry
 	}
 
 	return (
 		<div className={styles.galleryContainer}>
+			{' '}
+			{/* Main container for the entire gallery page */}
 			<div className={styles.galleryHeader}>
+				{' '}
+				{/* Header section with title and description */}
 				<h1 className={styles.galleryTitle}>{t('gallery.title') || 'Deep-Sea Media Gallery'}</h1>
 				<p className={styles.galleryDescription}>
 					{t('gallery.description') ||
 						'Explore a collection of deep-sea images and videos from various exploration missions and research activities.'}
 				</p>
 			</div>
-
 			<div className={styles.galleryContent}>
-				{/* Use the improved Gallery Filter Component */}
+				{' '}
+				{/* Main content area with filter sidebar and media display */}
+				{/* Filter sidebar on the left */}
 				<div className={styles.filterSidebar}>
 					<ImprovedGalleryFilter
 						filters={filters}
@@ -502,15 +517,16 @@ const GalleryTemplate: React.FC = () => {
 						currentFilteredItems={filteredItems}
 					/>
 				</div>
-
-				{/* Gallery display */}
+				{/* Gallery display area on the right */}
 				<div className={styles.mediaGalleryContainer}>
 					{loading ? (
+						// Loading state with spinner
 						<div className={styles.loadingContainer}>
 							<div className={styles.spinner}></div>
 							<p>{t('gallery.loading') || 'Loading media...'}</p>
 						</div>
 					) : error ? (
+						// Error state with retry options
 						<div className={styles.errorContainer}>
 							<p className={styles.errorMessage}>{error}</p>
 							<div className={styles.errorActions}>
@@ -519,10 +535,10 @@ const GalleryTemplate: React.FC = () => {
 								</button>
 								<button
 									onClick={() => {
-										// Check API connectivity
+										// Check API connectivity on multiple ports
 										const checkPorts = async () => {
 											setError(t('gallery.checkingConnectivity') || 'Checking API connectivity...')
-											const ports = [5802, 5062, 7171, 5000, 5001]
+											const ports = [5802, 5062, 7171, 5000, 5001] // Common API ports to check
 											let results = ''
 
 											for (const port of ports) {
@@ -561,7 +577,7 @@ const GalleryTemplate: React.FC = () => {
 											)
 										}
 
-										checkPorts()
+										checkPorts() // Execute the port check
 									}}
 									className={styles.diagnosticButton}>
 									{t('gallery.checkConnectivity') || 'Check API Connectivity'}
@@ -569,6 +585,7 @@ const GalleryTemplate: React.FC = () => {
 							</div>
 						</div>
 					) : currentItems.length === 0 ? (
+						// No results state
 						<div className={styles.noResults}>
 							<p>{t('gallery.noResults') || 'No media found matching your filters.'}</p>
 							<button onClick={handleResetFilters} className={styles.resetButton}>
@@ -577,6 +594,7 @@ const GalleryTemplate: React.FC = () => {
 						</div>
 					) : (
 						<>
+							{/* Results info showing current page information */}
 							<div className={styles.resultsInfo}>
 								<p>
 									{t('gallery.showing', {
@@ -590,14 +608,14 @@ const GalleryTemplate: React.FC = () => {
 								</p>
 							</div>
 
-							{/* Media Grid - 3 column layout */}
+							{/* Media Grid - 3 column layout of media cards */}
 							<div className={styles.mediaGrid}>
 								{currentItems.map(media => (
 									<MediaCard key={media.mediaId} media={media} onClick={() => handleMediaClick(media)} />
 								))}
 							</div>
 
-							{/* Pagination */}
+							{/* Pagination controls - only shown if more than one page */}
 							{totalPages > 1 && (
 								<div className={styles.pagination}>
 									<button
@@ -621,8 +639,7 @@ const GalleryTemplate: React.FC = () => {
 					)}
 				</div>
 			</div>
-
-			{/* Media Modal */}
+			{/* Media Modal - only rendered when a media item is selected */}
 			{showModal && selectedMedia && <MediaModal media={selectedMedia} onClose={handleCloseModal} />}
 		</div>
 	)
