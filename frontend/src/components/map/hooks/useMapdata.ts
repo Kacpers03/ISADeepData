@@ -1,15 +1,17 @@
-import { useState, useCallback, useEffect } from 'react'
+// frontend/src/components/map/hooks/useMapData.ts
+import { useState, useCallback, useEffect } from 'react' // Import React hooks for state, effects and callbacks
 
+// Custom hook for handling map data loading and management
 const useMapData = (mapData, loading, filters, selectedContractorId) => {
 	// Store all loaded GeoJSON data
-	const [allAreaLayers, setAllAreaLayers] = useState([])
-	const [localLoading, setLocalLoading] = useState(false)
-	const [contractorSummaryCache, setContractorSummaryCache] = useState({})
+	const [allAreaLayers, setAllAreaLayers] = useState([]) // State for area layers with GeoJSON
+	const [localLoading, setLocalLoading] = useState(false) // State for local data loading operations
+	const [contractorSummaryCache, setContractorSummaryCache] = useState({}) // Cache for contractor summary data
 
 	// Helper function to fetch GeoJSON for a contractor
 	const fetchContractorGeoJson = useCallback(async contractorId => {
 		try {
-			const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5062/api'
+			const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5062/api' // Get API URL
 			const response = await fetch(`${API_BASE_URL}/MapFilter/contractor-areas-geojson/${contractorId}`)
 
 			if (!response.ok) {
@@ -23,7 +25,7 @@ const useMapData = (mapData, loading, filters, selectedContractorId) => {
 				contractorId: contractorId,
 				areaId: area.areaId,
 				areaName: area.areaName,
-				geoJson: typeof area.geoJson === 'string' ? JSON.parse(area.geoJson) : area.geoJson,
+				geoJson: typeof area.geoJson === 'string' ? JSON.parse(area.geoJson) : area.geoJson, // Parse if string
 				centerLatitude: area.centerLat,
 				centerLongitude: area.centerLon,
 				totalAreaSizeKm2: area.totalAreaSizeKm2,
@@ -31,7 +33,7 @@ const useMapData = (mapData, loading, filters, selectedContractorId) => {
 					blockId: block.blockId,
 					blockName: block.blockName,
 					status: block.status,
-					geoJson: typeof block.geoJson === 'string' ? JSON.parse(block.geoJson) : block.geoJson,
+					geoJson: typeof block.geoJson === 'string' ? JSON.parse(block.geoJson) : block.geoJson, // Parse if string
 					centerLatitude: block.centerLat,
 					centerLongitude: block.centerLon,
 					areaSizeKm2: block.areaSizeKm2,
@@ -43,7 +45,7 @@ const useMapData = (mapData, loading, filters, selectedContractorId) => {
 		}
 	}, [])
 
-	// Get all stations
+	// Get all stations based on current filters
 	const getAllStations = useCallback(() => {
 		if (!mapData) return []
 
@@ -111,7 +113,7 @@ const useMapData = (mapData, loading, filters, selectedContractorId) => {
 		}
 	}, [mapData?.contractors, fetchContractorGeoJson, loading, localLoading])
 
-	// Fetch contractor summary
+	// Fetch contractor summary with caching
 	const fetchContractorSummary = async (contractorId, setContractorSummary, setToastMessage, setShowToast) => {
 		// Check if we already have this data in cache
 		if (contractorSummaryCache[contractorId]) {
@@ -124,7 +126,7 @@ const useMapData = (mapData, loading, filters, selectedContractorId) => {
 			console.log(`Fetching contractor summary for ${contractorId}`)
 			setLocalLoading(true)
 
-			const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5062/api'
+			const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5062/api' // Get API URL
 			const response = await fetch(`${API_BASE_URL}/Analytics/contractor/${contractorId}/summary`)
 
 			if (!response.ok) {
@@ -156,8 +158,7 @@ const useMapData = (mapData, loading, filters, selectedContractorId) => {
 		}
 	}
 
-	// Replace the fetchBlockAnalytics function in useMapData.ts with this improved version
-
+	// Fetch block analytics with error handling
 	const fetchBlockAnalytics = async (
 		blockId,
 		setBlockAnalytics,
@@ -172,7 +173,7 @@ const useMapData = (mapData, loading, filters, selectedContractorId) => {
 
 		try {
 			console.log(`Fetching analytics for block ${blockId}`)
-			const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5062/api'
+			const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5062/api' // Get API URL
 			const response = await fetch(`${API_BASE_URL}/Analytics/block/${blockId}`)
 
 			if (!response.ok) {
@@ -278,17 +279,18 @@ const useMapData = (mapData, loading, filters, selectedContractorId) => {
 		}
 	}
 
+	// Return all data and functions
 	return {
-		allAreaLayers,
-		setAllAreaLayers,
-		localLoading,
-		setLocalLoading,
-		contractorSummaryCache,
-		fetchContractorGeoJson,
-		loadAllVisibleContractors,
-		fetchContractorSummary,
-		fetchBlockAnalytics,
-		getAllStations,
+		allAreaLayers, // All area layers with GeoJSON
+		setAllAreaLayers, // Function to set area layers
+		localLoading, // Loading state for data operations
+		setLocalLoading, // Function to set loading state
+		contractorSummaryCache, // Cache for contractor summaries
+		fetchContractorGeoJson, // Function to fetch contractor GeoJSON
+		loadAllVisibleContractors, // Function to load all visible contractors
+		fetchContractorSummary, // Function to fetch contractor summary
+		fetchBlockAnalytics, // Function to fetch block analytics
+		getAllStations, // Function to get filtered stations
 	}
 }
 

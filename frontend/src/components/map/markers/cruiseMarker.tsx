@@ -1,18 +1,15 @@
-import React, { useState } from 'react'
-import { Marker } from 'react-map-gl'
-import styles from '../../../styles/map/markers.module.css'
+// frontend/src/components/map/markers/cruiseMarker.tsx
+import React, { useState } from 'react' // Import React and useState hook
+import { Marker } from 'react-map-gl' // Import Marker component from react-map-gl
+import styles from '../../../styles/map/markers.module.css' // Import marker styles
 
-/**
- * CruiseMarker component for displaying cruises on the map
- * @param {Object} cruise - The cruise data to display
- * @param {Function} onClick - Function to handle when the marker is clicked
- */
+// CruiseMarker component for displaying cruises on the map
 const CruiseMarker = ({ cruise, onClick }) => {
-	const [isHovered, setIsHovered] = useState(false)
+	const [isHovered, setIsHovered] = useState(false) // State to track hover for tooltip
 
-	// Calculate cruise position with improved fallbacks
+	// Calculate cruise position with multiple fallbacks
 	const calculatePosition = () => {
-		// First try: Use cruise's centerLatitude and centerLongitude if available
+		// First try: Use cruise's explicit center coordinates if available
 		if (cruise.centerLatitude && cruise.centerLongitude) {
 			// Store these values on the cruise object if they weren't already there
 			if (!cruise.centerLatSet) {
@@ -22,18 +19,19 @@ const CruiseMarker = ({ cruise, onClick }) => {
 			return { lat: cruise.centerLatitude, lng: cruise.centerLongitude }
 		}
 
-		// Second try: Calculate average from stations if they exist
+		// Second try: Calculate average position from stations
 		if (cruise.stations && cruise.stations.length > 0) {
-			// Filter out stations with invalid coordinates first
+			// Filter out stations with invalid coordinates
 			const validStations = cruise.stations.filter(
 				s => s.latitude !== undefined && s.longitude !== undefined && !isNaN(s.latitude) && !isNaN(s.longitude)
 			)
 
 			if (validStations.length > 0) {
+				// Calculate average position
 				const avgLat = validStations.reduce((sum, s) => sum + s.latitude, 0) / validStations.length
 				const avgLon = validStations.reduce((sum, s) => sum + s.longitude, 0) / validStations.length
 
-				// Store the calculated center on the cruise object for future use
+				// Cache the calculated center for future use
 				if (!cruise.centerLatSet) {
 					cruise.centerLatitude = avgLat
 					cruise.centerLongitude = avgLon
@@ -45,18 +43,17 @@ const CruiseMarker = ({ cruise, onClick }) => {
 			}
 		}
 
-		// Fallback: Check if cruise has any area or block associations we can use
+		// Fallback: Check if cruise has any area or block associations
 		if (cruise.contractorId) {
-			// This is just a placeholder. In a real implementation, you might
-			// need to access global map data to find areas for this contractor
+			// This is just a placeholder for potential implementation
 			console.log('Using fallback positioning for cruise:', cruise.cruiseName)
 		}
 
-		// Last resort: If we have no usable coordinates, don't render the cruise
+		// Last resort: If no valid coordinates, don't render
 		return null
 	}
 
-	const position = calculatePosition()
+	const position = calculatePosition() // Get position for this cruise
 
 	// Skip rendering if we couldn't determine a valid position
 	if (!position) {
@@ -68,19 +65,20 @@ const CruiseMarker = ({ cruise, onClick }) => {
 		<Marker
 			longitude={position.lng}
 			latitude={position.lat}
-			anchor='bottom'
+			anchor='bottom' // Anchor at bottom of icon
 			onClick={e => {
-				e.originalEvent.stopPropagation()
-				onClick(cruise)
+				e.originalEvent.stopPropagation() // Prevent map click
+				onClick(cruise) // Handle cruise click
 			}}>
 			<div
 				className={styles.cruiseMarker}
-				onMouseEnter={() => setIsHovered(true)}
+				onMouseEnter={() => setIsHovered(true)} // Show tooltip on hover
 				onMouseLeave={() => setIsHovered(false)}>
-				{/* Cruise tooltip appears on hover */}
+				{' '}
+				{/* Hide tooltip when not hovering */}
+				{/* Tooltip showing cruise name on hover */}
 				{isHovered && <div className={styles.cruiseTooltip}>{cruise.cruiseName}</div>}
-
-				{/* Cruise icon only - no label */}
+				{/* Cruise icon - ship/boat SVG */}
 				<div className={`${styles.cruiseIcon} ${cruise.isSelected ? styles.selectedCruise : ''}`}>
 					<svg width='24' height='24' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'>
 						<path

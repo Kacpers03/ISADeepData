@@ -1,14 +1,16 @@
-import { useState, useEffect } from 'react'
-import Supercluster from 'supercluster'
+// frontend/src/components/map/hooks/useCluster.ts
+import { useState, useEffect } from 'react' // Import React hooks for state and effects
+import Supercluster from 'supercluster' // Import library for point clustering
 
+// Custom hook that manages station clustering for the map
 const useCluster = (mapData, filters, mapRef, getAllStations) => {
-	const [clusterIndex, setClusterIndex] = useState(null)
-	const [clusters, setClusters] = useState([])
-	const [clusterZoom, setClusterZoom] = useState(0)
+	const [clusterIndex, setClusterIndex] = useState(null) // Supercluster instance state
+	const [clusters, setClusters] = useState([]) // Current visible clusters state
+	const [clusterZoom, setClusterZoom] = useState(0) // Current zoom level for clustering
 
 	// Cluster functionality for stations
 	useEffect(() => {
-		if (!mapData || !mapData.cruises) return
+		if (!mapData || !mapData.cruises) return // Skip if no map data available
 
 		// Important: Use getAllStations to get only filtered stations
 		const stationsData = getAllStations()
@@ -20,8 +22,8 @@ const useCluster = (mapData, filters, mapRef, getAllStations) => {
 		}
 
 		const supercluster = new Supercluster({
-			radius: 40,
-			maxZoom: 16,
+			radius: 40, // Clustering radius in pixels
+			maxZoom: 16, // Maximum zoom level for clustering
 		})
 
 		// Format points for supercluster
@@ -37,8 +39,8 @@ const useCluster = (mapData, filters, mapRef, getAllStations) => {
 			},
 		}))
 
-		supercluster.load(points)
-		setClusterIndex(supercluster)
+		supercluster.load(points) // Load points into the cluster index
+		setClusterIndex(supercluster) // Update cluster index state
 
 		// Important: When filtering changes, immediately update the clusters
 		if (mapRef.current) {
@@ -56,7 +58,7 @@ const useCluster = (mapData, filters, mapRef, getAllStations) => {
 				setClusters([])
 			}
 		}
-	}, [mapData, filters, getAllStations, mapRef])
+	}, [mapData, filters, getAllStations, mapRef]) // Dependencies for recalculation
 
 	// Update clusters when the map moves or zoom changes
 	const updateClusters = viewState => {
@@ -88,11 +90,11 @@ const useCluster = (mapData, filters, mapRef, getAllStations) => {
 	}
 
 	return {
-		clusterIndex,
-		clusters,
-		clusterZoom,
-		setClusterZoom,
-		updateClusters,
+		clusterIndex, // Supercluster instance
+		clusters, // Current visible clusters
+		clusterZoom, // Current zoom level used for clustering
+		setClusterZoom, // Function to manually set cluster zoom
+		updateClusters, // Function to update clusters on view change
 	}
 }
 

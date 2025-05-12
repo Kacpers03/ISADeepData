@@ -1,41 +1,39 @@
 // frontend/src/components/map/hooks/useMapInteractions.ts
-import { useCallback } from 'react'
+import { useCallback } from 'react' // Import React useCallback hook for memoized functions
 
-/**
- * Custom hook for map interactions and event handlers
- */
+// Custom hook for map interactions and event handlers
 const useMapInteractions = ({
-	mapRef,
-	viewState,
-	setViewState,
-	setUserHasSetView,
-	setViewBounds,
-	updateClusters,
-	setSelectedCruiseId,
-	setDetailPanelType,
-	setShowDetailPanel,
-	setPopupInfo,
-	setSelectedStation,
-	zoomToCruise,
-	zoomToArea,
-	zoomToBlock,
-	setShowCruises,
-	resetFilters,
-	fetchBlockAnalytics,
-	blockAnalytics,
-	setBlockAnalytics,
-	visibleAreaLayers,
-	selectedContractorId,
-	contractorSummary,
-	setContractorSummary,
-	fetchContractorSummary,
-	setToastMessage,
-	setShowToast,
+	mapRef, // Reference to map component
+	viewState, // Current map view state
+	setViewState, // Function to update view state
+	setUserHasSetView, // Function to track if user manually set view
+	setViewBounds, // Function to update view bounds
+	updateClusters, // Function to update station clusters
+	setSelectedCruiseId, // Function to set selected cruise
+	setDetailPanelType, // Function to set detail panel type
+	setShowDetailPanel, // Function to toggle detail panel
+	setPopupInfo, // Function to set popup information
+	setSelectedStation, // Function to set selected station
+	zoomToCruise, // Function to zoom to cruise
+	zoomToArea, // Function to zoom to area
+	zoomToBlock, // Function to zoom to block
+	setShowCruises, // Function to toggle cruise visibility
+	resetFilters, // Function to reset all filters
+	fetchBlockAnalytics, // Function to fetch block analytics
+	blockAnalytics, // Current block analytics data
+	setBlockAnalytics, // Function to set block analytics
+	visibleAreaLayers, // Currently visible area layers
+	selectedContractorId, // Currently selected contractor ID
+	contractorSummary, // Current contractor summary data
+	setContractorSummary, // Function to set contractor summary
+	fetchContractorSummary, // Function to fetch contractor summary
+	setToastMessage, // Function to set toast message
+	setShowToast, // Function to toggle toast visibility
 }) => {
-	// Handle view state change
+	// Handle view state change when map moves
 	const handleViewStateChange = useCallback(
 		evt => {
-			setViewState(evt.viewState)
+			setViewState(evt.viewState) // Update view state
 			// User has manually changed the view
 			setUserHasSetView(true)
 
@@ -56,7 +54,7 @@ const useMapInteractions = ({
 		[mapRef, setViewState, setUserHasSetView, setViewBounds, updateClusters]
 	)
 
-	// Handle cruise click - FULLY ENHANCED VERSION
+	// Handle cruise click - show details and zoom
 	const handleCruiseClick = useCallback(
 		cruise => {
 			console.log('Cruise clicked:', cruise.cruiseName)
@@ -102,7 +100,7 @@ const useMapInteractions = ({
 		]
 	)
 
-	// Handle marker (station) click
+	// Handle marker (station) click - show details
 	const handleMarkerClick = useCallback(
 		station => {
 			setSelectedStation(station)
@@ -113,7 +111,7 @@ const useMapInteractions = ({
 		[setSelectedStation, setDetailPanelType, setShowDetailPanel, setPopupInfo]
 	)
 
-	// Handle panel close
+	// Handle panel close - reset UI state but keep contractor selection
 	const handlePanelClose = useCallback(() => {
 		// Only reset the UI state, but keep the contractor summary data
 		setShowDetailPanel(false)
@@ -126,7 +124,7 @@ const useMapInteractions = ({
 		setBlockAnalytics(null)
 	}, [setShowDetailPanel, setDetailPanelType, setSelectedStation, setBlockAnalytics])
 
-	// Handle close all panels
+	// Handle close all panels - more complete reset of UI state
 	const handleCloseAllPanels = useCallback(() => {
 		// Close the detail panel
 		setShowDetailPanel(false)
@@ -140,7 +138,7 @@ const useMapInteractions = ({
 		setContractorSummary(null)
 	}, [setShowDetailPanel, setDetailPanelType, setSelectedStation, setBlockAnalytics, setContractorSummary])
 
-	// View contractor summary
+	// View contractor summary - fetch data if needed and show panel
 	const handleViewContractorSummary = useCallback(() => {
 		if (selectedContractorId && contractorSummary) {
 			setDetailPanelType('contractorSummary')
@@ -174,7 +172,7 @@ const useMapInteractions = ({
 		// The global view zoom will be handled by the smartZoom effect
 	}, [resetFilters, setUserHasSetView])
 
-	// Handle block click
+	// Handle block click - fetch data and show details
 	const handleBlockClick = useCallback(
 		blockId => {
 			fetchBlockAnalytics(
@@ -200,7 +198,7 @@ const useMapInteractions = ({
 		]
 	)
 
-	// Handle hover on map features
+	// Handle hover on map features - update cursor
 	const handleMapHover = useCallback(
 		e => {
 			if (!mapRef.current) return
@@ -220,7 +218,7 @@ const useMapInteractions = ({
 		[mapRef]
 	)
 
-	// Handle area click for zooming to area
+	// Handle area click - zoom to area
 	const handleAreaClick = useCallback(
 		areaId => {
 			if (!visibleAreaLayers) return
@@ -233,7 +231,7 @@ const useMapInteractions = ({
 		[visibleAreaLayers, zoomToArea]
 	)
 
-	// Handle station popup
+	// Handle station hover - show/hide popup
 	const handleStationHover = useCallback(
 		(station, show) => {
 			if (show) {
@@ -253,19 +251,20 @@ const useMapInteractions = ({
 		[setShowDetailPanel]
 	)
 
+	// Return all handlers
 	return {
-		handleViewStateChange,
-		handleCruiseClick,
-		handleMarkerClick,
-		handlePanelClose,
-		handleCloseAllPanels,
-		handleViewContractorSummary,
-		handleResetFilters,
-		handleBlockClick,
-		handleMapHover,
-		handleAreaClick,
-		handleStationHover,
-		toggleSummaryPanel,
+		handleViewStateChange, // Handle map movement/zoom
+		handleCruiseClick, // Handle cruise selection
+		handleMarkerClick, // Handle station marker selection
+		handlePanelClose, // Handle panel close
+		handleCloseAllPanels, // Handle closing all panels
+		handleViewContractorSummary, // Handle viewing contractor details
+		handleResetFilters, // Handle resetting all filters
+		handleBlockClick, // Handle block selection
+		handleMapHover, // Handle cursor hover on map
+		handleAreaClick, // Handle area selection
+		handleStationHover, // Handle station hover
+		toggleSummaryPanel, // Toggle summary panel
 	}
 }
 

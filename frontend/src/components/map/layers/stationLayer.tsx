@@ -1,15 +1,18 @@
-import React, { useState, useEffect } from 'react'
-import StationMarker from '../markers/stationMarker'
-import ClusterMarker from '../markers/clusterMarker'
+// frontend/src/components/map/layers/stationLayer.tsx
+import React, { useState, useEffect } from 'react' // Import React and hooks
+import StationMarker from '../markers/stationMarker' // Import component for single stations
+import ClusterMarker from '../markers/clusterMarker' // Import component for station clusters
 
+// Interface defining station layer properties
 interface StationLayerProps {
-	clusters: any[]
-	showStations: boolean
-	clusterIndex: any
-	mapRef: any
-	onStationClick: (station: any) => void
+	clusters: any[] // Array of station clusters from Supercluster
+	showStations: boolean // Toggle for station visibility
+	clusterIndex: any // Supercluster instance for cluster operations
+	mapRef: any // Reference to the map component
+	onStationClick: (station: any) => void // Click handler for station selection
 }
 
+// Component that renders station markers and clusters on the map
 const StationLayer: React.FC<StationLayerProps> = ({
 	clusters,
 	showStations,
@@ -17,7 +20,7 @@ const StationLayer: React.FC<StationLayerProps> = ({
 	mapRef,
 	onStationClick,
 }) => {
-	// Add state for tracking the active cluster
+	// State for tracking the active cluster tooltip
 	const [activeClusterId, setActiveClusterId] = useState<string | null>(null)
 
 	// Effect to close active tooltip when map moves significantly
@@ -27,18 +30,20 @@ const StationLayer: React.FC<StationLayerProps> = ({
 		const map = mapRef.current.getMap()
 
 		const handleMapMove = () => {
-			// Close the tooltip when the map moves significantly
+			// Close the tooltip when the map moves
 			setActiveClusterId(null)
 		}
 
-		// Add event listener for moveend (when the map stops moving)
+		// Add event listener for moveend (when map stops moving)
 		map.on('moveend', handleMapMove)
 
+		// Clean up listener on unmount or when dependencies change
 		return () => {
 			map.off('moveend', handleMapMove)
 		}
 	}, [activeClusterId, mapRef])
 
+	// If stations not visible or no clusters, render nothing
 	if (!showStations || !clusters || clusters.length === 0) {
 		return null
 	}
@@ -46,13 +51,14 @@ const StationLayer: React.FC<StationLayerProps> = ({
 	return (
 		<>
 			{clusters.map(cluster => {
-				// Is this a cluster?
+				// Check if this is a cluster or an individual station
 				const isCluster = cluster.properties.cluster
 				const clusterId = isCluster
 					? `cluster-${cluster.properties.cluster_id}`
 					: `station-${cluster.properties.stationId}`
 
 				if (isCluster) {
+					// Handle cluster of stations
 					// Get the cluster points if possible
 					const clusterPoints = (() => {
 						try {
@@ -77,7 +83,7 @@ const StationLayer: React.FC<StationLayerProps> = ({
 								longitude: cluster.geometry.coordinates[0],
 								latitude: cluster.geometry.coordinates[1],
 								count: cluster.properties.point_count,
-								// Add error handling for expansion zoom:
+								// Calculate appropriate zoom level for expanding cluster
 								expansionZoom: (() => {
 									try {
 										return clusterIndex.getClusterExpansionZoom(cluster.properties.cluster_id)
@@ -105,6 +111,7 @@ const StationLayer: React.FC<StationLayerProps> = ({
 										expansionZoom = Math.min(mapRef.current.getMap().getZoom() + 2, 16)
 									}
 
+									// Animate map to zoom into the cluster
 									mapRef.current.flyTo({
 										center: [longitude, latitude],
 										zoom: expansionZoom,
@@ -120,7 +127,7 @@ const StationLayer: React.FC<StationLayerProps> = ({
 						/>
 					)
 				} else {
-					// It's a single station
+					// Handle individual station
 					const station = cluster.properties.stationData
 					return <StationMarker key={clusterId} station={station} onClick={onStationClick} />
 				}

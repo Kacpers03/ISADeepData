@@ -1,36 +1,41 @@
 // frontend/src/components/map/MapLayers.tsx
-import React from 'react'
-import { Popup } from 'react-map-gl'
-import panelStyles from '../../../styles/map/panels.module.css'
-import markerStyles from '../../../styles/map/markers.module.css'
+import React from 'react' // Import React
+import { Popup } from 'react-map-gl' // Import Popup component for tooltips
+import panelStyles from '../../../styles/map/panels.module.css' // Import panel styling
+import markerStyles from '../../../styles/map/markers.module.css' // Import marker styling
 
 // Import layer components
-import AreaLayer from './areaLayer'
-import BlockLayer from './blockLayer'
-import StationLayer from './stationLayer'
-import CruiseLayer from './cruiseLayer'
+import AreaLayer from './areaLayer' // Component for area polygons
+import BlockLayer from './blockLayer' // Component for block polygons
+import StationLayer from './stationLayer' // Component for station markers and clusters
+import CruiseLayer from './cruiseLayer' // Component for cruise markers
 
+// Interface defining map layers properties
 interface MapLayersProps {
-	showAreas: boolean
-	showBlocks: boolean
-	showStations: boolean
-	showCruises: boolean
-	areas: any[]
-	cruises: any[]
-	clusters: any[]
-	clusterIndex: any
-	mapRef: any
-	hoveredBlockId: number | null
-	popupInfo: any
-	setPopupInfo: (info: any) => void
-	onBlockClick: (blockId: number) => void
-	onCruiseClick: (cruise: any) => void
-	onStationClick: (station: any) => void
+	showAreas: boolean // Toggle for area visibility
+	showBlocks: boolean // Toggle for block visibility
+	showStations: boolean // Toggle for station visibility
+	showCruises: boolean // Toggle for cruise visibility
+	areas: any[] // Array of area objects with GeoJSON
+	cruises: any[] // Array of cruise objects
+	clusters: any[] // Array of station clusters
+	clusterIndex: any // Supercluster instance for cluster operations
+	mapRef: any // Reference to the map component
+	hoveredBlockId: number | null // Currently hovered block ID
+	popupInfo: any // Information for currently shown popup
+	setPopupInfo: (info: any) => void // Function to set popup info
+	onBlockClick: (blockId: number) => void // Click handler for blocks
+	onCruiseClick: (cruise: any) => void // Click handler for cruises
+	onStationClick: (station: any) => void // Click handler for stations
 }
+
+// Combine styles from different modules
 const styles = {
 	...panelStyles,
 	...markerStyles,
 }
+
+// Component that manages all map layers
 const MapLayers: React.FC<MapLayersProps> = ({
 	showAreas,
 	showBlocks,
@@ -50,10 +55,10 @@ const MapLayers: React.FC<MapLayersProps> = ({
 }) => {
 	return (
 		<>
-			{/* Areas Layers */}
+			{/* Areas Layers - Render each exploration area */}
 			{showAreas && areas.map(area => <AreaLayer key={`area-${area.areaId}`} area={area} />)}
 
-			{/* Blocks Layers */}
+			{/* Blocks Layers - Render blocks from all areas */}
 			{showBlocks &&
 				areas.flatMap(area =>
 					area.blocks
@@ -68,10 +73,10 @@ const MapLayers: React.FC<MapLayersProps> = ({
 						: []
 				)}
 
-			{/* Cruises Layer */}
+			{/* Cruises Layer - Render cruise markers */}
 			<CruiseLayer cruises={cruises} showCruises={showCruises} onCruiseClick={onCruiseClick} />
 
-			{/* Stations Layer */}
+			{/* Stations Layer - Render station markers and clusters */}
 			<StationLayer
 				clusters={clusters}
 				showStations={showStations}
@@ -80,7 +85,7 @@ const MapLayers: React.FC<MapLayersProps> = ({
 				onStationClick={onStationClick}
 			/>
 
-			{/* Popup for station info */}
+			{/* Popup for station info - shown when hovering over a station */}
 			{popupInfo && (
 				<Popup
 					longitude={popupInfo.longitude}
