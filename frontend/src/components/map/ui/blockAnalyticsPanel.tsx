@@ -1,15 +1,18 @@
-import React, { useEffect, useState } from 'react'
-import styles from '../../../styles/map/panels.module.css'
-import layerStyles from '../../../styles/map/layers.module.css'
+// frontend/src/components/map/ui/blockAnalyticsPanel.tsx
+import React, { useEffect, useState } from 'react' // Import React and hooks
+import styles from '../../../styles/map/panels.module.css' // Import panel styles
+import layerStyles from '../../../styles/map/layers.module.css' // Import layer styles
 
+// Interface defining block analytics panel properties
 interface BlockAnalyticsPanelProps {
-	data: any
-	onClose: () => void
+	data: any // Block analytics data with environmental and resource metrics
+	onClose: () => void // Function to close the panel
 }
 
+// Component for displaying detailed analytics for a selected block
 export const BlockAnalyticsPanel: React.FC<BlockAnalyticsPanelProps> = ({ data, onClose }) => {
-	const [isLoading, setIsLoading] = useState(false)
-	const [refreshedData, setRefreshedData] = useState(null)
+	const [isLoading, setIsLoading] = useState(false) // Loading state for data refresh
+	const [refreshedData, setRefreshedData] = useState(null) // State for refreshed data after spatial association
 
 	// On first mount, check if we have no stations but have coordinates
 	useEffect(() => {
@@ -17,10 +20,10 @@ export const BlockAnalyticsPanel: React.FC<BlockAnalyticsPanelProps> = ({ data, 
 			// Only try spatial refresh if we have no stations but the block exists
 			if (data && data.block && (!data.counts || data.counts.stations === 0)) {
 				try {
-					setIsLoading(true)
+					setIsLoading(true) // Set loading state
 
 					// First associate stations with blocks based on spatial location
-					const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5062/api'
+					const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5062/api' // Get API URL
 					await fetch(`${API_BASE_URL}/Analytics/associate-stations-blocks`, {
 						method: 'POST',
 					})
@@ -29,38 +32,38 @@ export const BlockAnalyticsPanel: React.FC<BlockAnalyticsPanelProps> = ({ data, 
 					const response = await fetch(`${API_BASE_URL}/Analytics/block/${data.block.blockId}`)
 
 					if (response.ok) {
-						const freshData = await response.json()
-						setRefreshedData(freshData)
+						const freshData = await response.json() // Parse JSON response
+						setRefreshedData(freshData) // Update with refreshed data
 					}
 				} catch (error) {
-					console.error('Error refreshing block data with spatial associations:', error)
+					console.error('Error refreshing block data with spatial associations:', error) // Log error
 				} finally {
-					setIsLoading(false)
+					setIsLoading(false) // Clear loading state
 				}
 			}
 		}
 
-		attemptSpatialRefresh()
-	}, [data])
+		attemptSpatialRefresh() // Call the function
+	}, [data]) // Run when data changes
 
 	// Use refreshed data if available, otherwise fall back to original data
 	const displayData = refreshedData || data
 
-	if (!displayData) return null
+	if (!displayData) return null // Don't render if no data
 
 	// Helper to format numbers with commas for thousands
 	const formatNumber = num => {
-		if (num === undefined || num === null) return '0'
-		return num.toLocaleString()
+		if (num === undefined || num === null) return '0' // Default to '0' for null/undefined
+		return num.toLocaleString() // Format with commas for thousands
 	}
 
-	// Helper for safe property access
+	// Helper for safe property access with default value
 	const safeGet = (obj, path, defaultValue = '') => {
 		try {
 			const result = path.split('.').reduce((o, key) => (o && o[key] !== undefined ? o[key] : undefined), obj)
-			return result !== undefined ? result : defaultValue
+			return result !== undefined ? result : defaultValue // Return default if path not found
 		} catch (e) {
-			return defaultValue
+			return defaultValue // Return default on error
 		}
 	}
 
@@ -323,7 +326,7 @@ export const BlockAnalyticsPanel: React.FC<BlockAnalyticsPanelProps> = ({ data, 
 						className={styles.primaryButton}
 						onClick={async () => {
 							if (window.associateStationsWithBlocks) {
-								await window.associateStationsWithBlocks()
+								await window.associateStationsWithBlocks() // Call global function
 								// Reload the current block after association
 								window.showBlockAnalytics(displayData.block.blockId)
 							}
