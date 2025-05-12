@@ -594,19 +594,7 @@ const GalleryTemplate: React.FC = () => {
 						</div>
 					) : (
 						<>
-							{/* Results info showing current page information */}
-							<div className={styles.resultsInfo}>
-								<p>
-									{t('gallery.showing', {
-										from: indexOfFirstItem + 1,
-										to: Math.min(indexOfLastItem, filteredItems.length),
-										total: filteredItems.length,
-									}) ||
-										`Showing ${indexOfFirstItem + 1} - ${Math.min(indexOfLastItem, filteredItems.length)} of ${
-											filteredItems.length
-										} items`}
-								</p>
-							</div>
+							
 
 							{/* Media Grid - 3 column layout of media cards */}
 							<div className={styles.mediaGrid}>
