@@ -213,7 +213,7 @@ const SampleTable = ({ filters, visibleColumns, setFilteredData }) => {
 	}
 
 	return (
-		<div className={styles.fileTableContainer}> {/* Main container */}
+		<div className={styles.fileTableContainer}>
 			{/* Filter Summary - shows counts of filtered items by category */}
 			{filterSummary && (
 				<div className={styles.filterSummary}>
@@ -256,8 +256,8 @@ const SampleTable = ({ filters, visibleColumns, setFilteredData }) => {
 					{t('library.samples.table.noResults') || 'No samples match your filter criteria. Try adjusting your filters.'}
 				</div>
 			) : (
-				<div className={styles.tableWrapper}> {/* Table wrapper - only shown when data exists */}
-					<div className={styles.tableContainer}> {/* Table container with scroll capability */}
+				<div className={styles.tableWrapper}>
+					<div className={styles.tableContainer}>
 						<table className={styles.table}>
 							<thead className={styles.tableHead}>
 								{table.getHeaderGroups().map(headerGroup => (
@@ -265,15 +265,15 @@ const SampleTable = ({ filters, visibleColumns, setFilteredData }) => {
 										{headerGroup.headers.map(header => (
 											<th
 												key={header.id}
-												onClick={header.column.getToggleSortingHandler()} // Add click handler for sorting
+												onClick={header.column.getToggleSortingHandler()}
 												className={styles.sortableHeader}
 												style={{
 													width: header.column.columnDef.accessorKey === 'sampleDescription' ? '300px' : 'auto',
-												}}> {/* Special width for description column */}
-												{flexRender(header.column.columnDef.header, header.getContext())} {/* Render header content */}
+												}}>
+												{flexRender(header.column.columnDef.header, header.getContext())}
 												{header.column.getIsSorted() && (
 													<span className={styles.sortIndicator}>
-														{header.column.getIsSorted() === 'desc' ? ' ▼' : ' ▲'} {/* Sort direction indicator */}
+														{header.column.getIsSorted() === 'desc' ? ' ▼' : ' ▲'}
 													</span>
 												)}
 											</th>
@@ -285,7 +285,7 @@ const SampleTable = ({ filters, visibleColumns, setFilteredData }) => {
 								{table.getRowModel().rows.map(row => (
 									<tr key={row.id} className={styles.tableRow}>
 										{row.getVisibleCells().map(cell => (
-											<td key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</td> {/* Render cell content */}
+											<td key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</td>
 										))}
 									</tr>
 								))}
@@ -297,44 +297,44 @@ const SampleTable = ({ filters, visibleColumns, setFilteredData }) => {
 					<div className={styles.pagination}>
 						<div className={styles.paginationControls}>
 							<button
-								onClick={() => table.setPageIndex(0)} // Go to first page
-								disabled={!table.getCanPreviousPage()} // Disable if already on first page
+								onClick={() => table.setPageIndex(0)}
+								disabled={!table.getCanPreviousPage()}
 								className={styles.paginationButton}
 								aria-label='First page'>
-								{'<<'} {/* First page icon */}
+								{'<<'}
 							</button>
 							<button
-								onClick={() => table.previousPage()} // Go to previous page
-								disabled={!table.getCanPreviousPage()} // Disable if already on first page
+								onClick={() => table.previousPage()}
+								disabled={!table.getCanPreviousPage()}
 								className={styles.paginationButton}
 								aria-label='Previous page'>
-								{'<'} {/* Previous page icon */}
+								{'<'}
 							</button>
 							<span className={styles.pageInfo}>
-								Page {table.getState().pagination.pageIndex + 1} of {table.getPageCount()} {/* Page indicator */}
+								Page {table.getState().pagination.pageIndex + 1} of {table.getPageCount()}
 							</span>
 							<button
-								onClick={() => table.nextPage()} // Go to next page
-								disabled={!table.getCanNextPage()} // Disable if already on last page
+								onClick={() => table.nextPage()}
+								disabled={!table.getCanNextPage()}
 								className={styles.paginationButton}
 								aria-label='Next page'>
-								{'>'} {/* Next page icon */}
+								{'>'}
 							</button>
 							<button
-								onClick={() => table.setPageIndex(table.getPageCount() - 1)} // Go to last page
-								disabled={!table.getCanNextPage()} // Disable if already on last page
+								onClick={() => table.setPageIndex(table.getPageCount() - 1)}
+								disabled={!table.getCanNextPage()}
 								className={styles.paginationButton}
 								aria-label='Last page'>
-								{'>>'} {/* Last page icon */}
+								{'>>'}
 							</button>
 							<select
-								value={table.getState().pagination.pageSize} // Current page size
-								onChange={e => table.setPageSize(Number(e.target.value))} // Change handler for page size
+								value={table.getState().pagination.pageSize}
+								onChange={e => table.setPageSize(Number(e.target.value))}
 								className={styles.pageSizeSelect}
 								aria-label='Items per page'>
 								{[10, 20, 30, 40, 50].map(size => (
 									<option key={size} value={size}>
-										Show {size} {/* Page size options */}
+										Show {size}
 									</option>
 								))}
 							</select>
