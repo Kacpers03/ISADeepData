@@ -1,25 +1,17 @@
 // frontend/src/utils/csvExport.ts
+// Comprehensive CSV export utility that converts complex map data to properly formatted CSV files
 
-import { MapData } from './dataModels'
+import { MapData } from './dataModels' // Import type definition for map data
 import {
-	getProp,
-	normalizeCase,
-	formatNumericValue,
-	formatDateValue,
-	debugDataFields,
-	analyzeMapData,
+	getProp, // Utility for safely accessing properties regardless of case
+	normalizeCase, // Utility for normalizing object property cases
+	formatNumericValue, // Utility for formatting numeric values safely for Excel
+	formatDateValue, // Utility for formatting dates in a consistent format
+	debugDataFields, // Utility for logging data structure for debugging
+	analyzeMapData, // Utility for analyzing and counting data entities
 } from './dataUtilities'
 
-/**
- * Enhanced CSV export with complete data and exact column name mapping to match backend
- * Ensures all related data including GeoResult, CTDData, and Library are included
- */
-
-/**
- * Converts data to CSV format with all related data
- * @param data MapData object to be converted
- * @returns CSV-formatted string with semicolon delimiter
- */
+// Converts data to CSV format with all related data
 export const convertToCSV = (data: MapData): string => {
 	if (!data) return ''
 
@@ -535,14 +527,7 @@ export const convertToCSV = (data: MapData): string => {
 	return allRows.join('\r\n')
 }
 
-/**
- * Generate and download data as a CSV file with all related data
- * Column names exactly match the backend DbInitializer.cs file
- *
- * @param data MapData object
- * @param filename Base filename without extension
- * @returns true if successful, false on error
- */
+// Generate and download data as a CSV file with all related data
 export const downloadCSV = (data: MapData, filename = 'exploration-data'): boolean => {
 	if (!data) {
 		console.error('No data provided for CSV export')
