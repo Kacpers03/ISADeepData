@@ -1,82 +1,93 @@
 // frontend/src/contexts/languageContext.tsx
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react'
+// Provides a React context for managing application language and translations
 
-// Import language files
-import enTranslations from '../languages/en.json'
-import esTranslations from '../languages/es.json'
-import frTranslations from '../languages/fr.json'
+import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react' // Import React and required hooks for context management
 
-// Define available languages
-export type Language = 'en' | 'es' | 'fr'
+// Import language files with translation strings
+import enTranslations from '../languages/en.json' // English translations
+import esTranslations from '../languages/es.json' // Spanish translations
+import frTranslations from '../languages/fr.json' // French translations
 
-// Language resources
+// Define available languages as a TypeScript type for type safety
+export type Language = 'en' | 'es' | 'fr' // English, Spanish, French language codes
+
+// Language resources object mapping language codes to their translation files
 const resources = {
-	en: enTranslations,
-	es: esTranslations,
-	fr: frTranslations,
+	en: enTranslations, // English translation data
+	es: esTranslations, // Spanish translation data
+	fr: frTranslations, // French translation data
 }
 
+// Interface defining the shape of the language context
 interface LanguageContextType {
-	language: Language
-	setLanguage: (language: Language) => void
-	t: (key: string) => string
+	language: Language // Current active language
+	setLanguage: (language: Language) => void // Function to change the active language
+	t: (key: string) => string // Translation function that returns strings for given keys
 }
 
+// Create the language context with undefined as initial value
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined)
 
+// Props interface for the LanguageProvider component
 interface LanguageProviderProps {
-	children: ReactNode
+	children: ReactNode // React children to be wrapped by the provider
 }
 
+// LanguageProvider component to wrap the application and provide language context
 export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) => {
-	// Try to get language from localStorage, default to 'en'
+	// Initialize language state with default 'en' (English)
 	const [language, setLanguage] = useState<Language>('en')
 
-	// Load stored language on initial render
+	// Load stored language preference from localStorage on initial render
 	useEffect(() => {
 		if (typeof window !== 'undefined') {
-			const storedLanguage = localStorage.getItem('language') as Language
+			// Check if running in browser environment
+			const storedLanguage = localStorage.getItem('language') as Language // Get stored language
 			if (storedLanguage && ['en', 'es', 'fr'].includes(storedLanguage)) {
-				setLanguage(storedLanguage)
+				// Validate language is supported
+				setLanguage(storedLanguage) // Set language to stored preference
 			}
 		}
-	}, [])
+	}, []) // Empty dependency array ensures this effect runs only once on mount
 
-	// Update localStorage when language changes
+	// Update localStorage and document language attribute when language changes
 	useEffect(() => {
 		if (typeof window !== 'undefined') {
-			localStorage.setItem('language', language)
-			document.documentElement.lang = language
+			// Check if running in browser environment
+			localStorage.setItem('language', language) // Save language preference to localStorage
+			document.documentElement.lang = language // Update HTML lang attribute for accessibility
 		}
-	}, [language])
+	}, [language]) // Run effect when language state changes
 
-	// Translation function
+	// Translation function to retrieve localized strings
 	const t = (key: string): string => {
-		// Split the key by dots to access nested properties
-		const keys = key.split('.')
-		let translation: any = resources[language]
+		// Split the key by dots to access nested properties in translation objects
+		const keys = key.split('.') // e.g., 'nav.home' becomes ['nav', 'home']
+		let translation: any = resources[language] // Start with the root of current language resources
 
-		// Navigate through the nested properties
+		// Navigate through the nested properties to find the translation
 		for (const k of keys) {
 			if (translation && translation[k] !== undefined) {
-				translation = translation[k]
+				translation = translation[k] // Move deeper into the object
 			} else {
-				console.warn(`Translation key not found: ${key}`)
-				return key
+				console.warn(`Translation key not found: ${key}`) // Log warning for missing translations
+				return key // Return the key itself as fallback
 			}
 		}
 
-		return translation
+		return translation // Return the found translation string
 	}
 
+	// Provide the language context to child components
 	return <LanguageContext.Provider value={{ language, setLanguage, t }}>{children}</LanguageContext.Provider>
 }
 
-// Custom hook to use the language context
+// Custom hook to use the language context in components
 export const useLanguage = (): LanguageContextType => {
-	const context = useContext(LanguageContext)
+	const context = useContext(LanguageContext) // Access the language context
 	if (!context) {
+		// Throw error if hook is used outside of LanguageProvider
 		throw new Error('useLanguage must be used within a LanguageProvider')
 	}
-	return context
+	return context // Return the context with language state and functions
 }
