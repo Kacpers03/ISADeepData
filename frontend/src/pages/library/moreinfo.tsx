@@ -1,15 +1,17 @@
 // frontend/src/pages/library/moreinfo.tsx
-import { useRouter } from 'next/router'
+// Detailed file information page that displays metadata for a specific file/document
+
+import { useRouter } from 'next/router' // Next.js router for accessing URL parameters
 import React, { useEffect, useState } from 'react'
-import MediaInfoTemplate from '../../components/files/mediaInfoTemplate'
-import Head from 'next/head'
-import { FileInfo } from '../../types/fileTypes'
+import MediaInfoTemplate from '../../components/files/mediaInfoTemplate' // Template component for displaying file metadata
+import Head from 'next/head' // Next.js Head component for managing document head
+import { FileInfo } from '../../types/fileTypes' // Type definitions for file information
 
 const MoreInfoPage = () => {
 	const router = useRouter()
-	const { data } = router.query
-	const [fileInfo, setFileInfo] = useState<FileInfo | null>(null)
-	const [loading, setLoading] = useState(true)
+	const { data } = router.query // Extract data parameter from URL query
+	const [fileInfo, setFileInfo] = useState<FileInfo | null>(null) // State for storing parsed file information
+	const [loading, setLoading] = useState(true) // Loading state for UI feedback
 
 	useEffect(() => {
 		// Only try to parse the data once it's available from the router
@@ -21,7 +23,7 @@ const MoreInfoPage = () => {
 				// we could fetch them here from the API
 				// This is a placeholder for potential API integration
 				if (parsedData.contractorId && !parsedData.contractorObj) {
-					// Fetch contractor data if needed
+					// Fetch contractor data if needed - commented out as placeholder
 					// const fetchContractorData = async () => {
 					//   try {
 					//     const response = await fetch(`/api/contractors/${parsedData.contractorId}`);
@@ -39,11 +41,12 @@ const MoreInfoPage = () => {
 			} catch (err) {
 				console.error('Failed to parse data:', err)
 			} finally {
-				setLoading(false)
+				setLoading(false) // Set loading to false regardless of success or failure
 			}
 		}
-	}, [data])
+	}, [data]) // Re-run effect when data parameter changes
 
+	// Loading state display
 	if (loading && !fileInfo) {
 		return (
 			<div
@@ -59,6 +62,7 @@ const MoreInfoPage = () => {
 		)
 	}
 
+	// No data state display with return button
 	if (!fileInfo) {
 		return (
 			<div
@@ -88,6 +92,7 @@ const MoreInfoPage = () => {
 		)
 	}
 
+	// Main content when file information is available
 	return (
 		<>
 			<Head>

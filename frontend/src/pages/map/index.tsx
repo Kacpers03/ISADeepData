@@ -1,25 +1,30 @@
 // frontend/src/pages/map/index.tsx
+// Interactive map page that displays geographical data with filtering capabilities
+
 import React, { useEffect } from 'react'
-import dynamic from 'next/dynamic'
-import Head from 'next/head'
-import { FilterProvider } from '../../components/map/context/filterContext'
-import styles from '../../styles/map/mapPage.module.css'
-import { ImprovedFilterPanel } from '../../components/map/filters/filterPanel'
-import { useRouter } from 'next/router'
-import { useLanguage } from '../../contexts/languageContext'
+import dynamic from 'next/dynamic' // Next.js dynamic import for client-side only components
+import Head from 'next/head' // Next.js Head component for managing document head
+import { FilterProvider } from '../../components/map/context/filterContext' // Context provider for map filters
+import styles from '../../styles/map/mapPage.module.css' // Component-specific styles
+import { ImprovedFilterPanel } from '../../components/map/filters/filterPanel' // Filter UI component
+import { useRouter } from 'next/router' // Next.js router for navigation
+import { useLanguage } from '../../contexts/languageContext' // Language context for internationalization
 
 // Dynamically import MapComponent without SSR
+// This prevents server-side rendering of the map component which requires browser APIs
 const EnhancedMapComponent = dynamic(() => import('../../components/map/mapComponent'), { ssr: false })
 
 export default function MapPage() {
 	const router = useRouter()
-	const { t } = useLanguage()
+	const { t } = useLanguage() // Translation function for internationalization
 
 	// Main interaction handler - fixes navigation and footer clicks
+	// This is needed because map libraries can intercept events that should go to navigation
 	useEffect(() => {
 		// Universal click handler for map interactions
 		const handleNonMapClicks = e => {
 			// Check if click is on navbar, dropdown, or footer
+			// These elements should receive clicks normally without map interference
 			const isNavbarClick =
 				e.target.closest('.navbar') !== null ||
 				e.target.classList.contains('dropdown-item') ||
@@ -35,6 +40,7 @@ export default function MapPage() {
 
 			if (isNavbarClick || isFooterClick) {
 				// Stop event propagation before it reaches the map component
+				// This prevents the map from handling clicks meant for navigation
 				e.stopPropagation()
 
 				// For footer links, if they have href, use normal behavior
@@ -46,6 +52,7 @@ export default function MapPage() {
 		}
 
 		// Special handler for home/brand links
+		// Ensures home navigation works properly even with the map
 		const handleHomeClick = () => {
 			const homeLinks = document.querySelectorAll('.navbar-brand, .home-link')
 
@@ -61,12 +68,14 @@ export default function MapPage() {
 		}
 
 		// Add event listener in the capturing phase (true) - this is crucial
+		// Capturing phase ensures our handler runs before map handlers
 		document.addEventListener('click', handleNonMapClicks, true)
 
 		// Add home link handler
 		handleHomeClick()
 
 		// Apply z-index to footer to ensure it's above the map
+		// This prevents the map from rendering on top of the footer
 		const footer = document.querySelector('footer')
 		if (footer) {
 			footer.style.position = 'relative'
@@ -81,6 +90,7 @@ export default function MapPage() {
 		}
 
 		// Initialize Bootstrap components
+		// Bootstrap needs manual initialization when dynamically loaded
 		if (typeof window !== 'undefined') {
 			// Load Bootstrap JS
 			require('bootstrap/dist/js/bootstrap.bundle.min.js')
@@ -115,6 +125,7 @@ export default function MapPage() {
 	}, [])
 
 	// Mobile navigation support
+	// Ensures the mobile menu works properly with the map
 	useEffect(() => {
 		// Ensure navbar-collapse works properly on mobile
 		const navbarToggler = document.querySelector('.navbar-toggler')
@@ -138,6 +149,7 @@ export default function MapPage() {
 			</Head>
 
 			<div className={styles.mapPageContainer}>
+				{/* Map header with title and description */}
 				<header className={styles.mapHeader}>
 					<h1>{t('map.title') || 'ISA Exploration Areas'}</h1>
 					<p className={styles.mapDescription}>
@@ -153,13 +165,15 @@ export default function MapPage() {
 						<ImprovedFilterPanel />
 					</div>
 
-					{/* Map container */}
+					{/* Map container - holds the dynamically loaded map component */}
 					<div className={styles.mapSection}>
 						<EnhancedMapComponent />
 					</div>
 				</div>
 
+				{/* Informational cards section below the map */}
 				<div className={styles.mapInfoSection}>
+					{/* Card for map exploration features */}
 					<div className={styles.infoCard}>
 						<div className={styles.infoIcon}>
 							<svg
@@ -183,6 +197,7 @@ export default function MapPage() {
 						</p>
 					</div>
 
+					{/* Card for deep seabed resources information */}
 					<div className={styles.infoCard}>
 						<div className={styles.infoIcon}>
 							<svg
@@ -206,6 +221,7 @@ export default function MapPage() {
 						</p>
 					</div>
 
+					{/* Card for data transparency information */}
 					<div className={styles.infoCard}>
 						<div className={styles.infoIcon}>
 							<svg
