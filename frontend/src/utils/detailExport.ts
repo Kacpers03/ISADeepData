@@ -1,38 +1,19 @@
 // frontend/src/utils/detailExport.ts
+// Specialized CSV export utilities for entity-specific exports with relationship preservation
+
 import { Station, Cruise, Contractor, MapData } from '../types/filter-types'
 import { convertToCSV } from './csvExport'
 
-/**
- * Finds a contractor in the full mapData based on contractorId
- * @param mapData The complete map data
- * @param contractorId The ID of the contractor to find
- * @returns The contractor object or null if not found
- */
 const findContractor = (mapData: MapData, contractorId: number): Contractor | null => {
 	if (!mapData || !mapData.contractors) return null
 	return mapData.contractors.find(c => c.contractorId === contractorId) || null
 }
 
-/**
- * Finds a cruise in the full mapData based on cruiseId
- * @param mapData The complete map data
- * @param cruiseId The ID of the cruise to find
- * @returns The cruise object or null if not found
- */
 const findCruise = (mapData: MapData, cruiseId: number): Cruise | null => {
 	if (!mapData || !mapData.cruises) return null
 	return mapData.cruises.find(c => c.cruiseId === cruiseId) || null
 }
 
-/**
- * Export station data including its parent cruise and contractor
- * to ensure all relationships are maintained in the export
- *
- * @param station The station to export (only needs stationId)
- * @param mapData The full map data to find relationships
- * @param filename The base filename (without extension)
- * @returns boolean indicating success or failure
- */
 export const exportStationCSV = (station: Station, mapData: MapData, filename = 'station-data'): boolean => {
 	if (!station || !station.stationId) {
 		console.error('No station ID provided for CSV export')
@@ -60,10 +41,12 @@ export const exportStationCSV = (station: Station, mapData: MapData, filename = 
 		}
 
 		// Find the contractor if we have a cruise with contractorId
+		// This maintains the complete data hierarchy for the export
 		const contractorId = parentCruise.contractorId
 		const parentContractor = contractorId ? findContractor(mapData, contractorId) : null
 
 		// Create a mini-dataset focused on this station
+		// This preserves all relationships while keeping the CSV export focused
 		const exportData: MapData = {
 			contractors: parentContractor ? [parentContractor] : [],
 			cruises: [
@@ -89,6 +72,7 @@ export const exportStationCSV = (station: Station, mapData: MapData, filename = 
 		const url = URL.createObjectURL(blob)
 
 		// Add date and station code to filename for uniqueness
+		// Replace spaces with underscores for better filename compatibility
 		const date = new Date().toISOString().split('T')[0]
 		const stationCode = fullStation.stationCode || `station-${fullStation.stationId}`
 		const fullFilename = `${filename}-${stationCode.replace(/\s+/g, '_')}-${date}.csv`
@@ -112,15 +96,6 @@ export const exportStationCSV = (station: Station, mapData: MapData, filename = 
 	}
 }
 
-/**
- * Export cruise data including all its stations, samples, and parent contractor
- * to ensure all relationships are maintained in the export
- *
- * @param cruise The cruise to export
- * @param mapData The full map data to find relationships
- * @param filename The base filename (without extension)
- * @returns boolean indicating success or failure
- */
 export const exportCruiseCSV = (cruise: Cruise, mapData: MapData, filename = 'cruise-data'): boolean => {
 	if (!cruise) {
 		console.error('No cruise data provided for CSV export')
@@ -129,6 +104,7 @@ export const exportCruiseCSV = (cruise: Cruise, mapData: MapData, filename = 'cr
 
 	try {
 		// Find the parent contractor to include in export
+		// This ensures the full data hierarchy is preserved in the export
 		const parentContractor = cruise.contractorId ? findContractor(mapData, cruise.contractorId) : null
 
 		// Create a mini-dataset focused on this cruise with all relationships intact
@@ -151,6 +127,7 @@ export const exportCruiseCSV = (cruise: Cruise, mapData: MapData, filename = 'cr
 		const url = URL.createObjectURL(blob)
 
 		// Add date and cruise name to filename for uniqueness
+		// Replace spaces with underscores for better filename compatibility
 		const date = new Date().toISOString().split('T')[0]
 		const cruiseName = cruise.cruiseName || `cruise-${cruise.cruiseId}`
 		const fullFilename = `${filename}-${cruiseName.replace(/\s+/g, '_')}-${date}.csv`
@@ -174,15 +151,6 @@ export const exportCruiseCSV = (cruise: Cruise, mapData: MapData, filename = 'cr
 	}
 }
 
-/**
- * Export contractor data including all its areas, blocks, cruises, stations, etc.
- * to ensure all relationships are maintained in the export
- *
- * @param contractor The contractor to export
- * @param mapData The full map data to find relationships
- * @param filename The base filename (without extension)
- * @returns boolean indicating success or failure
- */
 export const exportContractorCSV = (
 	contractor: Contractor,
 	mapData: MapData,
@@ -195,6 +163,7 @@ export const exportContractorCSV = (
 
 	try {
 		// Find all cruises that belong to this contractor
+		// This ensures we include all related cruise data in the export
 		const contractorCruises = mapData.cruises?.filter(cruise => cruise.contractorId === contractor.contractorId) || []
 
 		// Create a mini-dataset focused on just this contractor and its cruises
@@ -217,6 +186,7 @@ export const exportContractorCSV = (
 		const url = URL.createObjectURL(blob)
 
 		// Add date and contractor name to filename for uniqueness
+		// Replace spaces with underscores and limit length to avoid too long filenames
 		const date = new Date().toISOString().split('T')[0]
 		const contractorName = contractor.contractorName || `contractor-${contractor.contractorId}`
 		const fullFilename = `${filename}-${contractorName.replace(/\s+/g, '_').substring(0, 30)}-${date}.csv`
