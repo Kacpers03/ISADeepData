@@ -1,4 +1,11 @@
-/* styles/files/mediaInfo.module.css */
+/*
+ * mediaInfo.module.css
+ *
+ * CSS module for the media information display page.
+ * Provides styling for detailed file information views including
+ * headers, metadata display, description sections, and related information.
+ * Features responsive design with appropriate scaling for different screen sizes.
+ */
 
 .pageContainer {
 	min-height: 100vh;

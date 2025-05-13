@@ -1,4 +1,13 @@
-/* Denne containeren fyller hele den tilgjengelige høyden for midtdelen (100vh minus header og footer) */
+/* 
+ * home.module.css
+ * 
+ * CSS module for the homepage component styling.
+ * Contains styles for the full-screen video background,
+ * text overlay, and responsive layout adjustments.
+ * This creates a cinematic hero section with centered text on top of a video.
+ */
+
+/* This container fills the entire available height for the middle section (100vh minus header and footer) */
 .homeContainer {
 	position: relative;
 	width: 100%;
@@ -9,7 +18,7 @@
 	padding: 0;
 }
 
-/* Videoen fyller hele homeContainer */
+/* The video fills the entire homeContainer */
 .heroVideo {
 	position: absolute;
 	top: 0;
@@ -19,7 +28,7 @@
 	object-fit: cover;
 }
 
-/* Overlay-teksten plasseres midt i containeren */
+/* Overlay text is positioned in the middle of the container */
 .overlay {
 	position: absolute;
 	top: 50%;

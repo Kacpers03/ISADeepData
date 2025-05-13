@@ -1,3 +1,13 @@
+/*
+ * markers.module.css
+ *
+ * CSS module for map marker and cluster styling.
+ * Provides styling for station markers, cluster markers, cruise markers,
+ * tooltips, and associated visual indicators.
+ * Features interactive hover effects and proper positioning.
+ */
+
+
 /* ========== STATION MARKER STYLES ========== */
 .mapMarker {
 	width: 20px;

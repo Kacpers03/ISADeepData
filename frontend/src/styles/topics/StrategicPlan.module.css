@@ -1,3 +1,13 @@
+/*
+ * StrategicPlan.module.css
+ *
+ * CSS module for the Strategic Plan topic page.
+ * Provides styles for the page layout, hero section with image,
+ * content sections about the strategic plan's goals and pillars,
+ * and call-to-action elements for downloads and further engagement.
+ * Features a clean, professional design with responsive layouts.
+ */
+
 .container {
 	max-width: 1200px;
 	margin: 0 auto;
@@ -77,7 +87,7 @@
 
 .feature {
 	flex: 1 1 30%; /* Adjusts each pillar to take about 30% of the container's width */
-	min-width: 280px; /* Ensures they don’t get too narrow on smaller screens */
+	min-width: 280px; /* Ensures they don't get too narrow on smaller screens */
 	box-sizing: border-box;
 	background-color: #fff;
 	padding: 20px;

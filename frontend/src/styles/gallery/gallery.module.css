@@ -1,3 +1,15 @@
+/*
+ * gallery.module.css
+ *
+ * CSS module for the media gallery page.
+ * Provides styling for the gallery layout, media cards, filter sidebar,
+ * interactive elements, modal views, and responsive adaptations.
+ * Features a visually appealing grid layout with hover effects and proper spacing.
+ */
+
+
+
+
 /* Overall gallery container */
 .galleryContainer {
 	max-width: 1440px;

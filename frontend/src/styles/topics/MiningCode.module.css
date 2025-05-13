@@ -1,3 +1,13 @@
+/*
+ * MiningCode.module.css
+ *
+ * CSS module for the Mining Code topic page.
+ * Provides styles for the page layout, hero section,
+ * information about mining regulations, legal frameworks,
+ * and development processes.
+ * Includes responsive design for various screen sizes.
+ */
+
 .container {
 	max-width: 1200px;
 	margin: 0 auto;

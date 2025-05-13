@@ -1,3 +1,12 @@
+/*
+ * terms.module.css
+ *
+ * CSS module for the Terms and Conditions page.
+ * Provides styling for the page layout including hero section with image,
+ * about section, detailed information boxes, and call-to-action elements.
+ * Features responsive design with proper text formatting for legal content.
+ */
+
 .container {
 	max-width: 1200px;
 	margin: 0 auto;

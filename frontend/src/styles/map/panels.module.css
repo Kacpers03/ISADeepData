@@ -1,3 +1,12 @@
+/*
+ * panels.module.css
+ *
+ * CSS module for map information panels and popups.
+ * Provides styling for detail panels, analytics sections, popups,
+ * data tables, accordion elements, and action buttons.
+ * Features clean layout with responsive adjustments.
+ */
+
 /* ========== DETAIL PANEL STYLES ========== */
 .detailPanel {
 	position: absolute;

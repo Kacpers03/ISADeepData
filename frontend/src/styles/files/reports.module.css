@@ -1,4 +1,11 @@
-/* reports.module.css - with added filter summary styling */
+/*
+ * reports.module.css
+ *
+ * CSS module for the reports/files listing page.
+ * Provides styling for the page layout, centered headers,
+ * filter containers, data tables, and pagination controls.
+ * Features responsive design with proper handling of various screen sizes.
+ */
 
 /* Page wrapper */
 .pageWrapper {

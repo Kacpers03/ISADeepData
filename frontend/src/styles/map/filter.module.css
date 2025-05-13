@@ -1,3 +1,15 @@
+/*
+ * filter.module.css
+ *
+ * CSS module for the map filtering sidebar component.
+ * Provides styling for filter panels, search functionality, filter dropdowns,
+ * search results display, and selected item indicators.
+ * Features responsive design with interactive filtering options.
+ */
+
+
+
+
 /* FILTER PANEL LOADING STATE */
 .filterPanelLoading {
 	display: flex;

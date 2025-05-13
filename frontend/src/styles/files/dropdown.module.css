@@ -1,3 +1,12 @@
+/*
+ * dropdown.module.css
+ *
+ * CSS module for custom dropdown components used in filter panels.
+ * Provides styling for interactive dropdowns with search functionality,
+ * selected item indicators, and responsive layouts.
+ * Features modern design with visual feedback for user interactions.
+ */
+
 /* FILTER PANEL LOADING STATE */
 .filterPanelLoading {
 	display: flex;

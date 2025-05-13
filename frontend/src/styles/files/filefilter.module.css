@@ -1,3 +1,12 @@
+/*
+ * filefilter.module.css
+ *
+ * CSS module for the file filtering sidebar component.
+ * Provides styling for filter containers, dropdowns, search functionality,
+ * and search results display with proper highlighting for selected items.
+ * Features responsive design with mobile adaptations.
+ */
+
 /* Main container styling - FIXED FOR RESPONSIVE LAYOUT */
 .filterContainer {
 	background-color: white;

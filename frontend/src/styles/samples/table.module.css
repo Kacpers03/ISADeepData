@@ -1,4 +1,12 @@
-/* table.module.css - with filter summary */
+/*
+ * table.module.css
+ *
+ * CSS module for the sample data table component.
+ * Provides styling for a responsive data table with sortable headers,
+ * pagination controls, filtering summary, and export functionality.
+ * Features clean design with proper text wrapping, responsive layouts,
+ * and mobile-friendly filter toggle for smaller screens.
+ */
 
 .pageWrapper {
 	padding: 20px;

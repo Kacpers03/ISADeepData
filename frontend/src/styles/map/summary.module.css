@@ -1,3 +1,13 @@
+/*
+ * summary.module.css
+ *
+ * CSS module for the map data summary panel.
+ * Provides styling for summary containers, statistics display,
+ * category boxes, and contractor information sections.
+ * Features collapsible interface with interactive elements.
+ */
+
+
 /* src/styles/map/summary.module.css */
 
 .summaryPanel {

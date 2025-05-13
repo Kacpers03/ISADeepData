@@ -1,4 +1,11 @@
-/* frontend/src/styles/document/document.module.css */
+/*
+ * document.module.css
+ *
+ * CSS module for document display pages.
+ * Provides styling for the document viewer layout, 
+ * including title section, table of contents, and action buttons.
+ * Features clean typography and responsive spacing for optimal readability.
+ */
 
 .documentPage {
 	min-height: 100vh;

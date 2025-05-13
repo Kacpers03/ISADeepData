@@ -1,3 +1,13 @@
+/*
+ * layers.module.css
+ *
+ * CSS module for map layer styling elements.
+ * Provides styling for status badges, data tables, accordion components,
+ * and block tooltips used in map layer visualization.
+ * Features consistent color coding and interactive elements.
+ */
+
+
 /* ========== STATUS BADGES ========== */
 .statusBadge {
 	display: inline-block;

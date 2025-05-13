@@ -1,3 +1,12 @@
+/*
+ * MarineProtection.module.css
+ *
+ * CSS module for the Marine Protection topic page.
+ * Provides styles for the page layout, hero section, 
+ * information about marine protection frameworks and approaches.
+ * Includes responsive design for various screen sizes.
+ */
+
 .container {
 	max-width: 1200px;
 	margin: 0 auto;

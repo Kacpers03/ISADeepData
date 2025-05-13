@@ -1,3 +1,13 @@
+/*
+ * mapPage.module.css
+ *
+ * CSS module for the overall map page layout.
+ * Provides styling for the page container, header, description,
+ * map/filter panel layout, and informational cards.
+ * Features responsive design with appropriate breakpoints.
+ */
+
+
 /* Updated map page layout CSS */
 .mapPageContainer {
 	max-width: 1400px;

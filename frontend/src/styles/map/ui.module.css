@@ -1,3 +1,12 @@
+/*
+ * ui.module.css
+ *
+ * CSS module for reusable UI components used in the map interface.
+ * Provides styling for buttons, badges, form elements, cards,
+ * alerts, and loading indicators.
+ * Features consistent styling that can be applied across the map application.
+ */
+
 /* ========== REUSABLE UI COMPONENTS ========== */
 
 /* Reset button styles */

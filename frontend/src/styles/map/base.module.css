@@ -1,3 +1,13 @@
+/*
+ * base.module.css
+ *
+ * CSS module for the core map container and general map states.
+ * Provides styling for the main map container, loading/error states,
+ * coordinate displays, toast notifications, and responsive adjustments.
+ * Features clean design with proper z-indexing and animation effects.
+ */
+
+
 /* ========== LAYOUT & CONTAINER STYLES ========== */
 .mapContainer {
 	position: relative;

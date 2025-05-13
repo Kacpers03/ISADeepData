@@ -1,4 +1,11 @@
-/* filter.module.css - Modernized version */
+/*
+ * filter.module.css
+ *
+ * CSS module for the sample filter sidebar component.
+ * Provides styling for an interactive filter panel with search functionality,
+ * dropdown selectors, column visibility toggles, and responsive behavior.
+ * Features a modern, clean design with visual feedback for user interactions.
+ */
 
 .filterContainer {
 	width: 280px;

@@ -1,3 +1,14 @@
+/*
+ * controls.module.css
+ *
+ * CSS module for the interactive map control elements.
+ * Provides styling for control panels, layer toggles, style selectors,
+ * display options, info panels, and zoom buttons.
+ * Features a compact, accessible interface with proper hover states.
+ */
+
+
+
 /* ========== MAP CONTROLS ========== */
 .compactControls {
 	position: absolute;
