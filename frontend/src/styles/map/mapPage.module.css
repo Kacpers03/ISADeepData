@@ -1,155 +1,165 @@
+/*
+ * mapPage.module.css
+ *
+ * CSS module for the overall map page layout.
+ * Provides styling for the page container, header, description,
+ * map/filter panel layout, and informational cards.
+ * Features responsive design with appropriate breakpoints.
+ */
+
+
 /* Updated map page layout CSS */
 .mapPageContainer {
-  max-width: 1400px;
-  margin: 0 auto;
-  padding: 30px 20px;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+	max-width: 1400px;
+	margin: 0 auto;
+	padding: 30px 20px;
+	font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
 .mapHeader {
-  margin-bottom: 30px;
-  text-align: center;
+	margin-bottom: 30px;
+	text-align: center;
 }
 
 .mapHeader h1 {
-  font-size: 2.2rem;
-  font-weight: 700;
-  color: #0f172a;
-  margin-bottom: 15px;
+	font-size: 2.2rem;
+	font-weight: 700;
+	color: #0f172a;
+	margin-bottom: 15px;
 }
 
 .mapDescription {
-  font-size: 1rem;
-  color: #64748b;
-  max-width: 800px;
-  margin: 0 auto;
-  line-height: 1.6;
+	font-size: 1rem;
+	color: #64748b;
+	max-width: 800px;
+	margin: 0 auto;
+	line-height: 1.6;
 }
 
 /* Map layout with filter panel and map side by side */
 .mapLayout {
-  display: flex;
-  gap: 24px;
-  margin-bottom: 30px;
-  height: 550px; /* Match the map container height */
+	display: flex;
+	gap: 24px;
+	margin-bottom: 30px;
+	height: 550px; /* Match the map container height */
 }
 
 /* Side filter panel */
 .sideFilterPanel {
-  height: 100%;
-  flex-shrink: 0;
-  overflow-y: auto;
-  position: relative;
-  border-radius: 12px;
-  max-width: 380px;
-  width: 380px;
+	height: 100%;
+	flex-shrink: 0;
+	overflow-y: auto;
+	position: relative;
+	border-radius: 12px;
+	max-width: 380px;
+	width: 380px;
 }
 
 @media (max-width: 768px) {
-  .sideFilterPanel {
-    width: 100%;
-    max-width: 100%;
-    margin-bottom: 20px;
-  }
-  
-  .mapLayout {
-    flex-direction: column;
-  }
+	.sideFilterPanel {
+		width: 100%;
+		max-width: 100%;
+		margin-bottom: 20px;
+	}
+
+	.mapLayout {
+		flex-direction: column;
+	}
 }
 
 /* Map section takes remaining space */
 .mapSection {
-  flex: 1;
-  min-width: 0; /* Ensures the flex item can shrink below its content size */
-  height: 100%;
-  border-radius: 12px;
-  overflow: hidden;
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+	flex: 1;
+	min-width: 0; /* Ensures the flex item can shrink below its content size */
+	height: 100%;
+	border-radius: 12px;
+	overflow: hidden;
+	box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
 }
 
 /* Information section below map */
 .mapInfoSection {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 30px;
-  margin-top: 60px;
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+	gap: 30px;
+	margin-top: 60px;
 }
 
 .infoCard {
-  background-color: white;
-  border-radius: 12px;
-  padding: 30px;
-  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
-  text-align: center;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+	background-color: white;
+	border-radius: 12px;
+	padding: 30px;
+	box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+	text-align: center;
+	transition: transform 0.3s ease, box-shadow 0.3s ease;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
 }
 
 .infoCard:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.08);
+	transform: translateY(-5px);
+	box-shadow: 0 15px 35px rgba(0, 0, 0, 0.08);
 }
 
 .infoIcon {
-  width: 60px;
-  height: 60px;
-  border-radius: 50%;
-  background-color: #f0f9ff;
-  color: #3b82f6;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 20px;
+	width: 60px;
+	height: 60px;
+	border-radius: 50%;
+	background-color: #f0f9ff;
+	color: #3b82f6;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	margin-bottom: 20px;
 }
 
 .infoCard h3 {
-  font-size: 1.3rem;
-  font-weight: 600;
-  color: #1e293b;
-  margin: 0 0 15px 0;
+	font-size: 1.3rem;
+	font-weight: 600;
+	color: #1e293b;
+	margin: 0 0 15px 0;
 }
 
 .infoCard p {
-  color: #64748b;
-  font-size: 1rem;
-  line-height: 1.6;
-  margin: 0;
+	color: #64748b;
+	font-size: 1rem;
+	line-height: 1.6;
+	margin: 0;
 }
 
 /* Responsive adjustments */
 @media (max-width: 992px) {
-  .mapLayout {
-    flex-direction: column;
-    height: auto;
-  }
-  
-  .sideFilterPanel {
-    width: 100%;
-    max-height: 400px;
-    margin-bottom: 20px;
-  }
-  
-  .mapSection {
-    height: 500px;
-  }
+	.mapLayout {
+		flex-direction: column;
+		height: auto;
+	}
+
+	.sideFilterPanel {
+		width: 100%;
+		max-height: 400px;
+		margin-bottom: 20px;
+	}
+
+	.mapSection {
+		height: 500px;
+	}
 }
 
 @media (max-width: 640px) {
-  .mapHeader h1 {
-    font-size: 1.8rem;
-  }
-  
-  .mapDescription {
-    font-size: 0.9rem;
-  }
-  
-  .mapInfoSection {
-    grid-template-columns: 1fr;
-  }
-  
-  .mapSection {
-    height: 400px;
-  }
+	.mapHeader h1 {
+		font-size: 1.8rem;
+	}
+
+	.mapDescription {
+		font-size: 0.9rem;
+	}
+
+	.mapInfoSection {
+		grid-template-columns: 1fr;
+	}
+
+	.mapSection {
+		height: 400px;
+	}
 }

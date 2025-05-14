@@ -1,82 +1,89 @@
-/* frontend/src/styles/document/document.module.css */
+/*
+ * document.module.css
+ *
+ * CSS module for document display pages.
+ * Provides styling for the document viewer layout, 
+ * including title section, table of contents, and action buttons.
+ * Features clean typography and responsive spacing for optimal readability.
+ */
 
 .documentPage {
-    min-height: 100vh;
-    background-color: #f9fafb;
-    padding: 2rem 1rem;
-  }
-  
-  .documentContainer {
-    max-width: 800px;
-    margin: 0 auto;
-    background-color: white;
-    border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-    padding: 2rem;
-  }
-  
-  .documentTitle {
-    font-size: 2rem;
-    font-weight: 700;
-    color: #111827;
-    margin-bottom: 1.5rem;
-    text-align: center;
-  }
-  
-  .documentDescription {
-    font-size: 1rem;
-    line-height: 1.7;
-    color: #4b5563;
-    margin-bottom: 2rem;
-  }
-  
-  .contentsSection {
-    margin-bottom: 2rem;
-  }
-  
-  .contentsTitle {
-    font-size: 1.5rem;
-    font-weight: 600;
-    color: #1f2937;
-    margin-bottom: 1rem;
-  }
-  
-  .contentsList {
-    list-style-type: disc;
-    padding-left: 1.5rem;
-  }
-  
-  .contentsList li {
-    margin-bottom: 0.75rem;
-    color: #4b5563;
-  }
-  
-  .buttonContainer {
-    display: flex;
-    margin-top: 1.5rem;
-    margin-bottom: 1rem;
-  }
-  
-  .documentButton {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    background-color: #2563eb;
-    color: white;
-    font-weight: 500;
-    padding: 0.75rem 1.5rem;
-    border-radius: 0.375rem;
-    text-decoration: none;
-    transition: all 0.2s ease;
-  }
-  
-  .documentButton:hover {
-    background-color: #1d4ed8;
-    transform: translateY(-1px);
-  }
-  
-  .buttonIcon {
-    width: 1.25rem;
-    height: 1.25rem;
-    stroke: currentColor;
-  }
+	min-height: 100vh;
+	background-color: #f9fafb;
+	padding: 2rem 1rem;
+}
+
+.documentContainer {
+	max-width: 800px;
+	margin: 0 auto;
+	background-color: white;
+	border-radius: 8px;
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+	padding: 2rem;
+}
+
+.documentTitle {
+	font-size: 2rem;
+	font-weight: 700;
+	color: #111827;
+	margin-bottom: 1.5rem;
+	text-align: center;
+}
+
+.documentDescription {
+	font-size: 1rem;
+	line-height: 1.7;
+	color: #4b5563;
+	margin-bottom: 2rem;
+}
+
+.contentsSection {
+	margin-bottom: 2rem;
+}
+
+.contentsTitle {
+	font-size: 1.5rem;
+	font-weight: 600;
+	color: #1f2937;
+	margin-bottom: 1rem;
+}
+
+.contentsList {
+	list-style-type: disc;
+	padding-left: 1.5rem;
+}
+
+.contentsList li {
+	margin-bottom: 0.75rem;
+	color: #4b5563;
+}
+
+.buttonContainer {
+	display: flex;
+	margin-top: 1.5rem;
+	margin-bottom: 1rem;
+}
+
+.documentButton {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.5rem;
+	background-color: #2563eb;
+	color: white;
+	font-weight: 500;
+	padding: 0.75rem 1.5rem;
+	border-radius: 0.375rem;
+	text-decoration: none;
+	transition: all 0.2s ease;
+}
+
+.documentButton:hover {
+	background-color: #1d4ed8;
+	transform: translateY(-1px);
+}
+
+.buttonIcon {
+	width: 1.25rem;
+	height: 1.25rem;
+	stroke: currentColor;
+}

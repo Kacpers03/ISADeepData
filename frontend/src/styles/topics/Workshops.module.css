@@ -1,147 +1,156 @@
+/*
+ * Workshops.module.css
+ *
+ * CSS module for the Workshops topic page.
+ * Provides styles for the page layout, hero section,
+ * workshop listings, archive sidebar, and related interactive elements.
+ * Features ISA-inspired design with responsive layouts for various screen sizes.
+ */
+
 .container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 20px;
-  font-family: Arial, sans-serif;
-  color: #333;
+	max-width: 1200px;
+	margin: 0 auto;
+	padding: 20px;
+	font-family: Arial, sans-serif;
+	color: #333;
 }
 
 /* HERO SECTION */
 .hero {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  background-color: #f7f9fb;
-  margin-bottom: 40px;
-  border-radius: 8px;
-  overflow: hidden;
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: space-between;
+	background-color: #f7f9fb;
+	margin-bottom: 40px;
+	border-radius: 8px;
+	overflow: hidden;
 }
 
 .heroText {
-  flex: 1 1 50%;
-  padding: 40px;
+	flex: 1 1 50%;
+	padding: 40px;
 }
 
 .heroTitle {
-  font-size: 2.5rem;
-  margin: 0;
-  color: #003366;
+	font-size: 2.5rem;
+	margin: 0;
+	color: #003366;
 }
 
 .heroSubtitle {
-  font-size: 1.2rem;
-  margin-top: 10px;
-  color: #555;
-  max-width: 500px;
+	font-size: 1.2rem;
+	margin-top: 10px;
+	color: #555;
+	max-width: 500px;
 }
 
 /* WORKSHOPS LIST - ISA style */
 .workshopsList {
-  display: flex;
-  gap: 30px;
-  margin-bottom: 40px;
+	display: flex;
+	gap: 30px;
+	margin-bottom: 40px;
 }
 
 .mainContent {
-  flex: 1;
+	flex: 1;
 }
 
 .sidebar {
-  width: 300px;
+	width: 300px;
 }
 
 .workshopItem {
-  background: #fff;
-  border-radius: 0;
-  margin-bottom: 15px;
-  padding: 20px;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-  border-bottom: 1px solid #f0f0f0;
+	background: #fff;
+	border-radius: 0;
+	margin-bottom: 15px;
+	padding: 20px;
+	cursor: pointer;
+	transition: background-color 0.2s ease;
+	border-bottom: 1px solid #f0f0f0;
 }
 
 .workshopItem:hover {
-  background-color: #f7f9fb;
+	background-color: #f7f9fb;
 }
 
 .workshopDate {
-  font-size: 0.9rem;
-  color: #666;
-  margin-bottom: 8px;
+	font-size: 0.9rem;
+	color: #666;
+	margin-bottom: 8px;
 }
 
 .workshopTitle {
-  margin: 0;
-  font-size: 1.1rem;
-  color: #003366;
-  line-height: 1.4;
+	margin: 0;
+	font-size: 1.1rem;
+	color: #003366;
+	line-height: 1.4;
 }
 
 /* SIDEBAR SECTIONS */
 .archiveSection {
-  background-color: #f7f9fb;
-  padding: 15px;
-  margin-bottom: 20px;
+	background-color: #f7f9fb;
+	padding: 15px;
+	margin-bottom: 20px;
 }
 
 .archiveTitle {
-  color: #003366;
-  font-size: 1.1rem;
-  margin: 0 0 15px 0;
-  font-weight: 600;
+	color: #003366;
+	font-size: 1.1rem;
+	margin: 0 0 15px 0;
+	font-weight: 600;
 }
 
 .archiveList {
-  list-style: none;
-  padding: 0;
-  margin: 0;
+	list-style: none;
+	padding: 0;
+	margin: 0;
 }
 
 .archiveItem {
-  margin-bottom: 10px;
-  display: flex;
-  justify-content: space-between;
+	margin-bottom: 10px;
+	display: flex;
+	justify-content: space-between;
 }
 
 .archiveYear {
-  color: #003366;
-  font-weight: 500;
+	color: #003366;
+	font-weight: 500;
 }
 
 .archiveCount {
-  color: #666;
+	color: #666;
 }
 
 .viewAllSection {
-  text-align: center;
+	text-align: center;
 }
 
 .viewAllButton {
-  display: inline-block;
-  background-color: #f7c948;
-  color: #333;
-  padding: 10px 20px;
-  text-decoration: none;
-  font-weight: 500;
-  transition: background-color 0.2s ease;
+	display: inline-block;
+	background-color: #f7c948;
+	color: #333;
+	padding: 10px 20px;
+	text-decoration: none;
+	font-weight: 500;
+	transition: background-color 0.2s ease;
 }
 
 .viewAllButton:hover {
-  background-color: #e5b73b;
+	background-color: #e5b73b;
 }
 
 /* RESPONSIVE STYLES */
 @media (max-width: 768px) {
-  .workshopsList {
-    flex-direction: column;
-  }
+	.workshopsList {
+		flex-direction: column;
+	}
 
-  .sidebar {
-    width: 100%;
-  }
+	.sidebar {
+		width: 100%;
+	}
 
-  .heroTitle {
-    font-size: 2rem;
-  }
+	.heroTitle {
+		font-size: 2rem;
+	}
 }
