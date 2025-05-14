@@ -62,7 +62,17 @@ const ResultsInfo: React.FC<ResultsInfoProps> = ({
 
 	return (
 		<div className={styles.resultsInfoWrapper}>
-			
+			{/* Results info showing filtered items by category */}
+			<div className={styles.resultsInfo}>
+				{loading ? (
+					<span>Loading data...</span>
+				) : (
+					<span>
+						Showing {contractorCount} contractor{contractorCount !== 1 ? 's' : ''}, {cruiseCount} cruise
+						{cruiseCount !== 1 ? 's' : ''}, and {stationCount} station{stationCount !== 1 ? 's' : ''}
+					</span>
+				)}
+			</div>
 
 			{/* CSV Export Button with improved loading state and feedback */}
 			<button
