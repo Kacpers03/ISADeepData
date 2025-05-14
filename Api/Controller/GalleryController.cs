@@ -14,11 +14,14 @@ namespace Api.Controllers
     {
         private readonly IGalleryService _galleryService;
         
+        // Constructor: set up the gallery service
         public GalleryController(IGalleryService galleryService)
         {
             _galleryService = galleryService;
         }
         
+        // GET api/gallery/media
+        // Get a list of media items, with optional filters
         [HttpGet("media")]
         public async Task<ActionResult<IEnumerable<GalleryItemDto>>> GetGalleryMedia(
             [FromQuery] string? mediaType,
@@ -32,64 +35,68 @@ namespace Api.Controllers
         {
             try
             {
+                // Get filtered items from service
                 var items = await _galleryService.GetGalleryItemsAsync(
                     contractorId, areaId, blockId, cruiseId, stationId, sampleId, 
                     mediaType, year);
                 
-                // Add thumbnail and file URLs to each item
+                // For each item, set URLs and descriptions
                 foreach (var item in items)
                 {
-                    // Map each item to one of the organism files that actually exist in storage
-                    // This ensures we display actual images instead of missing ones
-                    int fileIndex = (item.MediaId % 8) + 1; // Maps to organism1.jpg through organism8.jpg
+                    // Choose a sample file name based on MediaId
+                    int fileIndex = (item.MediaId % 8) + 1; // 1 to 8
                     string mappedFileName = $"organism{fileIndex}.jpg";
                     
-                    // Set the full URL for the media
+                    // Build full URL to storage
                     item.MediaUrl = $"https://isagallerystorage.blob.core.windows.net/gallery/{mappedFileName}";
                     
-                    // For the frontend, rename fields to match expected format
+                    // Frontend expects FileUrl and ThumbnailUrl
                     item.FileUrl = item.MediaUrl;
-                    
-                    // Use the same URL for thumbnails
                     item.ThumbnailUrl = item.MediaUrl;
                     
-                    // Add any additional properties needed by frontend
+                    // Use remarks or default description
                     item.Description = item.Remarks ?? $"Image {item.MediaId}";
                     
-                    // Save the original filename for reference
-                    // This doesn't affect display but keeps the record of the original name
+                    // Keep original filename for logs
                     string originalFileName = item.FileName ?? string.Empty;
-                    
-                    // Log mapping for debugging
                     Console.WriteLine($"Mapped {originalFileName} to {mappedFileName}");
                 }
                 
+                // Return the list of items
                 return Ok(items);
             }
             catch (Exception ex)
             {
+                // If something goes wrong, return 500 with error message
                 return StatusCode(500, new { message = $"Error retrieving gallery items: {ex.Message}" });
             }
         }
         
+        // GET api/gallery/{mediaId}/download
+        // Download a specific media file by ID
         [HttpGet("{mediaId}/download")]
         public async Task<IActionResult> DownloadMedia(int mediaId)
         {
             try
             {
+                // Get file bytes, MIME type, and name from service
                 var (content, contentType, fileName) = await _galleryService.GetMediaForDownloadAsync(mediaId);
+                // Return file to client
                 return File(content, contentType, fileName);
             }
             catch (FileNotFoundException)
             {
+                // If file not found, return 404
                 return NotFound(new { message = "Media file not found" });
             }
             catch (ArgumentException ex)
             {
+                // If bad input, return 400 with message
                 return BadRequest(new { message = ex.Message });
             }
             catch (Exception ex)
             {
+                // Other errors return 500
                 return StatusCode(500, new { message = $"Error downloading media: {ex.Message}" });
             }
         }
