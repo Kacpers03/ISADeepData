@@ -19,8 +19,9 @@ namespace Api.Controllers
         private readonly ISpatialService _spatialService;
         private readonly IMapFilterService _mapFilterService;
 
+        // Constructor: setup database and services
         public AnalyticsController(
-            MyDbContext context, 
+            MyDbContext context,
             ISpatialService spatialService,
             IMapFilterService mapFilterService)
         {
@@ -28,67 +29,72 @@ namespace Api.Controllers
             _spatialService = spatialService;
             _mapFilterService = mapFilterService;
         }
-        
+
+        // GET api/analytics/block/{blockId}
+        // Get analysis for one block by its ID
         [HttpGet("block/{blockId}")]
         public async Task<ActionResult<object>> GetBlockAnalysis(int blockId)
         {
+            // Ask service for block data
             var result = await _mapFilterService.GetBlockAnalysisAsync(blockId);
-            
+
+            // If no data, return 404
             if (result == null)
                 return NotFound();
-                
+
+            // Return data
             return result;
         }
-        
+
+        // GET api/analytics/contractor/{contractorId}/summary
+        // Get a summary for one contractor
         [HttpGet("contractor/{contractorId}/summary")]
         public async Task<ActionResult<object>> GetContractorSummary(int contractorId)
         {
-            // Sjekk om kontraktør eksisterer
+            // Find contractor with type and status
             var contractor = await _context.Contractors
                 .Include(c => c.ContractType)
                 .Include(c => c.ContractStatus)
                 .FirstOrDefaultAsync(c => c.ContractorId == contractorId);
-                
+
+            // If not found, return 404
             if (contractor == null)
                 return NotFound();
-                
-            // Hent tilknyttede områder
+
+            // Get contractor's areas
             var areas = await _context.ContractorAreas
                 .Where(a => a.ContractorId == contractorId)
                 .ToListAsync();
-                
             var areaIds = areas.Select(a => a.AreaId).ToList();
-            
-            // Hent tilknyttede blokker
+
+            // Get blocks in those areas
             var blocks = await _context.ContractorAreaBlocks
                 .Where(b => areaIds.Contains(b.AreaId))
                 .ToListAsync();
-                
-            // Hent cruises
+
+            // Get cruises for contractor
             var cruises = await _context.Cruises
                 .Where(c => c.ContractorId == contractorId)
                 .ToListAsync();
-                
             var cruiseIds = cruises.Select(c => c.CruiseId).ToList();
-            
-            // Hent stasjoner
+
+            // Get stations in those cruises
             var stations = await _context.Stations
                 .Where(s => cruiseIds.Contains(s.CruiseId))
                 .ToListAsync();
-                
             var stationIds = stations.Select(s => s.StationId).ToList();
-            
-            // Hent prøver
+
+            // Get samples from those stations
             var samples = await _context.Samples
                 .Where(s => stationIds.Contains(s.StationId))
                 .ToListAsync();
-                
-            // Beregn statistikk
+
+            // Calculate stats
             var totalAreaKm2 = blocks.Sum(b => b.AreaSizeKm2);
             var earliestCruise = cruises.Any() ? cruises.Min(c => c.StartDate) : DateTime.MinValue;
             var latestCruise = cruises.Any() ? cruises.Max(c => c.EndDate) : DateTime.MinValue;
-            
-            // Returnér samlet informasjon
+
+            // Return summary
             return new
             {
                 Contractor = new
@@ -99,6 +105,7 @@ namespace Api.Controllers
                     Status = contractor.ContractStatus?.ContractStatusName,
                     contractor.SponsoringState,
                     contractor.ContractualYear,
+                    // Years since contract year
                     ContractDuration = DateTime.Now.Year - contractor.ContractualYear
                 },
                 Summary = new
@@ -111,8 +118,10 @@ namespace Api.Controllers
                     TotalSamples = samples.Count,
                     EarliestCruise = earliestCruise,
                     LatestCruise = latestCruise,
+                    // Count days for all cruises
                     ExpeditionDays = cruises.Sum(c => (c.EndDate - c.StartDate).Days + 1)
                 },
+                // List each area with block count
                 Areas = areas.Select(a => new
                 {
                     a.AreaId,
@@ -122,26 +131,32 @@ namespace Api.Controllers
                 }).ToList()
             };
         }
-        
+
+        // POST api/analytics/associate-stations-blocks
+        // Link stations to blocks by location
         [HttpPost("associate-stations-blocks")]
         public async Task<ActionResult<object>> AssociateStationsWithBlocks()
         {
             try
             {
+                // Run spatial service
                 var result = await _spatialService.AssociateStationsWithBlocks();
-                
+
                 if (result)
                 {
-                    return Ok(new { message = "Stasjoner er nå koblet til blokker basert på geografiske koordinater" });
+                    // Success
+                    return Ok(new { message = "Stations are now linked to blocks" });
                 }
                 else
                 {
-                    return BadRequest(new { message = "Det oppstod et problem under tilknytningen av stasjoner til blokker" });
+                    // Service failed
+                    return BadRequest(new { message = "Failed to link stations to blocks" });
                 }
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { message = $"En feil oppstod: {ex.Message}" });
+                // Unexpected error
+                return StatusCode(500, new { message = $"Error: {ex.Message}" });
             }
         }
     }
