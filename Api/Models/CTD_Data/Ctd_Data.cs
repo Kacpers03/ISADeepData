@@ -5,23 +5,35 @@ using Models.Stations;
 
 namespace Models.CTD_Data
 {
+    // Entity model for CTD (Conductivity, Temperature, Depth) measurements
     public class CTDData
     {
+        // Primary key: unique ID of the CTD record
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int CtdId { get; set; } // ctd_id
+        public int CtdId { get; set; }
 
-        // Utenlandsk nøkkel: Kobling til Station
+        // Foreign key: ID of the station where the measurement was taken
         public int StationId { get; set; }
         [ForeignKey("StationId")]
         public Station? Station { get; set; }
 
-        public double DepthM { get; set; }       // depth_m
-        public double TemperatureC { get; set; } // temperature_c
-        public double Salinity { get; set; }     // salinity
-        public double Oxygen { get; set; }       // oxygen
-        public double Ph { get; set; }           // ph
+        // Depth in meters at which the measurement was recorded
+        public double DepthM { get; set; }
 
-        public DateTime MeasurementTime { get; set; } // measurement_time
+        // Water temperature in Celsius
+        public double TemperatureC { get; set; }
+
+        // Salinity measured in practical salinity units (PSU)
+        public double Salinity { get; set; }
+
+        // Dissolved oxygen concentration (e.g., mg/L)
+        public double Oxygen { get; set; }
+
+        // pH level of the water
+        public double Ph { get; set; }
+
+        // Date and time when the measurement was taken
+        public DateTime MeasurementTime { get; set; }
     }
 }
