@@ -25,23 +25,23 @@ namespace Api.Services.Implementations
             _containerName = "files";
         }
 
-        public async Task<string> UploadFileAsync(IFormFile file, LibraryDto dto)
+        public async Task<string> UploadFileAsync(IFormFile file, LibraryDto dto) //Function for fetching files based on blob url
         {
             if (file == null || file.Length == 0)
                 throw new ArgumentException("File is missing.");
 
             var blobServiceClient = new BlobServiceClient(_connectionString);
             var containerClient = blobServiceClient.GetBlobContainerClient(_containerName);
-            await containerClient.CreateIfNotExistsAsync();
+            await containerClient.CreateIfNotExistsAsync(); 
 
-            var blobClient = containerClient.GetBlobClient(file.FileName);
+            var blobClient = containerClient.GetBlobClient(file.FileName); //Fetching
 
-            using (var stream = file.OpenReadStream())
+            using (var stream = file.OpenReadStream()) 
             {
                 await blobClient.UploadAsync(stream, overwrite: true);
             }
 
-            var libraryEntity = new Library
+            var libraryEntity = new Library //Uses DTO to get the entry in the database
             {
                 ContractorId = dto.ContractorId,
                 Theme = dto.Theme,
@@ -54,19 +54,19 @@ namespace Api.Services.Implementations
                 IsConfidential = dto.IsConfidential
             };
 
-            await _libraryRepository.AddLibraryAsync(libraryEntity);
+            await _libraryRepository.AddLibraryAsync(libraryEntity); //Adds into the DB
 
-            return file.FileName;
+            return file.FileName; //returns filename
         }
 
-        public async Task<List<LibraryDto>> GetAllAsync()
+        public async Task<List<LibraryDto>> GetAllAsync() //Function for fetching the list of libraryDTOs
         {
-            // Ensure Contractor is included
+            //Ensure Contractor is included
             var items = await _context.Libraries
                 .Include(l => l.Contractor)
                 .ToListAsync();
 
-            return items.Select(l => new LibraryDto
+            return items.Select(l => new LibraryDto //Selects based on ID
             {
                 LibraryId = l.LibraryId,
                 ContractorId = l.ContractorId,
@@ -82,9 +82,9 @@ namespace Api.Services.Implementations
             }).ToList();
         }
 
-        public async Task<List<string>> GetDistinctContractors()
+        public async Task<List<string>> GetDistinctContractors() //Getting the contractors based on ID
         {
-            var libraries = await _libraryRepository.GetAllLibrariesWithContractorsAsync();
+            var libraries = await _libraryRepository.GetAllLibrariesWithContractorsAsync(); //Uses repository implementation
 
             return libraries
                 .Where(l => l.Contractor != null && !string.IsNullOrEmpty(l.Contractor.ContractorName))
@@ -94,9 +94,9 @@ namespace Api.Services.Implementations
                 .ToList();
         }
 
-        public async Task<List<string>> GetDistinctThemes()
+        public async Task<List<string>> GetDistinctThemes() //Getting the themes based on filtered theme
         {
-            var libraries = await _libraryRepository.GetAllLibrariesAsync();
+            var libraries = await _libraryRepository.GetAllLibrariesAsync(); //Uses repository
 
             return libraries
                 .Where(l => !string.IsNullOrEmpty(l.Theme))
