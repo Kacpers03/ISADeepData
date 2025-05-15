@@ -594,7 +594,20 @@ const GalleryTemplate: React.FC = () => {
 						</div>
 					) : (
 						<>
-							
+							{/* Results info showing filtered items by category and current view */}
+							{/* Results info showing filtered items by category and current view */}
+							<div className={styles.resultsInfo}>
+								<p>
+									Showing {indexOfFirstItem + 1}-{Math.min(indexOfLastItem, filteredItems.length)} of{' '}
+									{filteredItems.length} items •
+									{Array.from(new Set(filteredItems.map(item => item.contractorId))).length} contractor
+									{Array.from(new Set(filteredItems.map(item => item.contractorId))).length !== 1 ? 's' : ''},{' '}
+									{Array.from(new Set(filteredItems.map(item => item.cruiseId))).length} cruise
+									{Array.from(new Set(filteredItems.map(item => item.cruiseId))).length !== 1 ? 's' : ''}, and{' '}
+									{Array.from(new Set(filteredItems.map(item => item.stationId))).length} station
+									{Array.from(new Set(filteredItems.map(item => item.stationId))).length !== 1 ? 's' : ''}
+								</p>
+							</div>
 
 							{/* Media Grid - 3 column layout of media cards */}
 							<div className={styles.mediaGrid}>
