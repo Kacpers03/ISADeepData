@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Http;
 
 namespace Api.Services.Interfaces
 {
-    public interface ILibraryService
+    public interface ILibraryService 
     {
         Task<string> UploadFileAsync(IFormFile file, LibraryDto dto);
         Task<List<LibraryDto>> GetAllAsync();

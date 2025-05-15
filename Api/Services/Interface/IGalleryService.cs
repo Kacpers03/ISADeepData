@@ -8,7 +8,7 @@ namespace Api.Services.Interfaces
 {
     public interface IGalleryService
     {
-        // Returns a list of gallery items with optional filters
+        //Returns a list of gallery items with optional filters
         Task<IEnumerable<GalleryItemDto>> GetGalleryItemsAsync(
             int? contractorId,
             int? areaId,
@@ -19,7 +19,7 @@ namespace Api.Services.Interfaces
             string? mediaType,
             int? year);
 
-        // Returns a media file for downloading (content, type, and filename)
+        //Returns a media file for downloading (content, type, and filename)
         Task<(Stream Content, string ContentType, string FileName)> GetMediaForDownloadAsync(int mediaId);
     }
 }
