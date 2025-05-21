@@ -23,7 +23,7 @@ This project presents a comprehensive redesign of the International Seabed Autho
 
 ## Installation and Setup
 
-### Prerequisites
+### Tools
 
 - .NET 8 (ASP.NET Core)
 - Microsoft.AspNetCore.Cors
