@@ -297,7 +297,7 @@ const SampleFilter = ({
 								<div
 									className={`${styles.dropdownOption} ${filters.contractor === 'all' ? styles.selectedOption : ''}`}
 									onClick={() => selectOption('contractor', 'all')}>
-									All Contractors {/* "All" option */}
+									{t('library.samples.filter.allContractors') || 'All Contractors'}
 								</div>
 								{availableOptions.contractors.map((option, index) => (
 									<div
@@ -331,7 +331,7 @@ const SampleFilter = ({
 								<div
 									className={`${styles.dropdownOption} ${filters.station === 'all' ? styles.selectedOption : ''}`}
 									onClick={() => selectOption('station', 'all')}>
-									All Stations
+									{t('library.samples.filter.allStations') || 'All Stations'}
 								</div>
 								{availableOptions.stations.map((option, index) => (
 									<div
@@ -366,7 +366,7 @@ const SampleFilter = ({
 								<div
 									className={`${styles.dropdownOption} ${filters.cruise === 'all' ? styles.selectedOption : ''}`}
 									onClick={() => selectOption('cruise', 'all')}>
-									All Cruises
+									{t('library.samples.filter.allCruises') || 'All Cruises'}
 								</div>
 								{availableOptions.cruises.map((option, index) => (
 									<div
@@ -400,7 +400,7 @@ const SampleFilter = ({
 								<div
 									className={`${styles.dropdownOption} ${filters.sampleType === 'all' ? styles.selectedOption : ''}`}
 									onClick={() => selectOption('sampleType', 'all')}>
-									All Sample Types
+									{t('library.samples.filter.allSampleTypes') || 'All Sample Types'}
 								</div>
 								{availableOptions.sampleTypes.map((option, index) => (
 									<div
@@ -434,7 +434,7 @@ const SampleFilter = ({
 								<div
 									className={`${styles.dropdownOption} ${filters.matrixType === 'all' ? styles.selectedOption : ''}`}
 									onClick={() => selectOption('matrixType', 'all')}>
-									All Matrix Types
+									{t('library.samples.filter.allMatrixTypes') || 'All Matrix Types'}
 								</div>
 								{availableOptions.matrixTypes.map((option, index) => (
 									<div
@@ -468,7 +468,7 @@ const SampleFilter = ({
 								<div
 									className={`${styles.dropdownOption} ${filters.habitatType === 'all' ? styles.selectedOption : ''}`}
 									onClick={() => selectOption('habitatType', 'all')}>
-									All Habitat Types
+									{t('library.samples.filter.allHabitatTypes') || 'All Habitat Types'}
 								</div>
 								{availableOptions.habitatTypes.map((option, index) => (
 									<div
@@ -504,7 +504,7 @@ const SampleFilter = ({
 								<div
 									className={`${styles.dropdownOption} ${filters.analysis === 'all' ? styles.selectedOption : ''}`}
 									onClick={() => selectOption('analysis', 'all')}>
-									All Analyses
+									{t('library.samples.filter.allAnalyses') || 'All Analyses'}
 								</div>
 								{availableOptions.analyses.map((option, index) => (
 									<div
