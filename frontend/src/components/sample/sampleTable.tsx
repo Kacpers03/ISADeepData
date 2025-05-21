@@ -98,7 +98,7 @@ const SampleTable = ({ filters, visibleColumns, setFilteredData }) => {
 	}, [filteredData]) // Recalculate when filtered data changes
 
 	// Define all possible columns with improved cell rendering
-	const allColumns = {
+	const allColumns = useMemo(() => ({
 		sampleCode: {
 			accessorKey: 'sampleCode', // Property to access from data object
 			header: t('library.samples.table.sampleCode') || 'Sample Code', // Column header with translation
@@ -150,14 +150,14 @@ const SampleTable = ({ filters, visibleColumns, setFilteredData }) => {
 			// Special cell rendering for description to handle long text
 			cell: info => <div className={styles.descriptionCell}>{info.getValue() ?? '-'}</div>,
 		},
-	}
+	}), [t]);
 
 	// Filter to include only columns the user selected - memoized for performance
 	const columns = useMemo(() => {
 		return Object.keys(allColumns)
 			.filter(key => visibleColumns.includes(key)) // Only include columns selected by user
 			.map(key => allColumns[key]) // Map keys to column definitions
-	}, [visibleColumns]) // Recalculate when visible columns change
+	}, [visibleColumns, allColumns]) // Recalculate when visible columns change
 
 	const [sorting, setSorting] = useState([]) // State for table sorting configuration
 	const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 10 }) // State for pagination configuration

@@ -29,17 +29,17 @@ const SampleFilter = ({
 
 	// Define all possible column options for the column visibility toggles
 	const allColumnOptions = [
-		{ key: 'sampleCode', label: 'Sample Code' },
-		{ key: 'sampleType', label: 'Sample Type' },
-		{ key: 'matrixType', label: 'Matrix Type' },
-		{ key: 'habitatType', label: 'Habitat Type' },
-		{ key: 'analysis', label: 'Analysis' },
-		{ key: 'result', label: 'Result' },
-		{ key: 'contractor', label: 'Contractor' },
-		{ key: 'station', label: 'Station' },
-		{ key: 'cruise', label: 'Cruise' },
-		{ key: 'sampleDescription', label: 'Description' },
-	]
+		{ key: 'sampleCode', label: t('library.samples.filter.sampleCode') || 'Sample Code' },
+		{ key: 'sampleType', label: t('library.samples.filter.sampleType') || 'Sample Type' },
+		{ key: 'matrixType', label: t('library.samples.filter.matrixType') || 'Matrix Type' },
+		{ key: 'habitatType', label: t('library.samples.filter.habitatType') || 'Habitat Type' },
+		{ key: 'analysis', label: t('library.samples.filter.analysis') || 'Analysis' },
+		{ key: 'result', label: t('library.samples.filter.result') || 'Result' },
+		{ key: 'contractor', label: t('library.samples.filter.contractor') || 'Contractor' },
+		{ key: 'station', label: t('library.samples.filter.station') || 'Station' },
+		{ key: 'cruise', label: t('library.samples.filter.cruise') || 'Cruise' },
+		{ key: 'sampleDescription', label: t('library.samples.filter.description') || 'Description' },
+	  ]
 
 	// Calculate available options based on the filtered data - memoized for performance
 	const availableOptions = useMemo(() => {
@@ -297,7 +297,7 @@ const SampleFilter = ({
 								<div
 									className={`${styles.dropdownOption} ${filters.contractor === 'all' ? styles.selectedOption : ''}`}
 									onClick={() => selectOption('contractor', 'all')}>
-									All Contractors {/* "All" option */}
+									{t('library.samples.filter.allContractors') || 'All Contractors'}
 								</div>
 								{availableOptions.contractors.map((option, index) => (
 									<div
@@ -331,7 +331,7 @@ const SampleFilter = ({
 								<div
 									className={`${styles.dropdownOption} ${filters.station === 'all' ? styles.selectedOption : ''}`}
 									onClick={() => selectOption('station', 'all')}>
-									All Stations
+									{t('library.samples.filter.allStations') || 'All Stations'}
 								</div>
 								{availableOptions.stations.map((option, index) => (
 									<div
@@ -366,7 +366,7 @@ const SampleFilter = ({
 								<div
 									className={`${styles.dropdownOption} ${filters.cruise === 'all' ? styles.selectedOption : ''}`}
 									onClick={() => selectOption('cruise', 'all')}>
-									All Cruises
+									{t('library.samples.filter.allCruises') || 'All Cruises'}
 								</div>
 								{availableOptions.cruises.map((option, index) => (
 									<div
@@ -400,7 +400,7 @@ const SampleFilter = ({
 								<div
 									className={`${styles.dropdownOption} ${filters.sampleType === 'all' ? styles.selectedOption : ''}`}
 									onClick={() => selectOption('sampleType', 'all')}>
-									All Sample Types
+									{t('library.samples.filter.allSampleTypes') || 'All Sample Types'}
 								</div>
 								{availableOptions.sampleTypes.map((option, index) => (
 									<div
@@ -434,7 +434,7 @@ const SampleFilter = ({
 								<div
 									className={`${styles.dropdownOption} ${filters.matrixType === 'all' ? styles.selectedOption : ''}`}
 									onClick={() => selectOption('matrixType', 'all')}>
-									All Matrix Types
+									{t('library.samples.filter.allMatrixTypes') || 'All Matrix Types'}
 								</div>
 								{availableOptions.matrixTypes.map((option, index) => (
 									<div
@@ -468,7 +468,7 @@ const SampleFilter = ({
 								<div
 									className={`${styles.dropdownOption} ${filters.habitatType === 'all' ? styles.selectedOption : ''}`}
 									onClick={() => selectOption('habitatType', 'all')}>
-									All Habitat Types
+									{t('library.samples.filter.allHabitatTypes') || 'All Habitat Types'}
 								</div>
 								{availableOptions.habitatTypes.map((option, index) => (
 									<div
@@ -504,7 +504,7 @@ const SampleFilter = ({
 								<div
 									className={`${styles.dropdownOption} ${filters.analysis === 'all' ? styles.selectedOption : ''}`}
 									onClick={() => selectOption('analysis', 'all')}>
-									All Analyses
+									{t('library.samples.filter.allAnalyses') || 'All Analyses'}
 								</div>
 								{availableOptions.analyses.map((option, index) => (
 									<div
@@ -525,20 +525,18 @@ const SampleFilter = ({
 					<span>{t('library.samples.filter.visibleColumns') || 'Visible Columns'}</span>
 				</div>
 				<div className={styles.columnsGrid}>
-					{' '}
-					{/* Grid layout for column checkboxes */}
 					{allColumnOptions.map(col => (
 						<div key={col.key} className={styles.columnToggle}>
 							<input
 								type='checkbox'
 								id={`col-${col.key}`}
 								value={col.key}
-								checked={visibleColumns.includes(col.key)} // Checked if column is in visible columns array
-								onChange={handleColumnToggle} // Handle checkbox toggle
+								checked={visibleColumns.includes(col.key)}
+								onChange={handleColumnToggle}
 								className={styles.columnCheckbox}
 							/>
 							<label htmlFor={`col-${col.key}`} className={styles.columnLabel}>
-								{col.label} {/* Column display name */}
+								{col.label} 
 							</label>
 						</div>
 					))}

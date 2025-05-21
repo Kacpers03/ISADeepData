@@ -211,7 +211,7 @@ const FileTable: React.FC<{
 				},
 			},
 		],
-		[]
+		[t]
 	)
 
 	const [sorting, setSorting] = useState([]) // State for table sorting
