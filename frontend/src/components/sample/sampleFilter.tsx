@@ -29,17 +29,17 @@ const SampleFilter = ({
 
 	// Define all possible column options for the column visibility toggles
 	const allColumnOptions = [
-		{ key: 'sampleCode', label: 'Sample Code' },
-		{ key: 'sampleType', label: 'Sample Type' },
-		{ key: 'matrixType', label: 'Matrix Type' },
-		{ key: 'habitatType', label: 'Habitat Type' },
-		{ key: 'analysis', label: 'Analysis' },
-		{ key: 'result', label: 'Result' },
-		{ key: 'contractor', label: 'Contractor' },
-		{ key: 'station', label: 'Station' },
-		{ key: 'cruise', label: 'Cruise' },
-		{ key: 'sampleDescription', label: 'Description' },
-	]
+		{ key: 'sampleCode', label: t('library.samples.filter.sampleCode') || 'Sample Code' },
+		{ key: 'sampleType', label: t('library.samples.filter.sampleType') || 'Sample Type' },
+		{ key: 'matrixType', label: t('library.samples.filter.matrixType') || 'Matrix Type' },
+		{ key: 'habitatType', label: t('library.samples.filter.habitatType') || 'Habitat Type' },
+		{ key: 'analysis', label: t('library.samples.filter.analysis') || 'Analysis' },
+		{ key: 'result', label: t('library.samples.filter.result') || 'Result' },
+		{ key: 'contractor', label: t('library.samples.filter.contractor') || 'Contractor' },
+		{ key: 'station', label: t('library.samples.filter.station') || 'Station' },
+		{ key: 'cruise', label: t('library.samples.filter.cruise') || 'Cruise' },
+		{ key: 'sampleDescription', label: t('library.samples.filter.description') || 'Description' },
+	  ]
 
 	// Calculate available options based on the filtered data - memoized for performance
 	const availableOptions = useMemo(() => {
@@ -525,20 +525,18 @@ const SampleFilter = ({
 					<span>{t('library.samples.filter.visibleColumns') || 'Visible Columns'}</span>
 				</div>
 				<div className={styles.columnsGrid}>
-					{' '}
-					{/* Grid layout for column checkboxes */}
 					{allColumnOptions.map(col => (
 						<div key={col.key} className={styles.columnToggle}>
 							<input
 								type='checkbox'
 								id={`col-${col.key}`}
 								value={col.key}
-								checked={visibleColumns.includes(col.key)} // Checked if column is in visible columns array
-								onChange={handleColumnToggle} // Handle checkbox toggle
+								checked={visibleColumns.includes(col.key)}
+								onChange={handleColumnToggle}
 								className={styles.columnCheckbox}
 							/>
 							<label htmlFor={`col-${col.key}`} className={styles.columnLabel}>
-								{col.label} {/* Column display name */}
+								{col.label} 
 							</label>
 						</div>
 					))}
