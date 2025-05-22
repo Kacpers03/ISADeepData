@@ -2,7 +2,10 @@
 
 ## Overview
 
-This project presents a comprehensive redesign of the International Seabed Authority's DeepData platform, addressing critical usability challenges that previously limited access to valuable marine environmental data. Our solution transforms the user experience through intuitive navigation, flexible filtering mechanisms, and enhanced visualization tools, enabling researchers, policymakers, and the public to effectively explore and utilize seabed data.
+This project presents a comprehensive redesign of the International Seabed Authority's DeepData platform,
+addressing critical usability challenges that previously limited access to valuable marine environmental data.
+Our solution transforms the user experience through intuitive navigation, flexible filtering mechanisms, and enhanced visualization tools,
+enabling researchers, policymakers, and the public to effectively explore and utilize seabed data.
 
 ## Features
 
