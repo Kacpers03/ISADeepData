@@ -670,7 +670,10 @@
 				"allMatrixTypes": "Todos los Tipos de Matrices",
 				"allHabitatTypes": "Todos los Tipos de Hábitats",
 				"allAnalyses": "Todos los Análisis",
-				"all": "Todos"
+				"all": "Todos",
+				"sampleCode": "Código de Muestra",
+				"result": "Resultado",
+				"description": "Descripción"
 			},
 			"table": {
 				"sampleCode": "Código de Muestra",

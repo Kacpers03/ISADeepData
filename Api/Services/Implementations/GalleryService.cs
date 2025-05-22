@@ -18,12 +18,12 @@ namespace Api.Services.Implementations
         private readonly string _containerName;
 
         public GalleryService(
-            IGalleryRepository repository,
+            IGalleryRepository repository, //Initializes repository and configuration
             IConfiguration configuration)
         {
             _repository = repository;
             _connectionString = configuration.GetSection("AzureStorage:GalleryStorage:ConnectionString").Value
-                ?? throw new InvalidOperationException("Azure Storage connection string mangler i konfigurasjonen.");
+                ?? throw new InvalidOperationException("Azure Storage connection string mangler i konfigurasjonen."); //Error message if string does not exist
             _containerName = configuration.GetSection("AzureStorage:GalleryStorage:ContainerName").Value
                 ?? throw new InvalidOperationException("Azure Storage container name mangler i konfigurasjonen.");
         }
@@ -41,19 +41,19 @@ namespace Api.Services.Implementations
             var mediaItems = await _repository.GetGalleryItemsAsync(
                 contractorId, areaId, blockId, cruiseId, stationId, sampleId, mediaType);
 
-            var result = new List<GalleryItemDto>();
+            var result = new List<GalleryItemDto>(); //Initializes a list of galleryItems
 
             foreach (var item in mediaItems)
             {
-                // Hopper over elementer som mangler viktig data
+                //Skips elements that does not exist
                 if (item.Sample?.Station?.Cruise?.Contractor == null)
                     continue;
 
-                // Filtrer på år hvis spesifisert
+                //Filters by year if possible
                 if (year.HasValue && item.CaptureDate.Year != year.Value)
                     continue;
 
-                result.Add(new GalleryItemDto
+                result.Add(new GalleryItemDto //Adds all attributes
                 {
                     MediaId = item.MediaId,
                     FileName = item.FileName,
@@ -77,30 +77,30 @@ namespace Api.Services.Implementations
 
             return result;
         }
-
-        public async Task<(Stream Content, string ContentType, string FileName)> GetMediaForDownloadAsync(int mediaId)
+        //Function for downloading media
+        public async Task<(Stream Content, string ContentType, string FileName)> GetMediaForDownloadAsync(int mediaId) 
         {
-            var media = await _repository.GetMediaByIdAsync(mediaId);
+            var media = await _repository.GetMediaByIdAsync(mediaId); //Gets ID via the repository
 
             if (media == null)
             {
-                throw new ArgumentException($"Fant ikke media med ID {mediaId}");
+                throw new ArgumentException($"Did not find ID: {mediaId}"); //Error code if media does not exist
             }
 
-            var blobServiceClient = new BlobServiceClient(_connectionString);
+            var blobServiceClient = new BlobServiceClient(_connectionString); //Uses BlobService by connecting
             var containerClient = blobServiceClient.GetBlobContainerClient(_containerName);
             var blobClient = containerClient.GetBlobClient(media.FileName);
 
-            var response = await blobClient.DownloadAsync();
+            var response = await blobClient.DownloadAsync(); //Downloads after connecting
 
             return (response.Value.Content, GetContentType(media.FileName), media.FileName);
         }
 
-        private string GetContentType(string fileName)
+        private string GetContentType(string fileName) //Function for getting contenttype
         {
             var extension = Path.GetExtension(fileName).ToLowerInvariant();
 
-            // Returnerer riktig Content-Type basert på filendelse
+            //Return correct filetype based on ending of the file
             return extension switch
             {
                 ".jpg" or ".jpeg" => "image/jpeg",

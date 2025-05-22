@@ -16,7 +16,7 @@ namespace Api.Services.Implementations
         }
 
 
-        // Get all samples with full DTO mapping
+        //Get all samples with full DTO mapping
         public async Task<List<SampleDto>> GetAllSamplesAsync()
         {
             var samples = await _sampleRepository.GetAllSamplesAsync();
@@ -35,13 +35,13 @@ namespace Api.Services.Implementations
                 Analysis = s.Analysis,        
                 Result = s.Result, 
                 Unit = s.Unit           
-                 // or map if you add it to entity
+                 //or map if you add it to entity
             }).ToList();
         }
 
 
 
-        // Get distinct SampleTypes (for filtering dropdown)
+        //Get sampleTypes (for filtering dropdown)
         public async Task<List<string>> GetDistinctSampleTypesAsync()
         {
             var samples = await _sampleRepository.GetAllSamplesAsync();
@@ -54,7 +54,7 @@ namespace Api.Services.Implementations
         }
 
 
-        //  Get distinct MatrixTypes (corrected version)
+        //Get distinct MatrixTypes
         public async Task<List<string>> GetDistinctMatrixTypesAsync()
         {
             var samples = await _sampleRepository.GetAllSamplesAsync();
@@ -67,7 +67,7 @@ namespace Api.Services.Implementations
                 .ToList();
         }
 
-        //  Get distinct HabitatTypes (corrected version)
+        //Get distinct HabitatTypes
         public async Task<List<string>> GetDistinctHabitatTypesAsync()
         {
             var samples = await _sampleRepository.GetAllSamplesAsync();
@@ -80,7 +80,7 @@ namespace Api.Services.Implementations
                 .ToList();
         }
 
-        public async Task<List<string>> GetDistinctAnalysesAsync()
+        public async Task<List<string>> GetDistinctAnalysesAsync() //Selects analysis based on text
         {
             var samples = await _sampleRepository.GetAllSamplesAsync();
 
@@ -92,7 +92,7 @@ namespace Api.Services.Implementations
                 .ToList();
         }
 
-        public async Task<List<string>> GetDistinctStationCodesAsync()
+        public async Task<List<string>> GetDistinctStationCodesAsync() //Get station codes based on the station/ID
         {
             var samples = await _sampleRepository.GetAllSamplesAsync();
 
@@ -104,7 +104,7 @@ namespace Api.Services.Implementations
                 .ToList();
         }
 
-        public async Task<List<string>> GetDistinctCruiseNamesAsync()
+        public async Task<List<string>> GetDistinctCruiseNamesAsync() //Get cruise names based on the Station.
         {
             var samples = await _sampleRepository.GetAllSamplesAsync();
 
@@ -116,7 +116,7 @@ namespace Api.Services.Implementations
                 .ToList();
         }
 
-        public async Task<List<string>> GetDistinctContractorNamesAsync()
+        public async Task<List<string>> GetDistinctContractorNamesAsync() //Get contractor by looking into Cruise and station.
         {
             var samples = await _sampleRepository.GetAllSamplesAsync();
 

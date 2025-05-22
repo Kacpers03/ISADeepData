@@ -221,7 +221,7 @@ const FileFilter: React.FC<FileFilterProps> = ({
 											onFilterChange('contractor', 'all')
 											setActiveDropdown(null)
 										}}>
-										All Contractors {/* "All" option */}
+										{t('library.filter.allContractors') || 'All Contractors'} 
 										{filters.contractor === 'all' && <span className={dropdownStyles.selectedCheck}>✓</span>}
 									</div>
 									{availableOptions.contractors.map(option => (
@@ -268,7 +268,7 @@ const FileFilter: React.FC<FileFilterProps> = ({
 											onFilterChange('country', 'all')
 											setActiveDropdown(null)
 										}}>
-										All Countries
+										{t('library.filter.allCountries') || 'All Countries'}
 										{filters.country === 'all' && <span className={dropdownStyles.selectedCheck}>✓</span>}
 									</div>
 									{availableOptions.countries.map(option => (
@@ -310,7 +310,7 @@ const FileFilter: React.FC<FileFilterProps> = ({
 											onFilterChange('year', 'all')
 											setActiveDropdown(null)
 										}}>
-										All Years
+										{t('library.filter.allYears') || 'All Years'}
 										{filters.year === 'all' && <span className={dropdownStyles.selectedCheck}>✓</span>}
 									</div>
 									{availableOptions.years.map(option => (
@@ -353,7 +353,7 @@ const FileFilter: React.FC<FileFilterProps> = ({
 											onFilterChange('theme', 'all')
 											setActiveDropdown(null)
 										}}>
-										All Themes
+										{t('library.filter.allThemes') || 'All Themes'}
 										{filters.theme === 'all' && <span className={dropdownStyles.selectedCheck}>✓</span>}
 									</div>
 									{availableOptions.themes.map(option => (

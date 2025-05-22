@@ -1,36 +1,65 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# [Project Name] - ISA DeepData Platform Enhancement
 
-## Getting Started
+## Overview
 
-First, run the development server:
+This project presents a comprehensive redesign of the International Seabed Authority's DeepData platform,
+addressing critical usability challenges that previously limited access to valuable marine environmental data.
+Our solution transforms the user experience through intuitive navigation, flexible filtering mechanisms, and enhanced visualization tools,
+enabling researchers, policymakers, and the public to effectively explore and utilize seabed data.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## Features
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+- Improved map navigation and visualization
+- Modular filtering system
+- Streamlined data access and download capabilities
+- Enhanced media gallery for images and videos
+- Multilingual support (English, Spanish, French)
+- Responsive design for multiple screen sizes
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Technologies Used
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- Frontend: React, TypeScript, Next.js, Tailwind CSS
+- Backend: ASP.NET Core, C#
+- Database: SQLite
+- Cloud Storage: Azure Blob Storage
+- Mapping: React Map GL / Mapbox GL
 
-## Learn More
+## Installation and Setup
 
-To learn more about Next.js, take a look at the following resources:
+### Tools
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- .NET 8 (ASP.NET Core)
+- Microsoft.AspNetCore.Cors
+- Entity Framework Core 9
+- React 19.0.0
+- Next 15.1.6
+- Typescript 5
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### Create local file to run program
 
-## Deploy on Vercel
+1. Create a file under frontend directory: `.env.local`
+2. Paste this content:
+   NEXT_PUBLIC_MAPBOX_TOKEN=pk.eyJ1IjoiaGFzc2FuMjMwNSIsImEiOiJjbTduZWxuamMwMGYzMnhzNWdjemF2bWd5In0.SQq7tqewygAwAQQEhAEonQ
+   NEXT_PUBLIC_API_URL=http://localhost:5062/api
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### Backend Setup
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- Use terminal
+
+1. Navigate to the backend directory: `cd Api`
+2. Install dependencies: `dotnet build`
+3. Run the backend: `dotnet run`
+
+### Frontend Setup
+
+- Create new terminal
+
+1. Navigate to the frontend directory: `cd frontend`
+2. Install dependencies: `npm install`
+3. Run the development server: `npm run dev`
+4. Open [http://localhost:3000]in your browser
+
+### To activate map function on MacBook
+
+1. Navigate to the frontend directory: `cd frontend`
+2. Install react map component: `npm install --save babel-loader react-map-gl`

@@ -648,7 +648,10 @@
 				"allMatrixTypes": "All Matrix Types",
 				"allHabitatTypes": "All Habitat Types",
 				"allAnalyses": "All Analyses",
-				"all": "All"
+				"all": "All",
+				"sampleCode": "Sample Code",
+				"result": "Result",
+				"description": "Description"
 			},
 			"table": {
 				"sampleCode": "Sample Code",
