@@ -1,5 +1,9 @@
 # [Project Name] - ISA DeepData Platform Enhancement
 
+### LINK TO GITHUB:
+
+https://github.com/HassanYusuf1/Bachelor
+
 ## Overview
 
 This project presents a comprehensive redesign of the International Seabed Authority's DeepData platform,
